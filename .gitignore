@@ -1,0 +1,6 @@
+/.vscode/
+/SDL2/
+*.bat
+*.o
+*.exe
+*.dll
