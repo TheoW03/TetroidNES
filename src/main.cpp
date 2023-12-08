@@ -4,6 +4,17 @@
 using namespace std;
 int main(int argc, char *argv[])
 {
-    // cout << "hello world" << endl;
-    test();
+    // cout << "hello world" << endl;	
+   cout <<"sum: 1+1 = "<< mul(2,2) << endl; 
+
+ 
+	
 }
+
+
+
+
+
+
+
+
