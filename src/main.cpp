@@ -1,13 +1,14 @@
 #include <iostream>
 #include "../src/emulator/BitOperations.h"
-
+#include "../src/emulator/Memory.h"
 using namespace std;
 int main(int argc, char *argv[])
 {
-    // cout << "hello world" << endl;	
-   cout <<"sum: 1+1 = "<< mul(2,2) << endl; 
-
- 
+	Write_mem(0, -10);
+	cout << Read_mem(0) << endl;
+    	// cout << "hello world" << endl;	
+	
+	 
 	
 }
 
