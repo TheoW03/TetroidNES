@@ -14,6 +14,7 @@ void Write_mem(int address, int num){
     	}
 
 }
+
 int Read_mem(int address){
 	address = address * 32;
 	int decimalValue = 0;
