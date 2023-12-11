@@ -8,16 +8,6 @@ int main(int argc, char *argv[])
 	cout << Read_mem(0) << endl;
 	Write_mem(1, -20);	
 	cout << Read_mem(0) << endl;
-    	// cout << "hello world" << endl;	
-	
 	 
 	
 }
-
-
-
-
-
-
-
-
