@@ -1,6 +1,7 @@
 #include <iostream>
 #include "BitOperations.h"
 #include "Memory.h"
+#include "AddressMode.h"
 #include "Instructions.h"
 #include <cstdio>
 #include <bitset>
@@ -87,7 +88,15 @@ void run()
 		{
 		case 0xA9:
 		{
-			param = read_8bit(PC);
+			param = read_8bit(immediate_AddressMode(PC));
+			LDA(param, A_Reg);
+			set_zero(A_Reg);
+			set_negative(A_Reg);
+			PC++;
+		}
+		case 0xA5:
+		{
+			param = read_8bit(Zero_page_AddressMode(PC));
 			LDA(param, A_Reg);
 			set_zero(A_Reg);
 			set_negative(A_Reg);
