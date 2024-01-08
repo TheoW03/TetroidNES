@@ -6,7 +6,7 @@
 using namespace std;
 int main(int argc, char *argv[])
 {
-	vector<uint8_t> myVector = {0xa9, 0x01, 0x00};
+	vector<uint8_t> myVector = {0xa9, 0x00, 0x00};
 	load_instructions(myVector);
 	run();
 	

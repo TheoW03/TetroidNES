@@ -12,7 +12,7 @@ uint8_t read_8bit(uint16_t address){
 }
 
 uint16_t read_16bit(uint16_t address){
-	uint16_t value =   (int16_t)(memory[address] << 8) | memory[address+1];
+	uint16_t value =(uint16_t)(memory[address] << 8) | memory[address+1];
 	return value;
 }
 void write_8bit(uint16_t address, uint8_t value){
