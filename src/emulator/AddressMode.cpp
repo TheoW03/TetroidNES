@@ -41,11 +41,9 @@ uint16_t Indirect_AddressMode(uint16_t PC)
 }
 uint16_t Indirect_AddressModeX(uint16_t PC, uint8_t X_REG)
 {
-    uint16_t value = read_16bit((read_8bit(PC) + X_REG) % 255);
-    return value;
+    return read_16bit((read_8bit(PC) + X_REG) % 65535);
 }
 uint16_t Indirect_AddressModeY(uint16_t PC, uint16_t Y_REG)
 {
-    uint16_t value = read_16bit((read_8bit(PC) + Y_REG) % 255);
-    return value;
+    return (read_16bit(read_8bit(PC)) + Y_REG) % 65535;
 }

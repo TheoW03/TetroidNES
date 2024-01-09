@@ -15,7 +15,7 @@ uint8_t param = 0;
 void run()
 {
 	CPUProcessor cpu_Processor;
-	cpu_Processor.PC = 0;
+	cpu_Processor.PC = 0x8000;
 	cpu_Processor.A_Reg = 0;
 	cpu_Processor.status = 0;
 	cpu_Processor.X_Reg = 0;

@@ -3,7 +3,7 @@
 #include "Memory.h"
 #include "Computer.h"
 #include "AddressMode.h"
-#include <Map>
+#include <map>
 using namespace std;
 
 enum class AddressMode
@@ -63,6 +63,11 @@ uint16_t address_Mode(AddressMode address, uint16_t PC, uint8_t X_REG, uint16_t 
 	{
 		return Indirect_AddressModeY(PC, Y_REG);
 	}
+	default:
+	{
+		cout << "Instruction not supported" << endl;
+		return 0;
+	}
 	}
 }
 
@@ -79,7 +84,7 @@ void LDA(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xB1] = AddressMode::INDIRECT_Y;
 	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
 										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.A_Reg = read_8bit(value);
+	cpu.A_Reg = value;
 	cpu.PC++;
 	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
 		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X // meow
