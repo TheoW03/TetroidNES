@@ -10,3 +10,5 @@ void set_brk(CPUProcessor &cpu);
 int check_brk(CPUProcessor &cpu);
 void set_interrupt_disabled(int isDisabled, CPUProcessor &cpu);
 int check_Interrupt_disabled(CPUProcessor &cpu);
+void set_carry(int isCarry, CPUProcessor &cpu);
+int check_carry(CPUProcessor &cpu);

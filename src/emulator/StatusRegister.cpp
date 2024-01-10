@@ -3,14 +3,30 @@
 #include "Computer.h"
 using namespace std;
 
-int a = 0b1111111;
 #define CARRY_BIT 0b0000001
 #define ZERO_BIT 0b0000010
 #define INTERRUPT_DISABLED_BIT 0b0000100
 #define DECIMAL_BIT 0b0001000
-#define BREAK 0b0010000
-#define OVERFLOW 0b0100000
-#define NEGATIVE 0b1000000
+#define BREAK_BIT 0b0010000
+#define OVERFLOW_BIT 0b0100000
+#define NEGATIVE_BIT 0b1000000
+
+void set_carry(int isCarry, CPUProcessor &cpu)
+{
+    if (isCarry == 1)
+    {
+        cpu.status = cpu.status | CARRY_BIT;
+    }
+    else
+    {
+        cpu.status = cpu.status & (~CARRY_BIT);
+    }
+}
+int check_carry(CPUProcessor &cpu)
+{
+    return cpu.status & CARRY_BIT;
+}
+
 void set_zero(uint8_t value, CPUProcessor &cpu)
 {
     if (value == 0)
@@ -33,27 +49,27 @@ void set_negative(uint8_t value, CPUProcessor &cpu)
 
     if ((value & 0b10000000) != 0)
     {
-        cpu.status = cpu.status | NEGATIVE;
+        cpu.status = cpu.status | NEGATIVE_BIT;
     }
     else
     {
-        cpu.status = cpu.status & (~NEGATIVE);
+        cpu.status = cpu.status & (~NEGATIVE_BIT);
     }
 }
 
 int check_negative(CPUProcessor &cpu)
 {
-    return cpu.status & NEGATIVE;
+    return cpu.status & NEGATIVE_BIT;
 }
 
 void set_brk(CPUProcessor &cpu)
 {
-    cpu.status = cpu.status | BREAK;
+    cpu.status = cpu.status | BREAK_BIT;
 }
 
 int check_brk(CPUProcessor &cpu)
 {
-    return cpu.status & BREAK;
+    return cpu.status & BREAK_BIT;
 }
 
 void set_interrupt_disabled(int isDisabled, CPUProcessor &cpu)

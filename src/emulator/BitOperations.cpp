@@ -1,7 +1,8 @@
 #include <iostream>
+#include "StatusRegister.h"
 
 using namespace std;
-int add(int a, int b)
+uint8_t add(uint8_t a, uint8_t b)
 {
 	int carry = 0;
 	while (b != 0)
@@ -10,6 +11,7 @@ int add(int a, int b)
 		a = a ^ b;
 		b = carry << 1;
 	}
+	cout << carry << endl;
 	return a;
 }
 int mul(int a, int b)
