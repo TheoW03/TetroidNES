@@ -13,7 +13,7 @@ using namespace std;
 
 void set_carry(int isCarry, CPUProcessor &cpu)
 {
-    if (isCarry == 1)
+    if (isCarry != 0)
     {
         cpu.status = cpu.status | CARRY_BIT;
     }

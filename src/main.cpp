@@ -6,8 +6,7 @@
 using namespace std;
 int main(int argc, char *argv[])
 {
-	// vector<uint8_t> instructions = {0xa9, 129, 0x00};
-	// load_instructions(instructions);
-	cout << (int)add(254, 2) << endl;
+	vector<uint8_t> instructions = {0xa9, 129, 0xE9, 0x3, 0x00};
+	load_instructions(instructions);
 	run();
 }

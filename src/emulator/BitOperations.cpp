@@ -2,19 +2,17 @@
 #include "StatusRegister.h"
 
 using namespace std;
-uint8_t add(uint8_t a, uint8_t b)
+uint8_t add(uint8_t a, uint8_t b, uint8_t &carry)
 {
-	int carry = 0;
 	while (b != 0)
 	{
 		carry = a & b;
 		a = a ^ b;
 		b = carry << 1;
 	}
-	cout << carry << endl;
 	return a;
 }
-int mul(int a, int b)
+uint8_t mul(uint8_t a, uint8_t b)
 {
 	int result = 0;
 
@@ -30,10 +28,9 @@ int mul(int a, int b)
 	return result;
 }
 
-int sub(int a, int b)
+uint8_t sub(uint8_t a, uint8_t b, uint8_t &carry)
 {
 
-	int carry = 0;
 	while (b != 0)
 	{
 		carry = (~a) & b;

@@ -4,6 +4,7 @@
 #include "Computer.h"
 #include "AddressMode.h"
 #include <map>
+#include "StatusRegister.h"
 using namespace std;
 
 enum class AddressMode
@@ -110,6 +111,8 @@ void LDX(uint8_t current_instruction, CPUProcessor &cpu)
 	{
 		cpu.PC++;
 	}
+	set_zero(cpu.X_Reg, cpu);
+	set_negative(cpu.X_Reg, cpu);
 }
 void LDY(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -128,4 +131,34 @@ void LDY(uint8_t current_instruction, CPUProcessor &cpu)
 	{
 		cpu.PC++;
 	}
+	set_zero(cpu.Y_Reg, cpu);
+	set_negative(cpu.Y_Reg, cpu);
+}
+void ADC(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x69] = AddressMode::IMMEDIATE; // nice :Smirk:
+	uint8_t carry = 0;
+	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
+										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	cpu.A_Reg = add(cpu.A_Reg, value, carry);
+
+	set_carry(carry, cpu);
+	set_zero(cpu.A_Reg, cpu);
+	set_negative(cpu.A_Reg, cpu);
+	cpu.PC++;
+}
+void SBC(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0xE9] = AddressMode::IMMEDIATE; // meow :3
+	uint8_t carry = 0;
+	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
+										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	cpu.A_Reg = sub(cpu.A_Reg, value, carry);
+
+	set_carry(carry, cpu);
+	set_zero(cpu.A_Reg, cpu);
+	set_negative(cpu.A_Reg, cpu);
+	cpu.PC++;
 }
