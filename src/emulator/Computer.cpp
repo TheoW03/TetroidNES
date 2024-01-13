@@ -43,13 +43,39 @@ void run()
 		{
 			LDY(current_instruction, cpu_Processor);
 		}
-		else if (current_instruction == 0x69)
+		else if (current_instruction == 0x69 || current_instruction == 0x65 || current_instruction == 0x75	   // meow
+				 || current_instruction == 0x6D || current_instruction == 0x7D								   // meow //meow
+				 || current_instruction == 0x79 || current_instruction == 0x71 || current_instruction == 0x61) // meow
 		{
 			ADC(current_instruction, cpu_Processor);
 		}
-		else if (current_instruction == 0xE9)
+		else if (current_instruction == 0xE9 || current_instruction == 0xE5 || current_instruction == 0xF5	   // meow
+				 || current_instruction == 0xED || current_instruction == 0xFD								   // mrpr
+				 || current_instruction == 0xF9 || current_instruction == 0xF1 || current_instruction == 0xE1) // meow
 		{
 			SBC(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x18)
+		{
+			CLC(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x4C || current_instruction == 0x6C)
+		{
+			JMP(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xF0)
+		{
+			BEQ(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xD0)
+		{
+			BNE(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xC9 || current_instruction == 0xC5 || current_instruction == 0xD5	   // meow
+				 || current_instruction == 0xCD || current_instruction == 0xDD								   // mrpr
+				 || current_instruction == 0xD9 || current_instruction == 0xC1 || current_instruction == 0xD1) // meow
+		{
+			CMP(current_instruction, cpu_Processor);
 		}
 		else if (current_instruction == 0x00)
 		{
