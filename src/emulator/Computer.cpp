@@ -26,10 +26,15 @@ void run()
 
 		current_instruction = read_8bit(cpu_Processor.PC);
 		cpu_Processor.PC++;
+		// cout << "=======" << endl;
+		// printf("instruction: %x \n", current_instruction);
+		// printf("CPU PC: %x \n", cpu_Processor.PC);
+		// cout << "=======" << endl;
 		if (current_instruction == 0xA9 || current_instruction == 0xA5 || current_instruction == 0xB5	 //
 			|| current_instruction == 0xAD || current_instruction == 0xBD || current_instruction == 0xB9 //
 			|| current_instruction == 0xA1 || current_instruction == 0xB1)
 		{
+
 			LDA(current_instruction, cpu_Processor);
 		}
 		else if (current_instruction == 0xA2 || current_instruction == 0xA6 || current_instruction == 0xB6 // a

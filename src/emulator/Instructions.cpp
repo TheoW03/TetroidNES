@@ -198,37 +198,34 @@ void JMP(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x6C] = AddressMode::INDIRECT;
 	uint16_t new_PC = address_Mode(address_Mode_map[current_instruction],
 								   cpu.PC, cpu.X_Reg, cpu.Y_Reg);
-
-	cpu.PC += 2;
-	cpu.PC = new_PC;
+	cpu.PC = (new_PC + 0x8000);
 }
 void BEQ(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	if (check_zero(cpu) == 0)
 	{
+		cpu.PC++;
 		return;
 	}
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0xF0] = AddressMode::IMMEDIATE;
 	int16_t new_PC = (int16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
 													 cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-
-	cpu.PC++;
-	cpu.PC += new_PC;
+	cpu.PC = (new_PC + 0x8000);
 }
 void BNE(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	if (check_zero(cpu) != 0)
 	{
+		cpu.PC++;
 		return;
 	}
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0xD0] = AddressMode::IMMEDIATE;
 	int16_t new_PC = (int16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
 													 cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cout << "a" << endl;
-	cpu.PC++;
-	cpu.PC += new_PC;
+	// cpu.PC++;
+	cpu.PC = (new_PC + 0x8000);
 }
 void CMP(uint8_t current_instruction, CPUProcessor &cpu)
 {

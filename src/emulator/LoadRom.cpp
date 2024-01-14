@@ -11,11 +11,8 @@ vector<uint8_t> load_rom(string file_name)
     vector<string> vec;
     ifstream infile(file_name); // Open the file for reading
     string line;
-    // cout << "input: " << endl;
-    while (getline(infile, line,'n'))
+    while (getline(infile, line, 'n'))
     {
-        
-        // instructions.push_back(num);
         for (int i = 0; i < line.size(); i++)
         {
             instructions.push_back((uint8_t)line[i]);
