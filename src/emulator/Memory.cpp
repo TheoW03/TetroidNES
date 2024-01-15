@@ -23,8 +23,8 @@ void write_16bit(uint16_t address, uint16_t value)
 {
 	uint8_t msb = (uint8_t)(value >> 8);
 	uint8_t lsb = (uint8_t)(value & 0xFF);
-	memory[address] = msb;
-	memory[address + 1] = lsb;
+	memory[address] = lsb;
+	memory[address + 1] = msb;
 }
 
 void load_instructions(vector<uint8_t> instructions)

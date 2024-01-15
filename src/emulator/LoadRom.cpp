@@ -13,7 +13,7 @@ vector<uint8_t> load_rom(string file_name)
     string line;
     while (getline(infile, line, 'n'))
     {
-        for (int i = 0; i < line.size(); i++)
+        for (size_t i = 0; i < line.size(); i++)
         {
             instructions.push_back((uint8_t)line[i]);
         }

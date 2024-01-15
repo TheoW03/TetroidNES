@@ -20,10 +20,13 @@ void run()
 	cpu_Processor.status = 0;
 	cpu_Processor.X_Reg = 0;
 	cpu_Processor.Y_Reg = 0;
-	cpu_Processor.stack_pointer = 0x100;
-	while (1)
+	cpu_Processor.stack_pointer = 0xfd;
+	while (cpu_Processor.PC < 0xFFFF)
 	{
-
+		if (check_brk(cpu_Processor) != 0)
+		{
+			continue;
+		}
 		current_instruction = read_8bit(cpu_Processor.PC);
 		cpu_Processor.PC++;
 		// cout << "=======" << endl;
@@ -82,18 +85,23 @@ void run()
 		{
 			CMP(current_instruction, cpu_Processor);
 		}
+		
 		else if (current_instruction == 0x00)
 		{
 			if (check_Interrupt_disabled(cpu_Processor) != 0)
 				continue;
 			set_brk(cpu_Processor);
+			write_8bit(cpu_Processor.stack_pointer, cpu_Processor.status);
+			cpu_Processor.PC++;
+			cpu_Processor.stack_pointer -= 2;
+			write_16bit(cpu_Processor.stack_pointer, cpu_Processor.PC);
 			printf("A_Reg: %d \n", cpu_Processor.A_Reg);
 			printf("X_Reg: %d \n", cpu_Processor.X_Reg);
 			printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);
 			printf("PC: 0x%X \n", cpu_Processor.PC);
+			printf("sp: 0x%X \n", cpu_Processor.stack_pointer);
 			bitset<7> y(cpu_Processor.status);
-			cout << "status: "
-				 << "0b" << y << endl;
+			cout << "status: 0b" << y << endl;
 			return;
 		}
 	}

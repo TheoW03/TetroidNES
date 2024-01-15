@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <bitset>
 #include "Computer.h"
 using namespace std;
 
@@ -26,7 +26,7 @@ int check_carry(CPUProcessor &cpu)
 {
     return cpu.status & CARRY_BIT;
 }
-
+// void set_carry_test(uint8_t )
 void set_zero(uint8_t value, CPUProcessor &cpu)
 {
     if (value == 0)
@@ -87,4 +87,18 @@ void set_interrupt_disabled(int isDisabled, CPUProcessor &cpu)
 int check_Interrupt_disabled(CPUProcessor &cpu)
 {
     return cpu.status & INTERRUPT_DISABLED_BIT;
+}
+void set_overflow(uint8_t c_in, uint8_t c_out, CPUProcessor &cpu)
+{
+    // cout << ((c_out & 0b10000000) & 0) << endl;
+    
+    if (((c_out & 0b10000000) != 0) != ((c_in & 0b01000000) != 0))
+    {
+        cpu.status = cpu.status | OVERFLOW_BIT;
+        cout << "overflow" << endl;
+    }
+}
+int check_overflow(CPUProcessor &cpu)
+{
+    return cpu.status & OVERFLOW_BIT;
 }
