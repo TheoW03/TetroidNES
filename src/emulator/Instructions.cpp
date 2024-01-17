@@ -158,6 +158,8 @@ void ADC(uint8_t current_instruction, CPUProcessor &cpu)
 	{
 		cpu.PC++;
 	}
+	if (check_carry(cpu) != 0)
+		cpu.A_Reg++;
 	cpu.PC++;
 }
 void SBC(uint8_t current_instruction, CPUProcessor &cpu)
@@ -185,6 +187,7 @@ void SBC(uint8_t current_instruction, CPUProcessor &cpu)
 	{
 		cpu.PC++;
 	}
+	cpu.A_Reg -= 1 - carry;
 	cpu.PC++;
 }
 void CLC(uint8_t current_instruction, CPUProcessor &cpu)
@@ -242,8 +245,8 @@ void CMP(uint8_t current_instruction, CPUProcessor &cpu)
 	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
 										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
 	uint8_t v = sub(cpu.A_Reg, value, cpu, carry);
-	printf("X_Reg: %d \n", v);
-	printf("carry: %d \n", carry);
+	// printf("X_Reg: %d \n", v);
+	// printf("carry: %d \n", carry);
 	set_carry(carry, cpu);
 	set_zero(v, cpu);
 	set_negative(v, cpu);
