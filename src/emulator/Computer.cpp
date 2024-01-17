@@ -14,13 +14,15 @@ uint8_t param = 0;
 
 void run()
 {
+	write_16bit(0xFFFC, 0x8000);
 	CPUProcessor cpu_Processor;
-	cpu_Processor.PC = 0x8000;
+	cpu_Processor.PC = read_16bit(0xFFFC);
 	cpu_Processor.A_Reg = 0;
 	cpu_Processor.status = 0;
 	cpu_Processor.X_Reg = 0;
 	cpu_Processor.Y_Reg = 0;
 	cpu_Processor.stack_pointer = 0xfd;
+
 	while (cpu_Processor.PC < 0xFFFF)
 	{
 		if (check_brk(cpu_Processor) != 0)
@@ -85,7 +87,7 @@ void run()
 		{
 			CMP(current_instruction, cpu_Processor);
 		}
-		
+
 		else if (current_instruction == 0x00)
 		{
 			if (check_Interrupt_disabled(cpu_Processor) != 0)

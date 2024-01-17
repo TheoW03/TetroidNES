@@ -20,6 +20,7 @@ enum class AddressMode
 	INDIRECT_X,
 	INDIRECT_Y
 };
+
 uint16_t address_Mode(AddressMode address, uint16_t PC, uint8_t X_REG, uint16_t Y_REG)
 {
 	switch (address)
@@ -72,6 +73,7 @@ uint16_t address_Mode(AddressMode address, uint16_t PC, uint8_t X_REG, uint16_t 
 	}
 }
 
+#pragma region General purpose
 void LDA(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	map<uint8_t, AddressMode> address_Mode_map;
@@ -190,12 +192,45 @@ void SBC(uint8_t current_instruction, CPUProcessor &cpu)
 	cpu.A_Reg -= 1 - carry;
 	cpu.PC++;
 }
+void BIT(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: bit test
+}
+void AND(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: and
+}
+void ORA(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: or
+}
+void ROR(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: rotate right
+}
+void ROL(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: rotate left
+}
+#pragma endregion
+// flag setting instructions
+
+#pragma region setFlags
 void CLC(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	set_carry(0, cpu);
 }
+void SEC(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	set_carry(1, cpu);
+}
+#pragma endregion
+// JMP instructiions
+
+#pragma region Jmp instructions
 void JMP(uint8_t current_instruction, CPUProcessor &cpu)
 {
+
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0x4C] = AddressMode::ABSOLUTE;
 	address_Mode_map[0x6C] = AddressMode::INDIRECT;
@@ -230,6 +265,26 @@ void BNE(uint8_t current_instruction, CPUProcessor &cpu)
 	// cpu.PC++;
 	cpu.PC = (new_PC + 0x8000);
 }
+void BCC(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: Branch if carry clear
+}
+void BCS(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: Branch if carry set
+}
+void BPL(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: Branch if ~Negat
+}
+void BVC(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: Branch if overflow
+}
+void JSR(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: functions
+}
 void CMP(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	map<uint8_t, AddressMode> address_Mode_map;
@@ -258,3 +313,5 @@ void CMP(uint8_t current_instruction, CPUProcessor &cpu)
 	}
 	cpu.PC++;
 }
+
+#pragma endregion
