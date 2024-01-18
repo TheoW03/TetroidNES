@@ -14,7 +14,6 @@ uint8_t param = 0;
 
 void run()
 {
-	write_16bit(0xFFFC, 0x8000);
 	CPUProcessor cpu_Processor;
 	cpu_Processor.PC = read_16bit(0xFFFC);
 	cpu_Processor.A_Reg = 0;
@@ -22,7 +21,6 @@ void run()
 	cpu_Processor.X_Reg = 0;
 	cpu_Processor.Y_Reg = 0;
 	cpu_Processor.stack_pointer = 0xfd;
-
 	while (cpu_Processor.PC < 0xFFFF)
 	{
 		if (check_brk(cpu_Processor) != 0)
@@ -31,10 +29,12 @@ void run()
 		}
 		current_instruction = read_8bit(cpu_Processor.PC);
 		cpu_Processor.PC++;
-		// cout << "=======" << endl;
+		// DEBUG STUFF
+		//  cout << "=======" << endl;
 		// printf("instruction: %x \n", current_instruction);
 		// printf("CPU PC: %x \n", cpu_Processor.PC);
 		// cout << "=======" << endl;
+		// END
 		if (current_instruction == 0xA9 || current_instruction == 0xA5 || current_instruction == 0xB5	 //
 			|| current_instruction == 0xAD || current_instruction == 0xBD || current_instruction == 0xB9 //
 			|| current_instruction == 0xA1 || current_instruction == 0xB1)

@@ -4,6 +4,7 @@
 #include "Computer.h"
 #include "StatusRegister.h"
 using namespace std;
+
 uint8_t add(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
 {
 	uint8_t c_in = 0;
@@ -20,8 +21,6 @@ uint8_t add(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
 		c_out = carry;
 		set_overflow(c_in, c_out, cpu);
 	}
-	// if (carry != 0)
-	// 	a++;
 	return a;
 }
 uint8_t mul(uint8_t a, uint8_t b)
@@ -30,10 +29,8 @@ uint8_t mul(uint8_t a, uint8_t b)
 
 	while (a > 0 && b > 0)
 	{
-		if (a & 1)
-		{				 // if Least significant bit exists
+		if (a & 1)		 // if Least significant bit exists
 			result += b; // add by shifted left
-		}
 		a >>= 1;
 		b <<= 1; // next bit
 	}
@@ -65,4 +62,45 @@ uint8_t sub(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
 	// 	carry--;
 
 	return a;
+}
+uint8_t decimal_sub(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
+{
+	uint8_t lo_b = b & 0b1111;
+	uint8_t hi_b = (b >> 4) & 0b1111;
+	if (lo_b > 0xa || hi_b > 0xa)
+		return 0;
+	uint8_t lo_a = a & 0b1111;
+	uint8_t hi_a = (a >> 4) & 0b1111;
+	if (hi_a >= 0xa || lo_a >= 0xa)
+		return 0;
+	uint8_t lo_diff = sub(lo_a, lo_b, cpu, carry);
+	if ((int8_t)lo_diff < 0)
+		lo_diff += 10;
+	uint8_t hi_diff = sub(hi_a, hi_b, cpu, carry);
+	hi_diff = sub(hi_diff, 1, cpu, carry);
+	if ((int8_t)hi_diff < 0)
+		hi_diff += 11;
+	return (hi_diff << 4) | lo_diff;
+}
+
+uint8_t decimal_add(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
+{
+	uint8_t lo_b = b & 0b1111;
+	uint8_t hi_b = (b >> 4) & 0b1111;
+	if (lo_b > 0xa || hi_b > 0xa)
+		return 0;
+	uint8_t lo_a = a & 0b1111;
+	uint8_t hi_a = (a >> 4) & 0b1111;
+	if (hi_a >= 0xa || lo_a >= 0xa)
+		return 0;
+	// uint8_t carry = 0;
+	uint8_t lo_Sum = add(lo_a, lo_b, cpu, carry);
+	// uint8_t lo_Sum = lo_a + lo_b;
+	uint8_t c = lo_Sum - (lo_Sum % 10);
+	uint8_t this_carry = c / 10;
+	lo_Sum %= 10;
+	// uint8_t hi_sum = hi_a + hi_b + this_carry;
+	uint8_t hi_sum = add(hi_sum, this_carry, cpu, carry);
+	carry = this_carry;
+	return (hi_sum << 4) | lo_Sum;
 }

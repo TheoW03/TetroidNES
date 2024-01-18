@@ -73,7 +73,8 @@ uint16_t address_Mode(AddressMode address, uint16_t PC, uint8_t X_REG, uint16_t 
 	}
 }
 
-#pragma region General purpose
+// data transfer instructions, includes MOV...Stack pointer what not
+#pragma region data transfer instructions
 void LDA(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	map<uint8_t, AddressMode> address_Mode_map;
@@ -136,6 +137,10 @@ void LDY(uint8_t current_instruction, CPUProcessor &cpu)
 	set_zero(cpu.Y_Reg, cpu);
 	set_negative(cpu.Y_Reg, cpu);
 }
+#pragma endregion region data transfer instructions
+
+// ALU instructions, +,-,&, >>,<<
+#pragma region ALU instructions
 void ADC(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	map<uint8_t, AddressMode> address_Mode_map;
@@ -150,7 +155,10 @@ void ADC(uint8_t current_instruction, CPUProcessor &cpu)
 	uint8_t carry = 0;
 	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
 										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.A_Reg = add(cpu.A_Reg, value, cpu, carry);
+	if (check_decimal(cpu) != 0)
+		cpu.A_Reg = decimal_add(cpu.A_Reg, value, cpu, carry);
+	else
+		cpu.A_Reg = add(cpu.A_Reg, value, cpu, carry);
 	set_carry(carry, cpu);
 	set_zero(cpu.A_Reg, cpu);
 	set_negative(cpu.A_Reg, cpu);
@@ -178,8 +186,10 @@ void SBC(uint8_t current_instruction, CPUProcessor &cpu)
 	uint8_t carry = 0;
 	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
 										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.A_Reg = sub(cpu.A_Reg, value, cpu, carry);
-
+	if (check_decimal(cpu) != 0)
+		cpu.A_Reg = decimal_sub(cpu.A_Reg, value, cpu, carry);
+	else
+		cpu.A_Reg = sub(cpu.A_Reg, value, cpu, carry);
 	set_carry(carry, cpu);
 	set_zero(cpu.A_Reg, cpu);
 	set_negative(cpu.A_Reg, cpu);
@@ -221,9 +231,9 @@ void PHP(uint8_t current_instruction, CPUProcessor &cpu)
 	// TODO: rotate left
 }
 
-#pragma endregion
-// flag setting instructions
+#pragma endregion ALU instructions
 
+// status register  instructions
 #pragma region setFlags
 void CLV(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -264,10 +274,10 @@ void RTI(uint8_t current_instruction, CPUProcessor &cpu)
 	cpu.status = read_8bit(cpu.stack_pointer);
 	set_brk(cpu, 0);
 }
-#pragma endregion
-// JMP instructiions
+#pragma endregion setFlags
 
-#pragma region Jmp instructions
+// conditional branching, Stack functions and Jumping  instructions as well as CMP
+#pragma region Jmp
 void JMP(uint8_t current_instruction, CPUProcessor &cpu)
 {
 
@@ -323,11 +333,20 @@ void BCS(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void BPL(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: Branch if ~Negat
+	if (check_negative(cpu) != 0)
+	{
+		cpu.PC++;
+		return;
+	}
 }
 void BMI(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: Branch if negatice
+	if (check_negative(cpu) == 0)
+	{
+		cpu.PC++;
+		return;
+	}
 }
 void BVC(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -382,4 +401,4 @@ void CPX(uint8_t current_instruction, CPUProcessor &cpu)
 	// TODO: compare X
 }
 
-#pragma endregion
+#pragma endregion Jmp
