@@ -212,10 +212,24 @@ void ROL(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: rotate left
 }
+void PLP(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: rotate left
+}
+void PHP(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: rotate left
+}
+
 #pragma endregion
 // flag setting instructions
 
 #pragma region setFlags
+void CLV(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	set_carry(1, cpu);
+}
+
 void CLC(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	set_carry(0, cpu);
@@ -223,6 +237,27 @@ void CLC(uint8_t current_instruction, CPUProcessor &cpu)
 void SEC(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	set_carry(1, cpu);
+}
+void SEI(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: set interrupt disabled
+}
+void CLI(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: set interrupt disabled
+}
+
+void SED(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: set Decimal mocde
+}
+void CLD(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: set Decimal mocde
+}
+void RTI(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO:return from interrupt
 }
 #pragma endregion
 // JMP instructiions
@@ -277,13 +312,25 @@ void BPL(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: Branch if ~Negat
 }
+void BMI(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: Branch if negatice
+}
 void BVC(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: Branch if overflow
+}
+void BVS(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: Branch if overflow
 }
 void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: functions
+}
+void RTS(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: Branch if overflow
 }
 void CMP(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -312,6 +359,14 @@ void CMP(uint8_t current_instruction, CPUProcessor &cpu)
 		cpu.PC++;
 	}
 	cpu.PC++;
+}
+void CPY(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	//TODO: compare Y
+}
+void CPX(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	//TODO: compare X
 }
 
 #pragma endregion
