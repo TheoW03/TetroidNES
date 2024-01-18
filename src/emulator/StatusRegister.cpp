@@ -62,9 +62,12 @@ int check_negative(CPUProcessor &cpu)
     return cpu.status & NEGATIVE_BIT;
 }
 
-void set_brk(CPUProcessor &cpu)
+void set_brk(CPUProcessor &cpu, int brk)
 {
-    cpu.status = cpu.status | BREAK_BIT;
+    if (brk == 1)
+        cpu.status = cpu.status | BREAK_BIT;
+    else
+        cpu.status = cpu.status & (~BREAK_BIT);
 }
 
 int check_brk(CPUProcessor &cpu)
@@ -91,14 +94,43 @@ int check_Interrupt_disabled(CPUProcessor &cpu)
 void set_overflow(uint8_t c_in, uint8_t c_out, CPUProcessor &cpu)
 {
     // cout << ((c_out & 0b10000000) & 0) << endl;
-    
+
     if (((c_out & 0b10000000) != 0) != ((c_in & 0b01000000) != 0))
     {
         cpu.status = cpu.status | OVERFLOW_BIT;
-        cout << "overflow" << endl;
+    }
+    else
+    {
+        cpu.status = cpu.status & (~OVERFLOW_BIT);
+    }
+}
+void set_overflow(int overflow, CPUProcessor &cpu)
+{
+    if (overflow == 1)
+    {
+        cpu.status |= OVERFLOW_BIT;
+    }
+    else
+    {
+        cpu.status &= (~OVERFLOW_BIT);
     }
 }
 int check_overflow(CPUProcessor &cpu)
 {
     return cpu.status & OVERFLOW_BIT;
+}
+void set_decimal_mode(int isDecimal, CPUProcessor &cpu)
+{
+    if (isDecimal == 1)
+    {
+        cpu.status |= DECIMAL_BIT;
+    }
+    else
+    {
+        cpu.status &= (~DECIMAL_BIT);
+    }
+}
+int check_decimal(CPUProcessor &cpu)
+{
+    return cpu.status & DECIMAL_BIT;
 }

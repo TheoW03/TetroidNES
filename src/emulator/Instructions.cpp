@@ -227,7 +227,8 @@ void PHP(uint8_t current_instruction, CPUProcessor &cpu)
 #pragma region setFlags
 void CLV(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	set_carry(1, cpu);
+	// set_overflow(0, cpu);
+	set_overflow(0, cpu);
 }
 
 void CLC(uint8_t current_instruction, CPUProcessor &cpu)
@@ -240,24 +241,28 @@ void SEC(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void SEI(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: set interrupt disabled
+	set_interrupt_disabled(1, cpu);
 }
 void CLI(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: set interrupt disabled
+	set_interrupt_disabled(0, cpu);
 }
 
 void SED(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: set Decimal mocde
+	set_decimal_mode(1, cpu);
 }
 void CLD(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: set Decimal mocde
+	set_decimal_mode(0, cpu);
 }
 void RTI(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO:return from interrupt
+	cpu.PC = read_16bit(cpu.stack_pointer);
+	cpu.stack_pointer += 2;
+	cpu.status = read_8bit(cpu.stack_pointer);
+	set_brk(cpu, 0);
 }
 #pragma endregion
 // JMP instructiions
@@ -302,11 +307,19 @@ void BNE(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void BCC(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: Branch if carry clear
+	if (check_carry(cpu) != 0)
+	{
+		cpu.PC++;
+		return;
+	}
 }
 void BCS(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: Branch if carry set
+	if (check_carry(cpu) == 0)
+	{
+		cpu.PC++;
+		return;
+	}
 }
 void BPL(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -318,11 +331,11 @@ void BMI(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void BVC(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: Branch if overflow
+	// TODO: Branch if overflow clear
 }
 void BVS(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: Branch if overflow
+	// TODO: Branch if overflow set
 }
 void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -362,11 +375,11 @@ void CMP(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void CPY(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	//TODO: compare Y
+	// TODO: compare Y
 }
 void CPX(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	//TODO: compare X
+	// TODO: compare X
 }
 
 #pragma endregion

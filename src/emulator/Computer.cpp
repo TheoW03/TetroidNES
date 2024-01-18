@@ -69,6 +69,34 @@ void run()
 		{
 			CLC(current_instruction, cpu_Processor);
 		}
+		else if (current_instruction == 0x38)
+		{
+			SEC(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xD8)
+		{
+			CLD(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xF8)
+		{
+			SED(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x78)
+		{
+			SEI(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x58)
+		{
+			CLI(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xB8)
+		{
+			CLV(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x40)
+		{
+			RTI(current_instruction, cpu_Processor);
+		}
 		else if (current_instruction == 0x4C || current_instruction == 0x6C)
 		{
 			JMP(current_instruction, cpu_Processor);
@@ -92,7 +120,7 @@ void run()
 		{
 			if (check_Interrupt_disabled(cpu_Processor) != 0)
 				continue;
-			set_brk(cpu_Processor);
+			set_brk(cpu_Processor, 1);
 			write_8bit(cpu_Processor.stack_pointer, cpu_Processor.status);
 			cpu_Processor.PC++;
 			cpu_Processor.stack_pointer -= 2;
