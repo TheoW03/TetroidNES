@@ -29,3 +29,6 @@ void CLI(uint8_t current_instruction, CPUProcessor &cpu);
 void SED(uint8_t current_instruction, CPUProcessor &cpu);
 void CLD(uint8_t current_instruction, CPUProcessor &cpu);
 void RTI(uint8_t current_instruction, CPUProcessor &cpu);
+void BMI(uint8_t current_instruction, CPUProcessor &cpu);
+void BVS(uint8_t current_instruction, CPUProcessor &cpu);
+void RTS(uint8_t current_instruction, CPUProcessor &cpu);

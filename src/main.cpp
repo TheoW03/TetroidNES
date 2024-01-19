@@ -12,9 +12,9 @@ int main(int argc, char *argv[])
 	// char* name = "test";
 	// setup(name, 800, 600);
 	// vector<uint8_t> instructions = load_rom("games/test4.bin"); // random bin file
-	// vector<uint8_t> instructions = { 0xA9, 1, 0xE9, 2};
-	// load_instructions(instructions);
-	// run();
+	vector<uint8_t> instructions = { 0xA9, 1, 0xE9, 2};
+	load_instructions(instructions);
+	run();
 	return 1;
 }
 // bool checkCarryFlag(uint8_t result)

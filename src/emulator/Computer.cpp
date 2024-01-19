@@ -115,7 +115,38 @@ void run()
 		{
 			CMP(current_instruction, cpu_Processor);
 		}
-
+		else if (current_instruction == 0x90)
+		{
+			BCC(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xB0)
+		{
+			BCS(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x10)
+		{
+			BPL(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x30)
+		{
+			BMI(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x50)
+		{
+			BVC(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x70)
+		{
+			BVS(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x20)
+		{
+			JSR(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x60)
+		{
+			RTS(current_instruction, cpu_Processor);
+		}
 		else if (current_instruction == 0x00)
 		{
 			if (check_Interrupt_disabled(cpu_Processor) != 0)

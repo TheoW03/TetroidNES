@@ -17,3 +17,4 @@ void set_overflow(uint8_t c_in, uint8_t c_out, CPUProcessor &cpu);
 void set_decimal_mode(int isDecimal, CPUProcessor &cpu);
 int check_decimal(CPUProcessor &cpu);
 void set_overflow(int overflow, CPUProcessor &cpu);
+int check_overflow(CPUProcessor &cpu);
