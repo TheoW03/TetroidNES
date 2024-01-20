@@ -68,11 +68,17 @@ uint8_t decimal_sub(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
 	uint8_t lo_b = b & 0b1111;
 	uint8_t hi_b = (b >> 4) & 0b1111;
 	if (lo_b > 0xa || hi_b > 0xa)
+	{
+		cout << "test" << endl;
 		return 0;
+	}
 	uint8_t lo_a = a & 0b1111;
 	uint8_t hi_a = (a >> 4) & 0b1111;
-	if (hi_a >= 0xa || lo_a >= 0xa)
+	if (hi_a > 0xa || lo_a > 0xa)
+	{
+		cout << "test" << endl;
 		return 0;
+	}
 	uint8_t lo_diff = sub(lo_a, lo_b, cpu, carry);
 	if ((int8_t)lo_diff < 0)
 		lo_diff += 10;
@@ -87,7 +93,7 @@ uint8_t decimal_add(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
 {
 	uint8_t lo_b = b & 0b1111;
 	uint8_t hi_b = (b >> 4) & 0b1111;
-	if (lo_b > 0xa || hi_b > 0xa)
+	if (lo_b >= 0xa || hi_b >= 0xa)
 		return 0;
 	uint8_t lo_a = a & 0b1111;
 	uint8_t hi_a = (a >> 4) & 0b1111;
@@ -99,8 +105,8 @@ uint8_t decimal_add(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
 	uint8_t c = lo_Sum - (lo_Sum % 10);
 	uint8_t this_carry = c / 10;
 	lo_Sum %= 10;
-	// uint8_t hi_sum = hi_a + hi_b + this_carry;
-	uint8_t hi_sum = add(hi_sum, this_carry, cpu, carry);
+	uint8_t hi_sum = hi_a + hi_b + this_carry;
+	hi_sum = add(hi_sum, this_carry, cpu, carry);
 	carry = this_carry;
 	return (hi_sum << 4) | lo_Sum;
 }

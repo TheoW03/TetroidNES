@@ -29,6 +29,17 @@ void run()
 		}
 		current_instruction = read_8bit(cpu_Processor.PC);
 		cpu_Processor.PC++;
+		// cout << "========" << endl;
+		// printf("current instruction: %x \n", current_instruction);
+		// printf("A_Reg: %x \n", cpu_Processor.A_Reg);
+		// printf("X_Reg: %d \n", cpu_Processor.X_Reg);
+		// printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);
+		// printf("PC: 0x%X \n", cpu_Processor.PC);
+		// printf("sp: 0x%X \n", cpu_Processor.stack_pointer);
+		// bitset<7> z(cpu_Processor.status);
+		// cout << "status: 0b" << z << endl;
+		// cout << "========" << endl;
+
 		// DEBUG STUFF
 		//  cout << "=======" << endl;
 		// printf("instruction: %x \n", current_instruction);

@@ -155,6 +155,7 @@ void ADC(uint8_t current_instruction, CPUProcessor &cpu)
 	uint8_t carry = 0;
 	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
 										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	cout << "est" << endl;
 	if (check_decimal(cpu) != 0)
 		cpu.A_Reg = decimal_add(cpu.A_Reg, value, cpu, carry);
 	else
