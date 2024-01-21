@@ -137,6 +137,56 @@ void LDY(uint8_t current_instruction, CPUProcessor &cpu)
 	set_zero(cpu.Y_Reg, cpu);
 	set_negative(cpu.Y_Reg, cpu);
 }
+void PLP(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: rotate left
+	cpu.status = read_8bit(cpu.stack_pointer);
+	cpu.stack_pointer++;
+}
+void PHP(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: rotate left
+	cpu.stack_pointer--;
+	write_8bit(cpu.stack_pointer, cpu.status);
+}
+void PHA(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// push accumalortor on stack
+}
+void PLA(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// pull accumalator
+}
+void STA(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO store accumalator in mem
+}
+void STX(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO store x in mem
+}
+void STY(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// store y in meme
+}
+void TAY(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// Y = A
+}
+void TYA(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// A = Y
+}
+void TAX(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// X = A
+}
+void TXA(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// A = X
+}
+
+
 #pragma endregion region data transfer instructions
 
 // ALU instructions, +,-,&, >>,<<
@@ -268,27 +318,85 @@ void ORA(uint8_t current_instruction, CPUProcessor &cpu)
 void ROR(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: rotate right
+
+	set_carry((cpu.A_Reg & 1) != 0, cpu);
 	if (current_instruction == 0x6A)
 	{
 		// accumalatpr
+		cpu.A_Reg = rightRotate(cpu.A_Reg, 1);
 	}
 	else
 	{
+		map<uint8_t, AddressMode> address_Mode_map;
 
+		address_Mode_map[0x66] = AddressMode::ZERO_PAGE;   // meow :3
+		address_Mode_map[0x76] = AddressMode::ZERO_PAGE_X; // meow :3
+
+		address_Mode_map[0x6E] = AddressMode::ABSOLUTE;	  // meow :3
+		address_Mode_map[0x7E] = AddressMode::ABSOLUTE_X; // meow :3
+		uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
+											   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+		cpu.A_Reg = rightRotate(cpu.A_Reg, value);
+		if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
+			|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
+			cpu.PC++;
+		cpu.PC++;
 	}
-	
+	set_negative(cpu.A_Reg, cpu);
+	set_zero(cpu.A_Reg, cpu);
 }
 void ROL(uint8_t current_instruction, CPUProcessor &cpu)
 {
+	set_carry(((cpu.A_Reg << 7) != 0), cpu);
+	if (current_instruction == 0x2A)
+	{
+		// accumalatpr
+		cpu.A_Reg = leftRotate(cpu.A_Reg, 1);
+	}
+	else
+	{
+		map<uint8_t, AddressMode> address_Mode_map;
+
+		address_Mode_map[0x26] = AddressMode::ZERO_PAGE;   // meow :3
+		address_Mode_map[0x36] = AddressMode::ZERO_PAGE_X; // meow :3
+
+		address_Mode_map[0x2E] = AddressMode::ABSOLUTE;	  // meow :3
+		address_Mode_map[0x3E] = AddressMode::ABSOLUTE_X; // meow :3
+		uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
+											   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+		cpu.A_Reg = leftRotate(cpu.A_Reg, value);
+		if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
+			|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
+			cpu.PC++;
+		cpu.PC++;
+	}
+	set_negative(cpu.A_Reg, cpu);
+	set_zero(cpu.A_Reg, cpu);
 	// TODO: rotate left
 }
-void PLP(uint8_t current_instruction, CPUProcessor &cpu)
+void ASL(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: rotate left
+	// TODO a >> m
 }
-void PHP(uint8_t current_instruction, CPUProcessor &cpu)
+void LSR(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: rotate left
+	// TODO a << m
+}
+void EOR(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO xor
+}
+void DEX(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO:x--
+}
+void DEY(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO y--
+}
+void DEC(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: m--
 }
 
 #pragma endregion ALU instructions

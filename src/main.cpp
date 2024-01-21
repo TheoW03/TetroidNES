@@ -6,16 +6,24 @@
 #include "../src/emulator/LoadRom.h"
 #include <vector>
 #include <bitset>
+#include <cassert>
 using namespace std;
 int main(int argc, char *argv[])
 {
 	// char* name = "test";
 	// setup(name, 800, 600);
 	// vector<uint8_t> instructions = load_rom("games/test4.bin"); // random bin file
-	vector<uint8_t> instructions = {0xF8, 0xa9, 0x10, 0xE9, 0x05};
-	load_instructions(instructions);
-	write_16bit(0xFFFC, 0x8000);
+	// vector<uint8_t> instructions = {0xF8, 0xa9, 0x10, 0xE9, 0x05};
+	// load_instructions(instructions);
+	// write_16bit(0xFFFC, 0x8000);
+	// assert((-1<< 7) != 0) == 1);
+	// assert(1 == 1);
+	// assert(((uint8_t)(-1 << 7) != 0) == 1);
+	// assert(((uint8_t)(2 << 7) != 0) == 0);
+	// assert((uint8_t)(3 & 1) == 0);
+	// assert((uint8_t)(2 & 1) == 0);
 
+	// assert(((uint8_t)(2 << 7)) != 0);
 	run();
 	return 1;
 }

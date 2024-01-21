@@ -34,3 +34,5 @@ void BVS(uint8_t current_instruction, CPUProcessor &cpu);
 void RTS(uint8_t current_instruction, CPUProcessor &cpu);
 void CPX(uint8_t current_instruction, CPUProcessor &cpu);
 void CPY(uint8_t current_instruction, CPUProcessor &cpu);
+void PLP(uint8_t current_instruction, CPUProcessor &cpu);
+void PHP(uint8_t current_instruction, CPUProcessor &cpu);

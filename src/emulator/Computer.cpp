@@ -88,6 +88,14 @@ void run()
 		{
 			ORA(current_instruction, cpu_Processor);
 		}
+		else if (current_instruction == 0x2A || current_instruction == 0x26 || current_instruction == 0x36 || current_instruction == 0x2E || current_instruction == 0x3E)
+		{
+			ROL(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x6A || current_instruction == 0x66 || current_instruction == 0x76 || current_instruction == 0x6E || current_instruction == 0x7E)
+		{
+			ROR(current_instruction, cpu_Processor);
+		}
 		else if (current_instruction == 0x18)
 		{
 			CLC(current_instruction, cpu_Processor);
@@ -179,6 +187,14 @@ void run()
 		else if (current_instruction == 0x60)
 		{
 			RTS(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x28)
+		{
+			PLP(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x08)
+		{
+			PHP(current_instruction, cpu_Processor);
 		}
 		else if (current_instruction == 0x00)
 		{
