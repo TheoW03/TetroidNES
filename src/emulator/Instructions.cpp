@@ -212,17 +212,71 @@ void AND(uint8_t current_instruction, CPUProcessor &cpu)
 	// TODO: and
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0x29] = AddressMode::IMMEDIATE; // meow :3
+
+	address_Mode_map[0x25] = AddressMode::ZERO_PAGE;   // meow :3
+	address_Mode_map[0x35] = AddressMode::ZERO_PAGE_X; // meow :3
+
+	address_Mode_map[0x2D] = AddressMode::ABSOLUTE;	  // meow :3
+	address_Mode_map[0x3D] = AddressMode::ABSOLUTE_X; // meow :3
+	address_Mode_map[0x39] = AddressMode::ABSOLUTE_Y; // meow :3
+
+	address_Mode_map[0x21] = AddressMode::INDIRECT_X; // meow :3
+	address_Mode_map[0x31] = AddressMode::INDIRECT_Y; // meow :3
+
 	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
 										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
 	cpu.A_Reg = cpu.A_Reg & value;
+	set_negative(cpu.A_Reg, cpu);
+	set_zero(cpu.A_Reg, cpu);
+	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
+		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X // meow
+		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_Y)
+	{
+		cpu.PC++;
+	}
+	cpu.PC++;
 }
 void ORA(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: or
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x09] = AddressMode::IMMEDIATE; // meow :3
+
+	address_Mode_map[0x05] = AddressMode::ZERO_PAGE;   // meow :3
+	address_Mode_map[0x15] = AddressMode::ZERO_PAGE_X; // meow :3
+
+	address_Mode_map[0x0D] = AddressMode::ABSOLUTE;	  // meow :3
+	address_Mode_map[0x1D] = AddressMode::ABSOLUTE_X; // meow :3
+	address_Mode_map[0x19] = AddressMode::ABSOLUTE_Y; // meow :3
+
+	address_Mode_map[0x01] = AddressMode::INDIRECT_X; // meow :3
+	address_Mode_map[0x11] = AddressMode::INDIRECT_Y; // meow :3
+
+	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
+										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	cpu.A_Reg = cpu.A_Reg | value;
+	set_negative(cpu.A_Reg, cpu);
+	set_zero(cpu.A_Reg, cpu);
+	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
+		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X // meow
+		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_Y)
+	{
+		cpu.PC++;
+	}
+	cpu.PC++;
 }
 void ROR(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: rotate right
+	if (current_instruction == 0x6A)
+	{
+		// accumalatpr
+	}
+	else
+	{
+
+	}
+	
 }
 void ROL(uint8_t current_instruction, CPUProcessor &cpu)
 {

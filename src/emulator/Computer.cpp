@@ -76,6 +76,18 @@ void run()
 		{
 			SBC(current_instruction, cpu_Processor);
 		}
+		else if (current_instruction == 0x29 || current_instruction == 0x25 || current_instruction == 0x35 // meow
+				 || current_instruction == 0x2D || current_instruction == 0x3D							   // meow //meow
+				 || current_instruction == 0x39 || current_instruction == 0x21 || current_instruction == 0x31)
+		{
+			AND(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x09 || current_instruction == 0x05 || current_instruction == 0x15 // meow
+				 || current_instruction == 0x0D || current_instruction == 0x1D							   // meow //meow
+				 || current_instruction == 0x19 || current_instruction == 0x01 || current_instruction == 0x11)
+		{
+			ORA(current_instruction, cpu_Processor);
+		}
 		else if (current_instruction == 0x18)
 		{
 			CLC(current_instruction, cpu_Processor);
