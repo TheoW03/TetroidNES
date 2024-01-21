@@ -126,6 +126,16 @@ void run()
 		{
 			CMP(current_instruction, cpu_Processor);
 		}
+		else if (current_instruction == 0xC0 // meow
+				 || current_instruction == 0xC4 || current_instruction == 0xCC)
+		{
+			CPY(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xE0 // meow
+				 || current_instruction == 0xE4 || current_instruction == 0xEC)
+		{
+			CPX(current_instruction, cpu_Processor);
+		}
 		else if (current_instruction == 0x90)
 		{
 			BCC(current_instruction, cpu_Processor);

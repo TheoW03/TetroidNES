@@ -210,6 +210,11 @@ void BIT(uint8_t current_instruction, CPUProcessor &cpu)
 void AND(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: and
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x29] = AddressMode::IMMEDIATE; // meow :3
+	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
+										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	cpu.A_Reg = cpu.A_Reg & value;
 }
 void ORA(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -445,11 +450,43 @@ void CMP(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void CPY(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: compare Y
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0xC0] = AddressMode::IMMEDIATE;
+	address_Mode_map[0xC4] = AddressMode::ZERO_PAGE;
+	address_Mode_map[0xCC] = AddressMode::ABSOLUTE;
+	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
+										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	uint8_t carry = 0;
+	uint8_t v = sub(cpu.Y_Reg, value, cpu, carry);
+	// printf("X_Reg: %d \n", v);
+	// printf("carry: %d \n", carry);
+	set_carry(carry, cpu);
+	set_zero(v, cpu);
+	set_negative(v, cpu);
+	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE)
+		cpu.PC++;
+	cpu.PC++;
 }
 void CPX(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// TODO: compare X
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0xE0] = AddressMode::IMMEDIATE;
+	address_Mode_map[0xE4] = AddressMode::ZERO_PAGE;
+	address_Mode_map[0xEC] = AddressMode::ABSOLUTE;
+
+	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
+										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	uint8_t carry = 0;
+
+	uint8_t v = sub(cpu.X_Reg, value, cpu, carry);
+	// printf("X_Reg: %d \n", v);
+	// printf("carry: %d \n", carry);
+	set_carry(carry, cpu);
+	set_zero(v, cpu);
+	set_negative(v, cpu);
+	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE)
+		cpu.PC++;
+	cpu.PC++;
 }
 
 #pragma endregion Jmp

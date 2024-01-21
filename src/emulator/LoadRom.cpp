@@ -6,6 +6,12 @@
 #include <cstdio>
 using namespace std;
 
+struct Rom
+{
+    vector<uint8_t> instructions;
+    uint16_t PRG_ROM;
+    uint16_t CHR_ROM;
+};
 vector<uint8_t> load_rom(string file_name)
 {
     vector<uint8_t> instructions;
@@ -22,9 +28,27 @@ vector<uint8_t> load_rom(string file_name)
     write_16bit(0xFFFC, 0x8000);
     return instructions;
 }
-void modify_for_NESfile(vector<uint8_t> &instructions)
+Rom modify_for_NESfile(vector<uint8_t> &instructions)
 {
+    Rom rom;
+    uint16_t map_info;
+
     write_16bit(0xFFFC, 0x8600);
     for (size_t i = 0; i < 4; i++)
         instructions.pop_back();
+    uint8_t prg_rom = instructions[0];
+    instructions.pop_back();
+    uint8_t chr_rom = instructions[0];
+    instructions.pop_back();
+    int8_t control_byte1 = instructions[0];
+    instructions.pop_back();
+    uint8_t control_byte2 = instructions[0];
+    instructions.pop_back();
+    uint8_t size_ofprgRam = instructions[0];
+    instructions.pop_back();
+    for (size_t i = 0; i < 7; i++)
+        instructions.pop_back();
+    write_16bit(0xFFFC, 0x8600);
+    rom.instructions = instructions;
+    return rom;
 }
