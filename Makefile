@@ -1,5 +1,5 @@
 all: LoadRom.cpp main.cpp StatusRegister.cpp Computer.cpp BitOperations.cpp Instructions.cpp Memory.cpp AddressMode.cpp
-	g++ LoadRom.o StatusRegister.o AddressMode.o BitOperations.o Instructions.o Computer.o Memory.o main.o -L SDL2/lib -Wall -lSDL2main -lSDL2 -o test.exe
+	g++ LoadRom.o StatusRegister.o AddressMode.o BitOperations.o Instructions.o Computer.o Memory.o main.o -L SDL2/lib -Wall -lSDL2main -lSDL2 -o output.exe
 BitOperations.cpp: src/emulator/BitOperations.h 
 	g++ -Wall -c src/emulator/BitOperations.cpp -I SDL2/include -L SDL2/lib
 Memory.cpp: src/emulator/Memory.h
