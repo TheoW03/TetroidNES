@@ -13,17 +13,18 @@ only supports ROM file type iNES v1.0
 
 ## Build instructions
 
-the build system for this is make
 
-1. run make in your terminal
+1. install SDL2  for C++
 
+
+2. run make in your terminal
 
 ```
 make 
 ```
 
 
-2. then run output
+3. then run output
 
 ./output.exe {YOUR NES FILE}
 
