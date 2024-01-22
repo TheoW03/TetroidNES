@@ -17,9 +17,12 @@ the build system for this is make
 
 1. run make in your terminal
 
-``
-make
-``
+
+```
+make 
+```
+
+
 2. then run output
 
 ./output.exe {YOUR NES FILE}
