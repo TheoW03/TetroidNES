@@ -1,7 +1,6 @@
 #include <iostream>
 #include "Computer.h"
 using namespace std;
-
 void LDA(uint8_t current_instruction, CPUProcessor &cpu);
 void LDX(uint8_t current_instruction, CPUProcessor &cpu);
 void LDY(uint8_t current_instruction, CPUProcessor &cpu);
@@ -36,3 +35,18 @@ void CPX(uint8_t current_instruction, CPUProcessor &cpu);
 void CPY(uint8_t current_instruction, CPUProcessor &cpu);
 void PLP(uint8_t current_instruction, CPUProcessor &cpu);
 void PHP(uint8_t current_instruction, CPUProcessor &cpu);
+void EOR(uint8_t current_instruction, CPUProcessor &cpu);
+void ASL(uint8_t current_instruction, CPUProcessor &cpu);
+void LSR(uint8_t current_instruction, CPUProcessor &cpu);
+void DEX(uint8_t current_instruction, CPUProcessor &cpu);
+void DEY(uint8_t current_instruction, CPUProcessor &cpu);
+void DEC(uint8_t current_instruction, CPUProcessor &cpu);
+void TXA(uint8_t current_instruction, CPUProcessor &cpu);
+void TAX(uint8_t current_instruction, CPUProcessor &cpu);
+void TYA(uint8_t current_instruction, CPUProcessor &cpu);
+void TAY(uint8_t current_instruction, CPUProcessor &cpu);
+void STY(uint8_t current_instruction, CPUProcessor &cpu);
+void STX(uint8_t current_instruction, CPUProcessor &cpu);
+void STA(uint8_t current_instruction, CPUProcessor &cpu);
+void PLA(uint8_t current_instruction, CPUProcessor &cpu);
+void PHA(uint8_t current_instruction, CPUProcessor &cpu);

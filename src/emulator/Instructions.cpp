@@ -152,10 +152,14 @@ void PHP(uint8_t current_instruction, CPUProcessor &cpu)
 void PHA(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// push accumalortor on stack
+	cpu.stack_pointer--;
+	write_8bit(cpu.stack_pointer, cpu.A_Reg);
 }
 void PLA(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// pull accumalator
+	cpu.A_Reg = read_8bit(cpu.stack_pointer);
+	cpu.stack_pointer++;
 }
 void STA(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -167,25 +171,28 @@ void STX(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void STY(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// store y in meme
+	// store y in mem
 }
 void TAY(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// Y = A
+	cpu.Y_Reg = cpu.A_Reg;
 }
 void TYA(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// A = Y
+	cpu.A_Reg = cpu.Y_Reg;
 }
 void TAX(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// X = A
+	cpu.X_Reg = cpu.A_Reg;
 }
 void TXA(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// A = X
+	cpu.A_Reg = cpu.X_Reg;
 }
-
 
 #pragma endregion region data transfer instructions
 
@@ -256,6 +263,18 @@ void SBC(uint8_t current_instruction, CPUProcessor &cpu)
 void BIT(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: bit test
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x24] = AddressMode::ZERO_PAGE; // meow :3
+	address_Mode_map[0x2C] = AddressMode::ABSOLUTE;	 // meow :3
+	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
+										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	uint8_t result = value & cpu.A_Reg;
+	set_zero(result, cpu);
+	set_overflow((value & 0b00100000) != 0, cpu);
+	set_negative(value, cpu);
+	cpu.PC++;
+	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE)
+		cpu.PC++;
 }
 void AND(uint8_t current_instruction, CPUProcessor &cpu)
 {

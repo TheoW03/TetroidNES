@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
 	// assert(((uint8_t)(2 << 7) != 0) == 0);
 	// assert((uint8_t)(3 & 1) == 0);
 	// assert((uint8_t)(2 & 1) == 0);
+	// assert(((uint8_t)(127 & (0b00100000)) != 0) == 1);
+	// assert(((uint8_t)(128 & (0b00100000)) != 0) == 0);
+
 
 	// assert(((uint8_t)(2 << 7)) != 0);
 	run();

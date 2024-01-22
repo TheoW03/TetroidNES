@@ -156,6 +156,10 @@ void run()
 		{
 			CPX(current_instruction, cpu_Processor);
 		}
+		else if (current_instruction == 0x24 || current_instruction == 0x2C)
+		{
+			BIT(current_instruction, cpu_Processor);
+		}
 		else if (current_instruction == 0x90)
 		{
 			BCC(current_instruction, cpu_Processor);
@@ -195,6 +199,14 @@ void run()
 		else if (current_instruction == 0x08)
 		{
 			PHP(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x68)
+		{
+			PLA(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x48)
+		{
+			PHA(current_instruction, cpu_Processor);
 		}
 		else if (current_instruction == 0x00)
 		{
