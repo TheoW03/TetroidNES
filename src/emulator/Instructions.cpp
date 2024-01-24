@@ -193,7 +193,16 @@ void TXA(uint8_t current_instruction, CPUProcessor &cpu)
 	// A = X
 	cpu.A_Reg = cpu.X_Reg;
 }
-
+void TSX(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// x = S
+	cpu.X_Reg = cpu.stack_pointer;
+}
+void TXS(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// S = X
+	cpu.stack_pointer = cpu.X_Reg;
+}
 #pragma endregion region data transfer instructions
 
 // ALU instructions, +,-,&, >>,<<
@@ -257,7 +266,7 @@ void SBC(uint8_t current_instruction, CPUProcessor &cpu)
 	{
 		cpu.PC++;
 	}
-	cpu.A_Reg -= 1 - carry;
+	cpu.A_Reg -= carry;
 	cpu.PC++;
 }
 void BIT(uint8_t current_instruction, CPUProcessor &cpu)
@@ -414,6 +423,19 @@ void DEY(uint8_t current_instruction, CPUProcessor &cpu)
 	// TODO y--
 }
 void DEC(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: m--
+}
+
+void INC(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: m--
+}
+void INX(uint8_t current_instruction, CPUProcessor &cpu)
+{
+	// TODO: m--
+}
+void INY(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: m--
 }
