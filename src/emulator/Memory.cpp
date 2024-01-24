@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-
+#include "LoadRom.h"
 using namespace std;
 
 #define RAM_START 0x0000
@@ -98,17 +98,15 @@ void NES_mmap_write16(uint16_t address, uint16_t value)
 	{
 		// return 0;
 	}
-	
 }
-void load_rom(uint16_t chr_rom_start, uint16_t chr_size, uint16_t prg_rom_start, uint16_t prg_size, vector<uint8_t> instructions)
+void load_rom(Rom rom)
 {
-	// copy(instructions.begin(), instructions.end(), PRGrom.begin() + prg_size);
-	for (int i = prg_rom_start; i < prg_size; i++)
+	for (int i = rom.PRG_ROM_START; i < rom.PRG_ROM_SIZE; i++)
 	{
-		PRGrom.push_back(instructions[i]);
+		PRGrom.push_back(rom.instructions[i]);
 	}
-	for (int i = chr_rom_start; i < chr_size; i++)
+	for (int i = rom.CHR_ROM_START; i < rom.CHR_ROM_SIZE; i++)
 	{
-		CHRrom.push_back(instructions[i]);
+		CHRrom.push_back(rom.instructions[i]);
 	}
 }
