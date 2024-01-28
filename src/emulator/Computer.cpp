@@ -96,6 +96,14 @@ void run()
 		{
 			ROR(current_instruction, cpu_Processor);
 		}
+		else if (current_instruction == 0x86 || current_instruction == 0x96 || current_instruction == 0x9E)
+		{
+			STX(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x84 || current_instruction == 0x94 || current_instruction == 0x8C)
+		{
+			STY(current_instruction, cpu_Processor);
+		}
 		else if (current_instruction == 0x18)
 		{
 			CLC(current_instruction, cpu_Processor);
@@ -207,6 +215,30 @@ void run()
 		else if (current_instruction == 0x48)
 		{
 			PHA(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xAA)
+		{
+			TAX(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x8A)
+		{
+			TXA(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x9A)
+		{
+			TXS(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xBA)
+		{
+			TSX(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x98)
+		{
+			TYA(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xA8)
+		{
+			TAY(current_instruction, cpu_Processor);
 		}
 		else if (current_instruction == 0x00)
 		{

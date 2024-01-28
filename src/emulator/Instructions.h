@@ -50,3 +50,5 @@ void STX(uint8_t current_instruction, CPUProcessor &cpu);
 void STA(uint8_t current_instruction, CPUProcessor &cpu);
 void PLA(uint8_t current_instruction, CPUProcessor &cpu);
 void PHA(uint8_t current_instruction, CPUProcessor &cpu);
+void TXS(uint8_t current_instruction, CPUProcessor &cpu);
+void TSX(uint8_t current_instruction, CPUProcessor &cpu);

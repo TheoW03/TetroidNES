@@ -160,6 +160,9 @@ void PLA(uint8_t current_instruction, CPUProcessor &cpu)
 	// pull accumalator
 	cpu.A_Reg = read_8bit(cpu.stack_pointer);
 	cpu.stack_pointer++;
+
+	set_zero(cpu.A_Reg, cpu);
+	set_negative(cpu.A_Reg, cpu);
 }
 void STA(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -168,35 +171,65 @@ void STA(uint8_t current_instruction, CPUProcessor &cpu)
 void STX(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO store x in mem
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x86] = AddressMode::ZERO_PAGE; // nice
+	address_Mode_map[0x96] = AddressMode::ZERO_PAGE_Y;
+	address_Mode_map[0x9E] = AddressMode::ABSOLUTE;
+	uint16_t v = address_Mode(address_Mode_map[current_instruction],
+							  cpu.PC, cpu.X_Reg, cpu.Y_Reg);
+	write_8bit(v, cpu.X_Reg);
+	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE)
+		cpu.PC++;
+	cpu.PC++;
 }
 void STY(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// store y in mem
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x84] = AddressMode::ZERO_PAGE;
+	address_Mode_map[0x94] = AddressMode::ZERO_PAGE_X;
+	address_Mode_map[0x8C] = AddressMode::ABSOLUTE; // nice
+	uint16_t v = address_Mode(address_Mode_map[current_instruction],
+							  cpu.PC, cpu.X_Reg, cpu.Y_Reg);
+	write_8bit(v, cpu.Y_Reg);
+	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE)
+		cpu.PC++;
+	cpu.PC++;
 }
 void TAY(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// Y = A
 	cpu.Y_Reg = cpu.A_Reg;
+	set_zero(cpu.Y_Reg, cpu);
+	set_negative(cpu.Y_Reg, cpu);
 }
 void TYA(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// A = Y
 	cpu.A_Reg = cpu.Y_Reg;
+	set_zero(cpu.A_Reg, cpu);
+	set_negative(cpu.A_Reg, cpu);
 }
 void TAX(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// X = A
 	cpu.X_Reg = cpu.A_Reg;
+	set_zero(cpu.X_Reg, cpu);
+	set_negative(cpu.X_Reg, cpu);
 }
 void TXA(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// A = X
 	cpu.A_Reg = cpu.X_Reg;
+	set_zero(cpu.A_Reg, cpu);
+	set_negative(cpu.A_Reg, cpu);
 }
 void TSX(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// x = S
 	cpu.X_Reg = cpu.stack_pointer;
+	set_zero(cpu.X_Reg, cpu);
+	set_negative(cpu.X_Reg, cpu);
 }
 void TXS(uint8_t current_instruction, CPUProcessor &cpu)
 {
