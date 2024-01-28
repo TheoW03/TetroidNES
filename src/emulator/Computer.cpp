@@ -104,6 +104,50 @@ void run()
 		{
 			STY(current_instruction, cpu_Processor);
 		}
+		else if (current_instruction == 0x85 || current_instruction == 0x95 || current_instruction == 0x8D // meow
+				 || current_instruction == 0x9D || current_instruction == 0x99							   // meow //meow
+				 || current_instruction == 0x81 || current_instruction == 0x91)
+		{
+			STA(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x4A || current_instruction == 0x46 || current_instruction == 0x56 || current_instruction == 0x4E || current_instruction == 0x5E)
+		{
+			LSR(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x0A || current_instruction == 0x06 || current_instruction == 0x16 || current_instruction == 0x0E || current_instruction == 0x1E)
+		{
+			ASL(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x49 || current_instruction == 0x45 || current_instruction == 0x55 // meow
+				 || current_instruction == 0x4D || current_instruction == 0x5D							   // mrpr
+				 || current_instruction == 0x59 || current_instruction == 0x41 || current_instruction == 0x51)
+		{
+			EOR(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xE8)
+		{
+			INX(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xC8)
+		{
+			INY(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xCA)
+		{
+			DEX(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xC6 || current_instruction == 0xD6 || current_instruction == 0xCE || current_instruction == 0xDE)
+		{
+			DEC(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0xE6 || current_instruction == 0xF6 || current_instruction == 0xEE || current_instruction == 0xFE)
+		{
+			INC(current_instruction, cpu_Processor);
+		}
+		else if (current_instruction == 0x88)
+		{
+			DEY(current_instruction, cpu_Processor);
+		}
 		else if (current_instruction == 0x18)
 		{
 			CLC(current_instruction, cpu_Processor);
@@ -240,6 +284,9 @@ void run()
 		{
 			TAY(current_instruction, cpu_Processor);
 		}
+		else if (current_instruction == 0xEA)
+		{
+		}
 		else if (current_instruction == 0x00)
 		{
 			if (check_Interrupt_disabled(cpu_Processor) != 0)
@@ -257,6 +304,19 @@ void run()
 			bitset<7> y(cpu_Processor.status);
 			cout << "status: 0b" << y << endl;
 			return;
+		}
+		else
+		{
+			cout << "unrecognized instruction" << endl;
+			printf("current instruction 0x%x is unrecongnized \n", current_instruction);
+			printf("A_Reg: %d \n", cpu_Processor.A_Reg);
+			printf("X_Reg: %d \n", cpu_Processor.X_Reg);
+			printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);
+			printf("PC: 0x%X \n", cpu_Processor.PC);
+			printf("sp: 0x%X \n", cpu_Processor.stack_pointer);
+			bitset<7> y(cpu_Processor.status);
+			cout << "status: 0b" << y << endl;
+			exit(EXIT_FAILURE);
 		}
 	}
 }

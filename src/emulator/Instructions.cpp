@@ -167,6 +167,23 @@ void PLA(uint8_t current_instruction, CPUProcessor &cpu)
 void STA(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO store accumalator in mem
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x85] = AddressMode::ZERO_PAGE;
+	address_Mode_map[0x95] = AddressMode::ZERO_PAGE_X;
+	address_Mode_map[0x8D] = AddressMode::ABSOLUTE;
+	address_Mode_map[0x9D] = AddressMode::ABSOLUTE_X;
+	address_Mode_map[0x99] = AddressMode::ABSOLUTE_Y;
+	address_Mode_map[0x81] = AddressMode::INDIRECT_X;
+	address_Mode_map[0x91] = AddressMode::INDIRECT_Y;
+
+	uint16_t v = address_Mode(address_Mode_map[current_instruction],
+							  cpu.PC, cpu.X_Reg, cpu.Y_Reg);
+	write_8bit(v, cpu.A_Reg);
+	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
+		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X // meow
+		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_Y)
+		cpu.PC++;
+	cpu.PC++;
 }
 void STX(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -438,39 +455,163 @@ void ROL(uint8_t current_instruction, CPUProcessor &cpu)
 void ASL(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO a >> m
+	set_carry(((cpu.A_Reg << 7) != 0), cpu);
+
+	if (current_instruction == 0x0A)
+	{
+		cpu.A_Reg = cpu.A_Reg >> 1;
+	}
+	else
+	{
+		map<uint8_t, AddressMode> address_Mode_map;
+
+		address_Mode_map[0x06] = AddressMode::ZERO_PAGE;   // meow :3
+		address_Mode_map[0x16] = AddressMode::ZERO_PAGE_X; // meow :3
+
+		address_Mode_map[0x0E] = AddressMode::ABSOLUTE;	  // meow :3
+		address_Mode_map[0x1E] = AddressMode::ABSOLUTE_X; // meow :3
+		uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
+											   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+		cpu.A_Reg = cpu.A_Reg >> value;
+		if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
+			|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
+			cpu.PC++;
+		cpu.PC++;
+	}
+	set_negative(cpu.A_Reg, cpu);
+	set_zero(cpu.A_Reg, cpu);
 }
 void LSR(uint8_t current_instruction, CPUProcessor &cpu)
 {
+	set_carry((cpu.A_Reg & 1) != 0, cpu);
+	if (current_instruction == 0x4A)
+	{
+		cpu.A_Reg = cpu.A_Reg << 1;
+	}
+	else
+	{
+		map<uint8_t, AddressMode> address_Mode_map;
+
+		address_Mode_map[0x46] = AddressMode::ZERO_PAGE;   // meow :3
+		address_Mode_map[0x56] = AddressMode::ZERO_PAGE_X; // meow :3
+
+		address_Mode_map[0x4E] = AddressMode::ABSOLUTE;	  // meow :3
+		address_Mode_map[0x5E] = AddressMode::ABSOLUTE_X; // meow :3
+		uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
+											   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+		cpu.A_Reg = cpu.A_Reg << value;
+		if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
+			|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
+			cpu.PC++;
+		cpu.PC++;
+	}
+	set_negative(cpu.A_Reg, cpu);
+	set_zero(cpu.A_Reg, cpu);
+
 	// TODO a << m
 }
 void EOR(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO xor
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x49] = AddressMode::IMMEDIATE; // meow :3
+
+	address_Mode_map[0x45] = AddressMode::ZERO_PAGE;   // meow :3
+	address_Mode_map[0x55] = AddressMode::ZERO_PAGE_X; // meow :3
+
+	address_Mode_map[0x4D] = AddressMode::ABSOLUTE;	  // meow :3
+	address_Mode_map[0x5D] = AddressMode::ABSOLUTE_X; // meow :3
+	address_Mode_map[0x59] = AddressMode::ABSOLUTE_Y; // meow :3
+
+	address_Mode_map[0x41] = AddressMode::INDIRECT_X; // meow :3
+	address_Mode_map[0x51] = AddressMode::INDIRECT_Y; // meow :3
+	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
+										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	cpu.A_Reg = cpu.A_Reg ^ value;
+
+	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
+		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X // meow
+		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_Y)
+	{
+		cpu.PC++;
+	}
+	set_negative(cpu.A_Reg, cpu);
+	set_zero(cpu.A_Reg, cpu);
+	cpu.PC++;
 }
 void DEX(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO:x--
+	cpu.X_Reg--;
+	set_negative(cpu.X_Reg, cpu);
+	set_zero(cpu.X_Reg, cpu);
 }
 void DEY(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO y--
+	cpu.Y_Reg--;
+	set_negative(cpu.Y_Reg, cpu);
+	set_zero(cpu.Y_Reg, cpu);
 }
 void DEC(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: m--
+	map<uint8_t, AddressMode> address_Mode_map;
+
+	address_Mode_map[0xC6] = AddressMode::ZERO_PAGE;   // meow :3
+	address_Mode_map[0xD6] = AddressMode::ZERO_PAGE_X; // meow :3
+
+	address_Mode_map[0xCE] = AddressMode::ABSOLUTE;	  // meow :3
+	address_Mode_map[0xDE] = AddressMode::ABSOLUTE_X; // meow :3
+
+	uint16_t v = address_Mode(address_Mode_map[current_instruction],
+							  cpu.PC, cpu.X_Reg, cpu.Y_Reg);
+	uint8_t vs = read_8bit(v);
+	vs--;
+	set_zero(v, cpu);
+	set_negative(v, cpu);
+	write_8bit(v, vs);
+	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
+		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
+		cpu.PC++;
+	cpu.PC++;
 }
 
 void INC(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: m--
+	map<uint8_t, AddressMode> address_Mode_map;
+
+	address_Mode_map[0xE6] = AddressMode::ZERO_PAGE;   // meow :3
+	address_Mode_map[0xF6] = AddressMode::ZERO_PAGE_X; // meow :3
+
+	address_Mode_map[0xEE] = AddressMode::ABSOLUTE;	  // meow :3
+	address_Mode_map[0xFE] = AddressMode::ABSOLUTE_X; // meow :3
+	uint16_t v = address_Mode(address_Mode_map[current_instruction],
+							  cpu.PC, cpu.X_Reg, cpu.Y_Reg);
+	uint8_t vs = read_8bit(v);
+	vs++;
+	set_zero(v, cpu);
+	set_negative(v, cpu);
+	write_8bit(v, vs);
+	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
+		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
+		cpu.PC++;
+	cpu.PC++;
 }
 void INX(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: m--
+	cpu.X_Reg++;
+	set_negative(cpu.X_Reg, cpu);
+	set_zero(cpu.X_Reg, cpu);
 }
 void INY(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: m--
+	cpu.Y_Reg++;
+	set_negative(cpu.Y_Reg, cpu);
+	set_zero(cpu.Y_Reg, cpu);
 }
 
 #pragma endregion ALU instructions

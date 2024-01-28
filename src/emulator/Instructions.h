@@ -52,3 +52,6 @@ void PLA(uint8_t current_instruction, CPUProcessor &cpu);
 void PHA(uint8_t current_instruction, CPUProcessor &cpu);
 void TXS(uint8_t current_instruction, CPUProcessor &cpu);
 void TSX(uint8_t current_instruction, CPUProcessor &cpu);
+void INC(uint8_t current_instruction, CPUProcessor &cpu);
+void INX(uint8_t current_instruction, CPUProcessor &cpu);
+void INY(uint8_t current_instruction, CPUProcessor &cpu);
