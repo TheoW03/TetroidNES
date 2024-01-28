@@ -4,9 +4,7 @@
 
 cpu architecture type: 6502
 
-RAM: 65 KB  
-
-vRam: 2 KB
+RAM: 2 KB
 
 only supports ROM file type iNES v1.0 
 

@@ -568,8 +568,8 @@ void DEC(uint8_t current_instruction, CPUProcessor &cpu)
 							  cpu.PC, cpu.X_Reg, cpu.Y_Reg);
 	uint8_t vs = read_8bit(v);
 	vs--;
-	set_zero(v, cpu);
-	set_negative(v, cpu);
+	set_zero(vs, cpu);
+	set_negative(vs, cpu);
 	write_8bit(v, vs);
 	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
 		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
@@ -591,8 +591,8 @@ void INC(uint8_t current_instruction, CPUProcessor &cpu)
 							  cpu.PC, cpu.X_Reg, cpu.Y_Reg);
 	uint8_t vs = read_8bit(v);
 	vs++;
-	set_zero(v, cpu);
-	set_negative(v, cpu);
+	set_zero(vs, cpu);
+	set_negative(vs, cpu);
 	write_8bit(v, vs);
 	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
 		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
