@@ -9,7 +9,7 @@ using namespace std;
 #define PPU_REGISTERS 0x2000
 #define PPU_REGISTERS_END 0x3FFF
 
-static uint8_t memory[0xFFFF];
+static volatile uint8_t memory[0xFFFF];
 static uint8_t v_memory[0x800];
 
 static vector<uint8_t> PRGrom;
@@ -22,6 +22,7 @@ uint8_t read_8bit(uint16_t address)
 uint16_t read_16bit(uint16_t address)
 {
 	uint16_t value = (uint16_t)(memory[address + 1] << 8) | memory[address];
+
 	return value;
 }
 void write_8bit(uint16_t address, uint8_t value)

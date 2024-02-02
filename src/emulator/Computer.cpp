@@ -6,7 +6,7 @@
 #include "StatusRegister.h"
 #include <cstdio>
 #include <bitset>
-
+#include <pthread.h>
 using namespace std;
 
 uint8_t current_instruction = 0;
@@ -23,22 +23,24 @@ void run()
 	cpu_Processor.stack_pointer = 0xfd;
 	while (cpu_Processor.PC < 0xFFFF)
 	{
+		// cout << "a" << endl;
 		if (check_brk(cpu_Processor) != 0)
 		{
 			continue;
 		}
 		current_instruction = read_8bit(cpu_Processor.PC);
 		cpu_Processor.PC++;
-		// cout << "========" << endl;
-		// printf("current instruction: %x \n", current_instruction);
-		// printf("A_Reg: %x \n", cpu_Processor.A_Reg);
-		// printf("X_Reg: %d \n", cpu_Processor.X_Reg);
-		// printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);
-		// printf("PC: 0x%X \n", cpu_Processor.PC);
-		// printf("sp: 0x%X \n", cpu_Processor.stack_pointer);
-		// bitset<7> z(cpu_Processor.status);
-		// cout << "status: 0b" << z << endl;
-		// cout << "========" << endl;
+		// _sleep(100000);
+		cout << "========" << endl;
+		printf("current instruction: %x \n", current_instruction);
+		printf("A_Reg: %x \n", cpu_Processor.A_Reg);
+		printf("X_Reg: %d \n", cpu_Processor.X_Reg);
+		printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);
+		printf("PC: 0x%X \n", cpu_Processor.PC);
+		printf("sp: 0x%X \n", cpu_Processor.stack_pointer);
+		bitset<7> z(cpu_Processor.status);
+		cout << "status: 0b" << z << endl;
+		cout << "========" << endl;
 
 		// DEBUG STUFF
 		//  cout << "=======" << endl;

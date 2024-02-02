@@ -271,7 +271,7 @@ void ADC(uint8_t current_instruction, CPUProcessor &cpu)
 	uint8_t carry = 0;
 	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
 										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cout << "est" << endl;
+	// cout << "est" << endl;
 	if (check_decimal(cpu) != 0)
 		cpu.A_Reg = decimal_add(cpu.A_Reg, value, cpu, carry);
 	else
@@ -669,7 +669,8 @@ void JMP(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x6C] = AddressMode::INDIRECT;
 	uint16_t new_PC = address_Mode(address_Mode_map[current_instruction],
 								   cpu.PC, cpu.X_Reg, cpu.Y_Reg);
-	cpu.PC = (new_PC + 0x8000);
+	cpu.PC = (new_PC );
+	printf("%x \n", cpu.PC);
 }
 void BEQ(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -723,7 +724,7 @@ void BCS(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xB0] = AddressMode::IMMEDIATE;
 	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
 													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.PC = (new_PC + 0x8000);
+	cpu.PC = (new_PC + 0x8000); 
 }
 void BPL(uint8_t current_instruction, CPUProcessor &cpu)
 {
