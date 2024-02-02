@@ -11,7 +11,7 @@
 using namespace std;
 void *threadFunction(void *arg)
 {
-	std::cout << "Thread i" << endl;
+	scout << "Thread i" << endl;
 	// while (1)
 	// 	;
 	vector<uint8_t> instructions = {0xa5, 0xff, 0x4C, 0x00, 0x80};
