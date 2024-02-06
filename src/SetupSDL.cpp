@@ -39,30 +39,16 @@ int setup(char *title, int width, int height)
     //     };
 
     SDL_Event e;
+    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_TARGET, 32, 32);
+
     while (1)
     {
-        if (SDL_PollEvent(&windowEvent))
-        {
-            if (windowEvent.type == SDL_QUIT)
-            {
 
-                SDL_DestroyWindow(window);
-                SDL_Quit();
-                exit(EXIT_SUCCESS);
-                return EXIT_SUCCESS;
-            }
-        }
         // cout << "test" << endl;
 
         while (SDL_PollEvent(&e) != 0)
         {
-            if (windowEvent.type == SDL_QUIT)
-            {
-                SDL_DestroyWindow(window);
-                SDL_Quit();
-                exit(EXIT_SUCCESS);
-                return EXIT_SUCCESS;
-            }
+
             if (e.type == SDL_KEYDOWN)
             {
 
@@ -83,14 +69,33 @@ int setup(char *title, int width, int height)
                 case SDLK_ESCAPE:
                     SDL_DestroyWindow(window);
                     SDL_Quit();
+                    exit(EXIT_SUCCESS);
                 }
             }
 
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-            SDL_RenderClear(renderer);
-            // SDL_RenderGeometry(renderer, nullptr, verts.data(), verts.size(), nullptr, 0);
-            SDL_RenderPresent(renderer);
             // _sleep(1);
         }
+        if (SDL_PollEvent(&windowEvent))
+        {
+            if (windowEvent.type == SDL_QUIT)
+            {
+
+                SDL_DestroyWindow(window);
+                SDL_Quit();
+                exit(EXIT_SUCCESS);
+                return EXIT_SUCCESS;
+            }
+        }
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+        SDL_RenderClear(renderer);
+        // cout << "test" << endl;
+        // SDL_RenderGeometry(renderer, nullptr, verts.data(), verts.size(), nullptr, 0);
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+
+        SDL_SetRenderTarget(renderer, texture);
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderDrawPoint(renderer, 92, 92);
+        SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+        SDL_RenderPresent(renderer);
     }
 }

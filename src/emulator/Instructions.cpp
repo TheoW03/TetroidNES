@@ -669,7 +669,7 @@ void JMP(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x6C] = AddressMode::INDIRECT;
 	uint16_t new_PC = address_Mode(address_Mode_map[current_instruction],
 								   cpu.PC, cpu.X_Reg, cpu.Y_Reg);
-	cpu.PC = (new_PC );
+	cpu.PC = (new_PC);
 	printf("%x \n", cpu.PC);
 }
 void BEQ(uint8_t current_instruction, CPUProcessor &cpu)
@@ -683,7 +683,8 @@ void BEQ(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xF0] = AddressMode::IMMEDIATE;
 	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
 													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.PC = (new_PC + 0x8000);
+	cpu.PC += new_PC;
+	// cpu.PC = (new_PC + 0x8000);
 }
 void BNE(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -697,7 +698,8 @@ void BNE(uint8_t current_instruction, CPUProcessor &cpu)
 	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
 													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
 	// cpu.PC++;
-	cpu.PC = (new_PC + 0x8000);
+	cpu.PC += new_PC;
+	// cpu.PC = (new_PC + 0x8000);
 }
 void BCC(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -711,7 +713,8 @@ void BCC(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x90] = AddressMode::IMMEDIATE;
 	int16_t new_PC = (int16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
 													 cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.PC = (new_PC + 0x8000);
+	// cpu.PC = (new_PC + 0x8000);
+	cpu.PC += new_PC;
 }
 void BCS(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -724,7 +727,8 @@ void BCS(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xB0] = AddressMode::IMMEDIATE;
 	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
 													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.PC = (new_PC + 0x8000); 
+	// cpu.PC = (new_PC + 0x8000);
+	cpu.PC += new_PC;
 }
 void BPL(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -737,7 +741,8 @@ void BPL(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x10] = AddressMode::IMMEDIATE;
 	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
 													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.PC = (new_PC + 0x8000);
+	// cpu.PC = (new_PC + 0x8000);
+	cpu.PC += new_PC;
 }
 void BMI(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -751,7 +756,8 @@ void BMI(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x30] = AddressMode::IMMEDIATE;
 	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
 													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.PC = (new_PC + 0x8000);
+	// cpu.PC = (new_PC + 0x8000);
+	cpu.PC += new_PC;
 }
 void BVC(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -765,7 +771,8 @@ void BVC(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x50] = AddressMode::IMMEDIATE;
 	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
 													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.PC = (new_PC + 0x8000);
+	// cpu.PC = (new_PC + 0x8000);
+	cpu.PC += new_PC;
 }
 void BVS(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -779,7 +786,8 @@ void BVS(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x70] = AddressMode::IMMEDIATE;
 	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
 													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.PC = (new_PC + 0x8000);
+	// cpu.PC = (new_PC + 0x8000);
+	cpu.PC += new_PC;
 }
 void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -791,7 +799,8 @@ void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 	cpu.PC += 2;
 	write_16bit(cpu.stack_pointer, cpu.PC);
 	cpu.stack_pointer -= 2;
-	cpu.PC = (new_PC + 0x8000);
+	// cpu.PC = (new_PC + 0x8000);
+	cpu.PC = new_PC;
 }
 void RTS(uint8_t current_instruction, CPUProcessor &cpu)
 {
