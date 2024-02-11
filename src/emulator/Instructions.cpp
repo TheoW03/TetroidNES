@@ -96,6 +96,8 @@ void LDA(uint8_t current_instruction, CPUProcessor &cpu)
 	{
 		cpu.PC++;
 	}
+	set_zero(cpu.A_Reg, cpu);
+	set_negative(cpu.A_Reg, cpu);
 }
 void LDX(uint8_t current_instruction, CPUProcessor &cpu)
 {
