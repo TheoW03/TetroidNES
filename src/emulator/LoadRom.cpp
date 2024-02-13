@@ -42,7 +42,7 @@ Rom modify_for_NESfile(vector<uint8_t> &instructions)
     // instructions.pop_back();
     uint8_t chr_rom = instructions[1];
     // instructions.pop_back();
-    int8_t control_byte1 = instructions[2];
+    uint8_t control_byte1 = instructions[2];
     // instructions.pop_back();
     uint8_t control_byte2 = instructions[3];
     // instructions.pop_back();
