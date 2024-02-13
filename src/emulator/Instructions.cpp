@@ -672,7 +672,7 @@ void JMP(uint8_t current_instruction, CPUProcessor &cpu)
 	uint16_t new_PC = address_Mode(address_Mode_map[current_instruction],
 								   cpu.PC, cpu.X_Reg, cpu.Y_Reg);
 	cpu.PC = (new_PC);
-	printf("%x \n", cpu.PC);
+	printf(" PC: %x \n", cpu.PC);
 }
 void BEQ(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -683,24 +683,27 @@ void BEQ(uint8_t current_instruction, CPUProcessor &cpu)
 	}
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0xF0] = AddressMode::IMMEDIATE;
-	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
-													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.PC += new_PC;
-	// cpu.PC = (new_PC + 0x8000);
+	int8_t new_PC = (int8_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
+												   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	cpu.PC += (int8_t)new_PC;
+	cpu.PC++; // cpu.PC = (new_PC + 0x8000);
 }
 void BNE(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	if (check_zero(cpu) != 0)
 	{
 		cpu.PC++;
+		cout << "0" << endl;
+		printf("0 %d \n", check_zero(cpu));
 		return;
 	}
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0xD0] = AddressMode::IMMEDIATE;
-	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
-													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	int8_t new_PC = read_8bit(address_Mode(address_Mode_map[current_instruction],
+										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
 	// cpu.PC++;
-	cpu.PC += new_PC;
+	cpu.PC += (int8_t)new_PC;
+	cpu.PC++;
 	// cpu.PC = (new_PC + 0x8000);
 }
 void BCC(uint8_t current_instruction, CPUProcessor &cpu)
@@ -713,10 +716,11 @@ void BCC(uint8_t current_instruction, CPUProcessor &cpu)
 
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0x90] = AddressMode::IMMEDIATE;
-	int16_t new_PC = (int16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
-													 cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	int8_t new_PC = (int16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
+													cpu.PC, cpu.X_Reg, cpu.Y_Reg));
 	// cpu.PC = (new_PC + 0x8000);
-	cpu.PC += new_PC;
+	cpu.PC += (int8_t)new_PC;
+	cpu.PC++;
 }
 void BCS(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -727,10 +731,11 @@ void BCS(uint8_t current_instruction, CPUProcessor &cpu)
 	}
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0xB0] = AddressMode::IMMEDIATE;
-	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
-													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	int8_t new_PC = (int8_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
+												   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
 	// cpu.PC = (new_PC + 0x8000);
-	cpu.PC += new_PC;
+	cpu.PC += (int8_t)new_PC;
+	cpu.PC++;
 }
 void BPL(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -741,10 +746,11 @@ void BPL(uint8_t current_instruction, CPUProcessor &cpu)
 	}
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0x10] = AddressMode::IMMEDIATE;
-	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
-													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	int8_t new_PC = (int8_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
+												   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
 	// cpu.PC = (new_PC + 0x8000);
-	cpu.PC += new_PC;
+	cpu.PC += (int8_t)new_PC;
+	cpu.PC++;
 }
 void BMI(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -756,10 +762,11 @@ void BMI(uint8_t current_instruction, CPUProcessor &cpu)
 	}
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0x30] = AddressMode::IMMEDIATE;
-	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
-													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	int8_t new_PC = (int8_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
+												   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
 	// cpu.PC = (new_PC + 0x8000);
-	cpu.PC += new_PC;
+	cpu.PC += (int8_t)new_PC;
+	cpu.PC++;
 }
 void BVC(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -771,10 +778,11 @@ void BVC(uint8_t current_instruction, CPUProcessor &cpu)
 	}
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0x50] = AddressMode::IMMEDIATE;
-	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
-													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	int8_t new_PC = (int8_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
+												   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
 	// cpu.PC = (new_PC + 0x8000);
-	cpu.PC += new_PC;
+	cpu.PC += (int8_t)new_PC;
+	cpu.PC++;
 }
 void BVS(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -786,10 +794,11 @@ void BVS(uint8_t current_instruction, CPUProcessor &cpu)
 	}
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0x70] = AddressMode::IMMEDIATE;
-	uint16_t new_PC = (uint16_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
-													   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
+	int8_t new_PC = (int8_t)read_8bit(address_Mode(address_Mode_map[current_instruction],
+												   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
 	// cpu.PC = (new_PC + 0x8000);
-	cpu.PC += new_PC;
+	cpu.PC += (int8_t)new_PC;
+	cpu.PC++;
 }
 void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -806,8 +815,21 @@ void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void RTS(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	cpu.PC = read_16bit(cpu.stack_pointer);
+	for (int i = cpu.stack_pointer; i < 0xff; i += 2)
+	{
+		printf("addr: %x value: %x \n", i, read_16bit(i));
+	}
 	cpu.stack_pointer += 2;
+
+	cpu.PC = read_16bit(cpu.stack_pointer);
+	printf("sp: %x \n", cpu.stack_pointer);
+
+	printf("pc: %x \n", read_16bit(cpu.stack_pointer));
+	// cpu.stack_pointer += 2;
+
+	// cpu.PC++;
+
+	// cpu.stack_pointer += 2;
 }
 void CMP(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -868,7 +890,8 @@ void CPX(uint8_t current_instruction, CPUProcessor &cpu)
 	uint8_t carry = 0;
 
 	uint8_t v = sub(cpu.X_Reg, value, cpu, carry);
-	// printf("X_Reg: %d \n", v);
+	printf("value: %d result %d \n", value, v);
+
 	// printf("carry: %d \n", carry);
 	set_carry(carry, cpu);
 	set_zero(v, cpu);
