@@ -76,25 +76,27 @@ SDL_Color getColorFromByte(uint8_t byte)
         return {0, 255, 255}; // CYAN
     }
 }
-void update_texture(uint8_t pixels[32 * 32 * 3])
+bool update_texture(uint8_t pixels[32 * 32 * 3])
 {
     // cout << "test: " << static_cast<int>(color.r) << endl;
     int frame_idx = 0;
-    
+    bool update = false;
+
     for (int i = 0x0200; i < 0x600; i++)
     {
         SDL_Color c = getColorFromByte(read_8bit(i));
-        if (pixels[frame_idx] != static_cast<int>(c.r)         // m
-            || pixels[frame_idx + 1] != static_cast<int>(c.g)  // s
-            || pixels[frame_idx + 2] != static_cast<int>(c.b)) // s
-        {
-            pixels[frame_idx] = static_cast<int>(c.r);
-            pixels[frame_idx + 1] = static_cast<int>(c.g);
-            pixels[frame_idx + 2] = static_cast<int>(c.b);
-        }
+        // if (pixels[frame_idx] != static_cast<int>(c.r)         // m
+        //     || pixels[frame_idx + 1] != static_cast<int>(c.g)  // s
+        //     || pixels[frame_idx + 2] != static_cast<int>(c.b)) // s
+        // {
+        pixels[frame_idx] = static_cast<int>(c.r);
+        pixels[frame_idx + 1] = static_cast<int>(c.g);
+        pixels[frame_idx + 2] = static_cast<int>(c.b);
+        update = true;
 
         frame_idx += 3;
     }
+    return update;
 }
 int setup(char *title, int width, int height)
 {
@@ -147,15 +149,16 @@ int setup(char *title, int width, int height)
                 return EXIT_SUCCESS;
             }
         }
+        handle_keybinds(e, window);
+
         update_texture(pixels);
         SDL_UpdateTexture(texture, nullptr, pixels, 32 * 3);
-        SDL_RenderClear(renderer);
 
-        handle_keybinds(e, window);
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, texture, nullptr, nullptr);
 
         // SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
         // SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, texture, nullptr, nullptr);
         SDL_RenderPresent(renderer);
     }
 }

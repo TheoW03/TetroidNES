@@ -672,7 +672,7 @@ void JMP(uint8_t current_instruction, CPUProcessor &cpu)
 	uint16_t new_PC = address_Mode(address_Mode_map[current_instruction],
 								   cpu.PC, cpu.X_Reg, cpu.Y_Reg);
 	cpu.PC = (new_PC);
-	printf(" PC: %x \n", cpu.PC);
+	// printf(" PC: %x \n", cpu.PC);
 }
 void BEQ(uint8_t current_instruction, CPUProcessor &cpu)
 {
@@ -693,8 +693,8 @@ void BNE(uint8_t current_instruction, CPUProcessor &cpu)
 	if (check_zero(cpu) != 0)
 	{
 		cpu.PC++;
-		cout << "0" << endl;
-		printf("0 %d \n", check_zero(cpu));
+		// cout << "0" << endl;
+		// printf("0 %d \n", check_zero(cpu));
 		return;
 	}
 	map<uint8_t, AddressMode> address_Mode_map;
@@ -815,10 +815,10 @@ void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void RTS(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	for (int i = cpu.stack_pointer; i < 0xff; i += 2)
-	{
-		printf("addr: %x value: %x \n", i, read_16bit(i));
-	}
+	// for (int i = cpu.stack_pointer; i < 0xff; i += 2)
+	// {
+	// 	printf("addr: %x value: %x \n", i, read_16bit(i));
+	// }
 	cpu.stack_pointer += 2;
 
 	cpu.PC = read_16bit(cpu.stack_pointer);
