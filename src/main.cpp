@@ -69,7 +69,7 @@ void *keyboard_test(void *arg)
 int main(int argc, char *argv[])
 {
 	pthread_t myThread;
-	pthread_create(&myThread, NULL, colored_pixels, NULL);
+	pthread_create(&myThread, NULL, snake, NULL);
 	pthread_detach(myThread);
 	setup("test", 800, 600);
 	return 1;

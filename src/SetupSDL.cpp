@@ -3,6 +3,8 @@
 #include <vector>
 #include "../src/emulator/Memory.h"
 #include <pthread.h>
+#include <cstdlib>
+
 #include <SDL2/SDL_pixels.h>
 const int WIDTH = 800, HEIGHT = 600;
 using namespace std;
@@ -149,6 +151,7 @@ int setup(char *title, int width, int height)
                 return EXIT_SUCCESS;
             }
         }
+        write_8bit(0xfe,(uint8_t) rand() % 16);
         handle_keybinds(e, window);
 
         update_texture(pixels);

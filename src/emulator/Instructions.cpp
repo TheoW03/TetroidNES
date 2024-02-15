@@ -808,24 +808,25 @@ void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 	uint16_t new_PC = (uint16_t)(address_Mode(address_Mode_map[current_instruction],
 											  cpu.PC, cpu.X_Reg, cpu.Y_Reg));
 	cpu.PC += 2;
-	write_16bit(cpu.stack_pointer, cpu.PC);
 	cpu.stack_pointer -= 2;
+
+	write_16bit(cpu.stack_pointer, cpu.PC);
 	// cpu.PC = (new_PC + 0x8000);
 	cpu.PC = new_PC;
 }
 void RTS(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	// for (int i = cpu.stack_pointer; i < 0xff; i += 2)
-	// {
-	// 	printf("addr: %x value: %x \n", i, read_16bit(i));
-	// }
-	cpu.stack_pointer += 2;
-
+	for (int i = cpu.stack_pointer; i < 0xfd; i += 2)
+	{
+		printf("addr: %x value: %x \n", i, read_16bit(i));
+	}
+	// cpu.stack_pointer += 2;
 	cpu.PC = read_16bit(cpu.stack_pointer);
 	printf("sp: %x \n", cpu.stack_pointer);
 
 	printf("pc: %x \n", read_16bit(cpu.stack_pointer));
-	// cpu.stack_pointer += 2;
+
+	cpu.stack_pointer += 2;
 
 	// cpu.PC++;
 
