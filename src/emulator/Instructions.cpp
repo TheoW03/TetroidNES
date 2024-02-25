@@ -180,6 +180,8 @@ void STA(uint8_t current_instruction, CPUProcessor &cpu)
 
 	uint16_t v = address_Mode(address_Mode_map[current_instruction],
 							  cpu.PC, cpu.X_Reg, cpu.Y_Reg);
+	printf("%x \n", v);
+	// exit(EXIT_FAILURE);
 	write_8bit(v, cpu.A_Reg);
 	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
 		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X // meow
@@ -193,7 +195,7 @@ void STX(uint8_t current_instruction, CPUProcessor &cpu)
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0x86] = AddressMode::ZERO_PAGE; // nice
 	address_Mode_map[0x96] = AddressMode::ZERO_PAGE_Y;
-	address_Mode_map[0x9E] = AddressMode::ABSOLUTE;
+	address_Mode_map[0x8E] = AddressMode::ABSOLUTE;
 	uint16_t v = address_Mode(address_Mode_map[current_instruction],
 							  cpu.PC, cpu.X_Reg, cpu.Y_Reg);
 	write_8bit(v, cpu.X_Reg);
@@ -809,7 +811,6 @@ void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 											  cpu.PC, cpu.X_Reg, cpu.Y_Reg));
 	cpu.PC += 2;
 	cpu.stack_pointer -= 2;
-
 	write_16bit(cpu.stack_pointer, cpu.PC);
 	// cpu.PC = (new_PC + 0x8000);
 	cpu.PC = new_PC;

@@ -65,11 +65,27 @@ void *keyboard_test(void *arg)
 	write_16bit(0xFFFC, 0x600);
 	run();
 }
+void *movement(void *arg)
+{
+	vector<uint8_t> instructions = {0xA2, 0x00, 0xA0, 0x01, 0xA9, 0x01, 0x99, 0x00,
+									0x02, 0xA9, 0x00, 0x9D, 0x00, 0x02, 0x98, 0xAA,
+									0xC8, 0xC0, 0x20, 0xD0, 0xEF};
+	load_instructions(instructions);
+	write_16bit(0xFFFC, 0x600);
+	run();
+}
 
 int main(int argc, char *argv[])
 {
+	// snake();
+	// vector<uint8_t> instructions = {0xa9, 0xa, 0xA2, 0x0A, 0x81, 0x10};
+	// load_instructions(instructions);
+	// write_16bit(0xFFFC, 0x600);
+	// run();
+	// printf("memory: %x \n", read_8bit(0x0));
+
 	pthread_t myThread;
-	pthread_create(&myThread, NULL, snake, NULL);
+	pthread_create(&myThread, NULL, movement, NULL);
 	pthread_detach(myThread);
 	setup("test", 800, 600);
 	return 1;

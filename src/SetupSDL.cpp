@@ -91,11 +91,10 @@ bool update_texture(uint8_t pixels[32 * 32 * 3])
         //     || pixels[frame_idx + 1] != static_cast<int>(c.g)  // s
         //     || pixels[frame_idx + 2] != static_cast<int>(c.b)) // s
         // {
-        pixels[frame_idx] = static_cast<int>(c.r);
-        pixels[frame_idx + 1] = static_cast<int>(c.g);
-        pixels[frame_idx + 2] = static_cast<int>(c.b);
+        pixels[frame_idx] = static_cast<uint8_t>(c.r);
+        pixels[frame_idx + 1] = static_cast<uint8_t>(c.g);
+        pixels[frame_idx + 2] = static_cast<uint8_t>(c.b);
         update = true;
-
         frame_idx += 3;
     }
     return update;
@@ -113,28 +112,8 @@ int setup(char *title, int width, int height)
         return 1;
     }
     SDL_Event windowEvent;
-
-    // vector<SDL_Vertex> verts =
-    //     {
-    //         {
-    //             SDL_FPoint{400, 150},
-    //             SDL_Color{255, 0, 0, 255},
-    //             SDL_FPoint{0},
-    //         },
-    //         {
-    //             SDL_FPoint{200, 450},
-    //             SDL_Color{0, 0, 255, 255},
-    //             SDL_FPoint{0},
-    //         },
-    //         {
-    //             SDL_FPoint{600, 450},
-    //             SDL_Color{0, 255, 0, 255},
-    //             SDL_FPoint{0},
-    //         },
-    //     };
-
     SDL_Event e;
-    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STATIC, 32, 32);
+    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 32, 32);
     uint8_t pixels[32 * 32 * 3];
 
     while (1)
@@ -151,17 +130,14 @@ int setup(char *title, int width, int height)
                 return EXIT_SUCCESS;
             }
         }
-        write_8bit(0xfe,(uint8_t) rand() % 16);
         handle_keybinds(e, window);
+        write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
 
         update_texture(pixels);
         SDL_UpdateTexture(texture, nullptr, pixels, 32 * 3);
 
-        SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-
-        // SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-        // SDL_RenderClear(renderer);
         SDL_RenderPresent(renderer);
+        SDL_RenderClear(renderer);
     }
 }

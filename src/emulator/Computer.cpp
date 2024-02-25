@@ -98,7 +98,7 @@ void run()
 		{
 			ROR(current_instruction, cpu_Processor);
 		}
-		else if (current_instruction == 0x86 || current_instruction == 0x96 || current_instruction == 0x9E)
+		else if (current_instruction == 0x86 || current_instruction == 0x96 || current_instruction == 0x8E)
 		{
 			STX(current_instruction, cpu_Processor);
 		}
