@@ -30,17 +30,24 @@ void run()
 		}
 		current_instruction = read_8bit(cpu_Processor.PC);
 		cpu_Processor.PC++;
+		if (current_instruction == 0xEA)
+			continue;
 		// _sleep(100000);
-		cout << "========" << endl;
-		printf("current instruction: %x \n", current_instruction);
-		printf("A_Reg: %x \n", cpu_Processor.A_Reg);
-		printf("X_Reg: %d \n", cpu_Processor.X_Reg);
-		printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);
-		printf("PC: 0x%X \n", cpu_Processor.PC);
-		printf("sp: 0x%X \n", cpu_Processor.stack_pointer);
-		bitset<7> z(cpu_Processor.status);
-		cout << "status: 0b" << z << endl;
-		cout << "========" << endl;
+		// cout << "========" << endl;
+		// printf("current instruction: %x \n", current_instruction);
+		// printf("A_Reg: %x \n", cpu_Processor.A_Reg);
+		// printf("X_Reg: %d \n", cpu_Processor.X_Reg);
+		// printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);
+		// printf("PC: 0x%X \n", cpu_Processor.PC);
+		// printf("sp: 0x%X \n", cpu_Processor.stack_pointer);
+		// printf("$78: %X \n", read_8bit(0x78));
+		// printf("$79: %X \n", read_8bit(0x79));
+		// printf("$7a: %X \n", read_8bit(0x7a));
+		// printf("$7b: %X \n", read_8bit(0x3f0));
+
+		// bitset<7> z(cpu_Processor.status);
+		// cout << "status: 0b" << z << endl;
+		// cout << "========" << endl;
 
 		// DEBUG STUFF
 		//  cout << "=======" << endl;
@@ -320,5 +327,6 @@ void run()
 			cout << "status: 0b" << y << endl;
 			exit(EXIT_FAILURE);
 		}
+		// _sleep(0);
 	}
 }

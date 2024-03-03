@@ -109,7 +109,7 @@ void LDX(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xBE] = AddressMode::ABSOLUTE_Y;
 	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
 										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.X_Reg = read_8bit(value);
+	cpu.X_Reg = (value);
 	cpu.PC++;
 	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
 		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_Y)
@@ -129,7 +129,7 @@ void LDY(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xBC] = AddressMode::ABSOLUTE_X;
 	uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
 										   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-	cpu.Y_Reg = read_8bit(value);
+	cpu.Y_Reg = (value);
 	cpu.PC++;
 	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
 		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
@@ -180,7 +180,7 @@ void STA(uint8_t current_instruction, CPUProcessor &cpu)
 
 	uint16_t v = address_Mode(address_Mode_map[current_instruction],
 							  cpu.PC, cpu.X_Reg, cpu.Y_Reg);
-	printf("%x \n", v);
+	// printf("%x \n", v);
 	// exit(EXIT_FAILURE);
 	write_8bit(v, cpu.A_Reg);
 	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
@@ -429,7 +429,7 @@ void ROR(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void ROL(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	set_carry(((cpu.A_Reg << 7) != 0), cpu);
+	set_carry(((cpu.A_Reg >> 7) != 0), cpu);
 	if (current_instruction == 0x2A)
 	{
 		// accumalatpr
@@ -459,11 +459,11 @@ void ROL(uint8_t current_instruction, CPUProcessor &cpu)
 void ASL(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO a >> m
-	set_carry(((cpu.A_Reg << 7) != 0), cpu);
+	set_carry(((cpu.A_Reg >> 7) != 0), cpu);
 
 	if (current_instruction == 0x0A)
 	{
-		cpu.A_Reg = cpu.A_Reg >> 1;
+		cpu.A_Reg = cpu.A_Reg << 1;
 	}
 	else
 	{
@@ -476,7 +476,7 @@ void ASL(uint8_t current_instruction, CPUProcessor &cpu)
 		address_Mode_map[0x1E] = AddressMode::ABSOLUTE_X; // meow :3
 		uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
 											   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-		cpu.A_Reg = cpu.A_Reg >> value;
+		cpu.A_Reg = cpu.A_Reg << value;
 		if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
 			|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
 			cpu.PC++;
@@ -490,7 +490,7 @@ void LSR(uint8_t current_instruction, CPUProcessor &cpu)
 	set_carry((cpu.A_Reg & 1) != 0, cpu);
 	if (current_instruction == 0x4A)
 	{
-		cpu.A_Reg = cpu.A_Reg << 1;
+		cpu.A_Reg = cpu.A_Reg >> 1;
 	}
 	else
 	{
@@ -503,7 +503,7 @@ void LSR(uint8_t current_instruction, CPUProcessor &cpu)
 		address_Mode_map[0x5E] = AddressMode::ABSOLUTE_X; // meow :3
 		uint8_t value = read_8bit(address_Mode(address_Mode_map[current_instruction],
 											   cpu.PC, cpu.X_Reg, cpu.Y_Reg));
-		cpu.A_Reg = cpu.A_Reg << value;
+		cpu.A_Reg = cpu.A_Reg >> value;
 		if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
 			|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
 			cpu.PC++;
@@ -595,9 +595,10 @@ void INC(uint8_t current_instruction, CPUProcessor &cpu)
 							  cpu.PC, cpu.X_Reg, cpu.Y_Reg);
 	uint8_t vs = read_8bit(v);
 	vs++;
+	write_8bit(v, vs);
 	set_zero(vs, cpu);
 	set_negative(vs, cpu);
-	write_8bit(v, vs);
+	// printf("%d \n", vs);
 	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
 		|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
 		cpu.PC++;
@@ -674,6 +675,7 @@ void JMP(uint8_t current_instruction, CPUProcessor &cpu)
 	uint16_t new_PC = address_Mode(address_Mode_map[current_instruction],
 								   cpu.PC, cpu.X_Reg, cpu.Y_Reg);
 	cpu.PC = (new_PC);
+
 	// printf(" PC: %x \n", cpu.PC);
 }
 void BEQ(uint8_t current_instruction, CPUProcessor &cpu)
@@ -817,15 +819,12 @@ void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void RTS(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	for (int i = cpu.stack_pointer; i < 0xfd; i += 2)
-	{
-		printf("addr: %x value: %x \n", i, read_16bit(i));
-	}
+	
 	// cpu.stack_pointer += 2;
 	cpu.PC = read_16bit(cpu.stack_pointer);
-	printf("sp: %x \n", cpu.stack_pointer);
+	// printf("sp: %x \n", cpu.stack_pointer);
 
-	printf("pc: %x \n", read_16bit(cpu.stack_pointer));
+	// printf("pc: %x \n", read_16bit(cpu.stack_pointer));
 
 	cpu.stack_pointer += 2;
 
@@ -892,7 +891,7 @@ void CPX(uint8_t current_instruction, CPUProcessor &cpu)
 	uint8_t carry = 0;
 
 	uint8_t v = sub(cpu.X_Reg, value, cpu, carry);
-	printf("value: %d result %d \n", value, v);
+	// printf("value: %d result %d \n", value, v);
 
 	// printf("carry: %d \n", carry);
 	set_carry(carry, cpu);

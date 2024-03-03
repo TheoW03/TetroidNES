@@ -4,6 +4,7 @@
 #include "../src/emulator/Memory.h"
 #include <pthread.h>
 #include <cstdlib>
+// #include <Windows.h>
 
 #include <SDL2/SDL_pixels.h>
 const int WIDTH = 800, HEIGHT = 600;
@@ -84,17 +85,21 @@ bool update_texture(uint8_t pixels[32 * 32 * 3])
     int frame_idx = 0;
     bool update = false;
 
-    for (int i = 0x0200; i < 0x600; i++)
+    for (int i = 0x0200; i < 0x0600; i++)
     {
         SDL_Color c = getColorFromByte(read_8bit(i));
-        // if (pixels[frame_idx] != static_cast<int>(c.r)         // m
-        //     || pixels[frame_idx + 1] != static_cast<int>(c.g)  // s
-        //     || pixels[frame_idx + 2] != static_cast<int>(c.b)) // s
-        // {
-        pixels[frame_idx] = static_cast<uint8_t>(c.r);
-        pixels[frame_idx + 1] = static_cast<uint8_t>(c.g);
-        pixels[frame_idx + 2] = static_cast<uint8_t>(c.b);
-        update = true;
+        // if (pixels[frame_idx] != static_cast<uint8_t>(c.r))
+        //     cout << "doesnt equal" << endl;
+
+        if (pixels[frame_idx] != static_cast<uint8_t>(c.r)         // m
+            || pixels[frame_idx + 1] != static_cast<uint8_t>(c.g)  // s
+            || pixels[frame_idx + 2] != static_cast<uint8_t>(c.b)) // s
+        {
+            pixels[frame_idx] = static_cast<uint8_t>(c.r);
+            pixels[frame_idx + 1] = static_cast<uint8_t>(c.g);
+            pixels[frame_idx + 2] = static_cast<uint8_t>(c.b);
+            update = true;
+        }
         frame_idx += 3;
     }
     return update;
@@ -130,14 +135,21 @@ int setup(char *title, int width, int height)
                 return EXIT_SUCCESS;
             }
         }
-        handle_keybinds(e, window);
         write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
+        handle_keybinds(e, window);
+        if (update_texture(pixels))
+        {
+            SDL_UpdateTexture(texture, nullptr, pixels, 32 * 3);
 
-        update_texture(pixels);
-        SDL_UpdateTexture(texture, nullptr, pixels, 32 * 3);
+            SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+            // SDL_RenderClear(renderer);
+            SDL_RenderPresent(renderer);
+        }
 
-        SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-        SDL_RenderPresent(renderer);
-        SDL_RenderClear(renderer);
+        // _sleep(0);
+        // usleep(10);
+        // Sleep(10);
+        // SDL_Delay(10);
+        // SDLK_SLEEP()
     }
 }
