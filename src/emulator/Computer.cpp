@@ -327,6 +327,6 @@ void run()
 			cout << "status: 0b" << y << endl;
 			exit(EXIT_FAILURE);
 		}
-		// _sleep(0);
+		_sleep(0);
 	}
 }
