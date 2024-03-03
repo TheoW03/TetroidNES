@@ -7,6 +7,8 @@
 #include <cstdio>
 #include <bitset>
 #include <pthread.h>
+#include<unistd.h> 
+
 using namespace std;
 
 uint8_t current_instruction = 0;

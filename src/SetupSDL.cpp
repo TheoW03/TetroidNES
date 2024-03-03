@@ -4,6 +4,7 @@
 #include "../src/emulator/Memory.h"
 #include <pthread.h>
 #include <cstdlib>
+#include <unistd.h>
 // #include <Windows.h>
 
 #include <SDL2/SDL_pixels.h>
@@ -145,8 +146,9 @@ int setup(char *title, int width, int height)
             // SDL_RenderClear(renderer);
             SDL_RenderPresent(renderer);
         }
+        // sleep(1);
 
-        // _sleep(0);
+        // sleep(600);
         // usleep(10);
         // Sleep(10);
         // SDL_Delay(10);
