@@ -4,6 +4,8 @@
 #include "../src/emulator/Memory.h"
 #include <pthread.h>
 #include <cstdlib>
+#include <thread>
+#include <chrono>
 #include <unistd.h>
 // #include <Windows.h>
 
@@ -146,12 +148,14 @@ int setup(char *title, int width, int height)
             // SDL_RenderClear(renderer);
             SDL_RenderPresent(renderer);
         }
+        // this_thread::sleep_for(std::chrono::milliseconds(1));
+
         // sleep(1);
 
         // sleep(600);
         // usleep(10);
-        // Sleep(10);
-        // SDL_Delay(10);
+        // Sleep(1000);
+        // SDL_Delay(1);
         // SDLK_SLEEP()
     }
 }

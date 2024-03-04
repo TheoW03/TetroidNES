@@ -16,7 +16,7 @@ uint16_t Zero_page_AddressMode_X(uint16_t PC, uint8_t X_REG)
 uint16_t Zero_page_AddressMode_Y(uint16_t PC, uint8_t Y_REG)
 {
 
-    return (uint16_t)((uint8_t)(read_8bit(PC) + Y_REG));
+    return ((read_8bit(PC) + Y_REG));
 }
 
 uint16_t Absolute(uint16_t PC)

@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <bitset>
 #include <pthread.h>
-#include<unistd.h> 
+#include <unistd.h>
 
 using namespace std;
 
@@ -44,7 +44,7 @@ void run()
 		// printf("sp: 0x%X \n", cpu_Processor.stack_pointer);
 		// printf("$78: %X \n", read_8bit(0x78));
 		// printf("$79: %X \n", read_8bit(0x79));
-		// printf("$7a: %X \n", read_8bit(0x7a));
+		printf("$7a: %X \n", read_8bit(0x7a));
 		// printf("$7b: %X \n", read_8bit(0x3f0));
 
 		// bitset<7> z(cpu_Processor.status);
@@ -297,6 +297,7 @@ void run()
 		}
 		else if (current_instruction == 0xEA)
 		{
+			// NOP
 		}
 		else if (current_instruction == 0x00)
 		{
@@ -329,6 +330,5 @@ void run()
 			cout << "status: 0b" << y << endl;
 			exit(EXIT_FAILURE);
 		}
-		_sleep(0);
 	}
 }
