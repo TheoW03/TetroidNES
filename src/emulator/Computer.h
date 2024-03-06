@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include "Bus.h"
 using namespace std;
 #ifndef CPU_PROCESSOR
 #define CPU_PROCESSOR
@@ -11,6 +11,7 @@ struct CPUProcessor
     uint16_t stack_pointer;
     uint16_t PC;
     uint8_t status;
+    Bus bus;
 };
 #endif
 void run();

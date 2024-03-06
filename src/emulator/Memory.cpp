@@ -11,9 +11,20 @@ using namespace std;
 
 static volatile uint8_t memory[0xFFFF];
 static uint8_t v_memory[0x800];
+static uint16_t reset_vector;
 
-static vector<uint8_t> PRGrom;
-static vector<uint8_t> CHRrom;
+// struct Bus
+// {
+// 	uint8_t v_memory[0x800];
+// 	virtual uint8_t read_8bit(uint16_t address);
+// 	virtual void write_8bit(uint16_t address, uint8_t value);
+// 	virtual uint16_t read_16bit(uint16_t address, uint8_t value);
+// 	virtual void write_16bit(uint16_t address, uint16_t value);
+// };
+// void Bus::read_16bit(uint16_t)
+// {
+// 	cout << "hello world" << endl;
+// }
 uint8_t read_8bit(uint16_t address)
 {
 	return memory[address];
@@ -100,14 +111,14 @@ void NES_mmap_write16(uint16_t address, uint16_t value)
 		// return 0;
 	}
 }
-void load_rom(Rom rom)
-{
-	for (int i = rom.PRG_ROM_START; i < rom.PRG_ROM_SIZE; i++)
-	{
-		PRGrom.push_back(rom.instructions[i]);
-	}
-	for (int i = rom.CHR_ROM_START; i < rom.CHR_ROM_SIZE; i++)
-	{
-		CHRrom.push_back(rom.instructions[i]);
-	}
-}
+// void load_rom(Rom rom)
+// {
+// 	for (int i = rom.PRG_ROM_START; i < rom.PRG_ROM_SIZE; i++)
+// 	{
+// 		PRGrom.push_back(rom.instructions[i]);
+// 	}
+// 	for (int i = rom.CHR_ROM_START; i < rom.CHR_ROM_SIZE; i++)
+// 	{
+// 		CHRrom.push_back(rom.instructions[i]);
+// 	}
+// }

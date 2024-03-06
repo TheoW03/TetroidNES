@@ -1,10 +1,14 @@
-#include<iostream>
+#include <iostream>
 #include <vector>
 using namespace std;
 
-
-
-
+// #ifndef BUS_H
+// #define BUS_H
+// struct Bus
+// {
+//     virtual void helloWorld();
+// };
+// #endif
 
 uint8_t read_8bit(uint16_t address);
 

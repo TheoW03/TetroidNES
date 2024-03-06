@@ -111,11 +111,13 @@ int main(int argc, char *argv[])
 	// write_16bit(0xFFFC, 0x600);
 	// run();
 	// printf("%x \n", read_8bit(0x80));
-	pthread_t myThread;
+	// Bus b;
+	// b.helloWorld();
+	// pthread_t myThread;
 
-	pthread_create(&myThread, NULL, snake, NULL);
-	pthread_detach(myThread);
-	setup("test", 600, 600);
+	// pthread_create(&myThread, NULL, snake, NULL);
+	// pthread_detach(myThread);
+	// setup("test", 600, 600);
 
 	return 1;
 }

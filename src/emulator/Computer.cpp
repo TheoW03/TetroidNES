@@ -7,13 +7,41 @@
 #include <cstdio>
 #include <bitset>
 #include <pthread.h>
+#include "Bus.h"
+#include "LoadRom.h"
 #include <unistd.h>
 
 using namespace std;
 
 uint8_t current_instruction = 0;
 uint8_t param = 0;
+// struct CPUProcessor
+// {
+// 	uint8_t X_Reg;
+// 	uint8_t Y_Reg;
+// 	uint8_t A_Reg;
+// 	uint16_t stack_pointer;
+// 	uint16_t PC;
+// 	uint8_t status;
+// 	Bus bus;
+// };
+void Init(string file_name)
+{
 
+	CPUProcessor cpu_Processor;
+	cpu_Processor.PC = read_16bit(0xFFFC);
+	cpu_Processor.PC = 0x8000;
+	cpu_Processor.A_Reg = 0;
+	cpu_Processor.status = 0;
+	cpu_Processor.X_Reg = 0;
+	cpu_Processor.Y_Reg = 0;
+	cpu_Processor.stack_pointer = 0xfd;
+	// vector<uint8_t> a;
+	Rom rom;
+	vector<uint8_t> v = load_rom(file_name);
+	Bus bus(modify_for_NESfile(v));
+	cpu_Processor.bus = bus;
+}
 void run()
 {
 	CPUProcessor cpu_Processor;

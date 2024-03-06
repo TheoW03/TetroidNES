@@ -8,11 +8,9 @@ using namespace std;
 
 struct Rom
 {
-    vector<uint8_t> instructions;
-    uint16_t PRG_ROM_SIZE;
-    uint16_t PRG_ROM_START;
-    uint16_t CHR_ROM_SIZE;
-    uint16_t CHR_ROM_START;
+    vector<uint8_t> PRG;
+    vector<uint8_t> CHR;
+    uint8_t mapper;
 };
 vector<uint8_t> load_rom(string file_name)
 {
@@ -50,7 +48,7 @@ Rom modify_for_NESfile(vector<uint8_t> &instructions)
     // instructions.pop_back();
     // for (size_t i = 0; i < 7; i++)
     // instructions.pop_back();
-    write_16bit(0xFFFC, 0x8600);
-    rom.instructions = instructions;
+    // write_16bit(0xFFFC, 0x8600);
+    // rom.instructions = instructions;
     return rom;
 }
