@@ -1,5 +1,7 @@
 # NES emulator
 
+⚠ THIS PROJECT DOES NOT SUPPORT PIRACY. AND IS NOT MEANT FOR A TOOL OF PIRACY ⚠ 
+
 ## cpu stats
 
 cpu architecture type: 6502
