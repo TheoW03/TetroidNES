@@ -72,7 +72,7 @@ void run()
 		// printf("sp: 0x%X \n", cpu_Processor.stack_pointer);
 		// printf("$78: %X \n", read_8bit(0x78));
 		// printf("$79: %X \n", read_8bit(0x79));
-		printf("$7a: %X \n", read_8bit(0x7a));
+		// printf("$7a: %X \n", read_8bit(0x7a));
 		// printf("$7b: %X \n", read_8bit(0x3f0));
 
 		// bitset<7> z(cpu_Processor.status);

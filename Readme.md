@@ -2,7 +2,10 @@
 
 ⚠ THIS PROJECT DOES NOT SUPPORT PIRACY. AND IS NOT INTENDED FOR A TOOL OF PIRACY ⚠ 
 
-## cpu stats
+
+
+
+## cpu stats -->
 
 cpu architecture type: 6502
 

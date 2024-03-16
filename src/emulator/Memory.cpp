@@ -54,8 +54,8 @@ void load_instructions(vector<uint8_t> instructions)
 	cout << "===============" << endl;
 	for (size_t i = 0; i < instructions.size(); i++)
 	{
-		printf("PC: %x  instruction: %x \n", (uint16_t)(i + 0x600), instructions[i]);
-		write_8bit((i + 0x600), instructions[i]);
+		// printf("PC: %x  instruction: %x \n", (uint16_t)(i + 0x8000), instructions[i]);
+		write_8bit((i + 0x8000), instructions[i]);
 	}
 	cout << "===============" << endl;
 }

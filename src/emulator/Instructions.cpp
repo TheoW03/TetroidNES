@@ -819,7 +819,7 @@ void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void RTS(uint8_t current_instruction, CPUProcessor &cpu)
 {
-	
+
 	// cpu.stack_pointer += 2;
 	cpu.PC = read_16bit(cpu.stack_pointer);
 	// printf("sp: %x \n", cpu.stack_pointer);

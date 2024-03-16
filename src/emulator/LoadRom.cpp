@@ -6,11 +6,20 @@
 #include <cstdio>
 using namespace std;
 
+#define PRG_ROM_SIZE 16384
+#define CHR_ROM_SIZE 8192
+enum MirrorType
+{
+    VERTICAL,
+    HORIZONTAL,
+    FOUR_SCREEN,
+};
 struct Rom
 {
     vector<uint8_t> PRG;
     vector<uint8_t> CHR;
     uint8_t mapper;
+    MirrorType mirror;
 };
 vector<uint8_t> load_rom(string file_name)
 {
@@ -51,13 +60,13 @@ vector<uint8_t> load_rom(string file_name)
     write_16bit(0xFFFC, 0x8000);
     return instructions;
 }
+
 Rom modify_for_NESfile(vector<uint8_t> instructions)
 {
     Rom rom;
-    uint16_t map_info;
-
     write_16bit(0xFFFC, 0x8600);
     uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);
+    rom.mapper = map;
     if (instructions[0] != 'N' && instructions[1] != 'E' && instructions[2] != 'S' && instructions[3] != 0x1a)
     {
         cout << "not NES Rom" << endl;
@@ -69,19 +78,23 @@ Rom modify_for_NESfile(vector<uint8_t> instructions)
         exit(EXIT_FAILURE);
     }
 
-    uint8_t prg_rom = instructions[4];
-    // instructions.pop_back();
-    uint8_t chr_rom = instructions[5];
-    // instructions.pop_back();
+    uint16_t prg_rom = instructions[4] * PRG_ROM_SIZE;
+    uint16_t chr_rom = instructions[5] * CHR_ROM_SIZE;
     uint8_t control_byte1 = instructions[6];
-    // instructions.pop_back();
-    uint8_t control_byte2 = instructions[7];
-    // instructions.pop_back();
-    uint8_t size_ofprgRam = instructions[8];
-    // instructions.pop_back();
-    // for (size_t i = 0; i < 7; i++)
-    // instructions.pop_back();
-    // write_16bit(0xFFFC, 0x8600);
-    // rom.instructions = instructions;
+    bool four_screen = (control_byte1 & 0b1000) != 0;
+    bool vertical_mirroring = (control_byte1 & 0b1) != 0;
+    rom.mirror = (four_screen)                          ? MirrorType::FOUR_SCREEN
+                 : (!four_screen && vertical_mirroring) ? MirrorType::VERTICAL
+                                                        : MirrorType::HORIZONTAL;
+    uint16_t prg_start = 16 + (512 * (((instructions[6] & 0b100)) != 0));
+    for (size_t i = prg_start; i < prg_rom; i++)
+    {
+        rom.PRG.push_back(instructions[i]);
+    }
+    for (size_t i = prg_start + prg_rom; i < chr_rom; i++)
+    {
+        rom.CHR.push_back(instructions[i]);
+    }
+
     return rom;
 }

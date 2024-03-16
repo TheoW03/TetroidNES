@@ -107,8 +107,10 @@ private:
 };
 int main(int argc, char *argv[])
 {
-	modify_for_NESfile(load_rom(argv[1]));
-
+	Rom rom = modify_for_NESfile(load_rom(argv[1]));
+	load_instructions(rom.PRG);
+	write_16bit(0xFFFC, 0x8000);
+	run();
 	// int some_int;
 	// auto x = NAME_OF(some_int);
 	// Object obj(42);
@@ -118,7 +120,7 @@ int main(int argc, char *argv[])
 	// vector<uint8_t> instructions = {0xE6, 0x80};
 	// printf()
 	// load_instructions(instructions);
-	// write_16bit(0xFFFC, 0x600);
+	//
 	// run();
 	// printf("memory: %x \n", read_8bit(0x0));
 
