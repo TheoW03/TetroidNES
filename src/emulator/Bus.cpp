@@ -16,24 +16,41 @@ Bus::Bus(Rom rom)
 }
 uint8_t Bus::read_8bit(uint16_t address)
 {
-    return memory[address];
+    if (address < 0x0FFF)
+    {
+        uint16_t mirroraddr = address & 0x7ff;
+        return v_memory[mirroraddr];
+    }
 }
 
 void Bus::write_8bit(uint16_t address, uint8_t value)
 {
-    memory[address] = value;
+    if (address < 0x0FFF)
+    {
+        uint16_t mirroraddr = address & 0x7ff;
+        v_memory[mirroraddr] = value;
+    }
+    // memory[address] = value;
 }
 
 uint16_t Bus::read_16bit(uint16_t address)
 {
-    uint16_t value = (uint16_t)(memory[address + 1] << 8) | memory[address];
-    return value;
+    if (address < 0x0FFF)
+    {
+        uint16_t mirroraddr = address & 0x7ff;
+        uint16_t value = (uint16_t)(v_memory[mirroraddr + 1] << 8) | v_memory[mirroraddr];
+        return value;
+    }
 }
 
 void Bus::write_16bit(uint16_t address, uint16_t value)
 {
-    uint8_t msb = (uint8_t)(value >> 8);
-    uint8_t lsb = (uint8_t)(value & 0xFF);
-    memory[address] = lsb;
-    memory[address + 1] = msb;
+    if (address < 0x0FFF)
+    {
+        uint16_t mirroraddr = address & 0x7ff;
+        uint8_t msb = (uint8_t)(value >> 8);
+        uint8_t lsb = (uint8_t)(value & 0xFF);
+        v_memory[mirroraddr] = lsb;
+        v_memory[mirroraddr + 1] = msb;
+    }
 }

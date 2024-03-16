@@ -88,7 +88,7 @@ uint16_t NES_mmap_read16(uint16_t address)
 {
 	if (address < RAM_MIRRORS_END)
 	{
-		uint16_t mirroraddr = address & (1 << 11);
+		uint16_t mirroraddr = address & 0x800;
 		return (uint16_t)(v_memory[mirroraddr + 1] << 8) | v_memory[mirroraddr];
 	}
 	else if (address >= PPU_REGISTERS && address <= PPU_REGISTERS_END)

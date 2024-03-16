@@ -13,4 +13,4 @@ struct Rom
 #endif
 
 vector<uint8_t> load_rom(string file_name);
-Rom modify_for_NESfile(vector<uint8_t> &instructions);
+Rom modify_for_NESfile(vector<uint8_t> instructions);

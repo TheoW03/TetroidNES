@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include <cassert>
 using namespace std;
+// #define NAME_OF(v) #v
 
 void *colored_pixels(void *arg)
 {
@@ -96,9 +97,23 @@ void *movement(void *arg)
 	write_16bit(0xFFFC, 0x600);
 	run();
 }
+class Object
+{
+public:
+	Object(int value) : value(value) {}
 
+private:
+	int value;
+};
 int main(int argc, char *argv[])
 {
+	modify_for_NESfile(load_rom("games/DemoNES.nes"));
+
+	// int some_int;
+	// auto x = NAME_OF(some_int);
+	// Object obj(42);
+	// (void)some_int;
+	// cout << x << endl;
 	// snake();
 	// vector<uint8_t> instructions = {0xE6, 0x80};
 	// printf()

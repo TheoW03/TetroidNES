@@ -8,7 +8,7 @@ using namespace std;
 class Bus
 {
 private:
-    uint8_t memory[0x800];
+    uint8_t v_memory[0x800];
     uint16_t reset_vector;
     Rom rom;
     PPU ppu;
