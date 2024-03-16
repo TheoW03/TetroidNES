@@ -107,7 +107,7 @@ private:
 };
 int main(int argc, char *argv[])
 {
-	modify_for_NESfile(load_rom("games/DemoNES.nes"));
+	modify_for_NESfile(load_rom(argv[1]));
 
 	// int some_int;
 	// auto x = NAME_OF(some_int);

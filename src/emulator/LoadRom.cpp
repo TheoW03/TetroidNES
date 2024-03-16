@@ -37,7 +37,6 @@ vector<uint8_t> load_rom(string file_name)
         //     printf("%x \n",line[i]);
         // }
     }
-    cout << instructions.size() << endl;
     // for (int i = 0; i < instructions.size(); i++)
     //     // printf("%x \n", instructions[i]);
     // while (getline(infile, line, 'n'))
