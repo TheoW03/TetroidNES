@@ -111,6 +111,9 @@ int main(int argc, char *argv[])
 	load_instructions(rom.PRG);
 	write_16bit(0xFFFC, 0x8000);
 	run();
+	// unsigned char char char a = 16777215;
+	// uint32_t value : 24;
+	// value = 16777217;
 	// int some_int;
 	// auto x = NAME_OF(some_int);
 	// Object obj(42);

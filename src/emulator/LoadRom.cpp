@@ -95,6 +95,7 @@ Rom modify_for_NESfile(vector<uint8_t> instructions)
     {
         rom.CHR.push_back(instructions[i]);
     }
+    uint8_t a = 0;
 
     return rom;
 }
