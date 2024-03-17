@@ -122,7 +122,7 @@ int setup(char *title, int width, int height)
     SDL_Event windowEvent;
     SDL_Event e;
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 32, 32);
-    uint8_t pixels[32 * 32 * 3];
+    uint8_t pixels[32 * 32 * 3]; // meow
 
     while (1)
     {
