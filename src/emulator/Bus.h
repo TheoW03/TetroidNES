@@ -14,7 +14,6 @@ private:
     Rom rom;
     PPU ppu;
     APU apu;
-    // ppu
 public:
     Bus();
     Bus(Rom rom);
