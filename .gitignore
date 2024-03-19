@@ -5,6 +5,7 @@
 *.exe
 *.dll
 /games/
+output
 
 /Release/
 build
