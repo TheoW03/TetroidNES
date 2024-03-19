@@ -6,10 +6,11 @@
 #include "StatusRegister.h"
 #include <cstdio>
 #include <bitset>
-#include <pthread.h>
+// #include <pthread.h>
 #include "Bus.h"
+#include <thread>
 #include "LoadRom.h"
-#include <unistd.h>
+// #include <unistd.h>
 
 using namespace std;
 
@@ -358,5 +359,6 @@ void run()
 			cout << "status: 0b" << y << endl;
 			exit(EXIT_FAILURE);
 		}
+		// this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }

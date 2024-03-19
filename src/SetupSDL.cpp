@@ -41,8 +41,6 @@ void handle_keybinds(SDL_Event e, SDL_Window *window)
                 exit(EXIT_SUCCESS);
             }
         }
-
-        // _sleep(1);
     }
 }
 SDL_Color getColorFromByte(uint8_t byte)
