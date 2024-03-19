@@ -31,32 +31,12 @@ vector<uint8_t> load_rom(string file_name)
     {
         cerr << "Error opening file." << endl;
         exit(EXIT_FAILURE);
-        // return 1;
     }
     while (infile)
     {
-        char a = (uint8_t)infile.get();
-        // char32_t b;
-        // printf("%x \n", (uint8_t)a);
+        uint8_t a = (uint8_t)infile.get();
         instructions.push_back(a);
-
-        // for (size_t i = 0; i < line.size(); i++)
-        // {
-        //     instructions.push_back((uint8_t)line[i]);
-        //     printf("%x \n",line[i]);
-        // }
     }
-    // for (int i = 0; i < instructions.size(); i++)
-    //     // printf("%x \n", instructions[i]);
-    // while (getline(infile, line, 'n'))
-    // {
-
-    // for (size_t i = 0; i < line.size(); i++)
-    // {
-    //     instructions.push_back((uint8_t)line[i]);
-    //     printf("%x \n",line[i]);
-    // }
-    // }
     write_16bit(0xFFFC, 0x8000);
     return instructions;
 }
@@ -64,7 +44,6 @@ vector<uint8_t> load_rom(string file_name)
 Rom modify_for_NESfile(vector<uint8_t> instructions)
 {
     Rom rom;
-    write_16bit(0xFFFC, 0x8600);
     uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);
     rom.mapper = map;
     if (instructions[0] != 'N' && instructions[1] != 'E' && instructions[2] != 'S' && instructions[3] != 0x1a)
@@ -74,7 +53,7 @@ Rom modify_for_NESfile(vector<uint8_t> instructions)
     }
     if ((instructions[7] & 0b1101) == 0xc)
     {
-        cout << "not NES 1.0 format" << endl;
+        cout << "NES 1.0 format" << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -95,7 +74,5 @@ Rom modify_for_NESfile(vector<uint8_t> instructions)
     {
         rom.CHR.push_back(instructions[i]);
     }
-    uint8_t a = 0;
-
     return rom;
 }

@@ -5,3 +5,10 @@
 *.exe
 *.dll
 /games/
+
+build
+out
+.cache
+.idea
+.vs
+.vscode
