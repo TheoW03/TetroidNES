@@ -136,10 +136,10 @@ void threadFunction(int id)
 int main(int argc, char *argv[])
 {
 
-	// Rom rom = modify_for_NESfile(load_rom(argv[1]));
-	// load_instructions(rom.PRG);
-	// write_16bit(0xFFFC, 0x8000);
-	// run();
+	Rom rom = modify_for_NESfile(load_rom(argv[1]));
+	load_instructions(rom.PRG);
+	write_16bit(0xFFFC, 0x8000);
+	run();
 	// runsfml();
 	// unsigned char char char a = 16777215;
 	// uint32_t value : 24;
@@ -164,9 +164,9 @@ int main(int argc, char *argv[])
 	// Bus b;
 	// b.helloWorld();
 	// pthread_t myThread;
-	thread t1(threadFunction, 1);
-	t1.detach();
-	runsfml();
+	// thread t1(threadFunction, 1);
+	// t1.detach();
+	// runsfml();
 
 	return 1;
 }
