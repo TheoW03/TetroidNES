@@ -1,5 +1,7 @@
 #include "Bus.h"
 #include "PPU.h"
+#include "APU.h"
+
 using namespace std;
 
 // const static uint8_t ram_end = 0x0FFF;
@@ -13,6 +15,8 @@ Bus::Bus(Rom rom)
     this->rom = rom;
     PPU ppu(rom.CHR);
     this->ppu = ppu;
+    APU apu();
+    // this->apu = apu;
 }
 uint8_t Bus::read_8bit(uint16_t address)
 {
@@ -23,6 +27,7 @@ uint8_t Bus::read_8bit(uint16_t address)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
+        uint16_t mirroraddr = address & 0x2007;
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
@@ -40,6 +45,7 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
+        uint16_t mirroraddr = address & 0x2007;
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
@@ -61,6 +67,7 @@ uint16_t Bus::read_16bit(uint16_t address)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
+        uint16_t mirroraddr = address & 0x2007;
     }
     else if (address == 0xFFFC)
     {
@@ -86,6 +93,7 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
+        uint16_t mirroraddr = address & 0x2007;
     }
     else if (address == 0xFFFC)
     {

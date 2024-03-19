@@ -1,6 +1,7 @@
 #include <iostream>
 #include "PPU.h"
 #include "LoadRom.h"
+#include "APU.h"
 using namespace std;
 
 #ifndef BUS_H
@@ -12,6 +13,7 @@ private:
     uint16_t reset_vector;
     Rom rom;
     PPU ppu;
+    APU apu;
     // ppu
 public:
     Bus();
