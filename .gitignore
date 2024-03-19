@@ -6,6 +6,7 @@
 *.dll
 /games/
 
+/Release/
 build
 out
 .cache

@@ -6,10 +6,10 @@
 #include "StatusRegister.h"
 #include <cstdio>
 #include <bitset>
-#include <pthread.h>
+// #include <pthread.h>
 #include "Bus.h"
 #include "LoadRom.h"
-#include <unistd.h>
+// #include <unistd.h>
 
 using namespace std;
 
