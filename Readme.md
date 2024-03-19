@@ -3,32 +3,29 @@
 ⚠ THIS PROJECT DOES NOT SUPPORT PIRACY. AND IS NOT INTENDED FOR A TOOL OF PIRACY ⚠ 
 
 
-
-
-## cpu stats -->
-
-cpu architecture type: 6502
+## cpu stats
 
 RAM: 2 KB
 
 only supports ROM file type iNES v1.0 
-
+capable of executing all 6502 instructions
+from NES Rom file 
 
 ## Build instructions
 
+This project is built with CMake v3.16 
 
-1. install SDL2  for C++
-
-
-2. run make in your terminal
+in terminal
 
 ```
-make 
+cmake -S . -B build
+cmake --build build --config Release 
 ```
 
+the file location of the exe is in Relase/output.exe
 
-3. then run output
-
-./output.exe {YOUR NES FILE}
-
-
+to run 
+```
+./output.exe ${path to .nes rom file}
+```
+(can only handle NES v1.0 ROM files)
