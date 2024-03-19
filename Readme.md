@@ -17,3 +17,4 @@ from NES Rom file
 cmake -S . -B build
 cmake --build build --config Release 
 ./Release/output.exe ${path to .nes rom file}
+```
