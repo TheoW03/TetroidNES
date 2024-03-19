@@ -13,6 +13,8 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 add_executable(${EXECUTABLE_NAME} src/main.cpp
+    src/SetupSFML.cpp
+    
     src/emulator/AddressMode.cpp
     src/emulator/BitOperations.cpp
     src/emulator/Bus.cpp

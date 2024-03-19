@@ -41,8 +41,6 @@ void handle_keybinds(SDL_Event e, SDL_Window *window)
                 exit(EXIT_SUCCESS);
             }
         }
-
-        // _sleep(1);
     }
 }
 SDL_Color getColorFromByte(uint8_t byte)
@@ -122,7 +120,7 @@ int setup(char *title, int width, int height)
     SDL_Event windowEvent;
     SDL_Event e;
     SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, 32, 32);
-    uint8_t pixels[32 * 32 * 3]; // meow
+    uint8_t pixels[32 * 32 * 3];
 
     while (1)
     {
