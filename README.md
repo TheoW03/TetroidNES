@@ -1,17 +1,26 @@
-# NES emulator
+# NES Emulator
 
-⚠ THIS PROJECT DOES NOT SUPPORT PIRACY. AND IS NOT INTENDED FOR A TOOL OF PIRACY ⚠ 
+⚠ THIS PROJECT DOES NOT SUPPORT PIRACY. USE OF THIS EMULATOR OR ITS SOURCE CODE TO ENGAGE IN OR PROMOTE PIRACY IS NOT CONDONED BY ITS AUTHOR. ⚠ 
 
+## CPU Stats for the MOS 6502
 
-## cpu stats
+Chip created by: MOS Technology
 
-RAM: 2 KB
+Clock speed: 1-3 MHz
+RAM: 2 kB
+Address size: 16 bits
+Word size: 8 bits
 
-only supports ROM file type iNES v1.0 
-capable of executing all 6502 instructions
-from NES Rom file 
+Only supports iNES v1.0 ROM files.
+Capable of parsing and executing all 6502 instructions from NES ROM files. 
 
-## Build instructions
+## PPU Stats 
+
+(V)RAM: 2 kB
+
+## Build Instructions
+
+In the root directory...
 
 ```
 cmake -S . -B build
