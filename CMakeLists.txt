@@ -28,12 +28,13 @@ add_executable(${EXECUTABLE_NAME} src/main.cpp
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE sfml-graphics)
 target_compile_features(${EXECUTABLE_NAME} PRIVATE cxx_std_17)
 
-if(WIN32)
-    add_custom_command(
-        TARGET ${EXECUTABLE_NAME}
-        COMMENT "Copy OpenAL DLL"
-        PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
-        VERBATIM)
-endif()
+# if(WIN32)
+#     add_custom_command(
+#         TARGET ${EXECUTABLE_NAME}
+#         COMMENT "Copy OpenAL DLL"
+#         PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
+#         VERBATIM)
+# endif() 
+# uncomment if you are running this in Visual Studio or if you get an error on windows with the current setup
 
 install(TARGETS ${EXECUTABLE_NAME})
