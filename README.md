@@ -25,3 +25,7 @@ cmake -S . -B build # build Cmake
 cmake --build build --config Release # build project
 ./Release/output.exe ${path to .nes rom file} # run project
 ```
+
+## Resources
+
+<a href=https://www.nesdev.org/wiki/Nesdev_Wiki>NES dev wiki </a>
