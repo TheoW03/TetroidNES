@@ -14,6 +14,8 @@
 
 using namespace std;
 
+Bus computerBus = Bus();
+
 uint8_t current_instruction = 0;
 uint8_t param = 0;
 // struct CPUProcessor
@@ -28,9 +30,9 @@ uint8_t param = 0;
 // };
 void Init(string file_name)
 {
-
+	computerBus.write_16bit(0xFFC, 0x8000);
 	CPUProcessor cpu_Processor;
-	cpu_Processor.PC = read_16bit(0xFFFC);
+	cpu_Processor.PC = computerBus.read_16bit(0xFFFC);
 	cpu_Processor.PC = 0x8000;
 	cpu_Processor.A_Reg = 0;
 	cpu_Processor.status = 0;
@@ -59,7 +61,7 @@ void run()
 		{
 			continue;
 		}
-		current_instruction = read_8bit(cpu_Processor.PC);
+		current_instruction = computerBus.read_8bit(cpu_Processor.PC);
 		cpu_Processor.PC++;
 		if (current_instruction == 0xEA)
 			continue;
@@ -333,10 +335,10 @@ void run()
 			if (check_Interrupt_disabled(cpu_Processor) != 0)
 				continue;
 			set_brk(cpu_Processor, 1);
-			write_8bit(cpu_Processor.stack_pointer, cpu_Processor.status);
+			computerBus.write_8bit(cpu_Processor.stack_pointer, cpu_Processor.status);
 			cpu_Processor.PC++;
 			cpu_Processor.stack_pointer -= 2;
-			write_16bit(cpu_Processor.stack_pointer, cpu_Processor.PC);
+			computerBus.write_16bit(cpu_Processor.stack_pointer, cpu_Processor.PC);
 			printf("A_Reg: %d \n", cpu_Processor.A_Reg);
 			printf("X_Reg: %d \n", cpu_Processor.X_Reg);
 			printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);
