@@ -44,13 +44,6 @@ void Init(string file_name)
 }
 void run(CPUProcessor cpu_Processor)
 {
-	// CPUProcessor cpu_Processor;
-	// cpu_Processor.PC = read_16bit(0xFFFC);
-	// cpu_Processor.A_Reg = 0;
-	// cpu_Processor.status = 0;
-	// cpu_Processor.X_Reg = 0;
-	// cpu_Processor.Y_Reg = 0;
-	// cpu_Processor.stack_pointer = 0xfd;
 	while (cpu_Processor.PC < 0xFFFF)
 	{
 		// cout << "a" << endl;
