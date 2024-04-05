@@ -31,7 +31,7 @@ void Init(string file_name)
 {
 	vector<uint8_t> v = load_rom(file_name);
 	Bus bus(modify_for_NESfile(v));
-	bus.write_16bit(0xFFC, 0x8000);
+	bus.write_16bit(0xFFFC, 0x8000);
 	CPUProcessor cpu_Processor;
 	cpu_Processor.PC = bus.read_16bit(0xFFFC);
 	cpu_Processor.A_Reg = 0;
