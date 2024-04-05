@@ -14,4 +14,5 @@ struct CPUProcessor
     Bus bus;
 };
 #endif
-void run();
+// void run();
+void Init(string file_name);

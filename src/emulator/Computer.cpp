@@ -26,32 +26,24 @@ uint8_t param = 0;
 // 	uint8_t status;
 // 	Bus bus;
 // };
+void run(CPUProcessor cpu_Processor);
 void Init(string file_name)
 {
-
-	CPUProcessor cpu_Processor;
-	cpu_Processor.PC = read_16bit(0xFFFC);
-	cpu_Processor.PC = 0x8000;
-	cpu_Processor.A_Reg = 0;
-	cpu_Processor.status = 0;
-	cpu_Processor.X_Reg = 0;
-	cpu_Processor.Y_Reg = 0;
-	cpu_Processor.stack_pointer = 0xfd;
-	// vector<uint8_t> a;
-	Rom rom;
 	vector<uint8_t> v = load_rom(file_name);
 	Bus bus(modify_for_NESfile(v));
-	cpu_Processor.bus = bus;
-}
-void run()
-{
+	bus.write_16bit(0xFFFC, 0x8000);
 	CPUProcessor cpu_Processor;
-	cpu_Processor.PC = read_16bit(0xFFFC);
+	cpu_Processor.PC = bus.read_16bit(0xFFFC);
 	cpu_Processor.A_Reg = 0;
 	cpu_Processor.status = 0;
 	cpu_Processor.X_Reg = 0;
 	cpu_Processor.Y_Reg = 0;
 	cpu_Processor.stack_pointer = 0xfd;
+	cpu_Processor.bus = bus;
+	run(cpu_Processor);
+}
+void run(CPUProcessor cpu_Processor)
+{
 	while (cpu_Processor.PC < 0xFFFF)
 	{
 		// cout << "a" << endl;
@@ -59,7 +51,7 @@ void run()
 		{
 			continue;
 		}
-		current_instruction = read_8bit(cpu_Processor.PC);
+		current_instruction = cpu_Processor.bus.read_8bit(cpu_Processor.PC);
 		cpu_Processor.PC++;
 		if (current_instruction == 0xEA)
 			continue;
@@ -333,10 +325,10 @@ void run()
 			if (check_Interrupt_disabled(cpu_Processor) != 0)
 				continue;
 			set_brk(cpu_Processor, 1);
-			write_8bit(cpu_Processor.stack_pointer, cpu_Processor.status);
+			cpu_Processor.bus.write_8bit(cpu_Processor.stack_pointer, cpu_Processor.status);
 			cpu_Processor.PC++;
 			cpu_Processor.stack_pointer -= 2;
-			write_16bit(cpu_Processor.stack_pointer, cpu_Processor.PC);
+			cpu_Processor.bus.write_16bit(cpu_Processor.stack_pointer, cpu_Processor.PC);
 			printf("A_Reg: %d \n", cpu_Processor.A_Reg);
 			printf("X_Reg: %d \n", cpu_Processor.X_Reg);
 			printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);

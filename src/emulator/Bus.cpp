@@ -15,8 +15,8 @@ Bus::Bus(Rom rom)
     this->rom = rom;
     PPU ppu(rom.CHR);
     this->ppu = ppu;
-    APU apu();
-    // this->apu = apu;
+    APU APU();
+    this->apu = apu;
 }
 uint8_t Bus::read_8bit(uint16_t address)
 {
