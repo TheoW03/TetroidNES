@@ -29,8 +29,15 @@ uint8_t param = 0;
 void run(CPUProcessor cpu_Processor);
 void Init(string file_name)
 {
-	vector<uint8_t> v = load_rom(file_name);
-	Bus bus(modify_for_NESfile(v));
+	vector<uint8_t> test = {0xa9, 0x0, 0xf0, 0x81, 0x00};
+	Rom rom;
+	rom.PRG = test;
+	rom.CHR = test;
+	rom.mapper = 0;
+	rom.mirror = MirrorType::FOUR_SCREEN;
+	// vector<uint8_t> v = load_rom(file_name);
+	Bus bus(rom);
+	// Bus bus(modify_for_NESfile(v));
 	bus.write_16bit(0xFFFC, 0x8000);
 	CPUProcessor cpu_Processor;
 	cpu_Processor.PC = bus.read_16bit(0xFFFC);
@@ -46,6 +53,8 @@ void run(CPUProcessor cpu_Processor)
 {
 	while (cpu_Processor.PC < 0xFFFF)
 	{
+		cpu_Processor.bus.print_clock();
+
 		// cout << "a" << endl;
 		if (check_brk(cpu_Processor) != 0)
 		{
@@ -57,7 +66,7 @@ void run(CPUProcessor cpu_Processor)
 			continue;
 		// _sleep(100000);
 		// cout << "========" << endl;
-		// printf("current instruction: %x \n", current_instruction);
+		printf("current instruction: %x \n", current_instruction);
 		// printf("A_Reg: %x \n", cpu_Processor.A_Reg);
 		// printf("X_Reg: %d \n", cpu_Processor.X_Reg);
 		// printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);

@@ -21,7 +21,7 @@ enum class AddressMode
 	INDIRECT_Y
 };
 
-uint16_t address_Mode(AddressMode address, CPUProcessor cpu)
+uint16_t address_Mode(AddressMode address, CPUProcessor &cpu)
 {
 	switch (address)
 	{
@@ -87,7 +87,7 @@ void LDA(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xA1] = AddressMode::INDIRECT_X;
 	address_Mode_map[0xB1] = AddressMode::INDIRECT_Y;
 	uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+												   cpu));
 	cpu.A_Reg = value;
 	cpu.PC++;
 	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
@@ -108,7 +108,7 @@ void LDX(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xAE] = AddressMode::ABSOLUTE;
 	address_Mode_map[0xBE] = AddressMode::ABSOLUTE_Y;
 	uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+												   cpu));
 	cpu.X_Reg = (value);
 	cpu.PC++;
 	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
@@ -128,7 +128,7 @@ void LDY(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xAC] = AddressMode::ABSOLUTE;
 	address_Mode_map[0xBC] = AddressMode::ABSOLUTE_X;
 	uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+												   cpu));
 	cpu.Y_Reg = (value);
 	cpu.PC++;
 	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
@@ -274,7 +274,7 @@ void ADC(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x71] = AddressMode::INDIRECT_Y;
 	uint8_t carry = 0;
 	uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+												   cpu));
 	// cout << "est" << endl;
 	if (check_decimal(cpu) != 0)
 		cpu.A_Reg = decimal_add(cpu.A_Reg, value, cpu, carry);
@@ -306,7 +306,7 @@ void SBC(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xF1] = AddressMode::INDIRECT_Y;
 	uint8_t carry = 0;
 	uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+												   cpu));
 	if (check_decimal(cpu) != 0)
 		cpu.A_Reg = decimal_sub(cpu.A_Reg, value, cpu, carry);
 	else
@@ -330,7 +330,7 @@ void BIT(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x24] = AddressMode::ZERO_PAGE; // meow :3
 	address_Mode_map[0x2C] = AddressMode::ABSOLUTE;	 // meow :3
 	uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+												   cpu));
 	uint8_t result = value & cpu.A_Reg;
 	set_zero(result, cpu);
 	set_overflow((value & 0b00100000) != 0, cpu);
@@ -356,7 +356,7 @@ void AND(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x31] = AddressMode::INDIRECT_Y; // meow :3
 
 	uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+												   cpu));
 	cpu.A_Reg = cpu.A_Reg & value;
 	set_negative(cpu.A_Reg, cpu);
 	set_zero(cpu.A_Reg, cpu);
@@ -385,7 +385,7 @@ void ORA(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x11] = AddressMode::INDIRECT_Y; // meow :3
 
 	uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+												   cpu));
 	cpu.A_Reg = cpu.A_Reg | value;
 	set_negative(cpu.A_Reg, cpu);
 	set_zero(cpu.A_Reg, cpu);
@@ -416,9 +416,12 @@ void ROR(uint8_t current_instruction, CPUProcessor &cpu)
 
 		address_Mode_map[0x6E] = AddressMode::ABSOLUTE;	  // meow :3
 		address_Mode_map[0x7E] = AddressMode::ABSOLUTE_X; // meow :3
-		uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-											   cpu));
-		cpu.A_Reg = rightRotate(cpu.A_Reg, value);
+
+		uint16_t address = address_Mode(address_Mode_map[current_instruction], cpu);
+		uint8_t value = cpu.bus.read_8bit(address);
+		value = rightRotate(value, 1);
+		cpu.bus.write_8bit(address, value);
+
 		if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
 			|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
 			cpu.PC++;
@@ -444,9 +447,10 @@ void ROL(uint8_t current_instruction, CPUProcessor &cpu)
 
 		address_Mode_map[0x2E] = AddressMode::ABSOLUTE;	  // meow :3
 		address_Mode_map[0x3E] = AddressMode::ABSOLUTE_X; // meow :3
-		uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-											   cpu));
-		cpu.A_Reg = leftRotate(cpu.A_Reg, value);
+		uint16_t address = address_Mode(address_Mode_map[current_instruction], cpu);
+		uint8_t value = cpu.bus.read_8bit(address);
+		value = leftRotate(value, 1);
+		cpu.bus.write_8bit(address, value);
 		if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
 			|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
 			cpu.PC++;
@@ -474,9 +478,12 @@ void ASL(uint8_t current_instruction, CPUProcessor &cpu)
 
 		address_Mode_map[0x0E] = AddressMode::ABSOLUTE;	  // meow :3
 		address_Mode_map[0x1E] = AddressMode::ABSOLUTE_X; // meow :3
-		uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-											   cpu));
-		cpu.A_Reg = cpu.A_Reg << value;
+		uint16_t address = address_Mode(address_Mode_map[current_instruction], cpu);
+		uint8_t value = cpu.bus.read_8bit(address);
+
+		// cpu.A_Reg = cpu.A_Reg << value;
+		value <<= 1;
+		cpu.bus.write_8bit(address, value);
 		if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
 			|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
 			cpu.PC++;
@@ -501,9 +508,10 @@ void LSR(uint8_t current_instruction, CPUProcessor &cpu)
 
 		address_Mode_map[0x4E] = AddressMode::ABSOLUTE;	  // meow :3
 		address_Mode_map[0x5E] = AddressMode::ABSOLUTE_X; // meow :3
-		uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-											   cpu));
-		cpu.A_Reg = cpu.A_Reg >> value;
+		uint16_t address = address_Mode(address_Mode_map[current_instruction], cpu);
+		uint8_t value = cpu.bus.read_8bit(address);
+		value >>= 1;
+		cpu.bus.write_8bit(address, value);
 		if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
 			|| address_Mode_map[current_instruction] == AddressMode::ABSOLUTE_X)
 			cpu.PC++;
@@ -530,7 +538,7 @@ void EOR(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0x41] = AddressMode::INDIRECT_X; // meow :3
 	address_Mode_map[0x51] = AddressMode::INDIRECT_Y; // meow :3
 	uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+												   cpu));
 	cpu.A_Reg = cpu.A_Reg ^ value;
 
 	if (address_Mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
@@ -680,20 +688,25 @@ void JMP(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void BEQ(uint8_t current_instruction, CPUProcessor &cpu)
 {
+	map<uint8_t, AddressMode> address_Mode_map;
+
+	address_Mode_map[0xF0] = AddressMode::IMMEDIATE;
+	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
+														   cpu));
 	if (check_zero(cpu) == 0)
 	{
 		cpu.PC++;
 		return;
 	}
-	map<uint8_t, AddressMode> address_Mode_map;
-	address_Mode_map[0xF0] = AddressMode::IMMEDIATE;
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-												   cpu));
 	cpu.PC += (int8_t)new_PC;
 	cpu.PC++; // cpu.PC = (new_PC + 0x8000);
 }
 void BNE(uint8_t current_instruction, CPUProcessor &cpu)
 {
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0xD0] = AddressMode::IMMEDIATE;
+	int8_t new_PC = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
+												   cpu));
 	if (check_zero(cpu) != 0)
 	{
 		cpu.PC++;
@@ -701,10 +714,7 @@ void BNE(uint8_t current_instruction, CPUProcessor &cpu)
 		// printf("0 %d \n", check_zero(cpu));
 		return;
 	}
-	map<uint8_t, AddressMode> address_Mode_map;
-	address_Mode_map[0xD0] = AddressMode::IMMEDIATE;
-	int8_t new_PC = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+
 	// cpu.PC++;
 	cpu.PC += (int8_t)new_PC;
 	cpu.PC++;
@@ -712,46 +722,48 @@ void BNE(uint8_t current_instruction, CPUProcessor &cpu)
 }
 void BCC(uint8_t current_instruction, CPUProcessor &cpu)
 {
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x90] = AddressMode::IMMEDIATE;
+	int8_t new_PC = (int16_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
+															cpu));
 	if (check_carry(cpu) != 0)
 	{
 		cpu.PC++;
 		return;
 	}
 
-	map<uint8_t, AddressMode> address_Mode_map;
-	address_Mode_map[0x90] = AddressMode::IMMEDIATE;
-	int8_t new_PC = (int16_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-													cpu));
 	// cpu.PC = (new_PC + 0x8000);
 	cpu.PC += (int8_t)new_PC;
 	cpu.PC++;
 }
 void BCS(uint8_t current_instruction, CPUProcessor &cpu)
 {
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0xB0] = AddressMode::IMMEDIATE;
+	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
+														   cpu));
 	if (check_carry(cpu) == 0)
 	{
 		cpu.PC++;
 		return;
 	}
-	map<uint8_t, AddressMode> address_Mode_map;
-	address_Mode_map[0xB0] = AddressMode::IMMEDIATE;
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-												   cpu));
+
 	// cpu.PC = (new_PC + 0x8000);
 	cpu.PC += (int8_t)new_PC;
 	cpu.PC++;
 }
 void BPL(uint8_t current_instruction, CPUProcessor &cpu)
 {
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x10] = AddressMode::IMMEDIATE;
+	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
+														   cpu));
 	if (check_negative(cpu) != 0)
 	{
 		cpu.PC++;
 		return;
 	}
-	map<uint8_t, AddressMode> address_Mode_map;
-	address_Mode_map[0x10] = AddressMode::IMMEDIATE;
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-												   cpu));
+
 	// cpu.PC = (new_PC + 0x8000);
 	cpu.PC += (int8_t)new_PC;
 	cpu.PC++;
@@ -759,15 +771,16 @@ void BPL(uint8_t current_instruction, CPUProcessor &cpu)
 void BMI(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: Branch if negatice
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x30] = AddressMode::IMMEDIATE;
+	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
+														   cpu));
 	if (check_negative(cpu) == 0)
 	{
 		cpu.PC++;
 		return;
 	}
-	map<uint8_t, AddressMode> address_Mode_map;
-	address_Mode_map[0x30] = AddressMode::IMMEDIATE;
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-												   cpu));
+
 	// cpu.PC = (new_PC + 0x8000);
 	cpu.PC += (int8_t)new_PC;
 	cpu.PC++;
@@ -775,15 +788,16 @@ void BMI(uint8_t current_instruction, CPUProcessor &cpu)
 void BVC(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: Branch if overflow clear
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x50] = AddressMode::IMMEDIATE;
+	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
+														   cpu));
 	if (check_overflow(cpu) != 0)
 	{
 		cpu.PC++;
 		return;
 	}
-	map<uint8_t, AddressMode> address_Mode_map;
-	address_Mode_map[0x50] = AddressMode::IMMEDIATE;
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-												   cpu));
+
 	// cpu.PC = (new_PC + 0x8000);
 	cpu.PC += (int8_t)new_PC;
 	cpu.PC++;
@@ -791,15 +805,16 @@ void BVC(uint8_t current_instruction, CPUProcessor &cpu)
 void BVS(uint8_t current_instruction, CPUProcessor &cpu)
 {
 	// TODO: Branch if overflow set
+	map<uint8_t, AddressMode> address_Mode_map;
+	address_Mode_map[0x70] = AddressMode::IMMEDIATE;
+	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
+														   cpu));
 	if (check_overflow(cpu) == 0)
 	{
 		cpu.PC++;
 		return;
 	}
-	map<uint8_t, AddressMode> address_Mode_map;
-	address_Mode_map[0x70] = AddressMode::IMMEDIATE;
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-												   cpu));
+
 	// cpu.PC = (new_PC + 0x8000);
 	cpu.PC += (int8_t)new_PC;
 	cpu.PC++;
@@ -810,7 +825,7 @@ void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0x20] = AddressMode::ABSOLUTE;
 	uint16_t new_PC = (uint16_t)(address_Mode(address_Mode_map[current_instruction],
-											  cpu));
+											  cpu)); 
 	cpu.PC += 2;
 	cpu.stack_pointer -= 2;
 	cpu.bus.write_16bit(cpu.stack_pointer, cpu.PC);
@@ -825,9 +840,7 @@ void RTS(uint8_t current_instruction, CPUProcessor &cpu)
 	// printf("sp: %x \n", cpu.stack_pointer);
 
 	// printf("pc: %x \n", cpu.bus.read_16bit(cpu.stack_pointer));
-
 	cpu.stack_pointer += 2;
-
 	// cpu.PC++;
 
 	// cpu.stack_pointer += 2;
@@ -845,7 +858,7 @@ void CMP(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xD1] = AddressMode::INDIRECT_Y;
 	uint8_t carry = 0;
 	uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+												   cpu));
 	uint8_t v = sub(cpu.A_Reg, value, cpu, carry);
 	// printf("X_Reg: %d \n", v);
 	// printf("carry: %d \n", carry);
@@ -867,7 +880,7 @@ void CPY(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xC4] = AddressMode::ZERO_PAGE;
 	address_Mode_map[0xCC] = AddressMode::ABSOLUTE;
 	uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+												   cpu));
 	uint8_t carry = 0;
 	uint8_t v = sub(cpu.Y_Reg, value, cpu, carry);
 	// printf("X_Reg: %d \n", v);
@@ -887,7 +900,7 @@ void CPX(uint8_t current_instruction, CPUProcessor &cpu)
 	address_Mode_map[0xEC] = AddressMode::ABSOLUTE;
 
 	uint8_t value = cpu.bus.read_8bit(address_Mode(address_Mode_map[current_instruction],
-										   cpu));
+												   cpu));
 	uint8_t carry = 0;
 
 	uint8_t v = sub(cpu.X_Reg, value, cpu, carry);

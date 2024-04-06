@@ -12,6 +12,7 @@ Bus::Bus()
 }
 Bus::Bus(Rom rom)
 {
+    this->clock_cycles = 0;
     this->rom = rom;
     PPU ppu(rom.CHR);
     this->ppu = ppu;
@@ -20,6 +21,7 @@ Bus::Bus(Rom rom)
 }
 uint8_t Bus::read_8bit(uint16_t address)
 {
+    this->clock_cycles++;
     if (address < 0x1FFF)
     {
         uint16_t mirroraddr = address & 0x7ff;
@@ -38,6 +40,8 @@ uint8_t Bus::read_8bit(uint16_t address)
 
 void Bus::write_8bit(uint16_t address, uint8_t value)
 {
+    this->clock_cycles++;
+
     if (address <= 0x1FFF)
     {
         uint16_t mirroraddr = address & 0x7ff;
@@ -52,13 +56,14 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         cout << "Segementation Fault (Core Dumped)" << endl;
         exit(EXIT_FAILURE);
     }
-    // return 0;
 
     // memory[address] = value;
 }
 
 uint16_t Bus::read_16bit(uint16_t address)
 {
+    clock_cycles += 2;
+
     if (address < 0x1FFF)
     {
         uint16_t mirroraddr = address & 0x7ff;
@@ -83,6 +88,8 @@ uint16_t Bus::read_16bit(uint16_t address)
 
 void Bus::write_16bit(uint16_t address, uint16_t value)
 {
+    clock_cycles += 2;
+
     if (address < 0x1FFF)
     {
         uint16_t mirroraddr = address & 0x7ff;
@@ -105,4 +112,9 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
         exit(EXIT_FAILURE);
     }
     // return 0;
+}
+void Bus::print_clock()
+{
+    cout << "clock: " << clock_cycles << endl;
+    this->clock_cycles = 0;
 }
