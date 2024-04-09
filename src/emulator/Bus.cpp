@@ -53,7 +53,7 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
-        cout << "Segementation Fault (Core Dumped)" << endl;
+        cout << "Segmentation Fault (Core Dumped)" << endl;
         exit(EXIT_FAILURE);
     }
 

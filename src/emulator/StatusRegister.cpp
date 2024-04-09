@@ -11,7 +11,7 @@ using namespace std;
 #define OVERFLOW_BIT 0b0100000
 #define NEGATIVE_BIT 0b1000000
 
-void set_carry(int isCarry, CPUProcessor &cpu)
+void set_carry(int isCarry, CPU &cpu)
 {
     if (isCarry != 0)
     {
@@ -22,12 +22,12 @@ void set_carry(int isCarry, CPUProcessor &cpu)
         cpu.status = cpu.status & (~CARRY_BIT);
     }
 }
-int check_carry(CPUProcessor &cpu)
+int check_carry(CPU &cpu)
 {
     return cpu.status & CARRY_BIT;
 }
 // void set_carry_test(uint8_t )
-void set_zero(uint8_t value, CPUProcessor &cpu)
+void set_zero(uint8_t value, CPU &cpu)
 {
     if (value == 0)
     {
@@ -39,12 +39,12 @@ void set_zero(uint8_t value, CPUProcessor &cpu)
     }
 }
 
-int check_zero(CPUProcessor &cpu)
+int check_zero(CPU &cpu)
 {
     return cpu.status & ZERO_BIT;
 }
 
-void set_negative(uint8_t value, CPUProcessor &cpu)
+void set_negative(uint8_t value, CPU &cpu)
 {
 
     if ((value & 0b10000000) != 0)
@@ -57,12 +57,12 @@ void set_negative(uint8_t value, CPUProcessor &cpu)
     }
 }
 
-int check_negative(CPUProcessor &cpu)
+int check_negative(CPU &cpu)
 {
     return cpu.status & NEGATIVE_BIT;
 }
 
-void set_brk(CPUProcessor &cpu, int brk)
+void set_brk(CPU &cpu, int brk)
 {
     if (brk == 1)
         cpu.status = cpu.status | BREAK_BIT;
@@ -70,12 +70,12 @@ void set_brk(CPUProcessor &cpu, int brk)
         cpu.status = cpu.status & (~BREAK_BIT);
 }
 
-int check_brk(CPUProcessor &cpu)
+int check_brk(CPU &cpu)
 {
     return cpu.status & BREAK_BIT;
 }
 
-void set_interrupt_disabled(int isDisabled, CPUProcessor &cpu)
+void set_interrupt_disabled(int isDisabled, CPU &cpu)
 {
     if (isDisabled == 1)
     {
@@ -87,11 +87,11 @@ void set_interrupt_disabled(int isDisabled, CPUProcessor &cpu)
     }
 }
 
-int check_Interrupt_disabled(CPUProcessor &cpu)
+int check_Interrupt_disabled(CPU &cpu)
 {
     return cpu.status & INTERRUPT_DISABLED_BIT;
 }
-void set_overflow(uint8_t c_in, uint8_t c_out, CPUProcessor &cpu)
+void set_overflow(uint8_t c_in, uint8_t c_out, CPU &cpu)
 {
     // cout << ((c_out & 0b10000000) & 0) << endl;
 
@@ -104,7 +104,7 @@ void set_overflow(uint8_t c_in, uint8_t c_out, CPUProcessor &cpu)
         cpu.status = cpu.status & (~OVERFLOW_BIT);
     }
 }
-void set_overflow(int overflow, CPUProcessor &cpu)
+void set_overflow(int overflow, CPU &cpu)
 {
     if (overflow == 1)
     {
@@ -115,11 +115,11 @@ void set_overflow(int overflow, CPUProcessor &cpu)
         cpu.status &= (~OVERFLOW_BIT);
     }
 }
-int check_overflow(CPUProcessor &cpu)
+int check_overflow(CPU &cpu)
 {
     return cpu.status & OVERFLOW_BIT;
 }
-void set_decimal_mode(int isDecimal, CPUProcessor &cpu)
+void set_decimal_mode(int isDecimal, CPU &cpu)
 {
     if (isDecimal == 1)
     {
@@ -130,7 +130,7 @@ void set_decimal_mode(int isDecimal, CPUProcessor &cpu)
         cpu.status &= (~DECIMAL_BIT);
     }
 }
-int check_decimal(CPUProcessor &cpu)
+int check_decimal(CPU &cpu)
 {
     return cpu.status & DECIMAL_BIT;
 }

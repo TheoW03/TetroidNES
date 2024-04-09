@@ -3,7 +3,7 @@
 using namespace std;
 #ifndef CPU_PROCESSOR
 #define CPU_PROCESSOR
-struct CPUProcessor
+struct CPU
 {
     uint8_t X_Reg;
     uint8_t Y_Reg;
@@ -14,5 +14,4 @@ struct CPUProcessor
     Bus bus;
 };
 #endif
-// void run();
 void init(string file_name);
