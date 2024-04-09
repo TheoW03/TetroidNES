@@ -2,7 +2,6 @@
 #include "../src/emulator/BitOperations.h"
 #include "../src/emulator/Memory.h"
 #include "../src/emulator/Computer.h"
-// #include "SetupSDL.h"
 #include "../src/emulator/LoadRom.h"
 #include <vector>
 #include <bitset>
@@ -135,9 +134,8 @@ void threadFunction(int id)
 }
 int main(int argc, char *argv[])
 {
-
 	// Rom rom = modify_for_NESfile(load_rom(argv[1]));
-	Init(argv[1]);
+	init(argv[1]);
 	// load_instructions(rom.PRG);
 	// write_16bit(0xFFFC, 0x8000);
 	// run();

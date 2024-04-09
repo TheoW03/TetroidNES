@@ -1,17 +1,19 @@
-#include <map>
-#include <iostream>
-#include "BitOperations.h"
-#include "Memory.h"
-#include "AddressMode.h"
-#include "Instructions.h"
-#include "StatusRegister.h"
-#include <cstdio>
 #include <bitset>
-// #include <pthread.h>
-#include "Bus.h"
+#include <cstdio>
+#include <iostream>
+#include <map>
 #include <thread>
-#include "LoadRom.h"
+// #include <pthread.h>
 // #include <unistd.h>
+
+#include "BitOperations.h"
+
+#include "AddressMode.h"
+#include "Bus.h"
+#include "Instructions.h"
+#include "LoadRom.h"
+#include "Memory.h"
+#include "StatusRegister.h"
 
 using namespace std;
 
@@ -22,22 +24,13 @@ uint8_t param = 0;
 
 std::map<uint8_t, instructionPointer> instructionMap;
 
-//std::map<uint8_t, void (uint8_t current_instruction, CPUProcessor &cpu)> instructionMap;
-
-// struct CPUProcessor
-// {
-// 	uint8_t X_Reg;
-// 	uint8_t Y_Reg;
-// 	uint8_t A_Reg;
-// 	uint16_t stack_pointer;
-// 	uint16_t PC;
-// 	uint8_t status;
-// 	Bus bus;
-// };
 void run(CPUProcessor cpu_Processor);
 void initializeInstructionMap();
 
-void Init(string file_name)
+/**
+ * Initializes the CPU object and memories.
+ */
+void init(string file_name)
 {
 	initializeInstructionMap();
 	vector<uint8_t> test = {0xa9, 0x0, 0xf0, 0x81, 0x00};
@@ -48,7 +41,6 @@ void Init(string file_name)
 	rom.mirror = MirrorType::FOUR_SCREEN;
 	// vector<uint8_t> v = load_rom(file_name);
 	Bus bus(rom);
-	// Bus bus(modify_for_NESfile(v));
 	bus.write_16bit(0xFFFC, 0x8000);
 	CPUProcessor cpu_Processor;
 	cpu_Processor.PC = bus.read_16bit(0xFFFC);
@@ -271,12 +263,14 @@ void initializeInstructionMap()
 	instructionMap.insert(make_pair((uint8_t)0xA8, (instructionPointer)TAY));
 }
 
+/**
+ * Executes instructions in a loop and handles proper/improper exits. 
+ */
 void run(CPUProcessor cpu_Processor)
 {
 	while (cpu_Processor.PC < 0xFFFF)
 	{
-		cpu_Processor.bus.print_clock();
-
+		//cpu_Processor.bus.print_clock();
 		// cout << "a" << endl;
 		if (check_brk(cpu_Processor) != 0)
 		{
@@ -288,7 +282,7 @@ void run(CPUProcessor cpu_Processor)
 			continue;
 		// _sleep(100000);
 		// cout << "========" << endl;
-		printf("current instruction: %x \n", current_instruction);
+		// printf("Current instruction: %x \n", current_instruction);
 		// printf("A_Reg: %x \n", cpu_Processor.A_Reg);
 		// printf("X_Reg: %d \n", cpu_Processor.X_Reg);
 		// printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);
@@ -326,26 +320,27 @@ void run(CPUProcessor cpu_Processor)
 				cpu_Processor.PC++;
 				cpu_Processor.stack_pointer -= 2;
 				cpu_Processor.bus.write_16bit(cpu_Processor.stack_pointer, cpu_Processor.PC);
+				printf("Halt instruction encountered.\n");
 				printf("A_Reg: %d \n", cpu_Processor.A_Reg);
 				printf("X_Reg: %d \n", cpu_Processor.X_Reg);
 				printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);
-				printf("PC: 0x%X \n", cpu_Processor.PC);
-				printf("sp: 0x%X \n", cpu_Processor.stack_pointer);
+				printf("Program Counter: 0x%X \n", cpu_Processor.PC);
+				printf("Stack Pointer: 0x%X \n", cpu_Processor.stack_pointer);
 				bitset<7> y(cpu_Processor.status);
-				cout << "status: 0b" << y << endl;
+				cout << "Program exited successfully. Status: 0b" << y << endl;
 				return;
 			}
 			else
 			{
-				cout << "unrecognized instruction" << endl;
-				printf("current instruction 0x%x is unrecongnized \n", current_instruction);
+				cout << "Unrecognized instruction encountered." << endl;
+				printf("Current instruction 0x%x is unrecognized. \n", current_instruction);
 				printf("A_Reg: %d \n", cpu_Processor.A_Reg);
 				printf("X_Reg: %d \n", cpu_Processor.X_Reg);
 				printf("Y_Reg: %d \n", cpu_Processor.Y_Reg);
-				printf("PC: 0x%X \n", cpu_Processor.PC);
-				printf("sp: 0x%X \n", cpu_Processor.stack_pointer);
+				printf("Program Counter: 0x%X \n", cpu_Processor.PC);
+				printf("Stack Pointer: 0x%X \n", cpu_Processor.stack_pointer);
 				bitset<7> y(cpu_Processor.status);
-				cout << "status: 0b" << y << endl;
+				cout << "Program exited unsuccessfully. Status: 0b" << y << endl;
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -353,8 +348,6 @@ void run(CPUProcessor cpu_Processor)
 		{ 
 			instructionMap.at(current_instruction) (current_instruction, cpu_Processor);
 		}
-
-		
 		// this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }

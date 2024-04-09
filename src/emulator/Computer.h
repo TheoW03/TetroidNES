@@ -15,4 +15,4 @@ struct CPUProcessor
 };
 #endif
 // void run();
-void Init(string file_name);
+void init(string file_name);

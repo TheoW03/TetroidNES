@@ -108,13 +108,13 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
-        cout << "Segementation Fault (Core Dumped)" << endl;
+        cout << "Segmentation Fault (Core Dumped)" << endl;
         exit(EXIT_FAILURE);
     }
     // return 0;
 }
 void Bus::print_clock()
 {
-    cout << "clock: " << clock_cycles << endl;
+    cout << "Clock: " << clock_cycles << endl;
     this->clock_cycles = 0;
 }
