@@ -22,11 +22,12 @@ void set_carry(int isCarry, CPU &cpu)
         cpu.status = cpu.status & (~CARRY_BIT);
     }
 }
+
 int check_carry(CPU &cpu)
 {
     return cpu.status & CARRY_BIT;
 }
-// void set_carry_test(uint8_t )
+
 void set_zero(uint8_t value, CPU &cpu)
 {
     if (value == 0)
@@ -87,10 +88,11 @@ void set_interrupt_disabled(int isDisabled, CPU &cpu)
     }
 }
 
-int check_Interrupt_disabled(CPU &cpu)
+int check_interrupt_disabled(CPU &cpu)
 {
     return cpu.status & INTERRUPT_DISABLED_BIT;
 }
+
 void set_overflow(uint8_t c_in, uint8_t c_out, CPU &cpu)
 {
     // cout << ((c_out & 0b10000000) & 0) << endl;
@@ -104,6 +106,7 @@ void set_overflow(uint8_t c_in, uint8_t c_out, CPU &cpu)
         cpu.status = cpu.status & (~OVERFLOW_BIT);
     }
 }
+
 void set_overflow(int overflow, CPU &cpu)
 {
     if (overflow == 1)
@@ -115,10 +118,12 @@ void set_overflow(int overflow, CPU &cpu)
         cpu.status &= (~OVERFLOW_BIT);
     }
 }
+
 int check_overflow(CPU &cpu)
 {
     return cpu.status & OVERFLOW_BIT;
 }
+
 void set_decimal_mode(int isDecimal, CPU &cpu)
 {
     if (isDecimal == 1)
@@ -130,6 +135,7 @@ void set_decimal_mode(int isDecimal, CPU &cpu)
         cpu.status &= (~DECIMAL_BIT);
     }
 }
+
 int check_decimal(CPU &cpu)
 {
     return cpu.status & DECIMAL_BIT;

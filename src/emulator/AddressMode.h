@@ -1,13 +1,17 @@
 #include <iostream>
 
 using namespace std;
-uint16_t Absolute_page_AddressMode_Y(CPU &cpu);
-uint16_t Absolute_page_AddressMode_X(CPU &cpu);
-uint16_t Absolute(CPU &cpu);
-uint16_t Zero_page_AddressMode_Y(CPU &cpu);
-uint16_t Zero_page_AddressMode_X(CPU &cpu);
-uint16_t Zero_page_AddressMode(CPU &cpu);
-uint16_t immediate_AddressMode(CPU &cpu);
-uint16_t Indirect_AddressMode(CPU &cpu);
-uint16_t Indirect_AddressModeX(CPU &cpu);
-uint16_t Indirect_AddressModeY(CPU &cpu);
+
+uint16_t immediate_address_mode(CPU &cpu);
+
+uint16_t zero_page_address_mode(CPU &cpu);
+uint16_t zero_page_address_mode_X(CPU &cpu);
+uint16_t zero_page_address_mode_Y(CPU &cpu);
+
+uint16_t absolute(CPU &cpu);
+uint16_t absolute_page_address_mode_X(CPU &cpu);
+uint16_t absolute_page_address_mode_Y(CPU &cpu);
+
+uint16_t indirect_address_mode(CPU &cpu);
+uint16_t indirect_address_mode_X(CPU &cpu);
+uint16_t indirect_address_Mode_Y(CPU &cpu);

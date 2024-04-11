@@ -9,7 +9,7 @@ int check_negative(CPU &cpu);
 void set_brk(CPU &cpu, int brk);
 int check_brk(CPU &cpu);
 void set_interrupt_disabled(int isDisabled, CPU &cpu);
-int check_Interrupt_disabled(CPU &cpu);
+int check_interrupt_disabled(CPU &cpu);
 void set_carry(int isCarry, CPU &cpu);
 int check_carry(CPU &cpu);
 void set_overflow(uint8_t c_in, uint8_t c_out, CPU &cpu);

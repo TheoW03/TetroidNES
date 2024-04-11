@@ -111,14 +111,12 @@ uint8_t decimal_add(uint8_t a, uint8_t b, CPU &cpu, uint8_t &carry)
 	return (hi_sum << 4) | lo_Sum;
 }
 
-
-uint8_t leftRotate(uint8_t n, uint8_t d)
+uint8_t left_rotate(uint8_t n, uint8_t d)
 {
-
     return (n << d) | (n >> (8 - d));
 }
 
-uint8_t rightRotate(uint8_t n, uint8_t d)
+uint8_t right_rotate(uint8_t n, uint8_t d)
 {
     return (n >> d) | (n << (8 - d));
 }

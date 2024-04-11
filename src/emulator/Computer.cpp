@@ -50,6 +50,7 @@ void init(string file_name)
 	cpu.Y_Reg = 0;
 	cpu.stack_pointer = 0xfd;
 	cpu.bus = bus;
+	bus.fill(cpu.PC);
 	run(cpu);
 }
 
@@ -316,7 +317,7 @@ void run(CPU cpu)
 			}
 			else if (current_instruction == 0x00)
 			{
-				if (check_Interrupt_disabled(cpu) != 0)
+				if (check_interrupt_disabled(cpu) != 0)
 				{
 					continue;
 				}

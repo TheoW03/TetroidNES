@@ -1,6 +1,9 @@
 #include <iostream>
+
 #include "Computer.h"
+
 using namespace std;
+
 void LDA(uint8_t current_instruction, CPU &cpu);
 void LDX(uint8_t current_instruction, CPU &cpu);
 void LDY(uint8_t current_instruction, CPU &cpu);
