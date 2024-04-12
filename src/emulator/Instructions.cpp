@@ -825,7 +825,7 @@ void JSR(uint8_t current_instruction, CPUProcessor &cpu)
 	map<uint8_t, AddressMode> address_Mode_map;
 	address_Mode_map[0x20] = AddressMode::ABSOLUTE;
 	uint16_t new_PC = (uint16_t)(address_Mode(address_Mode_map[current_instruction],
-											  cpu)); 
+											  cpu));
 	cpu.PC += 2;
 	cpu.stack_pointer -= 2;
 	cpu.bus.write_16bit(cpu.stack_pointer, cpu.PC);

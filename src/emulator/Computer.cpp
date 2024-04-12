@@ -30,14 +30,14 @@ void run(CPUProcessor cpu_Processor);
 void Init(string file_name)
 {
 	vector<uint8_t> test = {0xa9, 0x0, 0xf0, 0x81, 0x00};
-	Rom rom;
-	rom.PRG = test;
-	rom.CHR = test;
-	rom.mapper = 0;
-	rom.mirror = MirrorType::FOUR_SCREEN;
-	// vector<uint8_t> v = load_rom(file_name);
-	Bus bus(rom);
-	// Bus bus(modify_for_NESfile(v));
+	// Rom rom;
+	// rom.PRG = test;
+	// rom.CHR = test;
+	// rom.mapper = 0;
+	// rom.mirror = MirrorType::FOUR_SCREEN;
+	vector<uint8_t> v = load_rom(file_name);
+	// Bus bus(rom);
+	Bus bus(modify_for_NESfile(v));
 	bus.write_16bit(0xFFFC, 0x8000);
 	CPUProcessor cpu_Processor;
 	cpu_Processor.PC = bus.read_16bit(0xFFFC);
