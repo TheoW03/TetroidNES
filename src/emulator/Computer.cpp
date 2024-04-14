@@ -40,7 +40,6 @@ void init(string file_name)
 	rom.mapper = 0;
 	rom.mirror = MirrorType::FOUR_SCREEN;
 	// vector<uint8_t> v = load_rom(file_name);
-	Bus bus(rom);
 	bus.write_16bit(0xFFFC, 0x8000);
 	CPU cpu;
 	cpu.PC = bus.read_16bit(0xFFFC);
