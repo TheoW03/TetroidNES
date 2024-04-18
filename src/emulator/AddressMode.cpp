@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <cstdio>
 #include "Bus.h"
 #include "Computer.h"
 
@@ -7,9 +7,9 @@ using namespace std;
 
 Bus addressBus = Bus();
 
-uint16_t immediate_address_mode(CPU &cpu)
+uint8_t immediate_address_mode(CPU &cpu)
 {
-    return cpu.PC;
+    return cpu.bus.fetch_next();
 }
 
 uint16_t zero_page_address_mode(CPU &cpu)
@@ -22,7 +22,7 @@ uint16_t zero_page_address_mode_X(CPU &cpu)
     return (cpu.bus.read_8bit(cpu.PC) + cpu.X_Reg);
 }
 
-uint16_t zero_page_address_mode_Y(CPU&cpu)
+uint16_t zero_page_address_mode_Y(CPU &cpu)
 {
     return ((cpu.bus.read_8bit(cpu.PC) + cpu.Y_Reg));
 }

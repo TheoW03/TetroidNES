@@ -25,8 +25,8 @@ Bus::Bus(Rom rom)
 
 /**
  * Returns the most recently stored instruction.
- * 
- * @return Most recently stored instruction. 
+ *
+ * @return Most recently stored instruction.
  */
 uint8_t Bus::get_current_instruction()
 {
@@ -35,28 +35,24 @@ uint8_t Bus::get_current_instruction()
 
 /**
  * Increments the program counter, updates the instructions stored in the pipeline and returns the previous current instruction.
- * 
+ *
  * @return Previous current instruction.
  */
 uint8_t Bus::fetch_next()
 {
     uint8_t current_instruction = get_current_instruction();
-
-    program_counter++;
-
     stored_instructions[1] = stored_instructions[0];
-
-    stored_instructions[0] = read_8bit(program_counter);
+    stored_instructions[0] = rom.PRG[this->program_counter - reset_vector];
+    this->program_counter++;
 
     return current_instruction;
 }
 
 void Bus::fill(uint16_t pc)
 {
-    stored_instructions[0] = 0;
-    stored_instructions[1] = 0;
-
-    program_counter = pc;
+    stored_instructions[1] = rom.PRG[pc - reset_vector];
+    stored_instructions[0] = rom.PRG[(pc + 1) - reset_vector];
+    this->program_counter = pc;
 }
 
 uint8_t Bus::read_8bit(uint16_t address)
@@ -153,7 +149,7 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
 }
 
 /**
- * Prints the clock cycle count to cout and sets that count to zero. 
+ * Prints the clock cycle count to cout and sets that count to zero.
  */
 void Bus::print_clock()
 {

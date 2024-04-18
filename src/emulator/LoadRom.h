@@ -22,5 +22,5 @@ struct Rom
 };
 #endif
 
-vector<uint8_t> load_rom(string file_name);
-Rom modify_for_NESfile(vector<uint8_t> instructions);
+vector<uint8_t> file_tobyte_vector(string file_name);
+Rom load_rom(vector<uint8_t> instructions);

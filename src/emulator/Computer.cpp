@@ -17,12 +17,12 @@
 
 using namespace std;
 
-typedef void (*instructionPointer) (int, CPU);
+typedef void (*instructionPointer)(uint8_t, CPU&);
 
 uint8_t current_instruction = 0;
 uint8_t param = 0;
 
-std::map<int, instructionPointer> instructionMap;
+std::map<uint8_t, instructionPointer> instructionMap;
 
 void run(CPU cpu);
 void initializeInstructionMap();
@@ -33,23 +33,27 @@ void initializeInstructionMap();
 void init(string file_name)
 {
 	initializeInstructionMap();
-	vector<uint8_t> test = {0xa9, 0x0, 0xf0, 0x81, 0x00};
+	vector<uint8_t> test = {0xa9, 0xa, 0x00};
 	Rom rom;
 	rom.PRG = test;
 	rom.CHR = test;
 	rom.mapper = 0;
 	rom.mirror = MirrorType::FOUR_SCREEN;
-	// vector<uint8_t> v = load_rom(file_name);
+	Bus bus(rom);
+	// vector<uint8_t> v = file_tobyte_vector(file_name);
+	// Bus bus(load_rom(v));
+	// Bus bus(rom);
 	bus.write_16bit(0xFFFC, 0x8000);
 	CPU cpu;
 	cpu.PC = bus.read_16bit(0xFFFC);
+	bus.fill(cpu.PC);
 	cpu.A_Reg = 0;
 	cpu.status = 0;
 	cpu.X_Reg = 0;
 	cpu.Y_Reg = 0;
 	cpu.stack_pointer = 0xfd;
 	cpu.bus = bus;
-	bus.fill(cpu.PC);
+
 	run(cpu);
 }
 
@@ -182,7 +186,7 @@ void initializeInstructionMap()
 	instructionMap.insert(make_pair(0xFE, (instructionPointer)INC));
 
 	instructionMap.insert(make_pair(0x88, (instructionPointer)DEY));
-	
+
 	instructionMap.insert(make_pair(0x18, (instructionPointer)CLC));
 
 	instructionMap.insert(make_pair(0x38, (instructionPointer)SEC));
@@ -227,7 +231,7 @@ void initializeInstructionMap()
 	instructionMap.insert(make_pair(0x2C, (instructionPointer)BIT));
 
 	instructionMap.insert(make_pair(0x90, (instructionPointer)BCC));
-	
+
 	instructionMap.insert(make_pair(0xB0, (instructionPointer)BCS));
 
 	instructionMap.insert(make_pair(0x10, (instructionPointer)BPL));
@@ -264,25 +268,24 @@ void initializeInstructionMap()
 }
 
 /**
- * Executes instructions in a loop and handles proper/improper exits. 
+ * Executes instructions in a loop and handles proper/improper exits.
  */
 void run(CPU cpu)
 {
 	while (cpu.PC < 0xFFFF)
 	{
-		//cpu.bus.print_clock();
-		// cout << "a" << endl;
+		// cpu.bus.print_clock();
+		//  cout << "a" << endl;
 		if (check_brk(cpu) != 0)
 		{
 			continue;
 		}
-		current_instruction = cpu.bus.read_8bit(cpu.PC);
-		cpu.PC++;
+		current_instruction = cpu.bus.fetch_next();
 		if (current_instruction == 0xEA)
 		{
 			continue;
 		}
-			
+
 		// _sleep(100000);
 		// cout << "========" << endl;
 		// printf("Current instruction: %x \n", current_instruction);
@@ -306,9 +309,9 @@ void run(CPU cpu)
 		// printf("CPU PC: %x \n", cpu.PC);
 		// cout << "=======" << endl;
 		// END
-		
-		//Equivalent to, in English, if instructionMap contains current_instruction.
-		if (instructionMap.find(current_instruction) == instructionMap.end()) 
+
+		// Equivalent to, in English, if instructionMap contains current_instruction.
+		if (instructionMap.find(current_instruction) == instructionMap.end())
 		{
 			if (current_instruction == 0xEA)
 			{
@@ -326,10 +329,10 @@ void run(CPU cpu)
 				cpu.stack_pointer -= 2;
 				cpu.bus.write_16bit(cpu.stack_pointer, cpu.PC);
 				printf("Halt instruction encountered.\n");
-				printf("A_Reg: %d \n", cpu.A_Reg);
+				printf("A_Reg: %x \n", cpu.A_Reg);
 				printf("X_Reg: %d \n", cpu.X_Reg);
 				printf("Y_Reg: %d \n", cpu.Y_Reg);
-				printf("Program Counter: 0x%X \n", cpu.PC);
+				printf("Program Counter: 0x%X \n", cpu.bus.program_counter);
 				printf("Stack Pointer: 0x%X \n", cpu.stack_pointer);
 				bitset<7> y(cpu.status);
 				cout << "Program exited successfully. Status: 0b" << y << endl;
@@ -339,7 +342,7 @@ void run(CPU cpu)
 			{
 				cout << "Unrecognized instruction encountered." << endl;
 				printf("Current instruction 0x%x is unrecognized. \n", current_instruction);
-				printf("A_Reg: %d \n", cpu.A_Reg);
+				printf("A_Reg: %x \n", cpu.A_Reg);
 				printf("X_Reg: %d \n", cpu.X_Reg);
 				printf("Y_Reg: %d \n", cpu.Y_Reg);
 				printf("Program Counter: 0x%X \n", cpu.PC);
@@ -350,8 +353,8 @@ void run(CPU cpu)
 			}
 		}
 		else
-		{ 
-			instructionMap.at(current_instruction) ((uint8_t)current_instruction, cpu);
+		{
+			instructionMap.at(current_instruction)(current_instruction, cpu);
 		}
 		// this_thread::sleep_for(std::chrono::milliseconds(1));
 	}

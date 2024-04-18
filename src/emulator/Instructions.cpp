@@ -28,51 +28,51 @@ uint16_t address_mode(AddressMode address, CPU &cpu)
 {
 	switch (address)
 	{
-		case AddressMode::IMMEDIATE:
-		{
-			return immediate_address_mode(cpu);
-		}
-		case AddressMode::ZERO_PAGE:
-		{
-			return zero_page_address_mode(cpu);
-		}
-		case AddressMode::ZERO_PAGE_X:
-		{
-			return zero_page_address_mode_X(cpu);
-		}
-		case AddressMode::ZERO_PAGE_Y:
-		{
-			return zero_page_address_mode_Y(cpu);
-		}
-		case AddressMode::ABSOLUTE:
-		{
-			return absolute(cpu);
-		}
-		case AddressMode::ABSOLUTE_X:
-		{
-			return absolute_page_address_mode_X(cpu);
-		}
-		case AddressMode::ABSOLUTE_Y:
-		{
-			return absolute_page_address_mode_Y(cpu);
-		}
-		case AddressMode::INDIRECT:
-		{
-			return indirect_address_mode(cpu);
-		}
-		case AddressMode::INDIRECT_X:
-		{
-			return indirect_address_mode_X(cpu);
-		}
-		case AddressMode::INDIRECT_Y:
-		{
-			return indirect_address_Mode_Y(cpu);
-		}
-		default:
-		{
-			cout << "Instruction not supported." << endl;
-			return 0;
-		}
+	case AddressMode::IMMEDIATE:
+	{
+		return immediate_address_mode(cpu);
+	}
+	case AddressMode::ZERO_PAGE:
+	{
+		return zero_page_address_mode(cpu);
+	}
+	case AddressMode::ZERO_PAGE_X:
+	{
+		return zero_page_address_mode_X(cpu);
+	}
+	case AddressMode::ZERO_PAGE_Y:
+	{
+		return zero_page_address_mode_Y(cpu);
+	}
+	case AddressMode::ABSOLUTE:
+	{
+		return absolute(cpu);
+	}
+	case AddressMode::ABSOLUTE_X:
+	{
+		return absolute_page_address_mode_X(cpu);
+	}
+	case AddressMode::ABSOLUTE_Y:
+	{
+		return absolute_page_address_mode_Y(cpu);
+	}
+	case AddressMode::INDIRECT:
+	{
+		return indirect_address_mode(cpu);
+	}
+	case AddressMode::INDIRECT_X:
+	{
+		return indirect_address_mode_X(cpu);
+	}
+	case AddressMode::INDIRECT_Y:
+	{
+		return indirect_address_Mode_Y(cpu);
+	}
+	default:
+	{
+		cout << "Instruction not supported." << endl;
+		return 0;
+	}
 	}
 }
 
@@ -89,16 +89,17 @@ void LDA(uint8_t current_instruction, CPU &cpu)
 	address_mode_map[0xB9] = AddressMode::ABSOLUTE_Y;
 	address_mode_map[0xA1] = AddressMode::INDIRECT_X;
 	address_mode_map[0xB1] = AddressMode::INDIRECT_Y;
-	uint8_t value = cpu.bus.read_8bit(address_mode(address_mode_map[current_instruction],
-												   cpu));
+	// uint8_t value = cpu.bus.read_8bit(address_mode(address_mode_map[current_instruction],
+	// 											   cpu));
+	uint8_t value = address_mode(address_mode_map[current_instruction], cpu);
 	cpu.A_Reg = value;
-	cpu.PC++;
-	if (address_mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
-		|| address_mode_map[current_instruction] == AddressMode::ABSOLUTE_X // meow
-		|| address_mode_map[current_instruction] == AddressMode::ABSOLUTE_Y)
-	{
-		cpu.PC++;
-	}
+	// cpu.PC++;
+	// if (address_mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
+	// 	|| address_mode_map[current_instruction] == AddressMode::ABSOLUTE_X // meow
+	// 	|| address_mode_map[current_instruction] == AddressMode::ABSOLUTE_Y)
+	// {
+	// 	cpu.PC++;
+	// }
 	set_zero(cpu.A_Reg, cpu);
 	set_negative(cpu.A_Reg, cpu);
 }
@@ -443,7 +444,7 @@ void ORA(uint8_t current_instruction, CPU &cpu)
 	cpu.A_Reg = cpu.A_Reg | value;
 	set_negative(cpu.A_Reg, cpu);
 	set_zero(cpu.A_Reg, cpu);
-	
+
 	if (address_mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
 		|| address_mode_map[current_instruction] == AddressMode::ABSOLUTE_X // meow
 		|| address_mode_map[current_instruction] == AddressMode::ABSOLUTE_Y)
@@ -903,7 +904,7 @@ void BVC(uint8_t current_instruction, CPU &cpu)
 	cpu.PC++;
 }
 
-void BVS(uint8_t current_instruction, CPU&cpu)
+void BVS(uint8_t current_instruction, CPU &cpu)
 {
 	// TODO: Branch if overflow set
 	map<uint8_t, AddressMode> address_mode_map;
@@ -927,7 +928,7 @@ void JSR(uint8_t current_instruction, CPU &cpu)
 	map<uint8_t, AddressMode> address_mode_map;
 	address_mode_map[0x20] = AddressMode::ABSOLUTE;
 	uint16_t new_PC = (uint16_t)(address_mode(address_mode_map[current_instruction],
-											  cpu)); 
+											  cpu));
 	cpu.PC += 2;
 	cpu.stack_pointer -= 2;
 	cpu.bus.write_16bit(cpu.stack_pointer, cpu.PC);
@@ -1021,7 +1022,7 @@ void CPX(uint8_t current_instruction, CPU &cpu)
 	set_carry(carry, cpu);
 	set_zero(v, cpu);
 	set_negative(v, cpu);
-	
+
 	if (address_mode_map[current_instruction] == AddressMode::ABSOLUTE)
 	{
 		cpu.PC++;
