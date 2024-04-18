@@ -7,29 +7,69 @@ using namespace std;
 // const static uint8_t ram_end = 0x0FFF;
 // const static uint8_t ppu_end = 0x2000;
 
-Bus::Bus()
-{
-}
+Bus::Bus() {}
+
 Bus::Bus(Rom rom)
 {
     this->clock_cycles = 0;
+    this->stored_instructions[0] = 0;
+    this->stored_instructions[1] = 0;
+    this->program_counter = 0;
+
     this->rom = rom;
     PPU ppu(rom.CHR);
     this->ppu = ppu;
     APU APU();
     this->apu = apu;
 }
+
+/**
+ * Returns the most recently stored instruction.
+ * 
+ * @return Most recently stored instruction. 
+ */
+uint8_t Bus::get_current_instruction()
+{
+    return stored_instructions[1];
+}
+
+/**
+ * Increments the program counter, updates the instructions stored in the pipeline and returns the previous current instruction.
+ * 
+ * @return Previous current instruction.
+ */
+uint8_t Bus::fetch_next()
+{
+    uint8_t current_instruction = get_current_instruction();
+
+    program_counter++;
+
+    stored_instructions[1] = stored_instructions[0];
+
+    stored_instructions[0] = read_8bit(program_counter);
+
+    return current_instruction;
+}
+
+void Bus::fill(uint16_t pc)
+{
+    stored_instructions[0] = 0;
+    stored_instructions[1] = 0;
+
+    program_counter = pc;
+}
+
 uint8_t Bus::read_8bit(uint16_t address)
 {
     this->clock_cycles++;
     if (address < 0x1FFF)
     {
-        uint16_t mirroraddr = address & 0x7ff;
-        return v_memory[mirroraddr];
+        uint16_t mirror_address = address & 0x7ff;
+        return v_memory[mirror_address];
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        uint16_t mirroraddr = address & 0x2007;
+        uint16_t mirror_address = address & 0x2007;
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
@@ -44,16 +84,16 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
 
     if (address <= 0x1FFF)
     {
-        uint16_t mirroraddr = address & 0x7ff;
-        v_memory[mirroraddr] = value;
+        uint16_t mirror_address = address & 0x7ff;
+        v_memory[mirror_address] = value;
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        uint16_t mirroraddr = address & 0x2007;
+        uint16_t mirror_address = address & 0x2007;
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
-        cout << "Segementation Fault (Core Dumped)" << endl;
+        cout << "Segmentation Fault (Core Dumped)" << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -66,17 +106,16 @@ uint16_t Bus::read_16bit(uint16_t address)
 
     if (address < 0x1FFF)
     {
-        uint16_t mirroraddr = address & 0x7ff;
-        uint16_t value = (uint16_t)(v_memory[mirroraddr + 1] << 8) | v_memory[mirroraddr];
+        uint16_t mirror_address = address & 0x7ff;
+        uint16_t value = (uint16_t)(v_memory[mirror_address + 1] << 8) | v_memory[mirror_address];
         return value;
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        uint16_t mirroraddr = address & 0x2007;
+        uint16_t mirror_address = address & 0x2007;
     }
     else if (address == 0xFFFC)
     {
-        // reset_vector = value;
         return reset_vector;
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
@@ -92,15 +131,15 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
 
     if (address < 0x1FFF)
     {
-        uint16_t mirroraddr = address & 0x7ff;
+        uint16_t mirror_address = address & 0x7ff;
         uint8_t msb = (uint8_t)(value >> 8);
         uint8_t lsb = (uint8_t)(value & 0xFF);
-        v_memory[mirroraddr] = lsb;
-        v_memory[mirroraddr + 1] = msb;
+        v_memory[mirror_address] = lsb;
+        v_memory[mirror_address + 1] = msb;
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        uint16_t mirroraddr = address & 0x2007;
+        uint16_t mirror_address = address & 0x2007;
     }
     else if (address == 0xFFFC)
     {
@@ -108,13 +147,16 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
-        cout << "Segementation Fault (Core Dumped)" << endl;
+        cout << "Segmentation Fault (Core Dumped)" << endl;
         exit(EXIT_FAILURE);
     }
-    // return 0;
 }
+
+/**
+ * Prints the clock cycle count to cout and sets that count to zero. 
+ */
 void Bus::print_clock()
 {
-    cout << "clock: " << clock_cycles << endl;
+    cout << "Clock: " << clock_cycles << endl;
     this->clock_cycles = 0;
 }

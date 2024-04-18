@@ -5,7 +5,7 @@
 #include "StatusRegister.h"
 using namespace std;
 
-uint8_t add(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
+uint8_t add(uint8_t a, uint8_t b, CPU &cpu, uint8_t &carry)
 {
 	uint8_t c_in = 0;
 	uint8_t c_out = 0;
@@ -37,7 +37,7 @@ uint8_t mul(uint8_t a, uint8_t b)
 	return result;
 }
 
-uint8_t sub(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
+uint8_t sub(uint8_t a, uint8_t b, CPU &cpu, uint8_t &carry)
 {
 	uint8_t c_in = 0;
 	uint8_t c_out = 0;
@@ -63,7 +63,7 @@ uint8_t sub(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
 
 	return a;
 }
-uint8_t decimal_sub(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
+uint8_t decimal_sub(uint8_t a, uint8_t b, CPU &cpu, uint8_t &carry)
 {
 	uint8_t lo_b = b & 0b1111;
 	uint8_t hi_b = (b >> 4) & 0b1111;
@@ -89,7 +89,7 @@ uint8_t decimal_sub(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
 	return (hi_diff << 4) | lo_diff;
 }
 
-uint8_t decimal_add(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
+uint8_t decimal_add(uint8_t a, uint8_t b, CPU &cpu, uint8_t &carry)
 {
 	uint8_t lo_b = b & 0b1111;
 	uint8_t hi_b = (b >> 4) & 0b1111;
@@ -111,14 +111,12 @@ uint8_t decimal_add(uint8_t a, uint8_t b, CPUProcessor &cpu, uint8_t &carry)
 	return (hi_sum << 4) | lo_Sum;
 }
 
-
-uint8_t leftRotate(uint8_t n, uint8_t d)
+uint8_t left_rotate(uint8_t n, uint8_t d)
 {
-
     return (n << d) | (n >> (8 - d));
 }
 
-uint8_t rightRotate(uint8_t n, uint8_t d)
+uint8_t right_rotate(uint8_t n, uint8_t d)
 {
     return (n >> d) | (n << (8 - d));
 }
