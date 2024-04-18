@@ -20,7 +20,7 @@ Bus::Bus(Rom rom)
     PPU ppu(rom.CHR);
     this->ppu = ppu; // test
     APU APU();
-    this->apu = apu;
+    this->apu = apu; // test
 }
 
 /**
