@@ -10,19 +10,7 @@
 
 using namespace std;
 
-enum class AddressMode
-{
-	ABSOLUTE,
-	ABSOLUTE_Y,
-	ABSOLUTE_X,
-	ZERO_PAGE,
-	ZERO_PAGE_X,
-	ZERO_PAGE_Y,
-	IMMEDIATE,
-	INDIRECT,
-	INDIRECT_X,
-	INDIRECT_Y
-};
+
 
 uint16_t address_mode(AddressMode address, CPU &cpu)
 {
@@ -89,17 +77,8 @@ void LDA(uint8_t current_instruction, CPU &cpu)
 	address_mode_map[0xB9] = AddressMode::ABSOLUTE_Y;
 	address_mode_map[0xA1] = AddressMode::INDIRECT_X;
 	address_mode_map[0xB1] = AddressMode::INDIRECT_Y;
-	// uint8_t value = cpu.bus.read_8bit(address_mode(address_mode_map[current_instruction],
-	// 											   cpu));
-	uint8_t value = address_mode(address_mode_map[current_instruction], cpu);
+	uint8_t value = cpu.bus.read_8bit(address_mode(address_mode_map[current_instruction], cpu));
 	cpu.A_Reg = value;
-	// cpu.PC++;
-	// if (address_mode_map[current_instruction] == AddressMode::ABSOLUTE		// meow
-	// 	|| address_mode_map[current_instruction] == AddressMode::ABSOLUTE_X // meow
-	// 	|| address_mode_map[current_instruction] == AddressMode::ABSOLUTE_Y)
-	// {
-	// 	cpu.PC++;
-	// }
 	set_zero(cpu.A_Reg, cpu);
 	set_negative(cpu.A_Reg, cpu);
 }

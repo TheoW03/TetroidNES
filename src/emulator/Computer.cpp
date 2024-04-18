@@ -17,7 +17,7 @@
 
 using namespace std;
 
-typedef void (*instructionPointer)(uint8_t, CPU&);
+typedef void (*instructionPointer)(uint8_t, CPU &);
 
 uint8_t current_instruction = 0;
 uint8_t param = 0;
@@ -53,7 +53,7 @@ void init(string file_name)
 	cpu.Y_Reg = 0;
 	cpu.stack_pointer = 0xfd;
 	cpu.bus = bus;
-
+	cpu.bus.clock_cycles = 0;
 	run(cpu);
 }
 
@@ -280,7 +280,8 @@ void run(CPU cpu)
 		{
 			continue;
 		}
-		current_instruction = cpu.bus.fetch_next();
+		// current_instruction = cpu.bus.fetch_next();
+		current_instruction = cpu.bus.read_8bit(cpu.bus.program_counter);
 		if (current_instruction == 0xEA)
 		{
 			continue;
@@ -319,6 +320,7 @@ void run(CPU cpu)
 			}
 			else if (current_instruction == 0x00)
 			{
+
 				if (check_interrupt_disabled(cpu) != 0)
 				{
 					continue;
@@ -345,7 +347,7 @@ void run(CPU cpu)
 				printf("A_Reg: %x \n", cpu.A_Reg);
 				printf("X_Reg: %d \n", cpu.X_Reg);
 				printf("Y_Reg: %d \n", cpu.Y_Reg);
-				printf("Program Counter: 0x%X \n", cpu.PC);
+				printf("Program Counter: 0x%X \n", cpu.bus.program_counter);
 				printf("Stack Pointer: 0x%X \n", cpu.stack_pointer);
 				bitset<7> y(cpu.status);
 				cout << "Program exited unsuccessfully. Status: 0b" << y << endl;

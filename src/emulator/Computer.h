@@ -14,4 +14,20 @@ struct CPU
     Bus bus;
 };
 #endif
+#ifndef ADDRESS_MODE
+#define ADDRESS_MODE
+enum class AddressMode
+{
+    ABSOLUTE,
+    ABSOLUTE_Y,
+    ABSOLUTE_X,
+    ZERO_PAGE,
+    ZERO_PAGE_X,
+    ZERO_PAGE_Y,
+    IMMEDIATE,
+    INDIRECT,
+    INDIRECT_X,
+    INDIRECT_Y
+};
+#endif
 void init(string file_name);

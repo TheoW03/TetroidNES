@@ -44,7 +44,6 @@ uint8_t Bus::fetch_next()
     stored_instructions[1] = stored_instructions[0];
     stored_instructions[0] = rom.PRG[this->program_counter - reset_vector];
     this->program_counter++;
-
     return current_instruction;
 }
 
@@ -52,6 +51,7 @@ void Bus::fill(uint16_t pc)
 {
     stored_instructions[1] = rom.PRG[pc - reset_vector];
     stored_instructions[0] = rom.PRG[(pc + 1) - reset_vector];
+    // clock_cycles++;
     this->program_counter = pc;
 }
 
@@ -69,7 +69,7 @@ uint8_t Bus::read_8bit(uint16_t address)
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
-        return rom.PRG[address - reset_vector];
+        return fetch_next();
     }
     return 0;
 }
@@ -116,7 +116,9 @@ uint16_t Bus::read_16bit(uint16_t address)
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
-        return (uint16_t)(rom.PRG[(address - reset_vector) + 1] << 8) | rom.PRG[address - reset_vector];
+        uint8_t lsb = fetch_next();
+        uint8_t msb = fetch_next();
+        return (uint16_t)(msb << 8) | lsb;
     }
     return 0;
 }
