@@ -37,7 +37,7 @@ uint16_t zero_page_address_mode(CPU &cpu)
  */
 uint16_t relative_addressmode(CPU &cpu)
 {
-    return zero_page_address_mode(cpu);
+    return cpu.bus.get_PC();
 }
 /**
  * @brief 8 bit ptr offset X

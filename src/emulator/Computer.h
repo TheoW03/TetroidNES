@@ -18,6 +18,7 @@ struct CPU
 #define ADDRESS_MODE
 enum class AddressMode
 {
+    ACCUMULATOR,
     ABSOLUTE,
     ABSOLUTE_Y,
     ABSOLUTE_X,
@@ -29,7 +30,7 @@ enum class AddressMode
     INDIRECT_X,
     INDIRECT_Y,
     RELATIVE,
-    IMPLICIT
+    IMPLIED
 };
 #endif
 void init(string file_name);
