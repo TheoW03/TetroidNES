@@ -25,3 +25,7 @@ cmake -S . -B build # build Cmake
 cmake --build build --config Release # build project
 ./Release/output.exe ${path to .nes rom file} # run project
 ```
+
+## Documentation
+
+Emulator docs: https://github.com/TheoW03/6502Emulator/tree/master/Docs
