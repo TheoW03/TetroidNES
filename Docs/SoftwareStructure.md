@@ -37,9 +37,11 @@ struct CPU
     uint16_t PC; //depreciated. we use bus.program_counter
     uint8_t status; //status reguster. they are 8 different statuses. used for branching 
     Bus bus; //the data bus (its used to communicate data between componets)
-};```
+};
+```
 
 
+the bus class
 
 ```C++
 #ifndef BUS_H
@@ -75,7 +77,6 @@ public:
 };
 #endif
 ```
-the bus class
 
 from then on its a hashmap that points each opCode to a struct instruction 
 
