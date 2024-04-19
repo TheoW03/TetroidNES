@@ -21,7 +21,7 @@ struct Rom
     uint8_t mapper;
     MirrorType mirror;
 };
-vector<uint8_t> load_rom(string file_name)
+vector<uint8_t> file_tobyte_vector(string file_name)
 {
     vector<uint8_t> instructions;
     vector<string> vec;
@@ -41,7 +41,7 @@ vector<uint8_t> load_rom(string file_name)
     return instructions;
 }
 
-Rom modify_for_NESfile(vector<uint8_t> instructions)
+Rom load_rom(vector<uint8_t> instructions)
 {
     Rom rom;
     uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);

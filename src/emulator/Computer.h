@@ -3,7 +3,7 @@
 using namespace std;
 #ifndef CPU_PROCESSOR
 #define CPU_PROCESSOR
-struct CPUProcessor
+struct CPU
 {
     uint8_t X_Reg;
     uint8_t Y_Reg;
@@ -14,5 +14,23 @@ struct CPUProcessor
     Bus bus;
 };
 #endif
-// void run();
-void Init(string file_name);
+#ifndef ADDRESS_MODE
+#define ADDRESS_MODE
+enum class AddressMode
+{
+    ACCUMULATOR,
+    ABSOLUTE,
+    ABSOLUTE_Y,
+    ABSOLUTE_X,
+    ZERO_PAGE,
+    ZERO_PAGE_X,
+    ZERO_PAGE_Y,
+    IMMEDIATE,
+    INDIRECT,
+    INDIRECT_X,
+    INDIRECT_Y,
+    RELATIVE,
+    IMPLIED
+};
+#endif
+void init(string file_name);
