@@ -27,7 +27,9 @@ enum class AddressMode
     IMMEDIATE,
     INDIRECT,
     INDIRECT_X,
-    INDIRECT_Y
+    INDIRECT_Y,
+    RELATIVE,
+    IMPLICIT
 };
 #endif
 void init(string file_name);

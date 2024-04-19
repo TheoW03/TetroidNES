@@ -100,6 +100,8 @@ void initializeInstructionMap()
 	instructionMap.insert(make_pair(0xBC, Instruction{(instructionPointer)LDY, AddressMode::ABSOLUTE_X}));
 
 #pragma endregion
+	
+	
 	// instructionMap.insert(make_pair(0xA9, (instructionPointer)LDA));
 	// instructionMap.insert(make_pair(0xA5, (instructionPointer)LDA));
 	// instructionMap.insert(make_pair(0xB5, (instructionPointer)LDA));
@@ -303,7 +305,17 @@ void initializeInstructionMap()
 
 	// instructionMap.insert(make_pair(0xA8, (instructionPointer)TAY));
 }
-
+void printCPU_stats(CPU cpu)
+{
+	printf("A_Reg: %x \n", cpu.A_Reg);
+	printf("X_Reg: %d \n", cpu.X_Reg);
+	printf("Y_Reg: %d \n", cpu.Y_Reg);
+	printf("Program Counter: 0x%X \n", cpu.bus.get_PC());
+	printf("Stack Pointer: 0x%X \n", cpu.stack_pointer);
+	bitset<7> status(cpu.status);
+	cpu.bus.print_clock();
+	cout << "cpu status register: " << status << endl;
+}
 /**
  * Executes instructions in a loop and handles proper/improper exits.
  */
@@ -311,43 +323,15 @@ void run(CPU cpu)
 {
 	while (cpu.PC < 0xFFFF)
 	{
-		// cpu.bus.print_clock();
-		//  cout << "a" << endl;
 		if (check_brk(cpu) != 0)
 		{
 			continue;
 		}
-		current_instruction = cpu.bus.fetch_next();
-		// current_instruction = cpu.bus.read_8bit(cpu.bus.program_counter);
+		current_instruction = cpu.bus.read_8bit(cpu.bus.get_PC());
 		if (current_instruction == 0xEA)
 		{
 			continue;
 		}
-
-		// _sleep(100000);
-		// cout << "========" << endl;
-		// printf("Current instruction: %x \n", current_instruction);
-		// printf("A_Reg: %x \n", cpu.A_Reg);
-		// printf("X_Reg: %d \n", cpu.X_Reg);
-		// printf("Y_Reg: %d \n", cpu.Y_Reg);
-		// printf("PC: 0x%X \n", cpu.PC);
-		// printf("sp: 0x%X \n", cpu.stack_pointer);
-		// printf("$78: %X \n", read_8bit(0x78));
-		// printf("$79: %X \n", read_8bit(0x79));
-		// printf("$7a: %X \n", read_8bit(0x7a));
-		// printf("$7b: %X \n", read_8bit(0x3f0));
-
-		// bitset<7> z(cpu.status);
-		// cout << "status: 0b" << z << endl;
-		// cout << "========" << endl;
-
-		// DEBUG STUFF
-		//  cout << "=======" << endl;
-		// printf("instruction: %x \n", current_instruction);
-		// printf("CPU PC: %x \n", cpu.PC);
-		// cout << "=======" << endl;
-		// END
-
 		// Equivalent to, in English, if instructionMap contains current_instruction.
 		if (instructionMap.find(current_instruction) == instructionMap.end())
 		{
@@ -364,30 +348,20 @@ void run(CPU cpu)
 				}
 				set_brk(cpu, 1);
 				cpu.bus.write_8bit(cpu.stack_pointer, cpu.status);
-				cpu.PC++;
+				cpu.bus.fetch_next();
 				cpu.stack_pointer -= 2;
-				cpu.bus.write_16bit(cpu.stack_pointer, cpu.PC);
+				cpu.bus.write_16bit(cpu.stack_pointer, cpu.bus.get_PC());
 				printf("Halt instruction encountered.\n");
-				printf("A_Reg: %x \n", cpu.A_Reg);
-				printf("X_Reg: %d \n", cpu.X_Reg);
-				printf("Y_Reg: %d \n", cpu.Y_Reg);
-				printf("Program Counter: 0x%X \n", cpu.bus.get_PC());
-				printf("Stack Pointer: 0x%X \n", cpu.stack_pointer);
-				bitset<7> y(cpu.status);
-				cout << "Program exited successfully. Status: 0b" << y << endl;
+				printCPU_stats(cpu);
+				cout << "program succesfully ended" << endl;
 				return;
 			}
 			else
 			{
 				cout << "Unrecognized instruction encountered." << endl;
 				printf("Current instruction 0x%x is unrecognized. \n", current_instruction);
-				printf("A_Reg: %x \n", cpu.A_Reg);
-				printf("X_Reg: %d \n", cpu.X_Reg);
-				printf("Y_Reg: %d \n", cpu.Y_Reg);
-				printf("Program Counter: 0x%X \n", cpu.bus.get_PC());
-				printf("Stack Pointer: 0x%X \n", cpu.stack_pointer);
-				bitset<7> y(cpu.status);
-				cout << "Program exited unsuccessfully. Status: 0b" << y << endl;
+				printCPU_stats(cpu);
+				cout << "Program exited unsuccessfully" << endl;
 				exit(EXIT_FAILURE);
 			}
 		}
@@ -397,6 +371,7 @@ void run(CPU cpu)
 			Instruction a = instructionMap.at(current_instruction);
 			a.i(a.addressmode, cpu);
 		}
+		cpu.bus.print_clock();
 		// this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }

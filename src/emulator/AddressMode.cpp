@@ -8,7 +8,7 @@ using namespace std;
 Bus addressBus = Bus();
 
 /**
- * @brief get PC because this is the address bus this. does the immediate address or 
+ * @brief get PC because this is the address bus this. does the immediate address or
  * "return the PC"
  *
  * @param cpu
@@ -30,10 +30,20 @@ uint16_t zero_page_address_mode(CPU &cpu)
     return cpu.bus.read_8bit(cpu.bus.get_PC());
 }
 /**
+ * @brief relative address mode (used for conditional branching)
+ *
+ * @param cpu
+ * @return uint16_t
+ */
+uint16_t relative_addressmode(CPU &cpu)
+{
+    return zero_page_address_mode(cpu);
+}
+/**
  * @brief 8 bit ptr offset X
- * 
- * @param cpu 
- * @return uint16_t 
+ *
+ * @param cpu
+ * @return uint16_t
  */
 uint16_t zero_page_address_mode_X(CPU &cpu)
 {
@@ -41,9 +51,9 @@ uint16_t zero_page_address_mode_X(CPU &cpu)
 }
 /**
  * @brief 8 bit ptr offset Y
- * 
- * @param cpu 
- * @return uint16_t 
+ *
+ * @param cpu
+ * @return uint16_t
  */
 uint16_t zero_page_address_mode_Y(CPU &cpu)
 {
@@ -51,10 +61,10 @@ uint16_t zero_page_address_mode_Y(CPU &cpu)
 }
 
 /**
- * @brief ptr but 16 bit 
- * 
- * @param cpu 
- * @return uint16_t 
+ * @brief ptr but 16 bit
+ *
+ * @param cpu
+ * @return uint16_t
  */
 uint16_t absolute(CPU &cpu)
 {
@@ -63,9 +73,9 @@ uint16_t absolute(CPU &cpu)
 }
 /**
  * @brief 16 bit ptr but offset with x
- * 
- * @param cpu 
- * @return uint16_t 
+ *
+ * @param cpu
+ * @return uint16_t
  */
 uint16_t absolute_page_address_mode_X(CPU &cpu)
 {
@@ -73,9 +83,9 @@ uint16_t absolute_page_address_mode_X(CPU &cpu)
 }
 /**
  * @brief 16 bit ptr but offset Y
- * 
- * @param cpu 
- * @return uint16_t 
+ *
+ * @param cpu
+ * @return uint16_t
  */
 uint16_t absolute_page_address_mode_Y(CPU &cpu)
 {

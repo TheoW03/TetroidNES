@@ -22,6 +22,10 @@ uint16_t address_mode(AddressMode address, CPU &cpu)
 	{
 		return zero_page_address_mode(cpu);
 	}
+	case AddressMode::RELATIVE:
+	{
+		return relative_addressmode(cpu);
+	}
 	case AddressMode::ZERO_PAGE_X:
 	{
 		return zero_page_address_mode_X(cpu);
