@@ -3,6 +3,10 @@
 since the 6502 is CISC each instruction has different ways of manupilating data. each instruction
 can have multiple address modes
 
+Implied: for instructions that dont manupilate data (like CLC)
+
+Relative: for BEQ, BNE. it adds on to the PC +/- 128
+
 Immediate: just returns the PC. 
 
 zero page x,y: 8 bit ptr with offsets of x,y 
