@@ -22,6 +22,11 @@ typedef void (*instructionPointer)(uint8_t, CPU &);
 uint8_t current_instruction = 0;
 uint8_t param = 0;
 
+struct Instruction
+{
+	instructionPointer i;
+	uint8_t opcode;
+};
 std::map<uint8_t, instructionPointer> instructionMap;
 
 void run(CPU cpu);
@@ -63,6 +68,7 @@ void init(string file_name)
  */
 void initializeInstructionMap()
 {
+
 	instructionMap.insert(make_pair(0xA9, (instructionPointer)LDA));
 	instructionMap.insert(make_pair(0xA5, (instructionPointer)LDA));
 	instructionMap.insert(make_pair(0xB5, (instructionPointer)LDA));
@@ -280,8 +286,8 @@ void run(CPU cpu)
 		{
 			continue;
 		}
-		// current_instruction = cpu.bus.fetch_next();
-		current_instruction = cpu.bus.read_8bit(cpu.bus.program_counter);
+		current_instruction = cpu.bus.fetch_next();
+		// current_instruction = cpu.bus.read_8bit(cpu.bus.program_counter);
 		if (current_instruction == 0xEA)
 		{
 			continue;
@@ -334,7 +340,7 @@ void run(CPU cpu)
 				printf("A_Reg: %x \n", cpu.A_Reg);
 				printf("X_Reg: %d \n", cpu.X_Reg);
 				printf("Y_Reg: %d \n", cpu.Y_Reg);
-				printf("Program Counter: 0x%X \n", cpu.bus.program_counter);
+				printf("Program Counter: 0x%X \n", cpu.bus.get_PC());
 				printf("Stack Pointer: 0x%X \n", cpu.stack_pointer);
 				bitset<7> y(cpu.status);
 				cout << "Program exited successfully. Status: 0b" << y << endl;
@@ -347,7 +353,7 @@ void run(CPU cpu)
 				printf("A_Reg: %x \n", cpu.A_Reg);
 				printf("X_Reg: %d \n", cpu.X_Reg);
 				printf("Y_Reg: %d \n", cpu.Y_Reg);
-				printf("Program Counter: 0x%X \n", cpu.bus.program_counter);
+				printf("Program Counter: 0x%X \n", cpu.bus.get_PC());
 				printf("Stack Pointer: 0x%X \n", cpu.stack_pointer);
 				bitset<7> y(cpu.status);
 				cout << "Program exited unsuccessfully. Status: 0b" << y << endl;

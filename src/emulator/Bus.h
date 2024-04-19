@@ -14,11 +14,11 @@ private:
     Rom rom;
     PPU ppu;
     APU apu;
+    uint16_t program_counter; 
 
 public:
     int clock_cycles;
     uint8_t stored_instructions[2];
-    uint16_t program_counter; 
 
     Bus();
     Bus(Rom rom);
@@ -32,5 +32,6 @@ public:
     uint16_t read_16bit(uint16_t address);
     void write_16bit(uint16_t address, uint16_t value);
     void print_clock();
+    uint16_t get_PC();
 };
 #endif

@@ -22,6 +22,10 @@ Bus::Bus(Rom rom)
     APU APU();
     this->apu = apu; // test
 }
+uint16_t Bus::get_PC()
+{
+    return this->program_counter;
+}
 
 /**
  * Returns the most recently stored instruction.
