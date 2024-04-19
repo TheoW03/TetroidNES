@@ -10,8 +10,6 @@
 
 using namespace std;
 
-
-
 uint16_t address_mode(AddressMode address, CPU &cpu)
 {
 	switch (address)
@@ -66,6 +64,14 @@ uint16_t address_mode(AddressMode address, CPU &cpu)
 
 // data transfer instructions, includes MOV...Stack pointer what not
 #pragma region data transfer instructions
+void LDA(AddressMode addressType, CPU &cpu)
+{
+	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	cpu.A_Reg = value;
+	set_zero(cpu.A_Reg, cpu);
+	set_negative(cpu.A_Reg, cpu);
+}
+
 void LDA(uint8_t current_instruction, CPU &cpu)
 {
 	map<uint8_t, AddressMode> address_mode_map;
@@ -82,7 +88,13 @@ void LDA(uint8_t current_instruction, CPU &cpu)
 	set_zero(cpu.A_Reg, cpu);
 	set_negative(cpu.A_Reg, cpu);
 }
-
+void LDX(AddressMode addressType, CPU &cpu)
+{
+	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	cpu.X_Reg = value;
+	set_zero(cpu.X_Reg, cpu);
+	set_negative(cpu.X_Reg, cpu);
+}
 void LDX(uint8_t current_instruction, CPU &cpu)
 {
 	map<uint8_t, AddressMode> address_mode_map;
@@ -91,10 +103,7 @@ void LDX(uint8_t current_instruction, CPU &cpu)
 	address_mode_map[0xB6] = AddressMode::ZERO_PAGE_Y;
 	address_mode_map[0xAE] = AddressMode::ABSOLUTE;
 	address_mode_map[0xBE] = AddressMode::ABSOLUTE_Y;
-	uint8_t value = cpu.bus.read_8bit(address_mode(address_mode_map[current_instruction],
-												   cpu));
-	cpu.X_Reg = (value);
-	cpu.PC++;
+
 	if (address_mode_map[current_instruction] == AddressMode::ABSOLUTE // meow
 		|| address_mode_map[current_instruction] == AddressMode::ABSOLUTE_Y)
 	{
@@ -102,6 +111,13 @@ void LDX(uint8_t current_instruction, CPU &cpu)
 	}
 	set_zero(cpu.X_Reg, cpu);
 	set_negative(cpu.X_Reg, cpu);
+}
+void LDY(AddressMode addressType, CPU &cpu)
+{
+	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	cpu.Y_Reg = (value);
+	set_zero(cpu.Y_Reg, cpu);
+	set_negative(cpu.Y_Reg, cpu);
 }
 
 void LDY(uint8_t current_instruction, CPU &cpu)

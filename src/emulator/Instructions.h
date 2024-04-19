@@ -4,7 +4,11 @@
 
 using namespace std;
 
-void LDA(uint8_t current_instruction, CPU &cpu);
+// void LDA(uint8_t current_instruction, CPU &cpu);s
+void LDA(AddressMode addressType, CPU &cpu);
+void LDX(AddressMode addressType, CPU &cpu);
+void LDY(AddressMode addressType, CPU &cpu);
+
 void LDX(uint8_t current_instruction, CPU &cpu);
 void LDY(uint8_t current_instruction, CPU &cpu);
 void ADC(uint8_t current_instruction, CPU &cpu);
