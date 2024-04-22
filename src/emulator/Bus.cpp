@@ -3,6 +3,9 @@
 #include "APU.h"
 
 using namespace std;
+#define TOP_STACK 0x1ff
+#define BOTTOM_STACK 0x100
+#define STACK_RESET 0xfd
 
 // const static uint8_t ram_end = 0x0FFF;
 // const static uint8_t ppu_end = 0x2000;
@@ -21,6 +24,8 @@ Bus::Bus(Rom rom)
     this->ppu = ppu; // test
     APU APU();
     this->apu = apu; // test
+    this->stack_pointer = STACK_RESET;
+    this->stack = BOTTOM_STACK + stack_pointer;
 }
 uint16_t Bus::get_PC()
 {
@@ -44,19 +49,21 @@ uint8_t Bus::get_current_instruction()
  */
 uint8_t Bus::fetch_next()
 {
+
     uint8_t current_instruction = get_current_instruction();
     stored_instructions[1] = stored_instructions[0];
+    program_counter++;
     stored_instructions[0] = rom.PRG[this->program_counter - reset_vector];
-    this->program_counter++;
     return current_instruction;
 }
 
 void Bus::fill(uint16_t pc)
 {
-    stored_instructions[1] = rom.PRG[(pc - reset_vector)];
     stored_instructions[0] = rom.PRG[(pc + 1) - reset_vector];
+    stored_instructions[1] = rom.PRG[(pc - reset_vector)];
     clock_cycles += 2;
     this->program_counter = pc;
+    program_counter++;
 }
 
 uint8_t Bus::read_8bit(uint16_t address)
@@ -120,7 +127,9 @@ uint16_t Bus::read_16bit(uint16_t address)
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
+
         uint8_t lsb = fetch_next();
+
         uint8_t msb = fetch_next();
         return (uint16_t)(msb << 8) | lsb;
     }
@@ -161,4 +170,44 @@ void Bus::print_clock()
 {
     cout << "Clock: " << clock_cycles << endl;
     this->clock_cycles = 0;
+}
+void Bus::push_stack8(uint8_t value)
+{
+    this->stack_pointer--;
+    this->stack = (stack_pointer + BOTTOM_STACK);
+    write_8bit((stack_pointer + BOTTOM_STACK), value);
+}
+uint8_t Bus::pop_stack8()
+{
+    uint8_t value = read_8bit(this->stack_pointer + BOTTOM_STACK);
+    this->stack_pointer++;
+    this->stack = (stack_pointer + BOTTOM_STACK);
+    return value;
+}
+void Bus::push_stack16(uint16_t value)
+{
+    push_stack8(value >> 8);
+    push_stack8(value & 0xff);
+}
+uint16_t Bus::pop_stack16()
+{
+    uint8_t lsb = pop_stack8();
+    uint8_t msb = pop_stack8();
+    return (uint16_t)(msb << 8) | lsb;
+}
+uint8_t Bus::get_stack_pointer()
+{
+    return this->stack_pointer;
+}
+
+void Bus::set_stack_pointer(uint8_t value)
+{
+    this->stack_pointer = value;
+    this->stack = (stack_pointer + BOTTOM_STACK);
+}
+
+void Bus::print_stack()
+{
+    printf("stack: %x \n", this->stack);
+    printf("stack_pointer %x \n", this->stack_pointer);
 }

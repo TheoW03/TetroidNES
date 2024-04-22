@@ -8,7 +8,6 @@ struct CPU
     uint8_t X_Reg;
     uint8_t Y_Reg;
     uint8_t A_Reg;
-    uint16_t stack_pointer;
     uint8_t status;
     Bus bus;
 };

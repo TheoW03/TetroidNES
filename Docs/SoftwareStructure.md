@@ -30,11 +30,10 @@ once the ROM is loaded. it stores all this in the Bus.cpp class and CPU struct
 ```C++
 struct CPU
 {
+    uint8_t A_Reg; //NES's multi purpose registers (they are 3. A,X,Y)
     uint8_t X_Reg;
     uint8_t Y_Reg; 
-    uint8_t A_Reg; //NES's multi purpose registers (they are 3. A,X,Y)
     uint16_t stack_pointer; //Stack
-    uint16_t PC; //depreciated. we use bus.program_counter
     uint8_t status; //status reguster. they are 8 different statuses. used for branching 
     Bus bus; //the data bus (its used to communicate data between componets)
 };

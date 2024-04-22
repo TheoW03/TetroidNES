@@ -96,29 +96,32 @@ void LDY(AddressMode addressType, CPU &cpu)
 void PLP(AddressMode addressType, CPU &cpu)
 {
 	// TODO: rotate left
-	cpu.status = cpu.bus.read_8bit(cpu.stack_pointer);
-	cpu.stack_pointer++;
+	cpu.status = cpu.bus.pop_stack8();
+	// cpu.stack_pointer++;
 }
 
 void PHP(AddressMode addressType, CPU &cpu)
 {
 	// TODO: rotate left
-	cpu.stack_pointer--;
-	cpu.bus.write_8bit(cpu.stack_pointer, cpu.status);
+	// cpu.stack_pointer--;
+	// cpu.bus.write_8bit(cpu.stack_pointer, cpu.status);
+
+	cpu.bus.push_stack8(cpu.status);
 }
 
 void PHA(AddressMode addressType, CPU &cpu)
 {
 	// push accumulator on stack
-	cpu.stack_pointer--;
-	cpu.bus.write_8bit(cpu.stack_pointer, cpu.A_Reg);
+	// cpu.stack_pointer--;
+	// cpu.bus.write_8bit(cpu.stack_pointer, cpu.A_Reg);
+	cpu.bus.push_stack8(cpu.A_Reg);
 }
 
 void PLA(AddressMode addressType, CPU &cpu)
 {
 	// pull accumulator
-	cpu.A_Reg = cpu.bus.read_8bit(cpu.stack_pointer);
-	cpu.stack_pointer++;
+	cpu.A_Reg = cpu.bus.pop_stack8();
+	// cpu.stack_pointer++;
 
 	set_zero(cpu.A_Reg, cpu);
 	set_negative(cpu.A_Reg, cpu);
@@ -180,7 +183,8 @@ void TXA(AddressMode addressType, CPU &cpu)
 void TSX(AddressMode addressType, CPU &cpu)
 {
 	// X = S
-	cpu.X_Reg = cpu.stack_pointer;
+	// cpu.X_Reg = cpu.stack_pointer;
+	cpu.X_Reg = cpu.bus.get_stack_pointer();
 	set_zero(cpu.X_Reg, cpu);
 	set_negative(cpu.X_Reg, cpu);
 }
@@ -188,7 +192,8 @@ void TSX(AddressMode addressType, CPU &cpu)
 void TXS(AddressMode addressType, CPU &cpu)
 {
 	// S = X
-	cpu.stack_pointer = cpu.X_Reg;
+	// cpu.stack_pointer = cpu.X_Reg;
+	cpu.bus.set_stack_pointer(cpu.X_Reg);
 }
 
 #pragma endregion region data transfer instructions
@@ -469,9 +474,12 @@ void RTI(AddressMode addressType, CPU &cpu)
 {
 	// TODO:return from interrupt
 	// cpu.PC = cpu.bus.read_16bit(cpu.stack_pointer);
-	cpu.bus.fill(cpu.bus.read_16bit(cpu.stack_pointer));
-	cpu.stack_pointer += 2;
-	cpu.status = cpu.bus.read_8bit(cpu.stack_pointer);
+	cpu.bus.fill(cpu.bus.pop_stack16());
+	cpu.status = cpu.bus.pop_stack8();
+	// cpu.bus.fill(cpu.bus.read_16bit(cpu.stack_pointer));
+	// cpu.stack_pointer += 2;
+	// cpu.status = cpu.bus.read_8bit(cpu.stack_pointer);
+
 	set_brk(cpu, 0);
 }
 #pragma endregion setFlags
@@ -486,7 +494,6 @@ void JMP(AddressMode addressType, CPU &cpu)
 	// address_mode_map[0x6C] = AddressMode::INDIRECT;
 	uint16_t new_PC = address_mode(addressType, cpu);
 	cpu.bus.fill(new_PC);
-	// printf(" PC: %x \n", cpu.PC);
 }
 
 void BEQ(AddressMode addressType, CPU &cpu)
@@ -499,7 +506,7 @@ void BEQ(AddressMode addressType, CPU &cpu)
 	{
 		return;
 	}
-	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 2) + new_PC));
+	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 1) + new_PC));
 }
 
 void BNE(AddressMode addressType, CPU &cpu)
@@ -512,7 +519,7 @@ void BNE(AddressMode addressType, CPU &cpu)
 	{
 		return;
 	}
-	uint16_t a = (uint16_t)((cpu.bus.get_PC() - 2) + (int8_t)new_PC);
+	uint16_t a = (uint16_t)((cpu.bus.get_PC() - 1) + (int8_t)new_PC);
 	cpu.bus.fill(a);
 }
 
@@ -526,7 +533,7 @@ void BCC(AddressMode addressType, CPU &cpu)
 	{
 		return;
 	}
-	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 2) + new_PC));
+	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 1) + new_PC));
 	// cpu.PC = (new_PC + 0x8000);
 }
 
@@ -541,20 +548,19 @@ void BCS(AddressMode addressType, CPU &cpu)
 		return;
 	}
 
-	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 2) + new_PC));
+	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 1) + new_PC));
 }
 
 void BPL(AddressMode addressType, CPU &cpu)
 {
 	map<uint8_t, AddressMode> address_mode_map;
-	// address_mode_map[0x10] = AddressMode::IMMEDIATE;
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
 	if (check_negative(cpu) != 0)
 	{
 		return;
 	}
 
-	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 2) + new_PC));
+	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 1) + new_PC));
 }
 
 void BMI(AddressMode addressType, CPU &cpu)
@@ -568,7 +574,7 @@ void BMI(AddressMode addressType, CPU &cpu)
 	{
 		return;
 	}
-	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 2) + new_PC));
+	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 1) + new_PC));
 }
 
 void BVC(AddressMode addressType, CPU &cpu)
@@ -584,7 +590,7 @@ void BVC(AddressMode addressType, CPU &cpu)
 	}
 
 	// cpu.PC = (new_PC + 0x8000);
-	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 2) + new_PC));
+	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 1) + new_PC));
 }
 
 void BVS(AddressMode addressType, CPU &cpu)
@@ -598,31 +604,23 @@ void BVS(AddressMode addressType, CPU &cpu)
 		return;
 	}
 
-	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 2) + new_PC));
+	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 1) + new_PC));
 }
 
 void JSR(AddressMode addressType, CPU &cpu)
 {
 	// TODO: functions
 	map<uint8_t, AddressMode> address_mode_map;
-	// address_mode_map[0x20] = AddressMode::ABSOLUTE;
 	uint16_t new_PC = (uint16_t)(address_mode(addressType, cpu));
-	cpu.stack_pointer -= 2;
-	cpu.bus.write_16bit(cpu.stack_pointer, cpu.bus.get_PC());
+	cpu.bus.push_stack16(cpu.bus.get_PC()); // "potential bugs"
 	cpu.bus.fill(new_PC);
 }
 
 void RTS(AddressMode addressType, CPU &cpu)
 {
-	// cpu.stack_pointer += 2;
-	cpu.bus.fill(cpu.bus.read_16bit(cpu.stack_pointer));
-	// printf("sp: %x \n", cpu.stack_pointer);
-
-	// printf("pc: %x \n", cpu.bus.read_16bit(cpu.stack_pointer));
-	cpu.stack_pointer += 2;
-	// cpu.PC++;
-
-	// cpu.stack_pointer += 2;
+	cpu.bus.fill(cpu.bus.pop_stack16() - 1);
+	cout << "this wordk" << endl;
+	printf("PC: %x \n", cpu.bus.get_PC());
 }
 
 void CMP(AddressMode addressType, CPU &cpu)

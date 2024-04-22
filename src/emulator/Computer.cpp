@@ -57,7 +57,7 @@ void init(string file_name)
 	cpu.status = 0;
 	cpu.X_Reg = 0;
 	cpu.Y_Reg = 0;
-	cpu.stack_pointer = 0xfd;
+	// cpu.stack_pointer = 0xfd;
 	cpu.bus = bus;
 	cpu.bus.clock_cycles = 0;
 	run(cpu);
@@ -323,7 +323,8 @@ void printCPU_stats(CPU cpu)
 	printf("X_Reg: %d \n", cpu.X_Reg);
 	printf("Y_Reg: %d \n", cpu.Y_Reg);
 	printf("Program Counter: 0x%X \n", cpu.bus.get_PC());
-	printf("Stack Pointer: 0x%X \n", cpu.stack_pointer);
+	// printf("Stack Pointer: 0x%X \n", cpu.stack_pointer);
+	cpu.bus.print_stack();
 	bitset<7> status(cpu.status);
 	cpu.bus.print_clock();
 	cout << "cpu status register: " << status << endl;
@@ -359,10 +360,10 @@ void run(CPU cpu)
 					continue;
 				}
 				set_brk(cpu, 1);
-				cpu.bus.write_8bit(cpu.stack_pointer, cpu.status);
+				// cpu.bus.write_8bit(cpu.stack_pointer, cpu.status);
+				cpu.bus.push_stack8(cpu.status);
 				cpu.bus.fetch_next();
-				cpu.stack_pointer -= 2;
-				cpu.bus.write_16bit(cpu.stack_pointer, cpu.bus.get_PC());
+				cpu.bus.push_stack16(cpu.bus.get_PC());
 				printf("Halt instruction encountered.\n");
 				printCPU_stats(cpu);
 				cout << "program succesfully ended" << endl;
