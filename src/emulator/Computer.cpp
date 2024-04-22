@@ -327,7 +327,7 @@ void printCPU_stats(CPU cpu)
 	cpu.bus.print_stack();
 	bitset<7> status(cpu.status);
 	cpu.bus.print_clock();
-	cout << "cpu status register: " << status << endl;
+	cout << "cpu status register: 0b" << status << endl;
 }
 /**
  * Executes instructions in a loop and handles proper/improper exits.
