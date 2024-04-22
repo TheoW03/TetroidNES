@@ -80,7 +80,6 @@ void LDX(AddressMode addressType, CPU &cpu)
 {
 	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
 	cpu.X_Reg = value;
-	cout << "LDX" << endl;
 	set_zero(cpu.X_Reg, cpu);
 	set_negative(cpu.X_Reg, cpu);
 }
@@ -619,8 +618,6 @@ void JSR(AddressMode addressType, CPU &cpu)
 void RTS(AddressMode addressType, CPU &cpu)
 {
 	cpu.bus.fill(cpu.bus.pop_stack16() - 1);
-	cout << "this wordk" << endl;
-	printf("PC: %x \n", cpu.bus.get_PC());
 }
 
 void CMP(AddressMode addressType, CPU &cpu)
