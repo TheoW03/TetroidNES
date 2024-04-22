@@ -52,8 +52,7 @@ void init(string file_name)
 	// Bus bus(rom);
 	bus.write_16bit(0xFFFC, 0x8000);
 	CPU cpu;
-	cpu.PC = bus.read_16bit(0xFFFC);
-	bus.fill(cpu.PC);
+	bus.fill(bus.read_16bit(0xFFFC));
 	cpu.A_Reg = 0;
 	cpu.status = 0;
 	cpu.X_Reg = 0;
@@ -334,14 +333,13 @@ void printCPU_stats(CPU cpu)
  */
 void run(CPU cpu)
 {
-	while (cpu.PC < 0xFFFF)
+	while (cpu.bus.get_PC() < 0xFFFF)
 	{
 		if (check_brk(cpu) != 0)
 		{
 			continue;
 		}
 		current_instruction = cpu.bus.read_8bit(cpu.bus.get_PC());
-		printf("%x \n", current_instruction);
 		if (current_instruction == 0xEA)
 		{
 			continue;
@@ -385,7 +383,6 @@ void run(CPU cpu)
 			Instruction a = instructionMap.at(current_instruction);
 			a.i(a.addressmode, cpu);
 		}
-		cpu.bus.print_clock();
 		// this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }

@@ -3,7 +3,7 @@ project(CMakeSFMLProject LANGUAGES CXX)
 
 set(CMAKE_EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/..)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/..)
-set(EXECUTABLE_NAME output.exe)
+set(EXECUTABLE_NAME output)
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 include(FetchContent)

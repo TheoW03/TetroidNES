@@ -5,8 +5,6 @@
 #include "../src/emulator/LoadRom.h"
 #include <vector>
 #include <bitset>
-#include <thread>
-// #include <pthread.h>
 #include "SetupSFML.h"
 #include <cassert>
 using namespace std;

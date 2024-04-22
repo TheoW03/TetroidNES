@@ -74,7 +74,6 @@ void LDA(AddressMode addressType, CPU &cpu)
 	cpu.A_Reg = value;
 	set_zero(cpu.A_Reg, cpu);
 	set_negative(cpu.A_Reg, cpu);
-	cout << "LDA" << endl;
 }
 
 void LDX(AddressMode addressType, CPU &cpu)
@@ -469,7 +468,8 @@ void CLD(AddressMode addressType, CPU &cpu)
 void RTI(AddressMode addressType, CPU &cpu)
 {
 	// TODO:return from interrupt
-	cpu.PC = cpu.bus.read_16bit(cpu.stack_pointer);
+	// cpu.PC = cpu.bus.read_16bit(cpu.stack_pointer);
+	cpu.bus.fill(cpu.bus.read_16bit(cpu.stack_pointer));
 	cpu.stack_pointer += 2;
 	cpu.status = cpu.bus.read_8bit(cpu.stack_pointer);
 	set_brk(cpu, 0);
@@ -495,9 +495,6 @@ void BEQ(AddressMode addressType, CPU &cpu)
 
 	// address_mode_map[0xF0] = AddressMode::IMMEDIATE;
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
-	printf("%x \n", new_PC);
-	printf("%x \n", cpu.bus.get_PC());
-
 	if (check_zero(cpu) == 0)
 	{
 		return;
@@ -527,7 +524,6 @@ void BCC(AddressMode addressType, CPU &cpu)
 
 	if (check_carry(cpu) != 0)
 	{
-		cpu.PC++;
 		return;
 	}
 	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 2) + new_PC));
@@ -555,7 +551,6 @@ void BPL(AddressMode addressType, CPU &cpu)
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
 	if (check_negative(cpu) != 0)
 	{
-		cpu.PC++;
 		return;
 	}
 
