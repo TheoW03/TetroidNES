@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Bus.h"
+// #include <SFML/Graphics.hpp>
 using namespace std;
 #ifndef CPU_H
 #define CPU_H
@@ -9,6 +10,8 @@ struct CPU
     uint8_t Y_Reg;
     uint8_t A_Reg;
     uint8_t status;
+    // sf::RenderWindow Render_window;
+
     Bus bus;
 };
 #endif

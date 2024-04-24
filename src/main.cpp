@@ -136,6 +136,9 @@ struct A
 };
 int main(int argc, char *argv[])
 {
+	// const int8_t *c = "hello world";
+	// signed char* c = "hello world";
+	// printf("%s \n", c);
 	// Rom rom = modify_for_NESfile(load_rom(argv[1]));
 	init(argv[1]);
 	// A a = {1, 2};

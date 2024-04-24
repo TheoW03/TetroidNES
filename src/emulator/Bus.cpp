@@ -1,6 +1,7 @@
 #include "Bus.h"
 #include "PPU.h"
 #include "APU.h"
+#include <SFML/Graphics.hpp>
 
 using namespace std;
 #define TOP_STACK 0x1ff

@@ -3,6 +3,8 @@
 #include <iostream>
 #include <map>
 #include <thread>
+#include <SFML/Graphics.hpp>
+
 // #include <pthread.h>
 // #include <unistd.h>
 
@@ -60,6 +62,7 @@ void init(string file_name)
 	// cpu.stack_pointer = 0xfd;
 	cpu.bus = bus;
 	cpu.bus.clock_cycles = 0;
+
 	run(cpu);
 }
 
@@ -334,8 +337,24 @@ void printCPU_stats(CPU cpu)
  */
 void run(CPU cpu)
 {
-	while (cpu.bus.get_PC() < 0xFFFF)
+	sf::RenderWindow window(sf::VideoMode(800, 600), "test window");
+	window.setFramerateLimit(144);
+
+	while (cpu.bus.get_PC() < 0xFFFF || window.isOpen())
 	{
+		// if(window.)
+		for (auto event = sf::Event{}; window.pollEvent(event);)
+		{
+			if (event.type == sf::Event::Closed)
+			{
+				window.close();
+				cout << "" << endl;
+				cout << "program succesfully ended" << endl;
+				exit(EXIT_SUCCESS);
+			}
+		}
+		window.display();
+
 		if (check_brk(cpu) != 0)
 		{
 			continue;
@@ -366,8 +385,6 @@ void run(CPU cpu)
 				cpu.bus.push_stack16(cpu.bus.get_PC());
 				printf("Halt instruction encountered.\n");
 				printCPU_stats(cpu);
-				cout << "program succesfully ended" << endl;
-				return;
 			}
 			else
 			{
