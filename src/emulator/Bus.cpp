@@ -21,7 +21,7 @@ Bus::Bus(Rom rom)
     this->program_counter = 0;
 
     this->rom = rom;
-    PPU ppu(rom.CHR);
+    PPU ppu(rom.CHR, rom.mirror);
     this->ppu = ppu; // test
     APU APU();
     this->apu = apu; // test

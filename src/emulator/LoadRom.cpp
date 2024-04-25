@@ -2,7 +2,6 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
-#include "Memory.h"
 #include <cstdio>
 using namespace std;
 
@@ -37,7 +36,6 @@ vector<uint8_t> file_tobyte_vector(string file_name)
         uint8_t a = (uint8_t)infile.get();
         instructions.push_back(a);
     }
-    write_16bit(0xFFFC, 0x8000);
     return instructions;
 }
 

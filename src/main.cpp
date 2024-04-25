@@ -1,6 +1,5 @@
 #include <iostream>
 #include "../src/emulator/BitOperations.h"
-#include "../src/emulator/Memory.h"
 #include "../src/emulator/Computer.h"
 #include "../src/emulator/LoadRom.h"
 #include <vector>

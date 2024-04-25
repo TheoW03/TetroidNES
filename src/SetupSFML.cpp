@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include "../src/emulator/Memory.h"
 using namespace std;
 
 sf::Color getColorFromByte(uint8_t byte)
@@ -40,26 +39,26 @@ sf::Color getColorFromByte(uint8_t byte)
 }
 bool update_texture(uint8_t pixels[32 * 32 * 4])
 {
-    // cout << "test: " << static_cast<int>(color.r) << endl;
-    int frame_idx = 0;
+    // // cout << "test: " << static_cast<int>(color.r) << endl;
+    // int frame_idx = 0;
     bool update = false;
 
-    for (int i = 0x0200; i < 0x0600; i++)
-    {
-        sf::Color c = getColorFromByte(read_8bit(i));
-        if (pixels[frame_idx] != static_cast<uint8_t>(c.r)         // m
-            || pixels[frame_idx + 1] != static_cast<uint8_t>(c.g)  // s
-            || pixels[frame_idx + 2] != static_cast<uint8_t>(c.b)) // s
-        {
-            pixels[frame_idx] = static_cast<uint8_t>(c.r);
-            pixels[frame_idx + 1] = static_cast<uint8_t>(c.g);
-            pixels[frame_idx + 2] = static_cast<uint8_t>(c.b);
-            pixels[frame_idx + 3] = 255;
+    // for (int i = 0x0200; i < 0x0600; i++)
+    // {
+    //     sf::Color c = getColorFromByte(read_8bit(i));
+    //     if (pixels[frame_idx] != static_cast<uint8_t>(c.r)         // m
+    //         || pixels[frame_idx + 1] != static_cast<uint8_t>(c.g)  // s
+    //         || pixels[frame_idx + 2] != static_cast<uint8_t>(c.b)) // s
+    //     {
+    //         pixels[frame_idx] = static_cast<uint8_t>(c.r);
+    //         pixels[frame_idx + 1] = static_cast<uint8_t>(c.g);
+    //         pixels[frame_idx + 2] = static_cast<uint8_t>(c.b);
+    //         pixels[frame_idx + 3] = 255;
 
-            update = true;
-        }
-        frame_idx += 4;
-    }
+    //         update = true;
+    //     }
+    //     frame_idx += 4;
+    // }
     return update;
 }
 void runsfml()
@@ -88,27 +87,27 @@ void runsfml()
                 window.close();
             }
         }
-        write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-        {
-            write_8bit(0xff, 0x77);
-        }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-        {
-            write_8bit(0xff, 0x61);
-        }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        {
-            write_8bit(0xff, 0x73);
-        }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        {
-            write_8bit(0xff, 0x64);
-        }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-        {
-            exit(EXIT_SUCCESS);
-        }
+        // write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
+        // if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        // {
+        //     write_8bit(0xff, 0x77);
+        // }
+        // else if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        // {
+        //     write_8bit(0xff, 0x61);
+        // }
+        // else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        // {
+        //     write_8bit(0xff, 0x73);
+        // }
+        // else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        // {
+        //     write_8bit(0xff, 0x64);
+        // }
+        // else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        // {
+        //     exit(EXIT_SUCCESS);
+        // }
         update_texture(pixels);
         texture.update(pixels);
         window.clear(); // Change this to the desired color
