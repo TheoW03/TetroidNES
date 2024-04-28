@@ -3,6 +3,8 @@
 #include <iostream>
 #include <map>
 #include <thread>
+#include <SFML/Graphics.hpp>
+
 // #include <pthread.h>
 // #include <unistd.h>
 
@@ -12,13 +14,9 @@
 #include "Bus.h"
 #include "Instructions.h"
 #include "LoadRom.h"
-#include "Memory.h"
 #include "StatusRegister.h"
 
-using namespace std;
 
-// typedef void (*instructionPointer)(uint8_t, CPU &);
-// typedef void (*instructionPointer)(AddressMode, CPU &);
 using instructionPointer = void (*)(AddressMode, CPU &);
 
 uint8_t current_instruction = 0;
@@ -37,7 +35,7 @@ void initializeInstructionMap();
 /**
  * Initializes the CPU object and memories.
  */
-void init(string file_name)
+void init(std::string file_name)
 {
 	initializeInstructionMap();
 	// vector<uint8_t> test = {0xa9, 0xa, 0xa0, 0xa, 0xa2, 0xa, 0x00};
@@ -47,7 +45,7 @@ void init(string file_name)
 	// rom.mapper = 0;
 	// rom.mirror = MirrorType::FOUR_SCREEN;
 	// Bus bus(rom);
-	vector<uint8_t> v = file_tobyte_vector(file_name);
+	std::vector<uint8_t> v = file_tobyte_vector(file_name);
 	Bus bus(load_rom(v));
 	// Bus bus(rom);
 	bus.write_16bit(0xFFFC, 0x8000);
@@ -60,6 +58,7 @@ void init(string file_name)
 	// cpu.stack_pointer = 0xfd;
 	cpu.bus = bus;
 	cpu.bus.clock_cycles = 0;
+
 	run(cpu);
 }
 
@@ -325,17 +324,34 @@ void printCPU_stats(CPU cpu)
 	printf("Program Counter: 0x%X \n", cpu.bus.get_PC());
 	// printf("Stack Pointer: 0x%X \n", cpu.stack_pointer);
 	cpu.bus.print_stack();
-	bitset<7> status(cpu.status);
+	std::bitset<7> status(cpu.status);
 	cpu.bus.print_clock();
-	cout << "cpu status register: 0b" << status << endl;
+	std::cout << "cpu status register: 0b" << status << std::endl;
 }
 /**
  * Executes instructions in a loop and handles proper/improper exits.
  */
 void run(CPU cpu)
 {
-	while (cpu.bus.get_PC() < 0xFFFF)
+	sf::RenderWindow window(sf::VideoMode(800, 600), "test window");
+	window.setFramerateLimit(144);
+	while (cpu.bus.get_PC() < 0xFFFF || window.isOpen())
 	{
+// if(window.)
+#pragma region SFML boiler plat
+		for (auto event = sf::Event{}; window.pollEvent(event);)
+		{
+			if (event.type == sf::Event::Closed)
+			{
+				window.close();
+				std::cout << "" << std::endl;
+				std::cout << "program succesfully ended" << std::endl;
+				exit(EXIT_SUCCESS);
+			}
+		}
+		window.display();
+		cpu.bus.write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
+#pragma endregion
 		if (check_brk(cpu) != 0)
 		{
 			continue;
@@ -366,15 +382,13 @@ void run(CPU cpu)
 				cpu.bus.push_stack16(cpu.bus.get_PC());
 				printf("Halt instruction encountered.\n");
 				printCPU_stats(cpu);
-				cout << "program succesfully ended" << endl;
-				return;
 			}
 			else
 			{
-				cout << "Unrecognized instruction encountered." << endl;
+				std::cout << "Unrecognized instruction encountered." << std::endl;
 				printf("Current instruction 0x%x is unrecognized. \n", current_instruction);
 				printCPU_stats(cpu);
-				cout << "Program exited unsuccessfully" << endl;
+				std::cout << "Program exited unsuccessfully" << std::endl;
 				exit(EXIT_FAILURE);
 			}
 		}

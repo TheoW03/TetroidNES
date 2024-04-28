@@ -21,7 +21,6 @@ add_executable(${EXECUTABLE_NAME} src/main.cpp
     src/emulator/Computer.cpp
     src/emulator/Instructions.cpp
     src/emulator/LoadRom.cpp
-    src/emulator/Memory.cpp
     src/emulator/PPU.cpp
     src/emulator/StatusRegister.cpp
 )

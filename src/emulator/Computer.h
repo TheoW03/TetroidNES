@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Bus.h"
-using namespace std;
+// #include <SFML/Graphics.hpp>
 #ifndef CPU_H
 #define CPU_H
 struct CPU
@@ -9,6 +9,8 @@ struct CPU
     uint8_t Y_Reg;
     uint8_t A_Reg;
     uint8_t status;
+    // sf::RenderWindow Render_window;
+
     Bus bus;
 };
 #endif
@@ -31,4 +33,4 @@ enum class AddressMode
     IMPLIED
 };
 #endif
-void init(string file_name);
+void init(std::string file_name);

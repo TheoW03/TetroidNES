@@ -3,9 +3,7 @@
 #include "Bus.h"
 #include "Computer.h"
 
-using namespace std;
-
-Bus addressBus = Bus();
+// using namespace std;
 
 /**
  * @brief get PC because this is the address bus this. does the immediate address or
@@ -89,7 +87,7 @@ uint16_t absolute_page_address_mode_X(CPU &cpu)
  */
 uint16_t absolute_page_address_mode_Y(CPU &cpu)
 {
-    return (addressBus.read_16bit(cpu.bus.get_PC()) + cpu.Y_Reg);
+    return (cpu.bus.read_16bit(cpu.bus.get_PC()) + cpu.Y_Reg);
 }
 
 uint16_t indirect_address_mode(CPU &cpu)

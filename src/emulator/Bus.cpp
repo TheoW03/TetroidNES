@@ -1,8 +1,8 @@
 #include "Bus.h"
 #include "PPU.h"
 #include "APU.h"
+#include <SFML/Graphics.hpp>
 
-using namespace std;
 #define TOP_STACK 0x1ff
 #define BOTTOM_STACK 0x100
 #define STACK_RESET 0xfd
@@ -20,7 +20,7 @@ Bus::Bus(Rom rom)
     this->program_counter = 0;
 
     this->rom = rom;
-    PPU ppu(rom.CHR);
+    PPU ppu(rom.CHR, rom.mirror);
     this->ppu = ppu; // test
     APU APU();
     this->apu = apu; // test

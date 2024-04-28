@@ -2,8 +2,6 @@
 
 #include "Computer.h"
 
-using namespace std;
-
 // void LDA(AddressMode addressType, CPU &cpu);s
 void LDA(AddressMode addressType, CPU &cpu);
 void LDX(AddressMode addressType, CPU &cpu);
