@@ -16,8 +16,7 @@
 #include "LoadRom.h"
 #include "StatusRegister.h"
 
-// typedef void (*instructionPointer)(uint8_t, CPU &);
-// typedef void (*instructionPointer)(AddressMode, CPU &);
+
 using instructionPointer = void (*)(AddressMode, CPU &);
 
 uint8_t current_instruction = 0;
