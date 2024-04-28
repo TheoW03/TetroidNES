@@ -3,7 +3,6 @@
 #include <fstream>
 #include <sstream>
 #include <cstdio>
-using namespace std;
 
 #define PRG_ROM_SIZE 16384
 #define CHR_ROM_SIZE 8192
@@ -15,20 +14,19 @@ enum MirrorType
 };
 struct Rom
 {
-    vector<uint8_t> PRG;
-    vector<uint8_t> CHR;
+    std::vector<uint8_t> PRG;
+    std::vector<uint8_t> CHR;
     uint8_t mapper;
     MirrorType mirror;
 };
-vector<uint8_t> file_tobyte_vector(string file_name)
+std::vector<uint8_t> file_tobyte_vector(std::string file_name)
 {
-    vector<uint8_t> instructions;
-    vector<string> vec;
-    ifstream infile(file_name, ios::binary); // Open the file for reading
-    string line;
+    std::vector<uint8_t> instructions;
+    std::ifstream infile(file_name, std::ios::binary); // Open the file for reading
+    std::string line;
     if (!infile)
     {
-        cerr << "Error opening file." << endl;
+        std::cerr << "Error opening file." << std::endl;
         exit(EXIT_FAILURE);
     }
     while (infile)
@@ -39,19 +37,19 @@ vector<uint8_t> file_tobyte_vector(string file_name)
     return instructions;
 }
 
-Rom load_rom(vector<uint8_t> instructions)
+Rom load_rom(std::vector<uint8_t> instructions)
 {
     Rom rom;
     uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);
     rom.mapper = map;
     if (instructions[0] != 'N' && instructions[1] != 'E' && instructions[2] != 'S' && instructions[3] != 0x1a)
     {
-        cout << "not NES Rom" << endl;
+        std::cout << "not NES Rom" << std::endl;
         exit(EXIT_FAILURE);
     }
     if ((instructions[7] & 0b1101) == 0xc)
     {
-        cout << "NES 1.0 format" << endl;
+        std::cout << "NES 1.0 format" << std::endl;
         exit(EXIT_FAILURE);
     }
 

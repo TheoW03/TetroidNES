@@ -3,7 +3,6 @@
 #include <bitset>
 #include "Computer.h"
 #include "StatusRegister.h"
-using namespace std;
 
 uint8_t add(uint8_t a, uint8_t b, CPU &cpu, uint8_t &carry)
 {

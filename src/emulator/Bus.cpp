@@ -3,7 +3,6 @@
 #include "APU.h"
 #include <SFML/Graphics.hpp>
 
-using namespace std;
 #define TOP_STACK 0x1ff
 #define BOTTOM_STACK 0x100
 #define STACK_RESET 0xfd

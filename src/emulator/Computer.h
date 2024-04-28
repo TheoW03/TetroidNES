@@ -1,7 +1,6 @@
 #include <iostream>
 #include "Bus.h"
 // #include <SFML/Graphics.hpp>
-using namespace std;
 #ifndef CPU_H
 #define CPU_H
 struct CPU
@@ -34,4 +33,4 @@ enum class AddressMode
     IMPLIED
 };
 #endif
-void init(string file_name);
+void init(std::string file_name);

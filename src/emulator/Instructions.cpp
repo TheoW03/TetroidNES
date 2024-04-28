@@ -8,8 +8,6 @@
 #include "StatusRegister.h"
 #include "Bus.h"
 
-using namespace std;
-
 uint16_t address_mode(AddressMode address, CPU &cpu)
 {
 	switch (address)
@@ -60,7 +58,7 @@ uint16_t address_mode(AddressMode address, CPU &cpu)
 	}
 	default:
 	{
-		cout << "Instruction not supported." << endl;
+		std::cout << "Instruction not supported." << std::endl;
 		return 0;
 	}
 	}

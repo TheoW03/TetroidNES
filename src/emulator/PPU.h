@@ -11,7 +11,7 @@ class PPU
 {
 private:
     uint8_t memory[0x800];
-    vector<uint8_t> chr_rom;
+    std::vector<uint8_t> chr_rom;
     uint8_t oam[0x80];
     uint8_t pallete[0x20];
     MirrorType mirrorType;

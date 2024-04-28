@@ -6,7 +6,6 @@
 #include <bitset>
 #include "SetupSFML.h"
 #include <cassert>
-using namespace std;
 // #define NAME_OF(v) #v
 
 // void *colored_pixels(void *arg)

@@ -1,7 +1,7 @@
 #include "PPU.h"
 #include <SFML/Graphics.hpp>
 
-PPU::PPU(vector<uint8_t> chr_rom, MirrorType mirrorType)
+PPU::PPU(std::vector<uint8_t> chr_rom, MirrorType mirrorType)
 {
     this->chr_rom = chr_rom;
     this->mirrorType = mirrorType;

@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-using namespace std;
 
 sf::Color getColorFromByte(uint8_t byte)
 {

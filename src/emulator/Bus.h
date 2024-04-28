@@ -2,7 +2,6 @@
 #include "PPU.h"
 #include "LoadRom.h"
 #include "APU.h"
-using namespace std;
 
 #ifndef BUS_H
 #define BUS_H
