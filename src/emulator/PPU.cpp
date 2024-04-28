@@ -21,6 +21,6 @@ uint16_t PPU::read_16bit_PPU(uint16_t addresss)
 void PPU::write_16bit_PPU(uint16_t address, uint16_t value)
 {
 }
-void PPU::write_8bit_PPU(uint16_t address, uint8_t value) // e
+void PPU::write_8bit_PPU(uint16_t address, uint8_t value)
 {
 }
