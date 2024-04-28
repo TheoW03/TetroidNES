@@ -3,8 +3,6 @@
 #include "Bus.h"
 #include "Computer.h"
 
-// using namespace std;
-
 /**
  * @brief get PC because this is the address bus this. does the immediate address or
  * "return the PC"

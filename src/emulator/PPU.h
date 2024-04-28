@@ -3,7 +3,6 @@
 #include <SFML/Graphics.hpp>
 // #include "Computer.h"
 #include "LoadRom.h"
-using namespace std;
 
 #ifndef PPU_H
 #define PPU_H
@@ -17,7 +16,7 @@ private:
     MirrorType mirrorType;
 
 public:
-    PPU(vector<uint8_t> chr_rom, MirrorType mirrorType);
+    PPU(std::vector<uint8_t> chr_rom, MirrorType mirrorType);
     PPU();
 
     uint8_t read_8bit_PPU(uint16_t address);

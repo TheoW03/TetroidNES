@@ -1,5 +1,4 @@
 #include <iostream>
-#include <map>
 
 #include "BitOperations.h"
 #include "Memory.h"
@@ -140,7 +139,6 @@ void STX(AddressMode addressType, CPU &cpu)
 void STY(AddressMode addressType, CPU &cpu)
 {
 	// store y in mem
-	map<uint8_t, AddressMode> address_mode_map;
 	uint16_t v = address_mode(addressType, cpu);
 	cpu.bus.write_8bit(v, cpu.Y_Reg);
 }
@@ -486,18 +484,12 @@ void RTI(AddressMode addressType, CPU &cpu)
 void JMP(AddressMode addressType, CPU &cpu)
 {
 
-	map<uint8_t, AddressMode> address_mode_map;
-	// address_mode_map[0x4C] = AddressMode::ABSOLUTE;
-	// address_mode_map[0x6C] = AddressMode::INDIRECT;
 	uint16_t new_PC = address_mode(addressType, cpu);
 	cpu.bus.fill(new_PC);
 }
 
 void BEQ(AddressMode addressType, CPU &cpu)
 {
-	map<uint8_t, AddressMode> address_mode_map;
-
-	// address_mode_map[0xF0] = AddressMode::IMMEDIATE;
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
 	if (check_zero(cpu) == 0)
 	{
@@ -508,8 +500,7 @@ void BEQ(AddressMode addressType, CPU &cpu)
 
 void BNE(AddressMode addressType, CPU &cpu)
 {
-	map<uint8_t, AddressMode> address_mode_map;
-	// address_mode_map[0xD0] = AddressMode::IMMEDIATE;
+	
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
 
 	if (check_zero(cpu) != 0)
@@ -522,8 +513,7 @@ void BNE(AddressMode addressType, CPU &cpu)
 
 void BCC(AddressMode addressType, CPU &cpu)
 {
-	map<uint8_t, AddressMode> address_mode_map;
-	// address_mode_map[0x90] = AddressMode::IMMEDIATE;
+
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
 
 	if (check_carry(cpu) != 0)
@@ -536,8 +526,7 @@ void BCC(AddressMode addressType, CPU &cpu)
 
 void BCS(AddressMode addressType, CPU &cpu)
 {
-	map<uint8_t, AddressMode> address_mode_map;
-	// address_mode_map[0xB0] = AddressMode::IMMEDIATE;
+
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
 
 	if (check_carry(cpu) == 0)
@@ -550,7 +539,6 @@ void BCS(AddressMode addressType, CPU &cpu)
 
 void BPL(AddressMode addressType, CPU &cpu)
 {
-	map<uint8_t, AddressMode> address_mode_map;
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
 	if (check_negative(cpu) != 0)
 	{
@@ -563,8 +551,6 @@ void BPL(AddressMode addressType, CPU &cpu)
 void BMI(AddressMode addressType, CPU &cpu)
 {
 	// TODO: Branch if negative
-	map<uint8_t, AddressMode> address_mode_map;
-	// address_mode_map[0x30] = AddressMode::IMMEDIATE;
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
 
 	if (check_negative(cpu) == 0)
@@ -577,8 +563,7 @@ void BMI(AddressMode addressType, CPU &cpu)
 void BVC(AddressMode addressType, CPU &cpu)
 {
 	// TODO: Branch if overflow clear
-	map<uint8_t, AddressMode> address_mode_map;
-	// address_mode_map[0x50] = AddressMode::IMMEDIATE;
+
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
 
 	if (check_overflow(cpu) != 0)
@@ -593,8 +578,6 @@ void BVC(AddressMode addressType, CPU &cpu)
 void BVS(AddressMode addressType, CPU &cpu)
 {
 	// TODO: Branch if overflow set
-	map<uint8_t, AddressMode> address_mode_map;
-	// address_mode_map[0x70] = AddressMode::IMMEDIATE;
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
 	if (check_overflow(cpu) == 0)
 	{
@@ -607,7 +590,6 @@ void BVS(AddressMode addressType, CPU &cpu)
 void JSR(AddressMode addressType, CPU &cpu)
 {
 	// TODO: functions
-	map<uint8_t, AddressMode> address_mode_map;
 	uint16_t new_PC = (uint16_t)(address_mode(addressType, cpu));
 	cpu.bus.push_stack16(cpu.bus.get_PC()); // "potential bugs"
 	cpu.bus.fill(new_PC);

@@ -2,7 +2,6 @@
 
 #include "Computer.h"
 
-// void LDA(AddressMode addressType, CPU &cpu);s
 void LDA(AddressMode addressType, CPU &cpu);
 void LDX(AddressMode addressType, CPU &cpu);
 void LDY(AddressMode addressType, CPU &cpu);

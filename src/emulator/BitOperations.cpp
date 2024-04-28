@@ -3,7 +3,6 @@
 #include <bitset>
 #include "Computer.h"
 #include "StatusRegister.h"
-
 uint8_t add(uint8_t a, uint8_t b, CPU &cpu, uint8_t &carry)
 {
 	uint8_t c_in = 0;
@@ -68,14 +67,12 @@ uint8_t decimal_sub(uint8_t a, uint8_t b, CPU &cpu, uint8_t &carry)
 	uint8_t hi_b = (b >> 4) & 0b1111;
 	if (lo_b > 0xa || hi_b > 0xa)
 	{
-		cout << "test" << endl;
 		return 0;
 	}
 	uint8_t lo_a = a & 0b1111;
 	uint8_t hi_a = (a >> 4) & 0b1111;
 	if (hi_a > 0xa || lo_a > 0xa)
 	{
-		cout << "test" << endl;
 		return 0;
 	}
 	uint8_t lo_diff = sub(lo_a, lo_b, cpu, carry);
@@ -112,10 +109,10 @@ uint8_t decimal_add(uint8_t a, uint8_t b, CPU &cpu, uint8_t &carry)
 
 uint8_t left_rotate(uint8_t n, uint8_t d)
 {
-    return (n << d) | (n >> (8 - d));
+	return (n << d) | (n >> (8 - d));
 }
 
 uint8_t right_rotate(uint8_t n, uint8_t d)
 {
-    return (n >> d) | (n << (8 - d));
+	return (n >> d) | (n << (8 - d));
 }

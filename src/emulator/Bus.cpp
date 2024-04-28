@@ -100,7 +100,7 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
-        cout << "Segmentation Fault (Core Dumped)" << endl;
+        std::cout << "Segmentation Fault (Core Dumped)" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -158,7 +158,7 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
-        cout << "Segmentation Fault (Core Dumped)" << endl;
+        std::cout << "Segmentation Fault (Core Dumped)" << std::endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -168,7 +168,7 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
  */
 void Bus::print_clock()
 {
-    cout << "Clock: " << clock_cycles << endl;
+    std::cout << "Clock: " << clock_cycles << std::endl;
     this->clock_cycles = 0;
 }
 void Bus::push_stack8(uint8_t value)

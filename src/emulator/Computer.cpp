@@ -16,7 +16,6 @@
 #include "LoadRom.h"
 #include "StatusRegister.h"
 
-
 using instructionPointer = void (*)(AddressMode, CPU &);
 
 uint8_t current_instruction = 0;
@@ -68,6 +67,8 @@ void init(std::string file_name)
  */
 void initializeInstructionMap()
 {
+
+	using std::make_pair; // here bc im lazy you may use using on the stack level. but lets stick to this
 
 #pragma region LDA
 	instructionMap.insert(make_pair(0xA9, Instruction{(instructionPointer)LDA, AddressMode::IMMEDIATE}));
