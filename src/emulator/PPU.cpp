@@ -6,6 +6,9 @@ PPU::PPU(std::vector<uint8_t> chr_rom, MirrorType mirrorType)
     this->chr_rom = chr_rom;
     this->mirrorType = mirrorType;
     this->internalDataBuffer = 0;
+    this->reg.ppuAddr.val = 0;
+    this->reg.ppuCtrl.val = 0;
+    this->reg.ppumask.val = 0;
 }
 
 PPU::PPU()
@@ -28,7 +31,7 @@ uint16_t PPU::mirror(uint16_t address)
 uint8_t PPU::read_PPU_data()
 {
     uint16_t addr = this->reg.ppuAddr.hi << 8 | (this->reg.ppuAddr.lo & 0xffff);
-    inc_address(reg.ppuCtrl.I ? 32 : 1);
+    this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
     if (addr >= 0 && addr <= 0x1fff)
     {
         uint8_t res = internalDataBuffer;
@@ -44,10 +47,38 @@ uint8_t PPU::read_PPU_data()
     return 0;
     // return 0;
 }
-void PPU::inc_address(uint8_t value)
+void PPU::write_PPU_address(uint8_t val)
 {
+    this->reg.ppuAddr.val = val;
 }
-
+void PPU::write_PPU_ctrl(uint8_t val)
+{
+    if (this->reg.scrollLatch)
+    {
+        this->reg.ppuAddr.lo = val;
+    }
+    else
+    {
+        this->reg.ppuAddr.hi = val;
+    }
+    this->reg.scrollLatch = !this->reg.scrollLatch;
+}
+void PPU::write_PPU_mask(uint8_t val)
+{
+    this->reg.ppumask.val = val;
+}
+void PPU::write_PPU_data(uint8_t val)
+{
+    uint16_t addr = this->reg.ppuAddr.hi << 8 | (this->reg.ppuAddr.lo & 0xffff);
+    this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
+    if (addr >= 0x2000 && addr <= 0x2fff)
+    {
+        uint8_t res = internalDataBuffer;
+        internalDataBuffer = memory[mirror(addr)];
+        return res;
+    }
+}
+// void PPU
 void PPU::write_PPU(uint16_t address, uint8_t value)
 {
 }

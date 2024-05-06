@@ -76,9 +76,25 @@ uint8_t Bus::read_8bit(uint16_t address)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        uint16_t mirror_address = address & 0x2007;
-        if (mirror_address == 0x2007)
+        if (address >= 0x2008)
+            while (address >= 0x2007)
+                address = address & 0x2007;
+        if (address == 0x2007)
             return ppu.read_PPU_data();
+        else
+        {
+            std::cout << "forbidden access to PPU write only address" << std::endl;
+            std::cout << "" << std::endl;
+            std::cout << "Exit failure" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    }
+    else if (address == 0x4014)
+    {
+        std::cout << "forbidden access to PPU write only address" << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Exit failure" << std::endl;
+        exit(EXIT_FAILURE);
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
@@ -98,7 +114,21 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        uint16_t mirror_address = address & 0x2007;
+        if (address >= 0x2008)
+            while (address >= 0x2007)
+                address = address & 0x2007;
+        if (address == 0x2000)
+        {
+            this->ppu.write_PPU_ctrl(value);
+        }
+        else if (address == 0x2006)
+        {
+            this->ppu.write_PPU_address(value);
+        }
+        else if (address == 0x2007)
+        {
+            this->ppu.write_PPU_data(value);
+        }
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
@@ -152,7 +182,9 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        uint16_t mirror_address = address & 0x2007;
+        // uint16_t mirror_address = address & 0x2007;
+        write_8bit(address + 1, value >> 8);
+        write_8bit(address, value);
     }
     else if (address == 0xFFFC)
     {

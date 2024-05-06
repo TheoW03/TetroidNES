@@ -38,14 +38,15 @@ void init(std::string file_name)
 {
 	initializeInstructionMap();
 	// vector<uint8_t> test = {0xa9, 0xa, 0xa0, 0xa, 0xa2, 0xa, 0x00};
-	// Rom rom;
-	// rom.PRG = test;
-	// rom.CHR = test;
-	// rom.mapper = 0;
-	// rom.mirror = MirrorType::FOUR_SCREEN;
-	// Bus bus(rom);
-	std::vector<uint8_t> v = file_tobyte_vector(file_name);
-	Bus bus(load_rom(v));
+	std::vector<uint8_t> test = {0xad, 0x07, 0x20, 0xa9, 0xa};
+	Rom rom;
+	rom.PRG = test;
+	rom.CHR = test;
+	rom.mapper = 0;
+	rom.mirror = MirrorType::FOUR_SCREEN;
+	Bus bus(rom);
+	// std::vector<uint8_t> v = file_tobyte_vector(file_name);
+	// Bus bus(load_rom(v));
 	// Bus bus(rom);
 	bus.write_16bit(0xFFFC, 0x8000);
 	CPU cpu;
