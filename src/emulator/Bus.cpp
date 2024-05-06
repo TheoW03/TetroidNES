@@ -77,6 +77,8 @@ uint8_t Bus::read_8bit(uint16_t address)
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
         uint16_t mirror_address = address & 0x2007;
+        if (mirror_address == 0x2007)
+            return ppu.read_PPU_data();
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
@@ -119,7 +121,7 @@ uint16_t Bus::read_16bit(uint16_t address)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        uint16_t mirror_address = address & 0x2007;
+        return read_8bit(address + 1) << 8 | read_8bit(address);
     }
     else if (address == 0xFFFC)
     {

@@ -25,22 +25,29 @@ uint16_t PPU::mirror(uint16_t address)
     return m;
 }
 
-uint8_t PPU::read_PPU(uint16_t address)
+uint8_t PPU::read_PPU_data()
 {
-    if (registers.addr >= 0 && registers.addr <= 0x1fff)
+    uint16_t addr = this->reg.ppuAddr.hi << 8 | (this->reg.ppuAddr.lo & 0xffff);
+    inc_address(reg.ppuCtrl.I ? 32 : 1);
+    if (addr >= 0 && addr <= 0x1fff)
     {
         uint8_t res = internalDataBuffer;
-        internalDataBuffer = chr_rom[registers.addr];
+        internalDataBuffer = chr_rom[addr];
         return res;
     }
-    else if (registers.addr >= 0x2000 && registers.addr <= 0x2fff)
+    else if (addr >= 0x2000 && addr <= 0x2fff)
     {
         uint8_t res = internalDataBuffer;
-        internalDataBuffer = memory[mirror(registers.addr)];
+        internalDataBuffer = memory[mirror(addr)];
         return res;
     }
     return 0;
+    // return 0;
 }
+void PPU::inc_address(uint8_t value)
+{
+}
+
 void PPU::write_PPU(uint16_t address, uint8_t value)
 {
 }
