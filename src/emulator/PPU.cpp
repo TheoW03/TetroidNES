@@ -44,8 +44,12 @@ uint8_t PPU::read_PPU_data()
         internalDataBuffer = memory[mirror(addr)];
         return res;
     }
+    else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c)
+    {
+        addr = addr - 0x10;
+        return pallete[addr - 0x3f00];
+    }
     return 0;
-    // return 0;
 }
 void PPU::write_PPU_address(uint8_t val)
 {
@@ -57,6 +61,7 @@ void PPU::write_PPU_address(uint8_t val)
     {
         this->reg.ppuAddr.hi = val;
     }
+
     this->reg.scrollLatch = !this->reg.scrollLatch;
 }
 void PPU::write_PPU_ctrl(uint8_t val)
@@ -76,9 +81,24 @@ void PPU::write_PPU_data(uint8_t val)
         uint8_t res = internalDataBuffer;
         internalDataBuffer = memory[mirror(addr)];
     }
+    else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c)
+    {
+        addr = addr - 0x10;
+        pallete[addr - 0x3f00] = val;
+    }
 }
 
 void PPU::tick(uint8_t clock_cycles)
 {
     this->cycles += clock_cycles;
+}
+uint8_t PPU::read_OAM_data()
+{
+
+    return oam[oam_addr];
+}
+void PPU::write_OAM_data(uint8_t val)
+{
+    oam[oam_addr] = val;
+    oam_addr++;
 }
