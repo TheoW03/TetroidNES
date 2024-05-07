@@ -203,7 +203,6 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
 void Bus::print_clock()
 {
     std::cout << "Clock: " << clock_cycles << std::endl;
-    this->clock_cycles = 0;
 }
 void Bus::push_stack8(uint8_t value)
 {
@@ -244,4 +243,9 @@ void Bus::print_stack()
 {
     printf("stack: %x \n", this->stack);
     printf("stack_pointer %x \n", this->stack_pointer);
+}
+
+void Bus::tick()
+{
+    ppu.tick(this->clock_cycles * 3);
 }

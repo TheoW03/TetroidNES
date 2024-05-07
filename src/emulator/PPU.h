@@ -75,6 +75,9 @@ private:
     uint8_t pallete[0x20];
     MirrorType mirrorType;
     uint8_t internalDataBuffer;
+    uint16_t mirror(uint16_t address);
+    size_t cycles;
+    uint16_t scanline;
 
 public:
     PPU(std::vector<uint8_t> chr_rom, MirrorType mirrorType);
@@ -86,10 +89,7 @@ public:
     void write_PPU_ctrl(uint8_t val);
     void write_PPU_mask(uint8_t val);
     void write_PPU_data(uint8_t val);
-    // void write_16bit_PPU(uint16_t address, uint16_t value);
-    void write_PPU(uint16_t address, uint8_t value);
-    uint16_t mirror(uint16_t address);
-    // uint16_t read_16bit_PPU(uint16_t address);
+    void tick(uint8_t cycles);
 };
 
 #endif

@@ -49,10 +49,6 @@ uint8_t PPU::read_PPU_data()
 }
 void PPU::write_PPU_address(uint8_t val)
 {
-    this->reg.ppuAddr.val = val;
-}
-void PPU::write_PPU_ctrl(uint8_t val)
-{
     if (this->reg.scrollLatch)
     {
         this->reg.ppuAddr.lo = val;
@@ -62,6 +58,10 @@ void PPU::write_PPU_ctrl(uint8_t val)
         this->reg.ppuAddr.hi = val;
     }
     this->reg.scrollLatch = !this->reg.scrollLatch;
+}
+void PPU::write_PPU_ctrl(uint8_t val)
+{
+    this->reg.ppuCtrl.val = val;
 }
 void PPU::write_PPU_mask(uint8_t val)
 {
@@ -78,7 +78,8 @@ void PPU::write_PPU_data(uint8_t val)
         return res;
     }
 }
-// void PPU
-void PPU::write_PPU(uint16_t address, uint8_t value)
+
+void PPU::tick(uint8_t cycles)
 {
+    this->cycles += cycles;
 }
