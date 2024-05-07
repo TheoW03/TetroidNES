@@ -46,6 +46,6 @@ public:
 
     void set_stack_pointer(uint8_t value);
     void print_stack(); // prints true value of stack
-    void tick(uint8_t cycles);
+    void tick();
 };
 #endif

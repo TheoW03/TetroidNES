@@ -75,11 +75,10 @@ void PPU::write_PPU_data(uint8_t val)
     {
         uint8_t res = internalDataBuffer;
         internalDataBuffer = memory[mirror(addr)];
-        return res;
     }
 }
 
-void PPU::tick(uint8_t cycles)
+void PPU::tick(uint8_t clock_cycles)
 {
-    this->cycles += cycles;
+    this->cycles += clock_cycles;
 }

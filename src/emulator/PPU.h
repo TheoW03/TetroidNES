@@ -89,7 +89,7 @@ public:
     void write_PPU_ctrl(uint8_t val);
     void write_PPU_mask(uint8_t val);
     void write_PPU_data(uint8_t val);
-    void tick(uint8_t cycles);
+    void tick(uint8_t clock_cycles);
 };
 
 #endif
