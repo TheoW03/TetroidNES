@@ -92,14 +92,17 @@ void PPU::tick(uint8_t clock_cycles)
 {
     this->cycles += clock_cycles;
 }
-void PPU::render(sf::Texture texture, uint64_t bank, uint64_t tiles)
+void PPU::render(sf::Texture texture)
 {
     std::vector<uint8_t> tile;
-    for (int i = bank + tiles * 16; i < bank + tiles * 16 + 15; i++)
-    {
-        tile.push_back(chr_rom[i]);
-    }
+    int bank  = reg.ppuCtrl.B;
+    // int bank =
+    // for (int i = bank + tiles * 16; i < bank + tiles * 16 + 15; i++)
+    // {
+    // tile.push_back(chr_rom[i]);
+    // }
 }
+
 uint8_t PPU::read_OAM_data()
 {
 
