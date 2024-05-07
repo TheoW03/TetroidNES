@@ -47,5 +47,6 @@ public:
     void set_stack_pointer(uint8_t value);
     void print_stack(); // prints true value of stack
     void tick();
+    void render(sf::Texture texture, uint64_t bank, uint64_t tile);
 };
 #endif

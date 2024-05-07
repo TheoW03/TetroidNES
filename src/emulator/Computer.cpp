@@ -337,6 +337,14 @@ void run(CPU cpu)
 {
 	sf::RenderWindow window(sf::VideoMode(800, 600), "test window");
 	window.setFramerateLimit(144);
+	sf::Texture texture;
+	texture.create(32, 32);
+	uint8_t pixels[32 * 32 * 4];
+	float scaleX = window.getSize().x / (float)(texture.getSize().x);
+	float scaleY = window.getSize().y / (float)(texture.getSize().y);
+	sf::Sprite sprite(texture);
+	sprite.setScale(scaleX, scaleY);
+
 	while (cpu.bus.get_PC() < 0xFFFF || window.isOpen())
 	{
 // if(window.)
@@ -351,8 +359,13 @@ void run(CPU cpu)
 				exit(EXIT_SUCCESS);
 			}
 		}
+		// cpu.bus.render(texture, 1, 0);
+		window.draw(sprite);
 		window.display();
+		// texture.update(pixels);
+		window.clear();
 		cpu.bus.write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
+
 #pragma endregion
 		if (check_brk(cpu) != 0)
 		{
