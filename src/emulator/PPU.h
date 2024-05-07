@@ -92,8 +92,6 @@ public:
     void write_PPU_data(uint8_t val);
     void write_OAM_data(uint8_t val);
     void tick(uint8_t clock_cycles);
-
-    
 };
 
 #endif

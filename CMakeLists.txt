@@ -24,7 +24,6 @@ add_executable(${EXECUTABLE_NAME} src/main.cpp
     src/emulator/LoadRom.cpp
     src/emulator/PPU.cpp
     src/emulator/StatusRegister.cpp
-    src/emulator/PPUStatus.cpp
 )
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE sfml-graphics)
 target_compile_features(${EXECUTABLE_NAME} PRIVATE cxx_std_17)
