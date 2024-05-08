@@ -468,13 +468,8 @@ void CLD(AddressMode addressType, CPU &cpu)
 void RTI(AddressMode addressType, CPU &cpu)
 {
 	// TODO:return from interrupt
-	// cpu.PC = cpu.bus.read_16bit(cpu.stack_pointer);
 	cpu.bus.fill(cpu.bus.pop_stack16());
 	cpu.status = cpu.bus.pop_stack8();
-	// cpu.bus.fill(cpu.bus.read_16bit(cpu.stack_pointer));
-	// cpu.stack_pointer += 2;
-	// cpu.status = cpu.bus.read_8bit(cpu.stack_pointer);
-
 	set_brk(cpu, 0);
 }
 #pragma endregion setFlags
@@ -500,7 +495,8 @@ void BEQ(AddressMode addressType, CPU &cpu)
 
 void BNE(AddressMode addressType, CPU &cpu)
 {
-	
+
+	std::cout << " test" << std::endl;
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
 
 	if (check_zero(cpu) != 0)

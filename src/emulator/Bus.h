@@ -22,7 +22,7 @@ public:
     uint8_t stored_instructions[2];
 
     Bus();
-    Bus(Rom rom);
+    Bus(Rom rom, uint16_t pc_start);
 
     uint8_t get_current_instruction();
     uint8_t fetch_next();

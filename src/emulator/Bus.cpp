@@ -12,13 +12,13 @@
 
 Bus::Bus() {}
 
-Bus::Bus(Rom rom)
+Bus::Bus(Rom rom, uint16_t pc_start)
 {
     this->clock_cycles = 0;
     this->stored_instructions[0] = 0;
     this->stored_instructions[1] = 0;
     this->program_counter = 0;
-
+    this->reset_vector = pc_start;
     this->rom = rom;
     PPU ppu(rom.CHR, rom.mirror);
     this->ppu = ppu; // test
@@ -49,6 +49,10 @@ uint8_t Bus::get_current_instruction()
  */
 uint8_t Bus::fetch_next()
 {
+    if (this->program_counter > 0xffff)
+    {
+        return 0;
+    }
 
     uint8_t current_instruction = get_current_instruction();
     stored_instructions[1] = stored_instructions[0];

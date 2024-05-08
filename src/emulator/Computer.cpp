@@ -16,6 +16,8 @@
 #include "LoadRom.h"
 #include "StatusRegister.h"
 
+#define PC_RESET 0x8000
+#define PC_END 0xffff
 using instructionPointer = void (*)(AddressMode, CPU &);
 
 uint8_t current_instruction = 0;
@@ -44,13 +46,13 @@ void init(std::string file_name)
 	rom.CHR = test;
 	rom.mapper = 0;
 	rom.mirror = MirrorType::FOUR_SCREEN;
-	Bus bus(rom);
+	Bus bus(rom, PC_RESET);
 	// std::vector<uint8_t> v = file_tobyte_vector(file_name);
 	// Bus bus(load_rom(v));
 	// Bus bus(rom);
-	bus.write_16bit(0xFFFC, 0x8000);
+	// bus.write_16bit(0xFFFC, 0x8000);
 	CPU cpu;
-	bus.fill(bus.read_16bit(0xFFFC));
+	bus.fill(PC_RESET);
 	cpu.A_Reg = 0;
 	cpu.status = 0;
 	cpu.X_Reg = 0;
@@ -335,6 +337,7 @@ void printCPU_stats(CPU cpu)
  */
 void run(CPU cpu)
 {
+	bool brk = false;
 	sf::RenderWindow window(sf::VideoMode(800, 600), "test window");
 	window.setFramerateLimit(144);
 	sf::Texture texture;
@@ -345,7 +348,7 @@ void run(CPU cpu)
 	sf::Sprite sprite(texture);
 	sprite.setScale(scaleX, scaleY);
 
-	while (cpu.bus.get_PC() < 0xFFFF || window.isOpen())
+	while (cpu.bus.get_PC() < PC_END && window.isOpen())
 	{
 // if(window.)
 #pragma region SFML boiler plat
@@ -355,7 +358,7 @@ void run(CPU cpu)
 			{
 				window.close();
 				std::cout << "" << std::endl;
-				std::cout << "program succesfully ended" << std::endl;
+				std::cout << "Program succesfully ended" << std::endl;
 				exit(EXIT_SUCCESS);
 			}
 		}
@@ -367,10 +370,7 @@ void run(CPU cpu)
 		cpu.bus.write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
 
 #pragma endregion
-		if (check_brk(cpu) != 0)
-		{
-			continue;
-		}
+
 		current_instruction = cpu.bus.read_8bit(cpu.bus.get_PC());
 		if (current_instruction == 0xEA)
 		{
@@ -386,24 +386,26 @@ void run(CPU cpu)
 			else if (current_instruction == 0x00)
 			{
 
-				if (check_interrupt_disabled(cpu) != 0)
+				if (check_interrupt_disabled(cpu) != 0 || brk)
 				{
 					continue;
 				}
 				set_brk(cpu, 1);
-				// cpu.bus.write_8bit(cpu.stack_pointer, cpu.status);
 				cpu.bus.push_stack8(cpu.status);
 				cpu.bus.fetch_next();
 				cpu.bus.push_stack16(cpu.bus.get_PC());
 				printf("Halt instruction encountered.\n");
 				printCPU_stats(cpu);
+				cpu.bus.fill(PC_END);
+				brk = true;
 			}
 			else
 			{
 				std::cout << "Unrecognized instruction encountered." << std::endl;
 				printf("Current instruction 0x%x is unrecognized. \n", current_instruction);
 				printCPU_stats(cpu);
-				std::cout << "Program exited unsuccessfully" << std::endl;
+				printf("\n");
+				std::cout << "Program unsucessfully ended" << std::endl;
 				exit(EXIT_FAILURE);
 			}
 		}

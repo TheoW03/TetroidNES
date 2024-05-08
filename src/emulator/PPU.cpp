@@ -88,14 +88,40 @@ void PPU::write_PPU_data(uint8_t val)
     }
 }
 
-void PPU::tick(uint8_t clock_cycles)
+bool PPU::tick(uint8_t clock_cycles)
 {
     this->cycles += clock_cycles;
+    if (this->cycles >= 341)
+    {
+        this->scanline += 1;
+        this->cycles -= 341;
+    }
+    if (scanline >= 261)
+    {
+        scanline = 0;
+        reg.ppuStatus.V = 1;
+        return true;
+    }
+
+    return false;
+}
+
+bool PPU::NMI_interrupt(uint8_t clock_cycles)
+{
+    if (this->scanline == 241)
+    {
+        if (reg.ppuCtrl.V == 0)
+        {
+            reg.ppuCtrl.V = 1;
+            return true;
+        }
+    }
+    return false;
 }
 void PPU::render(sf::Texture texture)
 {
     std::vector<uint8_t> tile;
-    int bank  = reg.ppuCtrl.B;
+    int bank = reg.ppuCtrl.B ? 0 : 0x1000;
 }
 
 uint8_t PPU::read_OAM_data()
