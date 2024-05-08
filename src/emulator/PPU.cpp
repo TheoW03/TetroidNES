@@ -96,11 +96,6 @@ void PPU::render(sf::Texture texture)
 {
     std::vector<uint8_t> tile;
     int bank  = reg.ppuCtrl.B;
-    // int bank =
-    // for (int i = bank + tiles * 16; i < bank + tiles * 16 + 15; i++)
-    // {
-    // tile.push_back(chr_rom[i]);
-    // }
 }
 
 uint8_t PPU::read_OAM_data()
