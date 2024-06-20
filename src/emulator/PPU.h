@@ -9,6 +9,7 @@
 class PPU
 {
 private:
+    sf::Color getColorFromByte(uint8_t byte);
     struct Registers
     {
         union
@@ -93,7 +94,7 @@ public:
     void write_OAM_data(uint8_t val);
     bool NMI_interrupt(uint8_t clock_cycles);
     bool tick(uint8_t clock_cycles);
-
+    uint8_t read_status();
     void render(sf::Texture texture);
 };
 

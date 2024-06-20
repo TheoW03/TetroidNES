@@ -496,7 +496,6 @@ void BEQ(AddressMode addressType, CPU &cpu)
 void BNE(AddressMode addressType, CPU &cpu)
 {
 
-	std::cout << " test" << std::endl;
 	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
 
 	if (check_zero(cpu) != 0)

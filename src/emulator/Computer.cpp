@@ -40,24 +40,21 @@ void init(std::string file_name)
 {
 	initializeInstructionMap();
 	// vector<uint8_t> test = {0xa9, 0xa, 0xa0, 0xa, 0xa2, 0xa, 0x00};
-	std::vector<uint8_t> test = {0xad, 0x07, 0x20, 0xa9, 0xa};
-	Rom rom;
-	rom.PRG = test;
-	rom.CHR = test;
-	rom.mapper = 0;
-	rom.mirror = MirrorType::FOUR_SCREEN;
-	Bus bus(rom, PC_RESET);
-	// std::vector<uint8_t> v = file_tobyte_vector(file_name);
-	// Bus bus(load_rom(v));
-	// Bus bus(rom);
-	// bus.write_16bit(0xFFFC, 0x8000);
+	// std::vector<uint8_t> test = {0xad, 0x07, 0x20, 0xa9, 0xa};
+	// Rom rom;
+	// rom.PRG = test;
+	// rom.CHR = test;
+	// rom.mapper = 0;
+	// rom.mirror = MirrorType::FOUR_SCREEN;
+	// Bus bus(rom, PC_RESET);
+	std::vector<uint8_t> v = file_tobyte_vector(file_name);
+	Bus bus(load_rom(v), 0x8000);
 	CPU cpu;
 	bus.fill(PC_RESET);
 	cpu.A_Reg = 0;
 	cpu.status = 0;
 	cpu.X_Reg = 0;
 	cpu.Y_Reg = 0;
-	// cpu.stack_pointer = 0xfd;
 	cpu.bus = bus;
 	cpu.bus.clock_cycles = 0;
 
@@ -311,7 +308,7 @@ void initializeInstructionMap()
 
 	instructionMap.insert(make_pair(0x8A, Instruction{(instructionPointer)TXA, AddressMode::IMPLIED}));
 
-	instructionMap.insert(make_pair(0xBA, Instruction{(instructionPointer)TXS, AddressMode::IMPLIED}));
+	instructionMap.insert(make_pair(0x9A, Instruction{(instructionPointer)TXS, AddressMode::IMPLIED}));
 
 	instructionMap.insert(make_pair(0xBA, Instruction{(instructionPointer)TSX, AddressMode::IMPLIED}));
 
@@ -362,7 +359,7 @@ void run(CPU cpu)
 				exit(EXIT_SUCCESS);
 			}
 		}
-		// cpu.bus.render(texture, 1, 0);
+		// cpu.bus.render(texture, 1, 0); 
 		window.draw(sprite);
 		window.display();
 		// texture.update(pixels);
@@ -370,15 +367,20 @@ void run(CPU cpu)
 		cpu.bus.write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
 
 #pragma endregion
-
-		current_instruction = cpu.bus.read_8bit(cpu.bus.get_PC());
-		if (current_instruction == 0xEA)
+		cpu.bus.tick();
+		if (cpu.bus.NMI_interrupt())
 		{
-			continue;
+			cpu.bus.push_stack8(cpu.status);
+			cpu.bus.fetch_next();
+			cpu.bus.push_stack16(cpu.bus.get_PC());
+			cpu.bus.fill(0xfffa);
 		}
+		current_instruction = cpu.bus.read_8bit(cpu.bus.get_PC());
+
 		// Equivalent to, in English, if instructionMap contains current_instruction.
 		if (instructionMap.find(current_instruction) == instructionMap.end())
 		{
+
 			if (current_instruction == 0xEA)
 			{
 				// NOP

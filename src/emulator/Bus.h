@@ -48,5 +48,6 @@ public:
     void print_stack(); // prints true value of stack
     void tick();
     void render(sf::Texture texture);
+    bool NMI_interrupt();
 };
 #endif

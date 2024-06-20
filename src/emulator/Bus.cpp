@@ -85,10 +85,14 @@ uint8_t Bus::read_8bit(uint16_t address)
                 address = address & 0x2007;
         if (address == 0x2007)
             return ppu.read_PPU_data();
+        else if (address == 0x2002)
+            return ppu.read_status();
         else
         {
             std::cout << "forbidden access to PPU write only address" << std::endl;
             std::cout << "" << std::endl;
+            printf("%x \n", address);
+
             std::cout << "Exit failure" << std::endl;
             exit(EXIT_FAILURE);
         }
@@ -257,4 +261,9 @@ void Bus::tick()
 void Bus::render(sf::Texture texture)
 {
     ppu.render(texture);
+}
+
+bool Bus::NMI_interrupt()
+{
+    return ppu.NMI_interrupt(this->clock_cycles * 3);
 }
