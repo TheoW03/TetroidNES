@@ -353,13 +353,15 @@ void run(CPU cpu)
 		{
 			if (event.type == sf::Event::Closed)
 			{
+				printCPU_stats(cpu);
+
 				window.close();
 				std::cout << "" << std::endl;
 				std::cout << "Program succesfully ended" << std::endl;
 				exit(EXIT_SUCCESS);
 			}
 		}
-		// cpu.bus.render(texture, 1, 0); 
+		// cpu.bus.render(texture, 1, 0);
 		window.draw(sprite);
 		window.display();
 		// texture.update(pixels);
