@@ -258,7 +258,7 @@ void Bus::tick()
     ppu.tick(this->clock_cycles * 3);
 }
 
-void Bus::render(sf::Texture texture)
+void Bus::render(sf::Texture &texture)
 {
     ppu.render(texture);
 }

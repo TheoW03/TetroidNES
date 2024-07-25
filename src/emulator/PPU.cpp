@@ -11,10 +11,7 @@ PPU::PPU(std::vector<uint8_t> chr_rom, MirrorType mirrorType)
     this->reg.ppumask.val = 0;
 }
 
-PPU::PPU()
-{
-}
-sf::Color PPU::getColorFromByte(uint8_t byte)
+sf::Color PPU::getColorFromByte(uint16_t byte)
 {
     sf::Color system_palette[64] = {
         sf::Color(0x80, 0x80, 0x80), sf::Color(0x00, 0x3D, 0xA6), sf::Color(0x00, 0x12, 0xB0), sf::Color(0x44, 0x00, 0x96),
@@ -146,17 +143,42 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
     }
     return false;
 }
-void PPU::render(sf::Texture texture)
+void PPU::render(sf::Texture &texture)
 {
     uint8_t data[256 * 240 * 3];
     std::vector<uint8_t> tile;
-    for (int i = 0; i < 0x3c; i++)
-        int bank = reg.ppuCtrl.B ? 0 : 0x1000;
+    // for (int i = 0; i < 256 * 240 * 3; i += 3)
+    // {
+    //     // data[i] = 0xff;
+    // }
     for (int i = 0; i < 15; i++)
     {
-        tile.push_back(chr_rom[i]);
+        printf("%d \n", this->chr_rom[i]);
+        // tile.push_back(chr_rom[i * 16]);
     }
-    texture.update(data);
+    // for (int i = 0; i < 0x3c0; i++)
+    // {
+    //     for (int y = 0; y < 7; y++)
+    //     {
+    //         uint8_t upper = tile[i + 8];
+    //         uint8_t lower = tile[i];
+    //         for (int x = 0; x < 7; x++)
+    //         {
+    //             // uint16_t value = (1 & upper) << 1 | (1 & lower);
+    //             // upper <<= 1;
+    //             // lower <<= 1;
+    //             // sf::Color rgb = getColorFromByte(value);
+    //             int b = y * 3 * 240 + x * 3;
+    //             std::cout << b << std::endl;
+    //             // data[b] = rgb.r;
+    //             // data[b + 1] = rgb.g;
+    //             // data[b + 2] = rgb.b;
+    //         }
+    //     }
+    // }
+    // for (int i = 0; i < 0x3c; i++)
+    //     int bank = reg.ppuCtrl.B ? 0 : 0x1000;
+    // texture.update(data);
 }
 uint8_t PPU::read_OAM_data()
 {

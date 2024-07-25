@@ -47,7 +47,7 @@ public:
     void set_stack_pointer(uint8_t value);
     void print_stack(); // prints true value of stack
     void tick();
-    void render(sf::Texture texture);
+    void render(sf::Texture &texture);
     bool NMI_interrupt();
 };
 #endif

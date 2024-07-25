@@ -319,9 +319,9 @@ void initializeInstructionMap()
 }
 void printCPU_stats(CPU cpu)
 {
-	printf("A_Reg: %x \n", cpu.A_Reg);
-	printf("X_Reg: %d \n", cpu.X_Reg);
-	printf("Y_Reg: %d \n", cpu.Y_Reg);
+	printf("Accumaltor: %x \n", cpu.A_Reg);
+	printf("X Register: %d \n", cpu.X_Reg);
+	printf("Y Register: %d \n", cpu.Y_Reg);
 	printf("Program Counter: 0x%X \n", cpu.bus.get_PC());
 	// printf("Stack Pointer: 0x%X \n", cpu.stack_pointer);
 	cpu.bus.print_stack();
@@ -361,6 +361,7 @@ void run(CPU cpu)
 				exit(EXIT_SUCCESS);
 			}
 		}
+		cpu.bus.render(texture);
 		// cpu.bus.render(texture, 1, 0);
 		window.draw(sprite);
 		window.display();

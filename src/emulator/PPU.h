@@ -9,7 +9,7 @@
 class PPU
 {
 private:
-    sf::Color getColorFromByte(uint8_t byte);
+    sf::Color getColorFromByte(uint16_t byte);
     struct Registers
     {
         union
@@ -82,7 +82,7 @@ private:
 
 public:
     PPU(std::vector<uint8_t> chr_rom, MirrorType mirrorType);
-    PPU();
+    // PPU();
 
     uint8_t read_PPU_data();
     uint8_t read_OAM_data();
@@ -95,7 +95,7 @@ public:
     bool NMI_interrupt(uint8_t clock_cycles);
     bool tick(uint8_t clock_cycles);
     uint8_t read_status();
-    void render(sf::Texture texture);
+    void render(sf::Texture &texture);
 };
 
 #endif
