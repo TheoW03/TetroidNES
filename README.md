@@ -1,22 +1,30 @@
-# NES Emulator
+# TetroidNES
 
-⚠ THIS PROJECT DOES NOT SUPPORT PIRACY. USE OF THIS EMULATOR OR ITS SOURCE CODE TO ENGAGE IN OR PROMOTE PIRACY IS NOT CONDONED BY ITS AUTHOR. ⚠ 
+Nintendo Entertainment System Emulator
 
-## CPU Stats for the MOS 6502
+## CPU Architecture Specs
 
-Chip created by: MOS Technology 
+instruction set: NES-6502 
+
+chip creator: MOS technologies and Nintendo
+
+date of release: 1975 (6502), 1982 & 1984 (NES) 
+
+## CPU Preformance Specs 
 
 Clock speed: 1-3 MHz
-RAM: 2 kiB
+
+RAM: 2 kiB (adress 0x00-0x1fff, 256 bytes is mapped to the stackpointer) it also has 2KiB for VRAM
+
 Address size: 16 bits
+
 Word size: 8 bits
 
-Only supports iNES v1.0 ROM files.
-Capable of executing all 6502 instructions from NES ROM files. 
+multi purpose registers: 3, 8 bit registers (A,X,Y)
 
-## PPU Stats 
+Stack pointer address: 0x100-0x1ff (256 bytes)
 
-(V)RAM: 2 kiB
+Accepted ROM file type: iNES v1.0 (.nes file extension or look for NES in the 1st 4 bytes in the header, and the 7th byte of the header on the 0th and 1st bit is 0)
 
 ## Build Instructions
 
@@ -29,3 +37,5 @@ cmake --build build --config Release # build project
 ## Documentation
 
 Emulator docs: https://github.com/TheoW03/6502Emulator/tree/master/Docs
+
+a special thanks to all who halped me make this 

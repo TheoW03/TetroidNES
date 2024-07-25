@@ -7,7 +7,7 @@ CPU: central processing unit. its the brains of this computer.
 
 PPU: picture processing unit. or a GPU. it handles the graphics
 The NES GPU. unlike modern GPU's uses no linear algebra or parelization
-it has no instructions. but you communicate to it by writting to 0x2000-0x2007
+it has no instructions. but you communicate to it by reading/writting to 0x2000-0x2007
 
 APU: audio processing unit, sound. like the PPU. but you writting too 0x4000-0x4200
  

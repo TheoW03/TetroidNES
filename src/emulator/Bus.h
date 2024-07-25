@@ -18,11 +18,11 @@ private:
     uint16_t stack;
 
 public:
-    int clock_cycles;
+    size_t clock_cycles;
     uint8_t stored_instructions[2];
 
     Bus();
-    Bus(Rom rom);
+    Bus(Rom rom, uint16_t pc_start);
 
     uint8_t get_current_instruction();
     uint8_t fetch_next();
@@ -46,5 +46,8 @@ public:
 
     void set_stack_pointer(uint8_t value);
     void print_stack(); // prints true value of stack
+    void tick();
+    void render(sf::Texture &texture);
+    bool NMI_interrupt();
 };
 #endif

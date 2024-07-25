@@ -12,13 +12,13 @@
 
 Bus::Bus() {}
 
-Bus::Bus(Rom rom)
+Bus::Bus(Rom rom, uint16_t pc_start)
 {
     this->clock_cycles = 0;
     this->stored_instructions[0] = 0;
     this->stored_instructions[1] = 0;
     this->program_counter = 0;
-
+    this->reset_vector = pc_start;
     this->rom = rom;
     PPU ppu(rom.CHR, rom.mirror);
     this->ppu = ppu; // test
@@ -49,6 +49,10 @@ uint8_t Bus::get_current_instruction()
  */
 uint8_t Bus::fetch_next()
 {
+    if (this->program_counter > 0xffff)
+    {
+        return 0;
+    }
 
     uint8_t current_instruction = get_current_instruction();
     stored_instructions[1] = stored_instructions[0];
@@ -76,7 +80,29 @@ uint8_t Bus::read_8bit(uint16_t address)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        uint16_t mirror_address = address & 0x2007;
+        if (address >= 0x2008)
+            while (address >= 0x2007)
+                address = address & 0x2007;
+        if (address == 0x2007)
+            return ppu.read_PPU_data();
+        else if (address == 0x2002)
+            return ppu.read_status();
+        else
+        {
+            std::cout << "forbidden access to PPU write only address" << std::endl;
+            std::cout << "" << std::endl;
+            printf("%x \n", address);
+
+            std::cout << "Exit failure" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    }
+    else if (address == 0x4014)
+    {
+        std::cout << "forbidden access to PPU write only address" << std::endl;
+        std::cout << "" << std::endl;
+        std::cout << "Exit failure" << std::endl;
+        exit(EXIT_FAILURE);
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
@@ -96,7 +122,21 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        uint16_t mirror_address = address & 0x2007;
+        if (address >= 0x2008)
+            while (address >= 0x2007)
+                address = address & 0x2007;
+        if (address == 0x2000)
+        {
+            this->ppu.write_PPU_ctrl(value);
+        }
+        else if (address == 0x2006)
+        {
+            this->ppu.write_PPU_address(value);
+        }
+        else if (address == 0x2007)
+        {
+            this->ppu.write_PPU_data(value);
+        }
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
@@ -119,7 +159,7 @@ uint16_t Bus::read_16bit(uint16_t address)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        uint16_t mirror_address = address & 0x2007;
+        return read_8bit(address + 1) << 8 | read_8bit(address);
     }
     else if (address == 0xFFFC)
     {
@@ -150,7 +190,9 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        uint16_t mirror_address = address & 0x2007;
+        // uint16_t mirror_address = address & 0x2007;
+        write_8bit(address + 1, value >> 8);
+        write_8bit(address, value);
     }
     else if (address == 0xFFFC)
     {
@@ -169,7 +211,6 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
 void Bus::print_clock()
 {
     std::cout << "Clock: " << clock_cycles << std::endl;
-    this->clock_cycles = 0;
 }
 void Bus::push_stack8(uint8_t value)
 {
@@ -210,4 +251,19 @@ void Bus::print_stack()
 {
     printf("stack: %x \n", this->stack);
     printf("stack_pointer %x \n", this->stack_pointer);
+}
+
+void Bus::tick()
+{
+    ppu.tick(this->clock_cycles * 3);
+}
+
+void Bus::render(sf::Texture &texture)
+{
+    ppu.render(texture);
+}
+
+bool Bus::NMI_interrupt()
+{
+    return ppu.NMI_interrupt(this->clock_cycles * 3);
 }
