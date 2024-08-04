@@ -1,16 +1,19 @@
 #include "PPU.h"
 #include <SFML/Graphics.hpp>
 
-PPU::PPU(std::vector<uint8_t> chr_rom, MirrorType mirrorType)
+PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
 {
-    this->chr_rom = chr_rom;
+    std::cout << " called2" << std::endl;
+
+    this->chr_rom = chrrom;
     this->mirrorType = mirrorType;
     this->internalDataBuffer = 0;
     this->reg.ppuAddr.val = 0;
     this->reg.ppuCtrl.val = 0;
     this->reg.ppumask.val = 0;
+    std::cout << this->mirrorType << std::endl;
 }
-
+PPU::PPU() {}
 sf::Color PPU::getColorFromByte(uint16_t byte)
 {
     sf::Color system_palette[64] = {
@@ -117,15 +120,14 @@ bool PPU::tick(uint8_t clock_cycles)
     {
         this->scanline += 1;
         this->cycles -= 341;
-    }
-    if (scanline >= 261)
-    {
+        if (scanline >= 262)
+        {
 
-        scanline = 0;
-        reg.ppuStatus.V = 0;
-        return true;
+            scanline = 0;
+            reg.ppuStatus.V = 0;
+            return true;
+        }
     }
-
     return false;
 }
 
@@ -143,42 +145,39 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
     }
     return false;
 }
-void PPU::render(sf::Texture &texture)
+void PPU::render(sf::Texture &texture, int bank, int tile)
 {
-    uint8_t data[256 * 240 * 3];
-    std::vector<uint8_t> tile;
-    // for (int i = 0; i < 256 * 240 * 3; i += 3)
-    // {
-    //     // data[i] = 0xff;
-    // }
-    for (int i = 0; i < 15; i++)
+    uint8_t data[200 * 200 * 4];
+    std::vector<uint8_t> tile_list;
+    int banks = bank * 0x1000;
+    for (int i = banks + tile; i <= (banks + tile + 15); i++)
     {
-        printf("%d \n", this->chr_rom[i]);
-        // tile.push_back(chr_rom[i * 16]);
+        // printf("%d \n", this->chr_rom[i]);
+        tile_list.push_back(chr_rom[i]);
     }
     // for (int i = 0; i < 0x3c0; i++)
     // {
-    //     for (int y = 0; y < 7; y++)
-    //     {
-    //         uint8_t upper = tile[i + 8];
-    //         uint8_t lower = tile[i];
-    //         for (int x = 0; x < 7; x++)
-    //         {
-    //             // uint16_t value = (1 & upper) << 1 | (1 & lower);
-    //             // upper <<= 1;
-    //             // lower <<= 1;
-    //             // sf::Color rgb = getColorFromByte(value);
-    //             int b = y * 3 * 240 + x * 3;
-    //             std::cout << b << std::endl;
-    //             // data[b] = rgb.r;
-    //             // data[b + 1] = rgb.g;
-    //             // data[b + 2] = rgb.b;
-    //         }
-    //     }
+    for (int y = 0; y < 8; y++)
+    {
+        uint8_t upper = tile_list[y];
+        uint8_t lower = tile_list[y + 8];
+        for (int x = 7; x >= 0; x--)
+        {
+            uint16_t value = (1 & upper) << 1 | (1 & lower);
+            upper >>= 1;
+            lower >>= 1;
+            sf::Color rgb = getColorFromByte(value);
+            int b = y * 4 * 200 + x * 4;
+            data[b] = rgb.r;
+            data[b + 1] = rgb.g;
+            data[b + 2] = rgb.b;
+            data[b + 3] = 0xff;
+        }
+    }
     // }
     // for (int i = 0; i < 0x3c; i++)
     //     int bank = reg.ppuCtrl.B ? 0 : 0x1000;
-    // texture.update(data);
+    texture.update(data);
 }
 uint8_t PPU::read_OAM_data()
 {

@@ -30,7 +30,7 @@ struct Instruction
 };
 std::map<uint8_t, Instruction> instructionMap;
 
-void run(CPU cpu);
+void run(CPU cpu, std::string file_name);
 void initializeInstructionMap();
 
 /**
@@ -49,6 +49,7 @@ void init(std::string file_name)
 	// Bus bus(rom, PC_RESET);
 	std::vector<uint8_t> v = file_tobyte_vector(file_name);
 	Bus bus(load_rom(v), 0x8000);
+	// printf("%x \n", )
 	CPU cpu;
 	bus.fill(PC_RESET);
 	cpu.A_Reg = 0;
@@ -58,7 +59,7 @@ void init(std::string file_name)
 	cpu.bus = bus;
 	cpu.bus.clock_cycles = 0;
 
-	run(cpu);
+	run(cpu, file_name);
 }
 
 /**
@@ -332,14 +333,13 @@ void printCPU_stats(CPU cpu)
 /**
  * Executes instructions in a loop and handles proper/improper exits.
  */
-void run(CPU cpu)
+void run(CPU cpu, std::string render_name)
 {
 	bool brk = false;
-	sf::RenderWindow window(sf::VideoMode(800, 600), "test window");
+	sf::RenderWindow window(sf::VideoMode(800, 600), render_name);
 	window.setFramerateLimit(144);
 	sf::Texture texture;
-	texture.create(32, 32);
-	uint8_t pixels[32 * 32 * 4];
+	texture.create(200, 200);
 	float scaleX = window.getSize().x / (float)(texture.getSize().x);
 	float scaleY = window.getSize().y / (float)(texture.getSize().y);
 	sf::Sprite sprite(texture);
@@ -361,12 +361,7 @@ void run(CPU cpu)
 				exit(EXIT_SUCCESS);
 			}
 		}
-		cpu.bus.render(texture);
-		// cpu.bus.render(texture, 1, 0);
-		window.draw(sprite);
-		window.display();
-		// texture.update(pixels);
-		window.clear();
+
 		cpu.bus.write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
 
 #pragma endregion
@@ -376,10 +371,13 @@ void run(CPU cpu)
 			cpu.bus.push_stack8(cpu.status);
 			cpu.bus.fetch_next();
 			cpu.bus.push_stack16(cpu.bus.get_PC());
-			cpu.bus.fill(0xfffa);
+			cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
 		}
 		current_instruction = cpu.bus.read_8bit(cpu.bus.get_PC());
-
+		cpu.bus.render(texture,10, 1);
+		window.clear(); // Change this to the desired color
+        window.draw(sprite);
+        window.display();
 		// Equivalent to, in English, if instructionMap contains current_instruction.
 		if (instructionMap.find(current_instruction) == instructionMap.end())
 		{
@@ -407,7 +405,7 @@ void run(CPU cpu)
 			else
 			{
 				std::cout << "Unrecognized instruction encountered." << std::endl;
-				printf("Current instruction 0x%x is unrecognized. \n", current_instruction);
+				printf("Current instruction 0x%x is unrecognized && and end of PC.0x%x \n", current_instruction, instructionMap[cpu.bus.get_PC()]);
 				printCPU_stats(cpu);
 				printf("\n");
 				std::cout << "Program unsucessfully ended" << std::endl;

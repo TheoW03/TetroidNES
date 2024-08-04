@@ -53,8 +53,8 @@ Rom load_rom(std::vector<uint8_t> instructions)
         exit(EXIT_FAILURE);
     }
 
-    uint16_t prg_rom = instructions[4] * PRG_ROM_SIZE;
-    uint16_t chr_rom = instructions[5] * CHR_ROM_SIZE;
+    size_t prg_rom = instructions[4] * PRG_ROM_SIZE;
+    size_t chr_rom = instructions[5] * CHR_ROM_SIZE;
     uint8_t control_byte1 = instructions[6];
     bool four_screen = (control_byte1 & 0b1000) != 0;
     bool vertical_mirroring = (control_byte1 & 0b1) != 0;
@@ -62,11 +62,13 @@ Rom load_rom(std::vector<uint8_t> instructions)
                  : (!four_screen && vertical_mirroring) ? MirrorType::VERTICAL
                                                         : MirrorType::HORIZONTAL;
     uint16_t prg_start = 16 + (512 * (((instructions[6] & 0b100)) != 0));
-    for (size_t i = prg_start; i < prg_rom; i++)
+    printf("%d \n", prg_start);
+    printf("%d \n", prg_rom);
+    for (size_t i = prg_start; i <   prg_rom + prg_start - 1; i++)
     {
         rom.PRG.push_back(instructions[i]);
     }
-    for (size_t i = prg_start + prg_rom; i < chr_rom; i++)
+    for (size_t i = prg_start + prg_rom; i < prg_start + prg_rom + chr_rom; i++)
     {
         rom.CHR.push_back(instructions[i]);
     }

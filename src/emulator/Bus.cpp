@@ -10,7 +10,10 @@
 // const static uint8_t ram_end = 0x0FFF;
 // const static uint8_t ppu_end = 0x2000;
 
-Bus::Bus() {}
+Bus::Bus()
+{
+    std::cout << "bus rest" << std::endl;
+}
 
 Bus::Bus(Rom rom, uint16_t pc_start)
 {
@@ -20,8 +23,12 @@ Bus::Bus(Rom rom, uint16_t pc_start)
     this->program_counter = 0;
     this->reset_vector = pc_start;
     this->rom = rom;
-    PPU ppu(rom.CHR, rom.mirror);
-    this->ppu = ppu; // test
+    std::cout << "ppu init" << std::endl;
+    PPU nes_ppu(rom.CHR, rom.mirror);
+    this->ppu = nes_ppu; // test
+    printf("prg: 0x%x \n", rom.PRG.size());
+    // this->ppu.chr_rom = rom.CHR;
+    // this->ppu.mirrorType = rom.mirror;
     APU APU();
     this->apu = apu; // test
     this->stack_pointer = STACK_RESET;
@@ -84,9 +91,9 @@ uint8_t Bus::read_8bit(uint16_t address)
             while (address >= 0x2007)
                 address = address & 0x2007;
         if (address == 0x2007)
-            return ppu.read_PPU_data();
+            return this->ppu.read_PPU_data();
         else if (address == 0x2002)
-            return ppu.read_status();
+            return this->ppu.read_status();
         else
         {
             std::cout << "forbidden access to PPU write only address" << std::endl;
@@ -164,6 +171,10 @@ uint16_t Bus::read_16bit(uint16_t address)
     else if (address == 0xFFFC)
     {
         return reset_vector;
+    }
+    else if (address == 0xfffa)
+    {
+        return rom.PRG[(address + 1 - reset_vector)] << 8 | rom.PRG[(address  - reset_vector)];
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
@@ -255,15 +266,15 @@ void Bus::print_stack()
 
 void Bus::tick()
 {
-    ppu.tick(this->clock_cycles * 3);
+    this->ppu.tick(this->clock_cycles * 3);
 }
 
-void Bus::render(sf::Texture &texture)
+void Bus::render(sf::Texture &texture, int bank, int tile)
 {
-    ppu.render(texture);
+    this->ppu.render(texture, bank, tile);
 }
 
 bool Bus::NMI_interrupt()
 {
-    return ppu.NMI_interrupt(this->clock_cycles * 3);
+    return this->ppu.NMI_interrupt(this->clock_cycles * 3);
 }

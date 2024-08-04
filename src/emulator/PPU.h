@@ -81,8 +81,8 @@ private:
     uint16_t scanline;
 
 public:
-    PPU(std::vector<uint8_t> chr_rom, MirrorType mirrorType);
-    // PPU();
+    PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType);
+    PPU();
 
     uint8_t read_PPU_data();
     uint8_t read_OAM_data();
@@ -95,7 +95,7 @@ public:
     bool NMI_interrupt(uint8_t clock_cycles);
     bool tick(uint8_t clock_cycles);
     uint8_t read_status();
-    void render(sf::Texture &texture);
+    void render(sf::Texture &texture, int bank, int tile);
 };
 
 #endif

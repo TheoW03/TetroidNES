@@ -5,6 +5,8 @@ set(CMAKE_EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/..)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/..)
 set(EXECUTABLE_NAME output)
 string(APPEND CMAKE_CXX_FLAGS "-Wall")
+# string(APPEND CMAKE_CXX_FLAGS "-g")
+set(CMAKE_BUILD_TYPE Debug)
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 include(FetchContent)
