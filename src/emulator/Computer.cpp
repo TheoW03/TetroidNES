@@ -374,7 +374,7 @@ void run(CPU cpu, std::string render_name)
 			cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
 		}
 		current_instruction = cpu.bus.read_8bit(cpu.bus.get_PC());
-		cpu.bus.render(texture,10, 1);
+		cpu.bus.render(texture,0, 0);
 		window.clear(); // Change this to the desired color
         window.draw(sprite);
         window.display();

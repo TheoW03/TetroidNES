@@ -3,7 +3,6 @@
 
 PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
 {
-    std::cout << " called2" << std::endl;
 
     this->chr_rom = chrrom;
     this->mirrorType = mirrorType;
@@ -11,7 +10,6 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     this->reg.ppuAddr.val = 0;
     this->reg.ppuCtrl.val = 0;
     this->reg.ppumask.val = 0;
-    std::cout << this->mirrorType << std::endl;
 }
 PPU::PPU() {}
 sf::Color PPU::getColorFromByte(uint16_t byte)

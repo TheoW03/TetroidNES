@@ -12,7 +12,6 @@
 
 Bus::Bus()
 {
-    std::cout << "bus rest" << std::endl;
 }
 
 Bus::Bus(Rom rom, uint16_t pc_start)
@@ -23,10 +22,8 @@ Bus::Bus(Rom rom, uint16_t pc_start)
     this->program_counter = 0;
     this->reset_vector = pc_start;
     this->rom = rom;
-    std::cout << "ppu init" << std::endl;
     PPU nes_ppu(rom.CHR, rom.mirror);
     this->ppu = nes_ppu; // test
-    printf("prg: 0x%x \n", rom.PRG.size());
     // this->ppu.chr_rom = rom.CHR;
     // this->ppu.mirrorType = rom.mirror;
     APU APU();
@@ -174,7 +171,7 @@ uint16_t Bus::read_16bit(uint16_t address)
     }
     else if (address == 0xfffa)
     {
-        return rom.PRG[(address + 1 - reset_vector)] << 8 | rom.PRG[(address  - reset_vector)];
+        return rom.PRG[(address + 1 - reset_vector)] << 8 | rom.PRG[(address - reset_vector)];
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
