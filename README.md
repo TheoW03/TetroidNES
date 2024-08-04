@@ -1,9 +1,7 @@
-![alt text](logo.png)
-
 # TetroidNES
 
 an open source NES emulator
-targed to windows 
+targeted to windows 
 
 ## Build Instructions
 
