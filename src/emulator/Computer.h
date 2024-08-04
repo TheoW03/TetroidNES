@@ -34,3 +34,4 @@ enum class AddressMode
 };
 #endif
 void init(std::string file_name);
+void printCPU_stats(CPU cpu);

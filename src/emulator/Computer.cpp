@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 
 // #include <pthread.h>
+#include "NESError.h"
 // #include <unistd.h>
 
 #include "BitOperations.h"
@@ -353,12 +354,14 @@ void run(CPU cpu, std::string render_name)
 		{
 			if (event.type == sf::Event::Closed)
 			{
-				printCPU_stats(cpu);
-
 				window.close();
-				std::cout << "" << std::endl;
-				std::cout << "Program succesfully ended" << std::endl;
-				exit(EXIT_SUCCESS);
+				program_success(cpu);
+				// printCPU_stats(cpu);
+				// window.close();
+				// std::cout << "" << std::endl;
+				// std::cout << "\033[92mProgram has successfully ended" << std::endl;
+				// std::cout << "exit code 0 \033[0m" << std::endl;
+				// exit(EXIT_SUCCESS);
 			}
 		}
 
@@ -374,50 +377,44 @@ void run(CPU cpu, std::string render_name)
 			cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
 		}
 		current_instruction = cpu.bus.read_8bit(cpu.bus.get_PC());
-		cpu.bus.render(texture,0, 0);
+		cpu.bus.render(texture, 0, 0);
 		window.clear(); // Change this to the desired color
-        window.draw(sprite);
-        window.display();
+		window.draw(sprite);
+		window.display();
 		// Equivalent to, in English, if instructionMap contains current_instruction.
-		if (instructionMap.find(current_instruction) == instructionMap.end())
+		if (instructionMap.find(current_instruction) != instructionMap.end()) // if instruction
 		{
 
-			if (current_instruction == 0xEA)
-			{
-				// NOP
-			}
-			else if (current_instruction == 0x00)
-			{
-
-				if (check_interrupt_disabled(cpu) != 0 || brk)
-				{
-					continue;
-				}
-				set_brk(cpu, 1);
-				cpu.bus.push_stack8(cpu.status);
-				cpu.bus.fetch_next();
-				cpu.bus.push_stack16(cpu.bus.get_PC());
-				printf("Halt instruction encountered.\n");
-				printCPU_stats(cpu);
-				cpu.bus.fill(PC_END);
-				brk = true;
-			}
-			else
-			{
-				std::cout << "Unrecognized instruction encountered." << std::endl;
-				printf("Current instruction 0x%x is unrecognized && and end of PC.0x%x \n", current_instruction, instructionMap[cpu.bus.get_PC()]);
-				printCPU_stats(cpu);
-				printf("\n");
-				std::cout << "Program unsucessfully ended" << std::endl;
-				exit(EXIT_FAILURE);
-			}
-		}
-		else
-		{
-			// instructionMap.at(current_instruction)(current_instruction, cpu);
 			Instruction a = instructionMap.at(current_instruction);
 			a.i(a.addressmode, cpu);
 		}
-		// this_thread::sleep_for(std::chrono::milliseconds(1));
+		else if (current_instruction == 0x00)
+		{
+
+			if (check_interrupt_disabled(cpu) != 0 || brk)
+			{
+				continue;
+			}
+			set_brk(cpu, 1);
+			cpu.bus.push_stack8(cpu.status);
+			cpu.bus.fetch_next();
+			cpu.bus.push_stack16(cpu.bus.get_PC());
+			printf("Halt instruction encountered.\n");
+			printCPU_stats(cpu);
+			cpu.bus.fill(PC_END);
+			brk = true;
+		}
+		else if (current_instruction != 0xEA)
+		{
+			printf("Current instruction 0x%x", current_instruction, instructionMap[cpu.bus.get_PC()]);
+			program_failure("Unrecognized instruction encountered",cpu, 1);
+			// std::cout << "Unrecognized instruction encountered." << std::endl;
+			// printf("Current instruction 0x%x is unrecognized && and end of PC.0x%x \n", current_instruction, instructionMap[cpu.bus.get_PC()]);
+			// printCPU_stats(cpu);
+			// printf("\n");
+			// std::cout << "\033[91mProgram unsuccessfully ended" << std::endl;
+			// std::cout << "exit code 1\033[0m" << std::endl;
+			// exit(EXIT_FAILURE);
+		}
 	}
 }

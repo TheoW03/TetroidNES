@@ -93,20 +93,20 @@ uint8_t Bus::read_8bit(uint16_t address)
             return this->ppu.read_status();
         else
         {
-            std::cout << "forbidden access to PPU write only address" << std::endl;
+            this->stored_instructions[1] = 0x82;
+            std::cout << "\033[91mforbidden access to PPU write only address\033[0m" << std::endl;
+            printf("address 0x%x \n", address);
             std::cout << "" << std::endl;
-            printf("%x \n", address);
-
-            std::cout << "Exit failure" << std::endl;
-            exit(EXIT_FAILURE);
+            return -1;
         }
     }
     else if (address == 0x4014)
     {
-        std::cout << "forbidden access to PPU write only address" << std::endl;
+        this->stored_instructions[1] = 0x82;
+        std::cout << "\033[91mforbidden access to PPU write only address\033[0m" << std::endl;
+        printf("address %x \n", address);
         std::cout << "" << std::endl;
-        std::cout << "Exit failure" << std::endl;
-        exit(EXIT_FAILURE);
+        return -1;
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
@@ -144,8 +144,13 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
-        std::cout << "Segmentation Fault (Core Dumped)" << std::endl;
-        exit(EXIT_FAILURE);
+        this->stored_instructions[1] = 0x82;
+
+        std::cout << "\033[91mAttempt to write into READ_ONLY_MEM\033[0m" << std::endl;
+        printf("address 0x%x \n", address);
+        std::cout << "" << std::endl;
+
+        // exit(EXIT_FAILURE);
     }
 
     // memory[address] = value;
@@ -208,8 +213,9 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
-        std::cout << "Segmentation Fault (Core Dumped)" << std::endl;
-        exit(EXIT_FAILURE);
+        this->stored_instructions[1] = 0x82;
+
+        std::cout << "Attempt to write into READ_ONLY_MEM" << std::endl;
     }
 }
 
