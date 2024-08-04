@@ -81,13 +81,28 @@ from then on its a hashmap that points each opCode to a struct instruction
 
 ```C++
 using instructionPointer = void (*)(AddressMode, CPU &); //function ptr for each NES instruction
-
+enum class AddressMode
+{
+    ACCUMULATOR,
+    ABSOLUTE,
+    ABSOLUTE_Y,
+    ABSOLUTE_X,
+    ZERO_PAGE,
+    ZERO_PAGE_X,
+    ZERO_PAGE_Y,
+    IMMEDIATE,
+    INDIRECT,
+    INDIRECT_X,
+    INDIRECT_Y,
+    RELATIVE,
+    IMPLIED
+};
 struct Instruction
 {
 	instructionPointer i;
-	AddressMode addressmode; //Address mode type enum. for the 9 address modes of the NES 
+	AddressMode addressmode; 
 };
-std::map<uint8_t, Instruction> instructionMap; //hashmap
+std::map<uint8_t, Instruction> instructionMap; //hashmap of isnrctions
 ```
 
 it runs until a BRK is called or an unrecognized instruction.or if it reaches 0xffff

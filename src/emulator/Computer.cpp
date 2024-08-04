@@ -373,8 +373,9 @@ void run(CPU cpu, std::string render_name)
 		{
 			cpu.bus.push_stack8(cpu.status);
 			cpu.bus.fetch_next();
-			cpu.bus.push_stack16(cpu.bus.get_PC());
+			cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
 			cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
+			set_interrupt_disabled(1, cpu);
 		}
 		current_instruction = cpu.bus.read_8bit(cpu.bus.get_PC());
 		cpu.bus.render(texture, 0, 0);
@@ -407,14 +408,7 @@ void run(CPU cpu, std::string render_name)
 		else if (current_instruction != 0xEA)
 		{
 			printf("Current instruction 0x%x", current_instruction, instructionMap[cpu.bus.get_PC()]);
-			program_failure("Unrecognized instruction encountered",cpu, 1);
-			// std::cout << "Unrecognized instruction encountered." << std::endl;
-			// printf("Current instruction 0x%x is unrecognized && and end of PC.0x%x \n", current_instruction, instructionMap[cpu.bus.get_PC()]);
-			// printCPU_stats(cpu);
-			// printf("\n");
-			// std::cout << "\033[91mProgram unsuccessfully ended" << std::endl;
-			// std::cout << "exit code 1\033[0m" << std::endl;
-			// exit(EXIT_FAILURE);
+			program_failure("Unrecognized instruction encountered", cpu, 1);
 		}
 	}
 }

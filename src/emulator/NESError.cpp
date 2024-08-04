@@ -14,5 +14,5 @@ void program_failure(std::string reason, CPU cpu, int exit_code)
     printf("\n");
     std::cout << "\033[91mProgram unsuccessfully ended" << std::endl;
     std::cout << "exit code 1\033[0m" << std::endl;
-    exit(exit_code);
+    exit(EXIT_FAILURE);
 }
