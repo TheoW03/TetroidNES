@@ -6,6 +6,7 @@
 
 #define PRG_ROM_SIZE 16384
 #define CHR_ROM_SIZE 8192
+
 enum MirrorType
 {
     VERTICAL,

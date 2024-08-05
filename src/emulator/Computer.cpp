@@ -16,6 +16,8 @@
 #include "Instructions.h"
 #include "LoadRom.h"
 #include "StatusRegister.h"
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #define PC_RESET 0x8000
 #define PC_END 0xffff
@@ -59,8 +61,8 @@ void init(std::string file_name)
 	cpu.Y_Reg = 0;
 	cpu.bus = bus;
 	cpu.bus.clock_cycles = 0;
-
-	run(cpu, file_name);
+	std::string window_name = fs::path(file_name).filename().replace_extension().string();
+	run(cpu, window_name);
 }
 
 /**
@@ -334,10 +336,12 @@ void printCPU_stats(CPU cpu)
 /**
  * Executes instructions in a loop and handles proper/improper exits.
  */
-void run(CPU cpu, std::string render_name)
+void run(CPU cpu, std::string window_name)
 {
 	bool brk = false;
-	sf::RenderWindow window(sf::VideoMode(800, 600), render_name);
+
+	sf::RenderWindow window(sf::VideoMode(800, 600), window_name);
+
 	window.setFramerateLimit(144);
 	sf::Texture texture;
 	texture.create(200, 200);
@@ -356,12 +360,6 @@ void run(CPU cpu, std::string render_name)
 			{
 				window.close();
 				program_success(cpu);
-				// printCPU_stats(cpu);
-				// window.close();
-				// std::cout << "" << std::endl;
-				// std::cout << "\033[92mProgram has successfully ended" << std::endl;
-				// std::cout << "exit code 0 \033[0m" << std::endl;
-				// exit(EXIT_SUCCESS);
 			}
 		}
 
@@ -379,7 +377,7 @@ void run(CPU cpu, std::string render_name)
 			set_interrupt_disabled(1, cpu);
 		}
 		current_instruction = cpu.bus.fetch_next();
-		cpu.bus.render(texture, 0,0);
+		cpu.bus.render(texture, 0, 0);
 		window.clear(); // Change this to the desired color
 		window.draw(sprite);
 		window.display();
