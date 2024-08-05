@@ -14,11 +14,14 @@
 
 ; "nes" linker config requires a STARTUP section, even if it's empty
 .segment "STARTUP"
-
+; chars
+.segment "CHARS"
 ; Main code segment for the program
 .segment "CODE"
 
+
 main: 
+  LDA #1
 JSR Add
 LDX #10
 BRK
@@ -29,11 +32,9 @@ BNE L2
 RTS
 L2:
 LDY #1
-JMP L3
-L3:
 RTS
 nmi:
-    jmp main
+    rti
 reset:
       jmp main
     irq:

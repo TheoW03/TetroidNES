@@ -64,6 +64,7 @@ uint8_t Bus::fetch_next()
     // printf(" fetch: current_instrcution: 0x%x  pc: 0x%x \n", current_instruction, this->program_counter);
     program_counter++;
     stored_instructions[0] = rom.PRG[this->program_counter - reset_vector];
+
     return current_instruction;
 }
 

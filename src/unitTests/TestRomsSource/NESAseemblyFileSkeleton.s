@@ -15,22 +15,18 @@
 
 ; "nes" linker config requires a STARTUP section, even if it's empty
 .segment "STARTUP"
-; chars
-.segment "CHARS"
+
 ; Main code segment for the program
 .segment "CODE"
 
-; make sure LDA works
+main:
+    ; put code in here
 
-main: 
-    LDA #5
-    LDX #5
-    LDY #5
-    BRK
-    jmp main
-nmi:
-  rti
 reset:
-  jmp main
+    jmp main ; goes here if reset Interrupt
 irq:
-  jmp main
+    jmp main ; goes here if brk instrcution
+nmi:
+    rti ;goes here if NMI interrupt
+    
+.segment "CHARS" ; for graphics

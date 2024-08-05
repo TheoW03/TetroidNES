@@ -16,6 +16,12 @@ cmake --build build --config Release
 # build and run unit tests
 cmake --build build
 # make sure TestRoms are up to date
+
+# TODO  install cc65 assembler and add it to your PATH/bin directory 
+# if you want buildTestRoms.ps1 to work
+# downlaode page: https://cc65.github.io/
+
+# builds the Test Roms 
 . .\buildTestRoms.ps1 
 build 
 # run Unit Tests

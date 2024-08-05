@@ -52,9 +52,10 @@ void init(std::string file_name)
 	// Bus bus(rom, PC_RESET);
 	std::vector<uint8_t> v = file_tobyte_vector(file_name);
 	Bus bus(load_rom(v), 0x8000);
-	// printf("%x \n", )
 	CPU cpu;
-	bus.fill(PC_RESET);
+
+	// std::cout <<bus.read_16bit(0xfffc) <<
+	bus.fill(bus.read_16bit(0xfffc));
 	cpu.A_Reg = 0;
 	cpu.status = 0;
 	cpu.X_Reg = 0;
@@ -349,8 +350,7 @@ void HandleIRQInterrupts(CPU &cpu)
 	cpu.bus.push_stack8(cpu.status);
 	cpu.bus.fetch_next();
 	cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
-	printf("Halt instruction encountered.\n");
-	printCPU_stats(cpu);
+
 	cpu.bus.fill(cpu.bus.read_16bit(0xfffe));
 }
 /**
@@ -358,7 +358,6 @@ void HandleIRQInterrupts(CPU &cpu)
  */
 void run(CPU cpu, std::string window_name)
 {
-	bool brk = false;
 
 	sf::RenderWindow window(sf::VideoMode(800, 600), window_name);
 
@@ -372,6 +371,9 @@ void run(CPU cpu, std::string window_name)
 
 	while (cpu.bus.get_PC() < PC_END && window.isOpen())
 	{
+		bool brk = false;
+
+		// printf("%x \n", current_instruction);
 // if(window.)
 #pragma region SFML boiler plat
 		for (auto event = sf::Event{}; window.pollEvent(event);)
@@ -399,7 +401,7 @@ void run(CPU cpu, std::string window_name)
 			// set_interrupt_disabled(1, cpu);
 		}
 		current_instruction = cpu.bus.fetch_next();
-		// cpu.bus.render(texture, 0, 1);
+		cpu.bus.render(texture, 0, 0);
 		window.clear(); // Change this to the desired color
 		window.draw(sprite);
 		window.display();
@@ -457,7 +459,7 @@ CPU test_init(std::string file_name)
 	Bus bus(load_rom(v), 0x8000);
 	// printf("%x \n", )
 	CPU cpu;
-	bus.fill(PC_RESET);
+	bus.fill(bus.read_16bit(0xfffc));
 	cpu.A_Reg = 0;
 	cpu.status = 0;
 	cpu.X_Reg = 0;
@@ -490,6 +492,7 @@ CPU test_run(CPU cpu, std::string window_name)
 
 	while (cpu.bus.get_PC() < PC_END && window.isOpen())
 	{
+		brk = false;
 // if(window.)
 #pragma region SFML boiler plat
 		for (auto event = sf::Event{}; window.pollEvent(event);)
@@ -545,7 +548,6 @@ CPU test_run(CPU cpu, std::string window_name)
 			// printCPU_stats(cpu);
 			// cpu.bus.fill(cpu.bus.read_16bit(0xfffe));
 			brk = true;
-			return cpu;
 		}
 		else if (current_instruction != 0xEA)
 		{

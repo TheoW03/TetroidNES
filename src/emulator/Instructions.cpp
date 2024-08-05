@@ -600,7 +600,10 @@ void JSR(AddressMode addressType, CPU &cpu)
 
 void RTS(AddressMode addressType, CPU &cpu)
 {
-	cpu.bus.fill(cpu.bus.pop_stack16() - 1);
+	uint16_t c = cpu.bus.pop_stack16();
+	// cpu.bus.print_stack();
+	// printf("%x \n", );
+	cpu.bus.fill(c - 1);
 }
 
 void CMP(AddressMode addressType, CPU &cpu)
