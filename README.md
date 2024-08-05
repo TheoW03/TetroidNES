@@ -15,6 +15,10 @@ cmake --build build --config Release
 
 # build and run unit tests
 cmake --build build
+# make sure TestRoms are up to date
+. .\buildTestRoms.ps1 
+build 
+# run Unit Tests
 ./Debug/Emulator_tests.exe
 ```
 
