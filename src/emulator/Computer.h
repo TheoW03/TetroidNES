@@ -1,5 +1,7 @@
 #include <iostream>
 #include "Bus.h"
+#include <filesystem>
+
 // #include <SFML/Graphics.hpp>
 #ifndef CPU_H
 #define CPU_H
@@ -10,6 +12,7 @@ struct CPU
     uint8_t A_Reg;
     uint8_t status;
     // sf::RenderWindow Render_window;
+    int error_code;
 
     Bus bus;
 };
@@ -35,3 +38,4 @@ enum class AddressMode
 #endif
 void init(std::string file_name);
 void printCPU_stats(CPU cpu);
+CPU test_init(std::string file_name);
