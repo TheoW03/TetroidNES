@@ -375,13 +375,11 @@ void run(CPU cpu, std::string render_name)
 
 			cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
 			cpu.bus.fetch_next();
-
-			// printf("interrupt %x \n", cpu.bus.read_16bit(0xfffa));
 			cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
 			set_interrupt_disabled(1, cpu);
 		}
 		current_instruction = cpu.bus.fetch_next();
-		cpu.bus.render(texture, 0, 0);
+		cpu.bus.render(texture, 0,0);
 		window.clear(); // Change this to the desired color
 		window.draw(sprite);
 		window.display();

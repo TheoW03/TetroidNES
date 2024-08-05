@@ -20,6 +20,8 @@ private:
 public:
     size_t clock_cycles;
     uint8_t stored_instructions[2];
+    uint8_t joy_pad_byte1;
+    uint8_t joy_pad_byte2;
 
     Bus();
     Bus(Rom rom, uint16_t pc_start);

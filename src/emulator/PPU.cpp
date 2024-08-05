@@ -151,8 +151,7 @@ void PPU::render(sf::Texture &texture, int bank, int tile)
     int idy = 0;
     // for
 
-    while (tile <= 60)
-    {
+
         /* code */
 
         std::vector<uint8_t> tile_list;
@@ -162,7 +161,7 @@ void PPU::render(sf::Texture &texture, int bank, int tile)
             // printf("%d \n", this->chr_rom[i]);
             tile_list.push_back(chr_rom[i]);
         }
-        tile += 16;
+        tile += 15;
 
         // for (int i = 0; i < 0x3c0; i++)
         // {
@@ -176,7 +175,7 @@ void PPU::render(sf::Texture &texture, int bank, int tile)
                 upper >>= 1;
                 lower >>= 1;
                 sf::Color rgb = getColorFromByte(value);
-                int b = idy * 4 * 200 + idx * 4;
+                int b = y * 4 * 200 + x * 4;
                 data[b] = rgb.r;
                 data[b + 1] = rgb.g;
                 data[b + 2] = rgb.b;
@@ -186,7 +185,7 @@ void PPU::render(sf::Texture &texture, int bank, int tile)
             idx =0;
             idy++;
         }
-    }
+    
     // }
     // for (int i = 0; i < 0x3c; i++)
     //     int bank = reg.ppuCtrl.B ? 0 : 0x1000;

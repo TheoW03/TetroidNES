@@ -112,6 +112,14 @@ uint8_t Bus::read_8bit(uint16_t address)
         std::cout << "" << std::endl;
         return -1;
     }
+    else if (address == 0x4016)
+    {
+        return joy_pad_byte1;
+    }
+    else if (address == 0x4017)
+    {
+        return joy_pad_byte2;
+    }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
         return rom.PRG[address - reset_vector];
@@ -146,6 +154,15 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
             this->ppu.write_PPU_data(value);
         }
     }
+    else if (address == 0x4016)
+    {
+        joy_pad_byte1 = value;
+        // return
+    }
+    else if (address == 0x4017)
+    {
+        joy_pad_byte2 = value;
+    }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
         this->stored_instructions[1] = 0x82;
@@ -174,11 +191,7 @@ uint16_t Bus::read_16bit(uint16_t address)
     {
         return read_8bit(address + 1) << 8 | read_8bit(address);
     }
-    else if (address == 0xFFFC)
-    {
-        return reset_vector;
-    }
-    else if (address >= 0x8000 && address <= 0xFFFB)
+    else if (address >= 0x8000 && address <= 0xFFFF)
     {
 
         uint8_t lsb = rom.PRG[address - reset_vector];
@@ -206,11 +219,8 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
         write_8bit(address + 1, value >> 8);
         write_8bit(address, value);
     }
-    else if (address == 0xFFFC)
-    {
-        reset_vector = value;
-    }
-    else if (address >= 0x8000 && address <= 0xFFFB)
+
+    else if (address >= 0x8000 && address <= 0xFFFF)
     {
         this->stored_instructions[1] = 0x82;
 
