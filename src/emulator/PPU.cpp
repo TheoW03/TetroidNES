@@ -162,7 +162,7 @@ void PPU::render(sf::Texture &texture, int bank, int tile)
             // printf("%d \n", this->chr_rom[i]);
             tile_list.push_back(chr_rom[i]);
         }
-        tile += 15;
+        tile += 16;
 
         // for (int i = 0; i < 0x3c0; i++)
         // {
