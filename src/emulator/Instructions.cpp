@@ -349,6 +349,7 @@ void ASL(AddressMode addressType, CPU &cpu)
 void LSR(AddressMode addressType, CPU &cpu)
 {
 	set_carry((cpu.A_Reg & 1) != 0, cpu);
+
 	if (addressType == AddressMode::ACCUMULATOR)
 	{
 		cpu.A_Reg = cpu.A_Reg >> 1;

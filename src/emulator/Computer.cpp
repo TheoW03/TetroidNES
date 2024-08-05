@@ -150,8 +150,8 @@ void initializeInstructionMap()
 #pragma endregion
 
 #pragma region ROL/ROR
-	instructionMap.insert(make_pair(0x26, Instruction{(instructionPointer)ROL, AddressMode::ACCUMULATOR}));
-	instructionMap.insert(make_pair(0x2A, Instruction{(instructionPointer)ROL, AddressMode::ZERO_PAGE}));
+	instructionMap.insert(make_pair(0x2A, Instruction{(instructionPointer)ROL, AddressMode::ACCUMULATOR}));
+	instructionMap.insert(make_pair(0x26, Instruction{(instructionPointer)ROL, AddressMode::ZERO_PAGE}));
 	instructionMap.insert(make_pair(0x36, Instruction{(instructionPointer)ROL, AddressMode::ZERO_PAGE_X}));
 	instructionMap.insert(make_pair(0x2E, Instruction{(instructionPointer)ROL, AddressMode::ABSOLUTE}));
 	instructionMap.insert(make_pair(0x3E, Instruction{(instructionPointer)ROL, AddressMode::ABSOLUTE_X}));
@@ -377,7 +377,7 @@ void run(CPU cpu, std::string window_name)
 			set_interrupt_disabled(1, cpu);
 		}
 		current_instruction = cpu.bus.fetch_next();
-		cpu.bus.render(texture, 0, 0);
+		cpu.bus.render(texture, 0, 1);
 		window.clear(); // Change this to the desired color
 		window.draw(sprite);
 		window.display();

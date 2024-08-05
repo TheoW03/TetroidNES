@@ -1,6 +1,6 @@
 # TetroidNES
 
-an open source NES emulator
+open source NES emulator
 targeted to windows 
 
 ## Build Instructions
@@ -8,7 +8,7 @@ targeted to windows
 ```SH
 cmake -S . -B build # build Cmake
 cmake --build build --config Release # build project
-./Release/output.exe ${path to .nes rom file} # run project
+./Release/tetroid.exe ${path to .nes rom file} # run project
 ```
 
 ## Documentation

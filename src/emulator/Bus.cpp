@@ -26,6 +26,7 @@ Bus::Bus(Rom rom, uint16_t pc_start)
     this->ppu = nes_ppu; // test
     // this->ppu.chr_rom = rom.CHR;
     // this->ppu.mirrorType = rom.mirror;
+    
     APU APU();
     this->apu = apu; // test
     this->stack_pointer = STACK_RESET;
