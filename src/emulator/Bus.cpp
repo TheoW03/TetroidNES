@@ -60,6 +60,7 @@ uint8_t Bus::fetch_next()
 
     uint8_t current_instruction = get_current_instruction();
     stored_instructions[1] = stored_instructions[0];
+    // printf(" fetch: current_instrcution: 0x%x  pc: 0x%x \n", current_instruction, this->program_counter);
     program_counter++;
     stored_instructions[0] = rom.PRG[this->program_counter - reset_vector];
     return current_instruction;
@@ -71,6 +72,9 @@ void Bus::fill(uint16_t pc)
     stored_instructions[1] = rom.PRG[(pc - reset_vector)];
     clock_cycles += 2;
     this->program_counter = pc;
+    // printf("current_instrcution: 0x%x  pc: 0x%x \n", current_instruction, this->program_counter);
+    // printf(" fill: proram counter: 0x%x current: 0x%x \n", pc, stored_instructions[1]);
+
     program_counter++;
 }
 
@@ -110,7 +114,7 @@ uint8_t Bus::read_8bit(uint16_t address)
     }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
-        return fetch_next();
+        return rom.PRG[address - reset_vector];
     }
     return 0;
 }
@@ -174,16 +178,11 @@ uint16_t Bus::read_16bit(uint16_t address)
     {
         return reset_vector;
     }
-    else if (address == 0xfffa)
-    {
-        return rom.PRG[(address + 1 - reset_vector)] << 8 | rom.PRG[(address - reset_vector)];
-    }
     else if (address >= 0x8000 && address <= 0xFFFB)
     {
 
-        uint8_t lsb = fetch_next();
-
-        uint8_t msb = fetch_next();
+        uint8_t lsb = rom.PRG[address - reset_vector];
+        uint8_t msb = rom.PRG[(address - reset_vector) + 1];
         return (uint16_t)(msb << 8) | lsb;
     }
     return 0;

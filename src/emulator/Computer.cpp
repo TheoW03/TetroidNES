@@ -372,12 +372,15 @@ void run(CPU cpu, std::string render_name)
 		if (cpu.bus.NMI_interrupt())
 		{
 			cpu.bus.push_stack8(cpu.status);
-			cpu.bus.fetch_next();
+
 			cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
+			cpu.bus.fetch_next();
+
+			// printf("interrupt %x \n", cpu.bus.read_16bit(0xfffa));
 			cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
 			set_interrupt_disabled(1, cpu);
 		}
-		current_instruction = cpu.bus.read_8bit(cpu.bus.get_PC());
+		current_instruction = cpu.bus.fetch_next();
 		cpu.bus.render(texture, 0, 0);
 		window.clear(); // Change this to the desired color
 		window.draw(sprite);
@@ -399,7 +402,7 @@ void run(CPU cpu, std::string render_name)
 			set_brk(cpu, 1);
 			cpu.bus.push_stack8(cpu.status);
 			cpu.bus.fetch_next();
-			cpu.bus.push_stack16(cpu.bus.get_PC());
+			cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
 			printf("Halt instruction encountered.\n");
 			printCPU_stats(cpu);
 			cpu.bus.fill(PC_END);

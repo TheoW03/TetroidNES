@@ -62,12 +62,19 @@ uint16_t address_mode(AddressMode address, CPU &cpu)
 	}
 	}
 }
-
+uint8_t get_value(AddressMode address, CPU &cpu)
+{
+	if (address == AddressMode::IMMEDIATE || address == AddressMode::RELATIVE)
+	{
+		return cpu.bus.fetch_next();
+	}
+	return cpu.bus.read_8bit(address_mode(address, cpu));
+}
 // data transfer instructions, includes MOV...Stack pointer what not
 #pragma region data transfer instructions
 void LDA(AddressMode addressType, CPU &cpu)
 {
-	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	uint8_t value = get_value(addressType, cpu);
 	cpu.A_Reg = value;
 	set_zero(cpu.A_Reg, cpu);
 	set_negative(cpu.A_Reg, cpu);
@@ -75,7 +82,7 @@ void LDA(AddressMode addressType, CPU &cpu)
 
 void LDX(AddressMode addressType, CPU &cpu)
 {
-	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	uint8_t value = get_value(addressType, cpu);
 	cpu.X_Reg = value;
 	set_zero(cpu.X_Reg, cpu);
 	set_negative(cpu.X_Reg, cpu);
@@ -83,7 +90,7 @@ void LDX(AddressMode addressType, CPU &cpu)
 
 void LDY(AddressMode addressType, CPU &cpu)
 {
-	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	uint8_t value = get_value(addressType, cpu);
 	cpu.Y_Reg = (value);
 	set_zero(cpu.Y_Reg, cpu);
 	set_negative(cpu.Y_Reg, cpu);
@@ -199,7 +206,7 @@ void ADC(AddressMode addressType, CPU &cpu)
 {
 
 	uint8_t carry = 0;
-	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	uint8_t value = get_value(addressType, cpu);
 	if (check_decimal(cpu) != 0)
 	{
 		cpu.A_Reg = decimal_add(cpu.A_Reg, value, cpu, carry);
@@ -222,7 +229,7 @@ void SBC(AddressMode addressType, CPU &cpu)
 {
 
 	uint8_t carry = 0;
-	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	uint8_t value = get_value(addressType, cpu);
 	if (check_decimal(cpu) != 0)
 	{
 		cpu.A_Reg = decimal_sub(cpu.A_Reg, value, cpu, carry);
@@ -241,7 +248,7 @@ void SBC(AddressMode addressType, CPU &cpu)
 void BIT(AddressMode addressType, CPU &cpu)
 {
 	// TODO: bit test
-	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	uint8_t value = get_value(addressType, cpu);
 	uint8_t result = value & cpu.A_Reg;
 	set_zero(result, cpu);
 	set_overflow((value & 0b00100000) != 0, cpu);
@@ -251,7 +258,7 @@ void BIT(AddressMode addressType, CPU &cpu)
 void AND(AddressMode addressType, CPU &cpu)
 {
 	// TODO: and
-	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	uint8_t value = get_value(addressType, cpu);
 	cpu.A_Reg = cpu.A_Reg & value;
 	set_negative(cpu.A_Reg, cpu);
 	set_zero(cpu.A_Reg, cpu);
@@ -261,7 +268,7 @@ void ORA(AddressMode addressType, CPU &cpu)
 {
 	// TODO: or
 
-	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	uint8_t value = get_value(addressType, cpu);
 	cpu.A_Reg = cpu.A_Reg | value;
 	set_negative(cpu.A_Reg, cpu);
 	set_zero(cpu.A_Reg, cpu);
@@ -365,7 +372,7 @@ void LSR(AddressMode addressType, CPU &cpu)
 void EOR(AddressMode addressType, CPU &cpu)
 {
 	// TODO xor
-	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	uint8_t value = get_value(addressType, cpu);
 	cpu.A_Reg = cpu.A_Reg ^ value;
 }
 
@@ -485,7 +492,7 @@ void JMP(AddressMode addressType, CPU &cpu)
 
 void BEQ(AddressMode addressType, CPU &cpu)
 {
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
+	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 	if (check_zero(cpu) == 0)
 	{
 		return;
@@ -496,7 +503,7 @@ void BEQ(AddressMode addressType, CPU &cpu)
 void BNE(AddressMode addressType, CPU &cpu)
 {
 
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
+	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
 	if (check_zero(cpu) != 0)
 	{
@@ -509,7 +516,7 @@ void BNE(AddressMode addressType, CPU &cpu)
 void BCC(AddressMode addressType, CPU &cpu)
 {
 
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
+	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
 	if (check_carry(cpu) != 0)
 	{
@@ -522,7 +529,7 @@ void BCC(AddressMode addressType, CPU &cpu)
 void BCS(AddressMode addressType, CPU &cpu)
 {
 
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
+	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
 	if (check_carry(cpu) == 0)
 	{
@@ -534,7 +541,7 @@ void BCS(AddressMode addressType, CPU &cpu)
 
 void BPL(AddressMode addressType, CPU &cpu)
 {
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
+	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 	if (check_negative(cpu) != 0)
 	{
 		return;
@@ -546,7 +553,7 @@ void BPL(AddressMode addressType, CPU &cpu)
 void BMI(AddressMode addressType, CPU &cpu)
 {
 	// TODO: Branch if negative
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
+	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
 	if (check_negative(cpu) == 0)
 	{
@@ -559,7 +566,7 @@ void BVC(AddressMode addressType, CPU &cpu)
 {
 	// TODO: Branch if overflow clear
 
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
+	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
 	if (check_overflow(cpu) != 0)
 	{
@@ -573,7 +580,7 @@ void BVC(AddressMode addressType, CPU &cpu)
 void BVS(AddressMode addressType, CPU &cpu)
 {
 	// TODO: Branch if overflow set
-	int8_t new_PC = (int8_t)cpu.bus.read_8bit(address_mode(addressType, cpu));
+	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 	if (check_overflow(cpu) == 0)
 	{
 		return;
@@ -598,7 +605,7 @@ void RTS(AddressMode addressType, CPU &cpu)
 void CMP(AddressMode addressType, CPU &cpu)
 {
 	uint8_t carry = 0;
-	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	uint8_t value = get_value(addressType, cpu);
 	uint8_t v = sub(cpu.A_Reg, value, cpu, carry);
 	set_carry(carry, cpu);
 	set_zero(v, cpu);
@@ -607,7 +614,7 @@ void CMP(AddressMode addressType, CPU &cpu)
 
 void CPY(AddressMode addressType, CPU &cpu)
 {
-	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	uint8_t value = get_value(addressType, cpu);
 	uint8_t carry = 0;
 	uint8_t v = sub(cpu.Y_Reg, value, cpu, carry);
 	set_carry(carry, cpu);
@@ -618,7 +625,7 @@ void CPY(AddressMode addressType, CPU &cpu)
 void CPX(AddressMode addressType, CPU &cpu)
 {
 
-	uint8_t value = cpu.bus.read_8bit(address_mode(addressType, cpu));
+	uint8_t value = get_value(addressType, cpu);
 	uint8_t carry = 0;
 
 	uint8_t v = sub(cpu.X_Reg, value, cpu, carry);

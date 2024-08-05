@@ -146,30 +146,45 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
 void PPU::render(sf::Texture &texture, int bank, int tile)
 {
     uint8_t data[200 * 200 * 4];
-    std::vector<uint8_t> tile_list;
     int banks = bank * 0x1000;
-    for (int i = banks + tile; i <= (banks + tile + 15); i++)
+    int idx = 0;
+    int idy = 0;
+    // for
+
+    while (tile <= 60)
     {
-        // printf("%d \n", this->chr_rom[i]);
-        tile_list.push_back(chr_rom[i]);
-    }
-    // for (int i = 0; i < 0x3c0; i++)
-    // {
-    for (int y = 0; y < 8; y++)
-    {
-        uint8_t upper = tile_list[y];
-        uint8_t lower = tile_list[y + 8];
-        for (int x = 7; x >= 0; x--)
+        /* code */
+
+        std::vector<uint8_t> tile_list;
+
+        for (int i = banks + tile; i <= (banks + tile + 15); i++)
         {
-            uint16_t value = (1 & upper) << 1 | (1 & lower);
-            upper >>= 1;
-            lower >>= 1;
-            sf::Color rgb = getColorFromByte(value);
-            int b = y * 4 * 200 + x * 4;
-            data[b] = rgb.r;
-            data[b + 1] = rgb.g;
-            data[b + 2] = rgb.b;
-            data[b + 3] = 0xff;
+            // printf("%d \n", this->chr_rom[i]);
+            tile_list.push_back(chr_rom[i]);
+        }
+        tile += 15;
+
+        // for (int i = 0; i < 0x3c0; i++)
+        // {
+        for (int y = 0; y < 8; y++)
+        {
+            uint8_t upper = tile_list[y];
+            uint8_t lower = tile_list[y + 8];
+            for (int x = 7; x >= 0; x--)
+            {
+                uint16_t value = (1 & upper) << 1 | (1 & lower);
+                upper >>= 1;
+                lower >>= 1;
+                sf::Color rgb = getColorFromByte(value);
+                int b = idy * 4 * 200 + idx * 4;
+                data[b] = rgb.r;
+                data[b + 1] = rgb.g;
+                data[b + 2] = rgb.b;
+                data[b + 3] = 0xff;
+                idx++;
+            }
+            idx =0;
+            idy++;
         }
     }
     // }

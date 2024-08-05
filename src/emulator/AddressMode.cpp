@@ -23,7 +23,7 @@ uint16_t immediate_address_mode(CPU &cpu)
  */
 uint16_t zero_page_address_mode(CPU &cpu)
 {
-    return cpu.bus.read_8bit(cpu.bus.get_PC());
+    return cpu.bus.fetch_next();
 }
 /**
  * @brief relative address mode (used for conditional branching)
@@ -43,7 +43,7 @@ uint16_t relative_addressmode(CPU &cpu)
  */
 uint16_t zero_page_address_mode_X(CPU &cpu)
 {
-    return cpu.bus.read_8bit(cpu.bus.get_PC()) + cpu.X_Reg;
+    return cpu.bus.fetch_next() + cpu.X_Reg;
 }
 /**
  * @brief 8 bit ptr offset Y
@@ -53,7 +53,7 @@ uint16_t zero_page_address_mode_X(CPU &cpu)
  */
 uint16_t zero_page_address_mode_Y(CPU &cpu)
 {
-    return cpu.bus.read_8bit(cpu.bus.get_PC()) + cpu.Y_Reg;
+    return cpu.bus.fetch_next() + cpu.Y_Reg;
 }
 
 /**
@@ -65,7 +65,10 @@ uint16_t zero_page_address_mode_Y(CPU &cpu)
 uint16_t absolute(CPU &cpu)
 {
 
-    return (cpu.bus.read_16bit(cpu.bus.get_PC()));
+    uint8_t lsb = cpu.bus.fetch_next();
+    uint8_t msb = cpu.bus.fetch_next();
+    uint16_t address = msb << 8 | lsb;
+    return address;
 }
 /**
  * @brief 16 bit ptr but offset with x
@@ -75,7 +78,10 @@ uint16_t absolute(CPU &cpu)
  */
 uint16_t absolute_page_address_mode_X(CPU &cpu)
 {
-    return (cpu.bus.read_16bit(cpu.bus.get_PC()) + cpu.X_Reg);
+    uint8_t lsb = cpu.bus.fetch_next();
+    uint8_t msb = cpu.bus.fetch_next();
+    uint16_t address = msb << 8 | lsb;
+    return (address + cpu.X_Reg);
 }
 /**
  * @brief 16 bit ptr but offset Y
@@ -85,21 +91,24 @@ uint16_t absolute_page_address_mode_X(CPU &cpu)
  */
 uint16_t absolute_page_address_mode_Y(CPU &cpu)
 {
-    return (cpu.bus.read_16bit(cpu.bus.get_PC()) + cpu.Y_Reg);
+    uint8_t lsb = cpu.bus.fetch_next();
+    uint8_t msb = cpu.bus.fetch_next();
+    uint16_t address = msb << 8 | lsb;
+    return (address + cpu.Y_Reg);
 }
 
 uint16_t indirect_address_mode(CPU &cpu)
 {
-    uint16_t value = (uint16_t)cpu.bus.read_8bit(cpu.bus.get_PC());
+    uint16_t value = (uint16_t)cpu.bus.fetch_next();
     return cpu.bus.read_16bit(value);
 }
 
 uint16_t indirect_address_mode_X(CPU &cpu)
 {
-    return cpu.bus.read_16bit((cpu.bus.read_8bit(cpu.bus.get_PC()) + cpu.X_Reg));
+    return cpu.bus.read_16bit((cpu.bus.fetch_next() + cpu.X_Reg));
 }
 
 uint16_t indirect_address_Mode_Y(CPU &cpu)
 {
-    return (cpu.bus.read_16bit(cpu.bus.read_8bit(cpu.bus.get_PC())) + cpu.Y_Reg);
+    return (cpu.bus.read_16bit(cpu.bus.fetch_next())) + cpu.Y_Reg;
 }
