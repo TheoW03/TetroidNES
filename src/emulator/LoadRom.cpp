@@ -63,9 +63,11 @@ Rom load_rom(std::vector<uint8_t> instructions)
                  : (!four_screen && vertical_mirroring) ? MirrorType::VERTICAL
                                                         : MirrorType::HORIZONTAL;
     uint16_t prg_start = 16 + (512 * (((instructions[6] & 0b100)) != 0));
-    for (size_t i = prg_start; i <   prg_rom + prg_start - 1; i++)
+    // printf("%d \n", prg_start + prg_rom)
+    for (size_t i = prg_start; i <   prg_rom + prg_start; i++)
     {
         rom.PRG.push_back(instructions[i]);
+        
     }
     for (size_t i = prg_start + prg_rom; i < prg_start + prg_rom + chr_rom; i++)
     {

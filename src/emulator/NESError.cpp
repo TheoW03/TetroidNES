@@ -1,4 +1,11 @@
 #include "../emulator/Computer.h"
+#include <fstream>
+
+void cpu_to_log(std::string path)
+{
+    std::ofstream outFile(path);
+
+}
 void program_success(CPU cpu)
 {
     printCPU_stats(cpu);

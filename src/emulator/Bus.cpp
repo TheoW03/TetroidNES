@@ -26,7 +26,7 @@ Bus::Bus(Rom rom, uint16_t pc_start)
     this->ppu = nes_ppu; // test
     // this->ppu.chr_rom = rom.CHR;
     // this->ppu.mirrorType = rom.mirror;
-    
+
     APU APU();
     this->apu = apu; // test
     this->stack_pointer = STACK_RESET;
@@ -121,7 +121,7 @@ uint8_t Bus::read_8bit(uint16_t address)
     {
         return joy_pad_byte2;
     }
-    else if (address >= 0x8000 && address <= 0xFFFB)
+    else if (address >= 0x8000 && address <= 0xFFFF)
     {
         return rom.PRG[address - reset_vector];
     }
@@ -164,7 +164,7 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     {
         joy_pad_byte2 = value;
     }
-    else if (address >= 0x8000 && address <= 0xFFFB)
+    else if (address >= 0x8000 && address <= 0xFFFF)
     {
         this->stored_instructions[1] = 0x82;
 
@@ -196,7 +196,7 @@ uint16_t Bus::read_16bit(uint16_t address)
     {
 
         uint8_t lsb = rom.PRG[address - reset_vector];
-        uint8_t msb = rom.PRG[(address - reset_vector) + 1];
+        uint8_t msb = rom.PRG[(address + 1) - reset_vector];
         return (uint16_t)(msb << 8) | lsb;
     }
     return 0;
