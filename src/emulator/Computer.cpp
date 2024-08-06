@@ -324,9 +324,9 @@ void initializeInstructionMap()
 }
 void printCPU_stats(CPU cpu)
 {
-	printf("Accumaltor: %x \n", cpu.A_Reg);
-	printf("X Register: %d \n", cpu.X_Reg);
-	printf("Y Register: %d \n", cpu.Y_Reg);
+	printf("Accumaltor: decimal: %d hexa: 0x%x \n", cpu.A_Reg, cpu.A_Reg);
+	printf("X Register: decimal: %d hexa: 0x%x \n", cpu.X_Reg, cpu.X_Reg);
+	printf("Y Register:decimal: %d hexa: 0x%x \n", cpu.Y_Reg, cpu.Y_Reg);
 	printf("Program Counter: 0x%X \n", cpu.bus.get_PC());
 	// printf("Stack Pointer: 0x%X \n", cpu.stack_pointer);
 	cpu.bus.print_stack();

@@ -9,7 +9,7 @@
   ;; When an NMI happens (once per frame if enabled) the label nmi:
     .addr nmi
     ;; When the processor first turns on or is reset, it will jump to the label reset:
-    .addr reset
+    .addr main
     .addr irq
 
 ; "nes" linker config requires a STARTUP section, even if it's empty
@@ -21,21 +21,17 @@
 
 
 main: 
-  LDA #1
-JSR Add
-LDX #10
-BRK
-
+  JSR Add
+  LDX #10
+  BRK
 Add:
-ADC #1
-BNE L2
-RTS
-L2:
-LDY #1
-RTS
+  ADC #1
+  BNE L2
+  RTS
+  L2:
+    LDY #1
+    RTS
 nmi:
-    rti
-reset:
-      jmp main
-    irq:
-        jmp main
+  rti
+irq:
+  jmp main

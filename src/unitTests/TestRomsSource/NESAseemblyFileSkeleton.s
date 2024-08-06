@@ -9,7 +9,7 @@
   ;; When an NMI happens (once per frame if enabled) the label nmi:
  .addr nmi
   ;; When the processor first turns on or is reset, it will jump to the label reset:
-  .addr reset
+  .addr main ; reset vector
   .addr irq
   ;; External interrupt IRQ (unused)
 
@@ -22,8 +22,6 @@
 main:
     ; put code in here
 
-reset:
-    jmp main ; goes here if reset Interrupt
 irq:
     jmp main ; goes here if brk instrcution
 nmi:
