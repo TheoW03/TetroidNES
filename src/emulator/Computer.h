@@ -36,6 +36,6 @@ enum class AddressMode
     IMPLIED
 };
 #endif
-void init(std::string file_name);
+CPU run(CPU cpu, std::string file_name);
 void printCPU_stats(CPU cpu);
-CPU test_init(std::string file_name);
+CPU init(std::string file_name);
