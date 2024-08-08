@@ -36,6 +36,7 @@ add_executable(${EXECUTABLE_NAME} src/main.cpp
     src/emulator/PPU.cpp
     src/emulator/StatusRegister.cpp
     src/emulator/NESError.cpp
+    src/emulator/InstructionMap.cpp
 )
 
 
@@ -55,6 +56,8 @@ add_executable(
     src/emulator/PPU.cpp
     src/emulator/StatusRegister.cpp
     src/emulator/NESError.cpp
+    src/emulator/InstructionMap.cpp
+
   
 )
 target_link_libraries(

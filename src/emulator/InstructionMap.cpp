@@ -1,10 +1,19 @@
 #include <map>
-#include "../emulator/Computer.h"
+// #include "../emulator/Computer.h"
 #include "../emulator/Instructions.h"
 #include <stdint.h>
-std::map<uint8_t, Instruction> initializeInstructionMap()
+using instructionPointer = void (*)(AddressMode, CPU &);
+
+struct Instruction
 {
-    std::map<uint8_t, Instruction> instructionMap;
+    instructionPointer i;
+    AddressMode addressmode;
+};
+
+std::map<uint8_t, Instruction> instructionMap;
+
+void initializeInstructionMap()
+{
 
     using std::make_pair; // here bc im lazy you may use using on the stack level. but lets stick to this
 
@@ -254,5 +263,14 @@ std::map<uint8_t, Instruction> initializeInstructionMap()
 
     instructionMap.insert(make_pair(0xA8, Instruction{(instructionPointer)TAY, AddressMode::IMPLIED}));
 #pragma endregion
-    return instructionMap;
+    instructionMap.insert(make_pair(0x00, Instruction{(instructionPointer)BRK, AddressMode::IMPLIED}));
+    instructionMap.insert(make_pair(0xea, Instruction{(instructionPointer)NOP, AddressMode::IMPLIED}));
+}
+Instruction GetInstruction(uint8_t opcode)
+{
+    return instructionMap.at(opcode);
+}
+bool InstructionValid(uint8_t opcode)
+{
+    return instructionMap.find(opcode) != instructionMap.end();
 }

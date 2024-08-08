@@ -57,3 +57,5 @@ void TSX(AddressMode addressType, CPU &cpu);
 void INC(AddressMode addressType, CPU &cpu);
 void INX(AddressMode addressType, CPU &cpu);
 void INY(AddressMode addressType, CPU &cpu);
+void BRK(AddressMode addressType, CPU &cpu);
+void NOP(AddressMode addressType, CPU &cpu);

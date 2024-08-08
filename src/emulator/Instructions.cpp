@@ -639,3 +639,20 @@ void CPX(AddressMode addressType, CPU &cpu)
 }
 
 #pragma endregion Jmp
+
+void BRK(AddressMode addressType, CPU &cpu)
+{
+	if (check_interrupt_disabled(cpu) != 0 || check_brk(cpu) != 0)
+	{
+		return;
+	}
+	set_brk(cpu, 1);
+	cpu.bus.push_stack8(cpu.status);
+	cpu.bus.fetch_next();
+	cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
+
+	cpu.bus.fill(cpu.bus.read_16bit(0xfffe));
+}
+void NOP(AddressMode addressType, CPU &cpu)
+{
+}

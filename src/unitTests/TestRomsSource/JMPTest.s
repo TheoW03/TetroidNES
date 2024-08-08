@@ -23,7 +23,7 @@
 main: 
   JSR Add
   LDX #10
-  BRK
+  JMP L
 Add:
   ADC #1
   BNE L2
@@ -31,6 +31,8 @@ Add:
   L2:
     LDY #1
     RTS
+  L:
+    jmp L
 nmi:
   rti
 irq:

@@ -40,10 +40,11 @@ TEST(HelloTest, TestJMP)
 
     EXPECT_EQ(cpu.X_Reg, 10);
     EXPECT_EQ(cpu.Y_Reg, 1);
+    EXPECT_NEAR(cpu.bus.get_PC(), 0x8018, 7);
 }
 /**
  * @brief Tests bitwise
- * 
+ *
  */
 TEST(HelloTest, TestASL)
 {
