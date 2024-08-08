@@ -105,7 +105,5 @@ struct Instruction
 std::map<uint8_t, Instruction> instructionMap; //hashmap of isnrctions
 ```
 
-it runs until a BRK is called or an unrecognized instruction.or if it reaches 0xffff
-
 clock cycles here are calculated by each r/w each instruction does 
 example: LDA #1 takes 2 clock cycles because it does 2 fetchs

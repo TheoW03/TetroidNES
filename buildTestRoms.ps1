@@ -4,7 +4,7 @@ function  build {
     "./src/unitTests/TestRomsSource/JMPTest.s -o ./src/unitTests/TestRoms/JMPTest.nes",
     "./src/unitTests/TestRomsSource/TestAsl.s -o ./src/unitTests/TestRoms/TestAsl.nes"
 
-    echo ""
+    Write-Output ""
 
     foreach ($p in $RomList) {
         $args = @($p -split "\s")
