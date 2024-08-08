@@ -3,6 +3,20 @@
 #include "LoadRom.h"
 #include "APU.h"
 
+#ifndef CONTROILER_H
+#define CONTROILER_H
+enum class Controller
+{
+    A = 0b00000001,
+    B = 0b00000010,
+    SELECT = 0b00000100,
+    START = 0b00001000,
+    UP = 0b00010000,
+    DOWN = 0b00100000,
+    LEFT = 0b01000000,
+    RIGHT = 0b10000000
+};
+#endif
 #ifndef BUS_H
 #define BUS_H
 class Bus
@@ -20,6 +34,7 @@ private:
 public:
     size_t clock_cycles;
     uint8_t stored_instructions[2];
+    bool strobe;
     uint8_t joy_pad_byte1;
     uint8_t joy_pad_byte2;
 
@@ -51,5 +66,6 @@ public:
     void tick();
     void render(sf::Texture &texture, int bank, int tile);
     bool NMI_interrupt();
+    void Read_controller1(Controller value, int isPressed);
 };
 #endif

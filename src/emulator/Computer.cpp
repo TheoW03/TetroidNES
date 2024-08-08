@@ -91,6 +91,39 @@ CPU run(CPU cpu, std::string window_name)
 				return cpu;
 			}
 		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		{
+			cpu.bus.Read_controller1(Controller::UP, 1);
+		}
+		else
+		{
+			cpu.bus.Read_controller1(Controller::UP, 0);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		{
+			cpu.bus.Read_controller1(Controller::DOWN, 1);
+		}
+		else
+		{
+			cpu.bus.Read_controller1(Controller::DOWN, 0);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		{
+			cpu.bus.Read_controller1(Controller::LEFT, 1);
+		}
+		else
+		{
+			cpu.bus.Read_controller1(Controller::LEFT, 0);
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		{
+			cpu.bus.Read_controller1(Controller::RIGHT, 1);
+		}
+		else
+		{
+			cpu.bus.Read_controller1(Controller::RIGHT, 0);
+		}
 		// were the NES does CPU stuff
 		cpu.bus.write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
 

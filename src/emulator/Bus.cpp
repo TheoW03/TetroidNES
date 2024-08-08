@@ -158,13 +158,14 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address == 0x4016)
     {
-        joy_pad_byte1 = value;
+        strobe = (bool)value;
+        // joy_pad_byte1 = value & 0b00000001;
         // return
     }
-    else if (address == 0x4017)
-    {
-        joy_pad_byte2 = value;
-    }
+    // else if (address == 0x4017)
+    // {
+    //     joy_pad_byte2 = value;
+    // }
     else if (address >= 0x8000 && address <= 0xFFFF)
     {
         this->stored_instructions[1] = 0x82;
@@ -291,4 +292,15 @@ void Bus::render(sf::Texture &texture, int bank, int tile)
 bool Bus::NMI_interrupt()
 {
     return this->ppu.NMI_interrupt(this->clock_cycles * 3);
+}
+void Bus::Read_controller1(Controller value, int isPressed)
+{
+    if (!strobe)
+    {
+        return;
+    }
+    if (isPressed == 1)
+        joy_pad_byte1 |= (uint8_t)value;
+    else
+        joy_pad_byte1 &= (uint8_t)~value;
 }
