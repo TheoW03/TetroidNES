@@ -9,9 +9,11 @@
 
 int main(int argc, char *argv[])
 {
-	if (argc > 1)
-		init(argv[1]);
-	else
+	if (argc < 1)
+	{
 		std::cout << "need NES v 1.0 ROM as input file" << std::endl;
-	return EXIT_SUCCESS;
+		return EXIT_FAILURE;
+	}
+	CPU cpu = init(argv[1]);
+	return cpu.error_code;
 }
