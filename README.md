@@ -34,8 +34,9 @@ build
 
 ## Documentation
 
-Emulator docs: <https://github.com/TheoW03/6502Emulator/tree/master/Docs>
+[documentation]
 
 a special thanks to all who helped me make this
 
 [cc65 download]: https://cc65.github.io/
+[documentation]: <https://github.com/TheoW03/6502Emulator/tree/master/Docs>
