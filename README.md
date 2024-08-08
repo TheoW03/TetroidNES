@@ -5,7 +5,8 @@ targeted to windows
 
 ## Build Instructions
 
-I recomend installing cc65 NES assembler
+I recomend installing cc65 NES assembler if you want a way to run and build the unit tests
+
 [cc65 download]
 
 ```SH
