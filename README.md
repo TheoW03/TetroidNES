@@ -1,6 +1,6 @@
 # TetroidNES
 
-[build] [repo-size]
+[][build]  [][repo-size]
 
 TetroidNES is an open source NES emulator targeted to windows.
 
@@ -43,5 +43,5 @@ a special thanks to all who helped me make this
 
 [cc65 download]: https://cc65.github.io/
 [documentation]: <https://github.com/TheoW03/6502Emulator/tree/master/Docs>
-[build]: <![build](https://github.com/TheoW03/TetroidNES/actions/workflows/ci.yml/badge.svg)>
-[repo-size]: <![](https://img.shields.io/github/repo-size/TheoW03/TetroidNES)>
+[build]: <https://github.com/TheoW03/TetroidNES/actions/workflows/ci.yml/badge.svg>
+[repo-size]: <https://img.shields.io/github/repo-size/TheoW03/TetroidNES>
