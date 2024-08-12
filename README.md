@@ -1,5 +1,5 @@
 # TetroidNES
-![]<https://github.com/TheoW03/TetroidNES/actions/workflows/ci.yml/badge.svg>
+[ci-status]
 
 open source NES emulator
 targeted to windows
@@ -41,3 +41,4 @@ a special thanks to all who helped me make this
 
 [cc65 download]: https://cc65.github.io/
 [documentation]: <https://github.com/TheoW03/6502Emulator/tree/master/Docs>
+[ci-status]: <https://github.com/TheoW03/TetroidNES/actions/workflows/ci.yml/badge.svg>
