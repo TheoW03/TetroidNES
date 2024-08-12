@@ -302,5 +302,5 @@ void Bus::Read_controller1(Controller value, int isPressed)
     if (isPressed == 1)
         joy_pad_byte1 |= (uint8_t)value;
     else
-        joy_pad_byte1 &= (uint8_t)~value;
+        joy_pad_byte1 &= ~((uint8_t)(value));
 }
