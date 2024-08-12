@@ -1,6 +1,6 @@
 # TetroidNES
 
-[][build]  [][repo-size]
+![][build]  ![][repo-size]
 
 TetroidNES is an open source NES emulator targeted to windows.
 
