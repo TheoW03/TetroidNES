@@ -1,5 +1,5 @@
 # TetroidNES
-[![ci-status](https://github.com/TheoW03/TetroidNES/actions/workflows/ci.yml/badge.svg)]
+![ci-status](https://github.com/TheoW03/TetroidNES/actions/workflows/ci.yml/badge.svg)
 
 open source NES emulator
 targeted to windows
