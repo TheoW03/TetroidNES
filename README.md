@@ -42,6 +42,6 @@ build
 a special thanks to all who helped me make this
 
 [cc65 download]: https://cc65.github.io/
-[documentation]: <https://github.com/TheoW03/6502Emulator/tree/master/Docs>
+[documentation]: <https://github.com/TheoW03/TetroidNES/wiki>
 [build]: <https://github.com/TheoW03/TetroidNES/actions/workflows/ci.yml/badge.svg>
 [license]: <https://img.shields.io/badge/License-MIT-yellow.svg>
