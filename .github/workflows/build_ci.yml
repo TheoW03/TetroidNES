@@ -42,13 +42,13 @@ jobs:
         exclude:
           - os: windows-latest
             c_compiler: gcc
-            install: sudo apt-get install libsfml-dev
+            install: choco install glfw3
           - os: windows-latest
             c_compiler: clang
-            install: sudo apt-get install libsfml-dev
+            install: choco install glfw3
           - os: ubuntu-latest
             c_compiler: cl
-            install: choco install glfw3
+            install: sudo apt-get install libsfml-dev
 
     steps:
     - uses: actions/checkout@v4
