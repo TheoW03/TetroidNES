@@ -297,7 +297,9 @@ bool Bus::NMI_interrupt()
 {
     return this->ppu.NMI_interrupt(this->clock_cycles * 3);
 }
+ 
 
+ 
 uint8_t Bus::read_joypad()
 {
     if (button_idx > 7)
