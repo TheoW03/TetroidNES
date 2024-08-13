@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "BitOperations.h"
-#include "Memory.h"
+// #include "Memory.h"
 #include "Computer.h"
 #include "AddressMode.h"
 #include "StatusRegister.h"
