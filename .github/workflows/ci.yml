@@ -1,7 +1,7 @@
 # This starter workflow is for a CMake project running on a single platform. There is a different starter workflow if you need cross-platform coverage.
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-multi-platform.yml
-name: build
-
+name: build-windows
+name: build-linux
 on:
   push:
     branches: [ "**" ]
@@ -13,7 +13,7 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build:
+  build-windows:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
@@ -32,6 +32,12 @@ jobs:
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+    build-linux:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v4
+        - run: |
+          echo "hello world"
     # - name: Test
     #   working-directory: ${{github.workspace}}/build
     #   # Execute tests defined by the CMake configuration.
