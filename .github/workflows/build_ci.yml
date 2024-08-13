@@ -24,8 +24,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         install: [
             choco install glfw3,
-            sudo apt-get install \
-            libxrandr-dev \
+            sudo apt-get install libxrandr-dev \
             libxcursor-dev \
             libudev-dev \
             libopenal-dev \
@@ -33,7 +32,7 @@ jobs:
             libvorbis-dev \
             libgl1-mesa-dev \
             libegl1-mesa-dev \
-            libdrm-dev,
+            libdrm-dev v,
           ]
         build_type: [Release]
         c_compiler: [gcc, clang, cl]
@@ -46,8 +45,7 @@ jobs:
             c_compiler: gcc
             cpp_compiler: g++
             install: |
-              sudo apt-get install \
-              libxrandr-dev \
+              sudo apt-get install libxrandr-dev \
               libxcursor-dev \
               libudev-dev \
               libopenal-dev \
@@ -55,13 +53,12 @@ jobs:
               libvorbis-dev \
               libgl1-mesa-dev \
               libegl1-mesa-dev \
-              libdrm-dev 
+              libdrm-dev
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
             install: |
-              sudo apt-get install \
-              libxrandr-dev \
+              sudo apt-get install libxrandr-dev \
               libxcursor-dev \
               libudev-dev \
               libopenal-dev \
@@ -69,15 +66,14 @@ jobs:
               libvorbis-dev \
               libgl1-mesa-dev \
               libegl1-mesa-dev \
-              libdrm-dev 
+              libdrm-dev
         exclude:
           - os: windows-latest
             c_compiler: gcc
 
           - os: windows-latest
             install: |
-              sudo apt-get install \
-              libxrandr-dev \
+              sudo apt-get install libxrandr-dev \
               libxcursor-dev \
               libudev-dev \
               libopenal-dev \
@@ -85,15 +81,14 @@ jobs:
               libvorbis-dev \
               libgl1-mesa-dev \
               libegl1-mesa-dev \
-              libdrm-dev 
+              libdrm-dev
 
           - os: windows-latest
             c_compiler: clang
 
           - os: windows-latest
             install: |
-              sudo apt-get install \
-              libxrandr-dev \
+              sudo apt-get install libxrandr-dev \
               libxcursor-dev \
               libudev-dev \
               libopenal-dev \
@@ -101,7 +96,7 @@ jobs:
               libvorbis-dev \
               libgl1-mesa-dev \
               libegl1-mesa-dev \
-              libdrm-dev 
+              libdrm-dev
 
           - os: ubuntu-latest
             c_compiler: cl
