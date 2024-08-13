@@ -33,8 +33,7 @@ jobs:
             libvorbis-dev \
             libgl1-mesa-dev \
             libegl1-mesa-dev \
-            libdrm-dev \
-            libgbm-devs,
+            libdrm-dev,
           ]
         build_type: [Release]
         c_compiler: [gcc, clang, cl]
@@ -56,8 +55,7 @@ jobs:
               libvorbis-dev \
               libgl1-mesa-dev \
               libegl1-mesa-dev \
-              libdrm-dev \
-              libgbm-devs
+              libdrm-dev 
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
@@ -71,8 +69,7 @@ jobs:
               libvorbis-dev \
               libgl1-mesa-dev \
               libegl1-mesa-dev \
-              libdrm-dev \
-              libgbm-devs
+              libdrm-dev 
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -88,8 +85,7 @@ jobs:
               libvorbis-dev \
               libgl1-mesa-dev \
               libegl1-mesa-dev \
-              libdrm-dev \
-              libgbm-devs
+              libdrm-dev 
 
           - os: windows-latest
             c_compiler: clang
@@ -105,8 +101,7 @@ jobs:
               libvorbis-dev \
               libgl1-mesa-dev \
               libegl1-mesa-dev \
-              libdrm-dev \
-              libgbm-devs
+              libdrm-dev 
 
           - os: ubuntu-latest
             c_compiler: cl
