@@ -2,9 +2,9 @@
 
 ![ci build][build] ![license][license]
 
-TetroidNES is an open source NES emulator targeted to windows.
+TetroidNES is an open source multi platform NES emulator.
 
-It currently has support for windows. and as of writting this it can execute any NES rom so long as it uses no graphics
+It currently has support for both windows and debian based linux distros
 
 ## Build Instructions
 
