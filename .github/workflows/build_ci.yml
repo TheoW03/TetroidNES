@@ -51,15 +51,26 @@ jobs:
             c_compiler: gcc
 
           - os: windows-latest
+            install: >
+              sudo apt-get install build-essential libxcursor-dev libxrandr-dev libxrandr-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libdrm-dev libgbm-dev
+
+          - os: windows-latest
             c_compiler: clang
+
+          - os: windows-latest
+            install: >
+              sudo apt-get install build-essential libxcursor-dev libxrandr-dev libxrandr-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libdrm-dev libgbm-dev
 
           - os: ubuntu-latest
             c_compiler: cl
 
+          - os: ubuntu-latest
+            install: choco install glfw3
+
     steps:
       - uses: actions/checkout@v4
       - name: Install
-        run: |
+        run: >
           ${{matrix.install}}
       - name: Set reusable strings
         # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
