@@ -36,7 +36,7 @@ jobs:
     - name: Test
       run: cmake --build build ; . .\buildTestRoms.ps1 ; build
     - name: runTests
-      run: ./Debug/Emulator_tests.exe
+      run: cd Debug ; ./Emulator_tests.exe
 
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest
