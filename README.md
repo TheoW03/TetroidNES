@@ -8,9 +8,8 @@ It currently has support for both windows and debian based linux distros
 
 ## Build Instructions
 
-I recomend installing cc65 NES assembler if you want a way to run and build the unit tests
-
-[cc65 download]
+glance at the Prerequisites page in the wiki to see what you need to download and compiler
+[Prerequisites]
 
 ```SH
 # build Cmake
@@ -41,7 +40,7 @@ build
 
 a special thanks to all who helped me make this
 
-[cc65 download]: https://cc65.github.io/
 [documentation]: <https://github.com/TheoW03/TetroidNES/wiki>
 [build]: <https://github.com/TheoW03/TetroidNES/actions/workflows/ci.yml/badge.svg>
 [license]: <https://img.shields.io/badge/License-MIT-yellow.svg>
+[Prerequisites]: <https://github.com/TheoW03/TetroidNES/wiki/Build-Instructions>

@@ -73,8 +73,8 @@ target_link_libraries(
 include(GoogleTest)
 gtest_discover_tests(  ${UNIT_TEST_EXE})
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE sfml-graphics)
-target_compile_features(${EXECUTABLE_NAME} PRIVATE cxx_std_17)
-target_compile_features(  ${UNIT_TEST_EXE} PRIVATE cxx_std_17)
+target_compile_features(${EXECUTABLE_NAME} PRIVATE cxx_std_20)
+target_compile_features(  ${UNIT_TEST_EXE} PRIVATE cxx_std_20)
 
 # if(WIN32)
 # add_custom_command(
