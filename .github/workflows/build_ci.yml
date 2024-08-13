@@ -23,33 +23,43 @@ jobs:
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
         os: [ubuntu-latest, windows-latest]
+        install: [choco install glfw3, sudo apt-get install libsfml-dev]
         build_type: [Release]
         c_compiler: [gcc, clang, cl]
         include:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
+            install: choco install glfw3
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
+            install: sudo apt-get install libsfml-dev
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
+            install: sudo apt-get install libsfml-dev
         exclude:
           - os: windows-latest
             c_compiler: gcc
+            install: sudo apt-get install libsfml-dev
           - os: windows-latest
             c_compiler: clang
+            install: sudo apt-get install libsfml-dev
           - os: ubuntu-latest
             c_compiler: cl
+            install: choco install glfw3
 
     steps:
     - uses: actions/checkout@v4
-
+    - name: Install
+      run: |
+        {{matrix.install}}
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       id: strings
       shell: bash
+    
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
     - name: Configure CMake
