@@ -24,8 +24,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         install: [
             choco install glfw3,
-            sudo apt update
-            sudo apt install \
+            sudo apt-get install \
             libxrandr-dev \
             libxcursor-dev \
             libudev-dev \
@@ -35,7 +34,7 @@ jobs:
             libgl1-mesa-dev \
             libegl1-mesa-dev \
             libdrm-dev \
-            libgbm-dev,
+            libgbm-devs,
           ]
         build_type: [Release]
         c_compiler: [gcc, clang, cl]
@@ -48,8 +47,7 @@ jobs:
             c_compiler: gcc
             cpp_compiler: g++
             install: |
-              sudo apt update &&
-              sudo apt install \
+              sudo apt-get install \
               libxrandr-dev \
               libxcursor-dev \
               libudev-dev \
@@ -59,13 +57,12 @@ jobs:
               libgl1-mesa-dev \
               libegl1-mesa-dev \
               libdrm-dev \
-              libgbm-dev
+              libgbm-devs
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
             install: |
-              sudo apt update &&
-              sudo apt install \
+              sudo apt-get install \
               libxrandr-dev \
               libxcursor-dev \
               libudev-dev \
@@ -75,15 +72,14 @@ jobs:
               libgl1-mesa-dev \
               libegl1-mesa-dev \
               libdrm-dev \
-              libgbm-dev
+              libgbm-devs
         exclude:
           - os: windows-latest
             c_compiler: gcc
 
           - os: windows-latest
             install: |
-              sudo apt update &&
-              sudo apt install \
+              sudo apt-get install \
               libxrandr-dev \
               libxcursor-dev \
               libudev-dev \
@@ -93,15 +89,14 @@ jobs:
               libgl1-mesa-dev \
               libegl1-mesa-dev \
               libdrm-dev \
-              libgbm-dev
+              libgbm-devs
 
           - os: windows-latest
             c_compiler: clang
 
           - os: windows-latest
             install: |
-              sudo apt update &&
-              sudo apt install \
+              sudo apt-get install \
               libxrandr-dev \
               libxcursor-dev \
               libudev-dev \
@@ -111,7 +106,7 @@ jobs:
               libgl1-mesa-dev \
               libegl1-mesa-dev \
               libdrm-dev \
-              libgbm-dev
+              libgbm-devs
 
           - os: ubuntu-latest
             c_compiler: cl
