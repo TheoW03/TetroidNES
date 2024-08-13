@@ -1,0 +1,45 @@
+name: build
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        build_type: [Release]
+        c_compiler: [gcc, clang]
+        include:
+          - os: windows-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+            install: choco install glfw3
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+            install: sudo apt-get install clang build-essential libxcursor-dev libxrandr-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libdrm-dev libgbm-dev
+        exclude:
+          - os: windows-latest
+            c_compiler: gcc
+          - os: ubuntu-latest
+            c_compiler: clang
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: ${{ matrix.install }}
+      - name: Set reusable strings
+        id: strings
+        shell: bash
+        run: echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+      - name: Configure CMake
+        run: cmake -B ${{ steps.strings.outputs.build-output-dir }} -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} -DCMAKE_BUILD_TYPE=Release -S ${{ github.workspace }}
+      - name: Build
+        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
