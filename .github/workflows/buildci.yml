@@ -26,7 +26,11 @@ jobs:
             c_compiler: gcc
             cpp_compiler: g++
             install: sudo apt-get install clang build-essential libxcursor-dev libxrandr-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libdrm-dev libgbm-dev
-
+        exclude:
+          - os: windows-latest
+            c_compiler: gcc
+          - os: ubuntu-latest
+            c_compiler: clang
     steps:
       - uses: actions/checkout@v4
       - name: Install
