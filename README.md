@@ -29,7 +29,7 @@ cmake --build build
 # downlaode page: 
 
 # builds the Test Roms 
-. .\buildTestRoms.ps1 
+. .\buildTestRoms.ps1  
 build 
 # run Unit Tests
 ./Debug/Emulator_tests.exe
