@@ -16,19 +16,15 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         build_type: [Release]
-        c_compiler: [gcc, clang, cl]
+        c_compiler: [gcc, clang]
         include:
           - os: windows-latest
-            c_compiler: cl
-            cpp_compiler: cl
+            c_compiler: clang
+            cpp_compiler: clang++
             install: choco install glfw3
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
-            install: sudo apt-get install build-essential libxcursor-dev libxrandr-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libdrm-dev libgbm-dev
-          - os: ubuntu-latest
-            c_compiler: clang
-            cpp_compiler: clang++
             install: sudo apt-get install build-essential libxcursor-dev libxrandr-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libdrm-dev libgbm-dev
 
     steps:
