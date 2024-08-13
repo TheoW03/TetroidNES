@@ -93,38 +93,73 @@ CPU run(CPU cpu, std::string window_name)
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 		{
-			cpu.bus.Read_controller1(Controller::UP, 1);
+			cpu.bus.write_controller1(Controller::UP, 1);
 		}
 		else
 		{
-			cpu.bus.Read_controller1(Controller::UP, 0);
+			cpu.bus.write_controller1(Controller::UP, 0);
 		}
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		{
-			cpu.bus.Read_controller1(Controller::DOWN, 1);
+			cpu.bus.write_controller1(Controller::DOWN, 1);
 		}
 		else
 		{
-			cpu.bus.Read_controller1(Controller::DOWN, 0);
+			cpu.bus.write_controller1(Controller::DOWN, 0);
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		{
-			cpu.bus.Read_controller1(Controller::LEFT, 1);
+			cpu.bus.write_controller1(Controller::LEFT, 1);
 		}
 		else
 		{
-			cpu.bus.Read_controller1(Controller::LEFT, 0);
+			cpu.bus.write_controller1(Controller::LEFT, 0);
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		{
-			cpu.bus.Read_controller1(Controller::RIGHT, 1);
+			cpu.bus.write_controller1(Controller::RIGHT, 1);
 		}
 		else
 		{
-			cpu.bus.Read_controller1(Controller::RIGHT, 0);
+			cpu.bus.write_controller1(Controller::RIGHT, 0);
 		}
-		// were the NES does CPU stuff
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		{
+			cpu.bus.write_controller1(Controller::A, 1);
+		}
+		else
+		{
+			cpu.bus.write_controller1(Controller::A, 0);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+		{
+			cpu.bus.write_controller1(Controller::B, 1);
+		}
+		else
+		{
+			cpu.bus.write_controller1(Controller::B, 0);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+		{
+			cpu.bus.write_controller1(Controller::START, 1);
+		}
+		else
+		{
+			cpu.bus.write_controller1(Controller::START, 0);
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+		{
+			cpu.bus.write_controller1(Controller::SELECT, 1);
+		}
+		else
+		{
+			cpu.bus.write_controller1(Controller::SELECT, 0);
+		}
+		
+		
 		cpu.bus.write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
 
 		cpu.bus.tick();

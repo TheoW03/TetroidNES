@@ -2,7 +2,7 @@
 #include "PPU.h"
 #include "APU.h"
 #include <SFML/Graphics.hpp>
-
+#include <bitset>
 #define TOP_STACK 0x1ff
 #define BOTTOM_STACK 0x100
 #define STACK_RESET 0xfd
@@ -23,6 +23,7 @@ Bus::Bus(Rom rom, uint16_t pc_start)
     this->reset_vector = pc_start;
     this->rom = rom;
     PPU nes_ppu(rom.CHR, rom.mirror);
+    joy_pad_byte1 = 0;
     this->ppu = nes_ppu; // test
     // this->ppu.chr_rom = rom.CHR;
     // this->ppu.mirrorType = rom.mirror;
@@ -116,7 +117,7 @@ uint8_t Bus::read_8bit(uint16_t address)
     }
     else if (address == 0x4016)
     {
-        return joy_pad_byte1;
+        return read_joypad();
     }
     else if (address == 0x4017)
     {
@@ -159,6 +160,9 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     else if (address == 0x4016)
     {
         strobe = (bool)value;
+        button_idx = 0;
+        // std::cout <<
+        // joy_pad_byte1 = 0;
         // joy_pad_byte1 = value & 0b00000001;
         // return
     }
@@ -293,14 +297,27 @@ bool Bus::NMI_interrupt()
 {
     return this->ppu.NMI_interrupt(this->clock_cycles * 3);
 }
-void Bus::Read_controller1(Controller value, int isPressed)
+
+uint8_t Bus::read_joypad()
 {
-    if (!strobe)
+    if (button_idx > 7)
     {
-        return;
+        return 1;
     }
+    uint8_t button = (joy_pad_byte1 << button_idx);
+    if (strobe)
+    {
+        button_idx++;
+    }
+    return button;
+}
+
+void Bus::write_controller1(Controller value, int isPressed)
+{
+    // uint8_t v = (uint8_t) value;
+
     if (isPressed == 1)
         joy_pad_byte1 |= (uint8_t)value;
-    else
+    else if (isPressed == 0)
         joy_pad_byte1 &= ~((uint8_t)(value));
 }

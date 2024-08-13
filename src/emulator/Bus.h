@@ -11,9 +11,9 @@ enum class Controller
     B = 0b00000010,
     SELECT = 0b00000100,
     START = 0b00001000,
-    UP = 0b00010000,
-    DOWN = 0b00100000,
-    LEFT = 0b01000000,
+    UP =    0b00010000,
+    DOWN =  0b00100000,
+    LEFT =  0b01000000,
     RIGHT = 0b10000000
 };
 #endif
@@ -30,6 +30,7 @@ private:
     uint16_t program_counter;
     uint8_t stack_pointer;
     uint16_t stack;
+    uint8_t button_idx;
 
 public:
     size_t clock_cycles;
@@ -66,6 +67,7 @@ public:
     void tick();
     void render(sf::Texture &texture, int bank, int tile);
     bool NMI_interrupt();
-    void Read_controller1(Controller value, int isPressed);
+    uint8_t read_joypad();
+    void write_controller1(Controller value, int isPressed);
 };
 #endif
