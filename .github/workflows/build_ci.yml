@@ -1,3 +1,4 @@
+
 name: build
 
 on:
@@ -28,15 +29,12 @@ jobs:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
-            
-        - os: ubuntu-latest
+          - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
-            install: apt
-        - os: ubuntu-latest
+          - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
-            # install: 
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -63,7 +61,6 @@ jobs:
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
-
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
