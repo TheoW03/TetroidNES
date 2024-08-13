@@ -47,7 +47,7 @@ jobs:
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
-            install: >
+            install: |
               sudo apt update 
               sudo apt install \
               libxrandr-dev \
@@ -63,7 +63,7 @@ jobs:
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
-            install: >
+            install: |
               sudo apt update 
               sudo apt install \
               libxrandr-dev \
@@ -81,7 +81,7 @@ jobs:
             c_compiler: gcc
 
           - os: windows-latest
-            install: >
+            install: |
               sudo apt update 
               sudo apt install \
               libxrandr-dev \
@@ -99,8 +99,8 @@ jobs:
             c_compiler: clang
 
           - os: windows-latest
-            install: >
-              sudo apt update 
+            install: |
+              sudo apt update &&
               sudo apt install \
               libxrandr-dev \
               libxcursor-dev \
