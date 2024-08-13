@@ -32,7 +32,9 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    # - name: Test
-    #   working-directory: ${{github.workspace}}/build
-    #   # Execute tests defined by the CMake configuration.
-    #   # See https://cmake.org/cmake/help/latest
+    - name: Test
+      run: cmake --build build
+    - name: runTests
+      run: . .\buildTestRoms.ps1 ; build
+      # Execute tests defined by the CMake configuration.
+      # See https://cmake.org/cmake/help/latest
