@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 #include "menubar.h"
 
-
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QIcon>
@@ -24,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     widget_layout = new QVBoxLayout();
     label = new QLabel(ui->centralwidget);
     main_menubar = new menubar(this);
-
 
     // widget_layout
     widget_layout->addWidget(mainbutton);
