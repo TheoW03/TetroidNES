@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     // events
     connect(mainbutton, &QPushButton::clicked, this,
-            [=](void){MainWindow::buttonPressed(mainbutton, label);}
+            [=, this](void){MainWindow::buttonPressed(mainbutton, label);}
     );
 }
 
