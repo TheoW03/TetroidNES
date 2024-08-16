@@ -1,6 +1,11 @@
 /.vscode/
 /SDL2/
-*.bat
+
+clean.bat
+Run.bat
+run_test.bat
+compile.bat
+
 *.o
 *.exe
 *.dll

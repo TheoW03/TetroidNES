@@ -5,55 +5,39 @@ project(qt_tetroidnes VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+set(EXECUTABLE_NAME qt_tetroidnes)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Core Gui)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core Gui)
-find_package(Qt6 REQUIRED COMPONENTS LinguistTools)
+set(REQUIRED_COMPONENTS Widgets Core Gui LinguistTools)
 
-set(PROJECT_SOURCES
-        main.cpp
+find_package(Qt6 REQUIRED COMPONENTS
+    ${REQUIRED_COMPONENTS}
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(qt_tetroidnes
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-        main.cpp mainwindow.cpp mainwindow.h mainwindow.ui menubar.cpp menubar.h resources.qrc
-    )
+set(PROJECT_SOURCES
+    main.cpp
+)
 
-qt_add_translations(qt_tetroidnes TS_FILES tetroidnes_en_US.ts)
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET qt_tetroidnes APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-else()
-    if(ANDROID)
-        add_library(qt_tetroidnes SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(qt_tetroidnes
-            ${PROJECT_SOURCES}
-        )
-    endif()
+qt_add_executable(${EXECUTABLE_NAME}
+    MANUAL_FINALIZATION
+    ${PROJECT_SOURCES}
+    main.cpp mainwindow.cpp mainwindow.h mainwindow.ui menubar.cpp menubar.h resources.qrc
+)
+
+qt_add_translations(${EXECUTABLE_NAME} TS_FILES tetroidnes_en_US.ts)
+
+if(ANDROID)
+    set_property(TARGET ${EXECUTABLE_NAME} APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/android)
 endif()
 
-target_link_libraries(qt_tetroidnes PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-target_link_libraries(qt_tetroidnes PRIVATE Qt${QT_VERSION_MAJOR}::Core)
-target_link_libraries(qt_tetroidnes PRIVATE Qt${QT_VERSION_MAJOR}::Gui)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE Qt6::Widgets)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE Qt6::Core)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE Qt6::Gui)
 
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
-#if(${QT_VERSION} VERSION_LESS 6.1.0)
-#  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.qt_tetroidnes)
-#endif()
-set_target_properties(qt_tetroidnes PROPERTIES
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -62,12 +46,12 @@ set_target_properties(qt_tetroidnes PROPERTIES
 )
 
 include(GNUInstallDirs)
-install(TARGETS qt_tetroidnes
+install(TARGETS ${EXECUTABLE_NAME}
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-
-
-qt_finalize_executable(qt_tetroidnes)
-
+install(CODE
+    file(GET_RUNTIME_DEPENDENCIES DIRECTORY ${REQUIRED_COMPONENTS})
+)
+qt_finalize_executable(${EXECUTABLE_NAME})
