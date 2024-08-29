@@ -39,8 +39,7 @@ struct NESHeader
         struct
         {
             unsigned mapper_upper : 4;
-            unsigned inesverif : 2;
-            unsigned inesverif2 : 2;
+            unsigned inesverif : 4;
         };
         byte_t val;
     } flag7;
@@ -78,8 +77,12 @@ Rom load_rom(std::vector<uint8_t> instructions)
     std::memcpy(&nes_header, instructions.data(), sizeof(NESHeader));
 
     // uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);
-    if (instructions[0] != 'N' && instructions[1] != 'E' && instructions[2] != 'S' && instructions[3] != 0x1a 
-    (instructions[7] & 0b1101) == 0xc)
+    if (                                 //
+        (nes_header.ident[0] != 'N'      //
+         && nes_header.ident[1] != 'E'   //
+         && nes_header.ident[2] != 'S'   //
+         && nes_header.ident[3] != 0x1a) // all man style should be the default in the VS code formatiro
+        || nes_header.flag7.inesverif == 0xc)
     {
         std::cout << "not NES Rom or NES 1.0 format" << std::endl;
         exit(EXIT_FAILURE);
@@ -105,7 +108,9 @@ Rom load_rom(std::vector<uint8_t> instructions)
     {
         rom.PRG.push_back(instructions[i]);
     }
-    for (size_t i = prg_start + prg_rom; i < prg_start + prg_rom + chr_rom; i++)
+    size_t chr_start = prg_start + prg_rom;
+    size_t chr_size = prg_start + prg_rom + chr_rom;
+    for (size_t i = chr_start; i < chr_size; i++)
     {
         rom.CHR.push_back(instructions[i]);
     }
