@@ -18,18 +18,18 @@ enum MirrorType
 typedef uint8_t byte_t;
 struct NESHeader
 {
-    byte_t ident[4];
-    byte_t prg_size;
-    byte_t chr_size;
+    byte_t ident[4]; // should be the words "NES 0x1a"
+    byte_t prg_size; // size of PRG
+    byte_t chr_size; // size of chr
     union
     {
         struct
         {
-            unsigned mapper_lower : 4;
-            unsigned four_screen : 1;
-            unsigned trainer : 1;
-            unsigned battery : 1;
-            unsigned vertical : 1;
+            unsigned mapper_lower : 4; // lower bits of mapper
+            unsigned four_screen : 1;  // if 4 screen
+            unsigned trainer : 1;      // trainer. Ie the PRG is a 512 offset
+            unsigned battery : 1;      // for zelda (it used a battery to save )
+            unsigned vertical : 1;     // if vertical
         };
         byte_t val;
     } flag6;
@@ -38,8 +38,8 @@ struct NESHeader
     {
         struct
         {
-            unsigned mapper_upper : 4;
-            unsigned inesverif : 4;
+            unsigned mapper_upper : 4; // upper bits of mapper
+            unsigned inesverif : 4;    // 0xc to verify if its ines 1.0 format
         };
         byte_t val;
     } flag7;
@@ -88,9 +88,7 @@ Rom load_rom(std::vector<uint8_t> instructions)
         exit(EXIT_FAILURE);
     }
     // uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);
-    uint8_t map = nes_header.flag7.mapper_upper | nes_header.flag6.mapper_lower;
-    rom.mapper = map;
-
+    rom.mapper = nes_header.flag7.mapper_upper | nes_header.flag6.mapper_lower;
     size_t prg_rom = nes_header.prg_size * PRG_ROM_SIZE;
     // if (prg_rom ==)
     size_t chr_rom = nes_header.chr_size * CHR_ROM_SIZE;
