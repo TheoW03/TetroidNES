@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <cstdio>
+#include <cstring>
 
 #define PRG_ROM_SIZE 16384
 #define CHR_ROM_SIZE 8192
@@ -74,7 +75,7 @@ Rom load_rom(std::vector<uint8_t> instructions)
 
     Rom rom;
     NESHeader nes_header;
-    std::memcpy(&nes_header, instructions.data(), sizeof(NESHeader));
+    memcpy(&nes_header, instructions.data(), sizeof(NESHeader));
 
     // uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);
     if (                                 //

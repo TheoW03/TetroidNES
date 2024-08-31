@@ -99,7 +99,7 @@ void LDY(AddressMode addressType, CPU &cpu)
 void PLP(AddressMode addressType, CPU &cpu)
 {
 	// TODO: rotate left
-	cpu.status = cpu.bus.pop_stack8();
+	cpu.status.val = cpu.bus.pop_stack8();
 	// cpu.stack_pointer++;
 }
 
@@ -109,7 +109,7 @@ void PHP(AddressMode addressType, CPU &cpu)
 	// cpu.stack_pointer--;
 	// cpu.bus.write_8bit(cpu.stack_pointer, cpu.status);
 
-	cpu.bus.push_stack8(cpu.status);
+	cpu.bus.push_stack8(cpu.status.val);
 }
 
 void PHA(AddressMode addressType, CPU &cpu)
@@ -477,7 +477,7 @@ void RTI(AddressMode addressType, CPU &cpu)
 {
 	// TODO:return from interrupt
 	cpu.bus.fill(cpu.bus.pop_stack16());
-	cpu.status = cpu.bus.pop_stack8();
+	cpu.status.val = cpu.bus.pop_stack8();
 	set_brk(cpu, 0);
 }
 #pragma endregion setFlags
@@ -494,7 +494,7 @@ void JMP(AddressMode addressType, CPU &cpu)
 void BEQ(AddressMode addressType, CPU &cpu)
 {
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
-	if (check_zero(cpu) == 0)
+	if (!check_zero(cpu))
 	{
 		return;
 	}
@@ -506,7 +506,7 @@ void BNE(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (check_zero(cpu) != 0)
+	if (check_zero(cpu))
 	{
 		return;
 	}
@@ -519,7 +519,7 @@ void BCC(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (check_carry(cpu) != 0)
+	if (check_carry(cpu))
 	{
 		return;
 	}
@@ -532,7 +532,7 @@ void BCS(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (check_carry(cpu) == 0)
+	if (!check_carry(cpu))
 	{
 		return;
 	}
@@ -543,7 +543,7 @@ void BCS(AddressMode addressType, CPU &cpu)
 void BPL(AddressMode addressType, CPU &cpu)
 {
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
-	if (check_negative(cpu) != 0)
+	if (check_negative(cpu))
 	{
 		return;
 	}
@@ -556,7 +556,7 @@ void BMI(AddressMode addressType, CPU &cpu)
 	// TODO: Branch if negative
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (check_negative(cpu) == 0)
+	if (!check_negative(cpu))
 	{
 		return;
 	}
@@ -569,7 +569,7 @@ void BVC(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (check_overflow(cpu) != 0)
+	if (check_overflow(cpu))
 	{
 		return;
 	}
@@ -582,7 +582,7 @@ void BVS(AddressMode addressType, CPU &cpu)
 {
 	// TODO: Branch if overflow set
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
-	if (check_overflow(cpu) == 0)
+	if (!check_overflow(cpu))
 	{
 		return;
 	}
@@ -647,7 +647,7 @@ void BRK(AddressMode addressType, CPU &cpu)
 		return;
 	}
 	set_brk(cpu, 1);
-	cpu.bus.push_stack8(cpu.status);
+	cpu.bus.push_stack8(cpu.status.val);
 	cpu.bus.fetch_next();
 	cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
 
