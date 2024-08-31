@@ -108,19 +108,19 @@ void set_overflow(uint8_t c_in, uint8_t c_out, CPU &cpu)
 
 void set_overflow(int overflow, CPU &cpu)
 {
-    // if (overflow == 1)
-    // {
-    //     cpu.status |= OVERFLOW_BIT;
-    // }
-    // else
-    // {
-    //     cpu.status &= (~OVERFLOW_BIT);
-    // }
+    if (overflow == 1)
+    {
+        cpu.status.V = 1;
+    }
+    else
+    {
+        cpu.status.V = 0;
+    }
 }
 
 int check_overflow(CPU &cpu)
 {
-    return cpu.status.I;
+    return cpu.status.V;
 }
 
 void set_decimal_mode(int isDecimal, CPU &cpu)

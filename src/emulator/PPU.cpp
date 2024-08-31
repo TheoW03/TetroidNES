@@ -147,22 +147,23 @@ void PPU::render(sf::Texture &texture, int bank, int tile)
 {
     uint8_t data[200 * 200 * 4];
     // bank = this->reg.ppuCtrl.B;
-    int banks = bank * 0x1000;
-    int idx = 0;
-    int idy = 0;
+
     // for
+    int banks = this->reg.ppuCtrl.B ;
 
     /* code */
 
-    std::vector<uint8_t> tile_list;
-
     for (int ppu_idx = 0; ppu_idx <= 0x03c0; ppu_idx++)
     {
-        tile = this->memory[ppu_idx] * 15;
-        idx = ppu_idx % 32;
-        idy = ppu_idx / 32;
-        for (int i = banks + tile; i <= (banks + tile + 15); i++)
+
+        tile = this->memory[ppu_idx];
+        int idx = ppu_idx % 32;
+        int idy = ppu_idx / 32;
+        std::vector<uint8_t> tile_list;
+
+        for (int i = banks + tile * 16; i <= (banks + tile * 16 + 15); i++)
         {
+
             tile_list.push_back(chr_rom[i]);
         }
 
@@ -176,19 +177,17 @@ void PPU::render(sf::Texture &texture, int bank, int tile)
                 upper >>= 1;
                 lower >>= 1;
                 sf::Color rgb = getColorFromByte(value);
-                int b = idy * 4 * 200 + idx * 4;
+                int tile_x = idx + x;
+                int tile_y = idy + y;
+                int b = (tile_y) * 4 * 200 + (tile_x) * 4;
+
                 data[b] = rgb.r;
                 data[b + 1] = rgb.g;
                 data[b + 2] = rgb.b;
                 data[b + 3] = 0xff;
-                idx++;
             }
-            idx = 0;
-            idy++;
         }
     }
-    // for (int i = 0; i < 0x3c; i++)
-    //     int bank = reg.ppuCtrl.B ? 0 : 0x1000;
     texture.update(data);
 }
 uint8_t PPU::read_OAM_data()

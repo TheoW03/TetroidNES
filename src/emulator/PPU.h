@@ -58,10 +58,7 @@ private:
                 unsigned V : 1;
                 unsigned S : 1;
                 unsigned O : 1;
-                unsigned unused1 : 1;
-                unsigned unused2 : 1;
-                unsigned unused3 : 1;
-                unsigned unused4 : 1;
+                unsigned padding : 4;
             };
             uint8_t val;
 

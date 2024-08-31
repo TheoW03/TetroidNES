@@ -158,8 +158,7 @@ CPU run(CPU cpu, std::string window_name)
 		{
 			cpu.bus.write_controller1(Controller::SELECT, 0);
 		}
-		
-		
+
 		cpu.bus.write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
 
 		cpu.bus.tick();
@@ -182,6 +181,7 @@ CPU run(CPU cpu, std::string window_name)
 		}
 		else
 		{
+			printf("instruction opcode 0x%x is unrecongnized \n", current_instruction);
 			program_failure("Unrecognized instruction encountered", cpu, 1);
 			cpu.error_code = EXIT_FAILURE;
 			return cpu;
