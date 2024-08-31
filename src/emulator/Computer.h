@@ -10,7 +10,7 @@ struct CPU
     uint8_t X_Reg;
     uint8_t Y_Reg;
     uint8_t A_Reg;
-    uint8_t status;
+    // uint8_t status;
     union
     {
         struct
@@ -31,7 +31,7 @@ struct CPU
             // unsigned vertical : 1;     // if vertical
         };
         uint8_t val;
-    } cpu_status;
+    } status;
 
     // sf::RenderWindow Render_window;
     int error_code;

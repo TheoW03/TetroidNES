@@ -31,7 +31,7 @@ CPU init(std::string file_name)
 	CPU cpu;
 	bus.fill(bus.read_16bit(0xfffc));
 	cpu.A_Reg = 0;
-	cpu.status = 0;
+	cpu.status.val = 0;
 	cpu.X_Reg = 0;
 	cpu.Y_Reg = 0;
 	cpu.bus = bus;
@@ -49,14 +49,14 @@ void printCPU_stats(CPU cpu)
 	printf("Y Register:decimal: %d hexa: 0x%x \n", cpu.Y_Reg, cpu.Y_Reg);
 	printf("Program Counter: 0x%X \n", cpu.bus.get_PC());
 	cpu.bus.print_stack();
-	std::bitset<7> status(cpu.status);
+	std::bitset<7> status(cpu.status.val);
 	cpu.bus.print_clock();
 	std::cout << "cpu status register: 0b" << status << std::endl;
 }
 
 void HandleNMIInterrupts(CPU &cpu)
 {
-	cpu.bus.push_stack8(cpu.status);
+	cpu.bus.push_stack8(cpu.status.val);
 
 	cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
 	cpu.bus.fetch_next();
