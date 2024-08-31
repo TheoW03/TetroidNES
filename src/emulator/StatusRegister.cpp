@@ -98,11 +98,11 @@ void set_overflow(uint8_t c_in, uint8_t c_out, CPU &cpu)
 
     if (((c_out & 0b10000000) != 0) != ((c_in & 0b01000000) != 0))
     {
-        cpu.status.O = 1;
+        cpu.status.V = 1;
     }
     else
     {
-        cpu.status.O = 0;
+        cpu.status.V = 0;
     }
 }
 
@@ -120,7 +120,7 @@ void set_overflow(int overflow, CPU &cpu)
 
 int check_overflow(CPU &cpu)
 {
-    return cpu.status.O;
+    return cpu.status.I;
 }
 
 void set_decimal_mode(int isDecimal, CPU &cpu)

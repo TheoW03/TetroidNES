@@ -7,33 +7,26 @@
 #define CPU_H
 struct CPU
 {
+    uint8_t A_Reg;
     uint8_t X_Reg;
     uint8_t Y_Reg;
-    uint8_t A_Reg;
-    // uint8_t status;
+
     union
     {
         struct
         {
-            unsigned C : 1;
-            unsigned Z : 1;
-            unsigned I : 1;
-            unsigned D : 1;
-            unsigned B : 1;
+            unsigned C : 1; // Carry
+            unsigned Z : 1; // Zero
+            unsigned I : 1; // interrupt disabled
+            unsigned D : 1; // Decimal mode (un-used)
+            unsigned B : 1; // break
             unsigned Unused : 1;
-            unsigned O : 1;
-            unsigned N : 1;
-
-            // unsigned mapper_lower : 4; // lower bits of mapper
-            // unsigned four_screen : 1;  // if 4 screen
-            // unsigned trainer : 1;      // trainer. Ie the PRG is a 512 offset
-            // unsigned battery : 1;      // for zelda (it used a battery to save )
-            // unsigned vertical : 1;     // if vertical
+            unsigned V : 1; // overflow
+            unsigned N : 1; // negative
         };
         uint8_t val;
     } status;
 
-    // sf::RenderWindow Render_window;
     int error_code;
 
     Bus bus;
