@@ -64,6 +64,7 @@ private:
 
         } ppuStatus;
         bool scrollLatch;
+        bool high_ptr;
     };
     uint8_t memory[0x800];
     Registers reg;

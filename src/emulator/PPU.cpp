@@ -9,6 +9,8 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     this->internalDataBuffer = 0;
     this->reg.ppuAddr.val = 0;
     this->reg.ppuCtrl.val = 0;
+    for (int i = 0; i < 2048; i++)
+        this->memory[i] = 0;
     this->reg.ppumask.val = 0;
 }
 PPU::PPU() {}
@@ -49,7 +51,7 @@ uint16_t PPU::mirror(uint16_t address)
 
 uint8_t PPU::read_PPU_data()
 {
-    uint16_t addr = this->reg.ppuAddr.hi << 8 | (this->reg.ppuAddr.lo & 0xffff);
+    uint16_t addr = this->reg.ppuAddr.val;
     this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
     if (addr >= 0 && addr <= 0x1fff)
     {
@@ -76,7 +78,7 @@ uint8_t PPU::read_status()
 }
 void PPU::write_PPU_address(uint8_t val)
 {
-    if (this->reg.scrollLatch)
+    if (this->reg.high_ptr)
     {
         this->reg.ppuAddr.lo = val;
     }
@@ -85,7 +87,7 @@ void PPU::write_PPU_address(uint8_t val)
         this->reg.ppuAddr.hi = val;
     }
 
-    this->reg.scrollLatch = !this->reg.scrollLatch;
+    this->reg.high_ptr = !this->reg.high_ptr;
 }
 void PPU::write_PPU_ctrl(uint8_t val)
 {
@@ -101,12 +103,13 @@ void PPU::write_PPU_data(uint8_t val)
     this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
     if (addr >= 0x2000 && addr <= 0x2fff)
     {
-        uint8_t res = internalDataBuffer;
-        internalDataBuffer = memory[mirror(addr)];
+        // uint8_t res = internalDataBuffer;
+        memory[mirror(addr)] = val;
+        // internalDataBuffer = memory[mirror(addr)];
     }
     else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c)
     {
-        addr = addr - 0x10;
+        // addr = addr - 0x10;
         pallete[addr - 0x3f00] = val;
     }
 }
@@ -145,13 +148,11 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
 }
 void PPU::render(sf::Texture &texture, int bank, int tile)
 {
-    uint8_t data[200 * 200 * 4];
-    // bank = this->reg.ppuCtrl.B;
+    uint8_t data[256 * 240 * 4];
+    bank = this->reg.ppuCtrl.B;
 
     // for
-    int banks = this->reg.ppuCtrl.B ;
-
-    /* code */
+    int banks =this->reg.ppuCtrl.B * 0x1000;
 
     for (int ppu_idx = 0; ppu_idx <= 0x03c0; ppu_idx++)
     {
@@ -161,7 +162,7 @@ void PPU::render(sf::Texture &texture, int bank, int tile)
         int idy = ppu_idx / 32;
         std::vector<uint8_t> tile_list;
 
-        for (int i = banks + tile * 16; i <= (banks + tile * 16 + 15); i++)
+        for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
         {
 
             tile_list.push_back(chr_rom[i]);
@@ -177,9 +178,9 @@ void PPU::render(sf::Texture &texture, int bank, int tile)
                 upper >>= 1;
                 lower >>= 1;
                 sf::Color rgb = getColorFromByte(value);
-                int tile_x = idx + x;
-                int tile_y = idy + y;
-                int b = (tile_y) * 4 * 200 + (tile_x) * 4;
+                int tile_x = idx * 8 + x;
+                int tile_y = idy * 8 + y;
+                int b = (tile_y) * 4 * 240 + (tile_x) * 4;
 
                 data[b] = rgb.r;
                 data[b + 1] = rgb.g;

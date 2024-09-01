@@ -73,7 +73,7 @@ CPU run(CPU cpu, std::string window_name)
 
 	window.setFramerateLimit(144);
 	sf::Texture texture;
-	texture.create(200, 200);
+	texture.create(256, 240);
 	float scaleX = window.getSize().x / (float)(texture.getSize().x);
 	float scaleY = window.getSize().y / (float)(texture.getSize().y);
 	sf::Sprite sprite(texture);
