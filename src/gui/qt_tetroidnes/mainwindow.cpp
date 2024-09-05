@@ -1,53 +1,64 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "menubar.h"
+#include "filtercontrolframe.h"
 
-#include <QPushButton>
 #include <QVBoxLayout>
 #include <QIcon>
-#include <QLabel>
-#include <QPixmap>
+#include <QtLogging>
+
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
-    // declare vars
-    QPushButton *mainbutton;
-    QLabel *label;
-    QVBoxLayout *widget_layout;
-    menubar *main_menubar;
+    QVBoxLayout *widget_layout =             new QVBoxLayout();
+    menubar *main_menubar =                  new menubar(this);
+    filtercontrolframe *sort_control_frame = new filtercontrolframe(ui->centralwidget);
+    romlist *rom_list =                      new romlist(ui->centralwidget);
 
-    // assign vars
-    mainbutton = new QPushButton(tr("Click Me!"), ui->centralwidget);
-    widget_layout = new QVBoxLayout();
-    label = new QLabel(ui->centralwidget);
-    main_menubar = new menubar(this);
-
-    // widget_layout
-    widget_layout->addWidget(mainbutton);
-    widget_layout->addWidget(label);
+    // widget layout
+    widget_layout->addWidget(sort_control_frame);
+    widget_layout->addWidget(rom_list);
 
     // central widget
     ui->centralwidget->setLayout(widget_layout);
 
-    // img label
-    label->setPixmap(QPixmap(":/resources/images/icon.jpg"));
-    label->setVisible(false);
-
     // setup
-    this->setMenuBar(main_menubar);
+    setMenuBar(main_menubar);
 
     // events
-    connect(mainbutton, &QPushButton::clicked, this,
-            [=, this](void){MainWindow::buttonPressed(mainbutton, label);}
-    );
+    connect(sort_control_frame->findChild<QButtonGroup*>(), &QButtonGroup::idReleased, this,
+            [this](int id){this->sort_mode_button_released(id);});
+    connect(sort_control_frame->findChild<QPushButton*>("SortOrder"), &QPushButton::toggled, this,
+            [this](bool toggled){this->sort_order_button_toggled(toggled);});
+    connect(sort_control_frame->findChild<QLineEdit*>(), &QLineEdit::textEdited, this,
+            [this](QString text){this->search_bar_edited(text);});
 }
 
-void MainWindow::buttonPressed(QPushButton *button, QLabel *label)
+void MainWindow::sort_mode_button_released(int id)
 {
-    button->setVisible(false);
-    label->setVisible(true);
+    this->findChild<romlist*>()->setCurrentMode(romlist::SortMode(id));
+}
+
+void MainWindow::sort_order_button_toggled(bool toggled)
+{
+    this->findChild<romlist*>()->setCurrentOrder(Qt::SortOrder(toggled));
+}
+
+void MainWindow::search_bar_edited(QString string)
+{
+    auto *p_romlist = findChild<romlist*>();
+    auto search_list = p_romlist->findItems("*" + string + "*", Qt::MatchWildcard | Qt::MatchContains); // Might need some work
+    auto all_items = p_romlist->findItems("*", Qt::MatchWildcard);
+    if (all_items.length() == 0)
+        return;
+    QListWidgetItem *pitem;
+    for (int i = 0; i <= all_items.length() - 1; i++)
+    {
+        pitem = all_items[i];
+        pitem->setHidden(!(search_list.contains(pitem)));
+    }
 }
 
 MainWindow::~MainWindow()

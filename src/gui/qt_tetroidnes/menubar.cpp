@@ -12,13 +12,13 @@ menubar::menubar(QWidget *parent): QMenuBar{parent}
     QAction *help;
 
     // assign vars
-    file = this->addAction(tr("File"));
-    edit = this->addAction(tr("Edit"));
-    tools = this->addAction(tr("Tools"));
-    help = this->addAction(tr("Help"));
+    file = addAction(tr("File"));
+    edit = addAction(tr("Edit"));
+    tools = addAction(tr("Tools"));
+    help = addAction(tr("Help"));
 
     // setup
-    this->setNativeMenuBar(true);
+    setNativeMenuBar(true);
 }
 
 menubar::~menubar()

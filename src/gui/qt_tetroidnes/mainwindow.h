@@ -1,6 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "filtercontrolframe.h"
+#include "romlist.h"
+
 #include <QMainWindow>
 #include <QPushButton>
 #include <QLabel>
@@ -18,9 +21,12 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void buttonPressed(QPushButton *button, QLabel *label);
-
-    QPushButton MainButton;
+    romlist *rom_list;
+    filtercontrolframe *sort_control_frame;
+public slots:
+    void sort_mode_button_released(int id);
+    void sort_order_button_toggled(bool toggled);
+    void search_bar_edited(QString string);
 
 private:
     Ui::MainWindow *ui;
