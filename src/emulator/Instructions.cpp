@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "BitOperations.h"
+#include "../include/BitOperations.h"
 // #include "Memory.h"
-#include "Computer.h"
-#include "AddressMode.h"
-#include "StatusRegister.h"
-#include "Bus.h"
+#include "../include/Computer.h"
+#include "../include/AddressMode.h"
+#include "../include/StatusRegister.h"
+#include "../include/Bus.h"
 
 uint16_t address_mode(AddressMode address, CPU &cpu)
 {
@@ -133,6 +133,8 @@ void PLA(AddressMode addressType, CPU &cpu)
 void STA(AddressMode addressType, CPU &cpu)
 {
 	// TODO store accumulator in mem
+
+	
 	uint16_t v = address_mode(addressType, cpu);
 	cpu.bus.write_8bit(v, cpu.A_Reg);
 }
@@ -249,7 +251,7 @@ void BIT(AddressMode addressType, CPU &cpu)
 {
 	// TODO: bit test
 	uint8_t value = get_value(addressType, cpu);
-	uint8_t result = value & cpu.A_Reg;
+	uint8_t result = cpu.A_Reg & value;
 	set_zero(result, cpu);
 	set_overflow((value & 0b00100000) != 0, cpu);
 	set_negative(value, cpu);
@@ -506,8 +508,10 @@ void BNE(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
+
 	if (check_zero(cpu))
 	{
+		std::cout << "BNE failed "<<std::endl;
 		return;
 	}
 	uint16_t a = (uint16_t)((cpu.bus.get_PC() - 1) + (int8_t)new_PC);

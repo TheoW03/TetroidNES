@@ -31,8 +31,8 @@ private:
         {
             struct
             {
-                uint8_t hi;
-                uint8_t lo;
+                unsigned lo : 8;
+                unsigned hi : 8;
             };
             uint16_t val;
         } ppuAddr;

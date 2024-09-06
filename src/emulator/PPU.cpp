@@ -1,6 +1,6 @@
-#include "PPU.h"
+// #include "PPU.h
 #include <SFML/Graphics.hpp>
-
+#include "../include/PPU.h"
 PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
 {
 
@@ -11,6 +11,8 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     this->reg.ppuCtrl.val = 0;
     for (int i = 0; i < 2048; i++)
         this->memory[i] = 0;
+    this->reg.high_ptr = true;
+    this->reg.scrollLatch = false;
     this->reg.ppumask.val = 0;
 }
 PPU::PPU() {}
@@ -53,7 +55,7 @@ uint8_t PPU::read_PPU_data()
 {
     uint16_t addr = this->reg.ppuAddr.val;
     this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
-    if (addr >= 0 && addr <= 0x1fff)
+    if (addr <= 0x1fff)
     {
         uint8_t res = internalDataBuffer;
         internalDataBuffer = chr_rom[addr];
@@ -74,7 +76,11 @@ uint8_t PPU::read_PPU_data()
 }
 uint8_t PPU::read_status()
 {
-    return reg.ppuStatus.val;
+    uint8_t ret = reg.ppuStatus.val;
+    reg.ppuStatus.V = 0;
+    reg.high_ptr = true;
+    reg.scrollLatch = false;
+    return ret;
 }
 void PPU::write_PPU_address(uint8_t val)
 {
@@ -99,19 +105,31 @@ void PPU::write_PPU_mask(uint8_t val)
 }
 void PPU::write_PPU_data(uint8_t val)
 {
-    uint16_t addr = this->reg.ppuAddr.hi << 8 | (this->reg.ppuAddr.lo & 0xffff);
-    this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
+    uint16_t addr = this->reg.ppuAddr.val;
+
+    // std::cout << addr << std::endl;
     if (addr >= 0x2000 && addr <= 0x2fff)
     {
         // uint8_t res = internalDataBuffer;
-        memory[mirror(addr)] = val;
+        this->memory[mirror(addr)] = val;
+        std::cout << "saving to vram" << std::endl;
         // internalDataBuffer = memory[mirror(addr)];
     }
     else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c)
     {
-        // addr = addr - 0x10;
+        addr = addr - 0x10;
         pallete[addr - 0x3f00] = val;
     }
+    else if (addr >= 0x3f00 && addr <= 0x3fff)
+    {
+        pallete[addr - 0x3f00] = val;
+    }
+    else
+    {
+        std::cout << "memory shouldnt be written at this addr" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
 }
 
 bool PPU::tick(uint8_t clock_cycles)
@@ -150,9 +168,9 @@ void PPU::render(sf::Texture &texture, int bank, int tile)
 {
     uint8_t data[256 * 240 * 4];
     bank = this->reg.ppuCtrl.B;
-
+    // printf("ppu addr %x \n", this->reg.ppuAddr.val);
     // for
-    int banks =this->reg.ppuCtrl.B * 0x1000;
+    int banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
 
     for (int ppu_idx = 0; ppu_idx <= 0x03c0; ppu_idx++)
     {

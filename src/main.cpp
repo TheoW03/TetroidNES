@@ -1,7 +1,6 @@
 #include <iostream>
-#include "../src/emulator/BitOperations.h"
-#include "../src/emulator/Computer.h"
-#include "../src/emulator/LoadRom.h"
+#include "./include/Computer.h"
+#include "./include/LoadRom.h"
 #include <vector>
 #include <bitset>
 #include "SetupSFML.h"

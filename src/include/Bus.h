@@ -1,6 +1,6 @@
 #include <iostream>
-#include "PPU.h"
-#include "LoadRom.h"
+#include "../include/PPU.h"
+#include "../include/LoadRom.h"
 #include "APU.h"
 
 #ifndef CONTROILER_H

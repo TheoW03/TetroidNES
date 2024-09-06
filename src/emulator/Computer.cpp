@@ -4,16 +4,16 @@
 #include <map>
 #include <thread>
 #include <SFML/Graphics.hpp>
-#include "NESError.h"
-#include "BitOperations.h"
+#include "../include/NESError.h"
+#include "../include/BitOperations.h"
 
-#include "AddressMode.h"
-#include "Bus.h"
-#include "Instructions.h"
-#include "LoadRom.h"
-#include "StatusRegister.h"
+#include "../include/AddressMode.h"
+// #include "Bus.h"
+#include "../include/Instructions.h"
+#include "../include/LoadRom.h"
+#include "../include/StatusRegister.h"
 #include <filesystem>
-#include "../../src/emulator/InstructionMap.h"
+#include "../include/InstructionMap.h"
 namespace fs = std::filesystem;
 
 #define PC_RESET 0x8000
@@ -170,14 +170,15 @@ CPU run(CPU cpu, std::string window_name)
 		}
 		current_instruction = cpu.bus.fetch_next();
 
-		cpu.bus.render(texture, 0, 0);
-		window.clear(); // Change this to the desired color
-		window.draw(sprite);
-		window.display();
 		if (InstructionValid(current_instruction))
 		{
 			Instruction a = GetInstruction(current_instruction);
 			a.i(a.addressmode, cpu);
+			// printf("pc: 0x%x current instrcution 0x%x \n", cpu.bus.get_PC(), current_instruction);
+			cpu.bus.render(texture, 0, 0);
+			window.clear(); // Change this to the desired color
+			window.draw(sprite);
+			window.display();
 		}
 		else
 		{

@@ -1,5 +1,5 @@
 #include "Bus.h"
-#include "PPU.h"
+#include "../include/PPU.h"
 #include "APU.h"
 #include <SFML/Graphics.hpp>
 #include <bitset>
@@ -91,13 +91,18 @@ uint8_t Bus::read_8bit(uint16_t address)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
+        // printf("ppuread: 0x%x \n", address);
+
         if (address >= 0x2008)
-            while (address >= 0x2007)
-                address = address & 0x2007;
+            return read_8bit(address & 0x2007);
         if (address == 0x2007)
             return this->ppu.read_PPU_data();
         else if (address == 0x2002)
             return this->ppu.read_status();
+        else if (address == 0x2004)
+        {
+            return this->ppu.read_OAM_data();
+        }
         else
         {
             this->stored_instructions[1] = 0x82;
@@ -141,12 +146,18 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        if (address >= 0x2008)
-            while (address >= 0x2007)
-                address = address & 0x2007;
+        // std::cout << "ppu write" << address << std::endl;
+
         if (address == 0x2000)
         {
             this->ppu.write_PPU_ctrl(value);
+        }
+        else if (address == 0x2001)
+        {
+            this->ppu.write_PPU_mask(value);
+        }
+        else if(address == 0x2003){
+            this->ppu.write_OAM_data(value);
         }
         else if (address == 0x2006)
         {
@@ -155,6 +166,15 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         else if (address == 0x2007)
         {
             this->ppu.write_PPU_data(value);
+        }
+        else if (address >= 0x2008)
+            this->write_8bit(address & 0x2007, value);
+        else
+        {
+            this->stored_instructions[1] = 0x82;
+            std::cout << "\033[91mforbidden access to PPU write only address\033[0m" << std::endl;
+            printf("address 0x%x \n", address);
+            std::cout << "" << std::endl;
         }
     }
     else if (address == 0x4016)
@@ -297,9 +317,7 @@ bool Bus::NMI_interrupt()
 {
     return this->ppu.NMI_interrupt(this->clock_cycles * 3);
 }
- 
 
- 
 uint8_t Bus::read_joypad()
 {
     if (button_idx > 7)
