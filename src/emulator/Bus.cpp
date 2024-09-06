@@ -1,6 +1,6 @@
-#include "Bus.h"
+#include "../include/Bus.h"
 #include "../include/PPU.h"
-#include "APU.h"
+#include "../include/APU.h"
 #include <SFML/Graphics.hpp>
 #include <bitset>
 #define TOP_STACK 0x1ff
