@@ -3,6 +3,10 @@
 #include <filesystem>
 
 // #include <SFML/Graphics.hpp>
+#define NES_RES_A 256 * 240
+#define NES_RES_W 240
+#define NES_RES_L 256
+
 #ifndef CPU_H
 #define CPU_H
 struct CPU

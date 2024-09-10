@@ -1,15 +1,19 @@
 #include <iostream>
 #include <vector>
-#include <SFML/Graphics.hpp>
+// #include <SFML/Graphics.hpp>
 #include <bit>
 #include "LoadRom.h"
+
+#include <tuple>
+
 
 #ifndef PPU_H
 #define PPU_H
 class PPU
 {
 private:
-    sf::Color getColorFromByte(uint16_t byte);
+    std::tuple<uint8_t, uint8_t, uint8_t> getColorFromByte(uint16_t byte);
+    // sf::Color getColorFromByte(uint16_t byte);
     struct Registers
     {
         union
@@ -93,7 +97,8 @@ public:
     bool NMI_interrupt(uint8_t clock_cycles);
     bool tick(uint8_t clock_cycles);
     uint8_t read_status();
-    void render(sf::Texture &texture, int bank, int tile);
+    // void render(sf::Texture &texture, int bank, int tile);
+    std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
 };
 
 #endif

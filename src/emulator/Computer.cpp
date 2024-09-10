@@ -63,6 +63,13 @@ void HandleNMIInterrupts(CPU &cpu)
 	cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
 	set_interrupt_disabled(1, cpu);
 }
+void test(uint8_t arr[257])
+{
+	for (int i = 0; i < 257; i++)
+	{
+		arr[i] = i;
+	}
+}
 /**
  * Executes actual code
  */
@@ -78,6 +85,8 @@ CPU run(CPU cpu, std::string window_name)
 	float scaleY = window.getSize().y / (float)(texture.getSize().y);
 	sf::Sprite sprite(texture);
 	sprite.setScale(scaleX, scaleY);
+	// uint8_t arr[257];
+	// uint8_t data[]
 
 	while (cpu.bus.get_PC() < PC_END && window.isOpen())
 	{
@@ -174,8 +183,20 @@ CPU run(CPU cpu, std::string window_name)
 		{
 			Instruction a = GetInstruction(current_instruction);
 			a.i(a.addressmode, cpu);
+			std::vector rgb_data_vector = cpu.bus.render_texture({NES_RES_L, NES_RES_W});
+
+			uint8_t rgb_data[NES_RES_A * 4];
+			std::copy(rgb_data_vector.begin(), rgb_data_vector.end(), rgb_data);
+			// nes_cpu.
+			// for (int i = 0; i < nes_cpu.size(); i++)
+			// {
+			// 	rgb_da
+			// }
+			// cpu.bus.render_texture(rgb_data);
+			texture.update(rgb_data);
 			// printf("pc: 0x%x current instrcution 0x%x \n", cpu.bus.get_PC(), current_instruction);
-			cpu.bus.render(texture, 0, 0);
+			// cpu.bus.render(texture, 0, 0);
+			// cpu.bus.render()
 			window.clear(); // Change this to the desired color
 			window.draw(sprite);
 			window.display();

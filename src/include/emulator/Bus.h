@@ -11,9 +11,9 @@ enum class Controller
     B = 0b00000010,
     SELECT = 0b00000100,
     START = 0b00001000,
-    UP =    0b00010000,
-    DOWN =  0b00100000,
-    LEFT =  0b01000000,
+    UP = 0b00010000,
+    DOWN = 0b00100000,
+    LEFT = 0b01000000,
     RIGHT = 0b10000000
 };
 #endif
@@ -65,9 +65,10 @@ public:
     void set_stack_pointer(uint8_t value);
     void print_stack(); // prints true value of stack
     void tick();
-    void render(sf::Texture &texture, int bank, int tile);
+    // void render(sf::Texture &texture, int bank, int tile);
     bool NMI_interrupt();
     uint8_t read_joypad();
     void write_controller1(Controller value, int isPressed);
+    std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
 };
 #endif

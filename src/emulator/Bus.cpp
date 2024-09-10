@@ -6,6 +6,8 @@
 #include <emulator/PPU.h>
 #include <SFML/Graphics.hpp>
 #include <bitset>
+#include <emulator/Bus.h>
+// #include "Bus.h>
 #define TOP_STACK 0x1ff
 #define BOTTOM_STACK 0x100
 #define STACK_RESET 0xfd
@@ -311,10 +313,10 @@ void Bus::tick()
     this->ppu.tick(this->clock_cycles * 3);
 }
 
-void Bus::render(sf::Texture &texture, int bank, int tile)
-{
-    this->ppu.render(texture, bank, tile);
-}
+// void Bus::render(sf::Texture &texture, int bank, int tile)
+// {
+//     this->ppu.render(texture, bank, tile);
+// }
 
 bool Bus::NMI_interrupt()
 {
@@ -343,4 +345,9 @@ void Bus::write_controller1(Controller value, int isPressed)
         joy_pad_byte1 |= (uint8_t)value;
     else if (isPressed == 0)
         joy_pad_byte1 &= ~((uint8_t)(value));
+}
+
+std::vector<uint8_t> Bus::render_texture(std::tuple<size_t, size_t> res)
+{
+    return this->ppu.render_texture(res);
 }
