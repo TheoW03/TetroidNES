@@ -4,16 +4,16 @@
 #include <map>
 #include <thread>
 #include <SFML/Graphics.hpp>
-#include "../include/NESError.h"
-#include "../include/BitOperations.h"
+#include <emulator/NESError.h>
+#include <emulator/BitOperations.h>
 
-#include "../include/AddressMode.h"
-// #include "Bus.h"
-#include "../include/Instructions.h"
-#include "../include/LoadRom.h"
-#include "../include/StatusRegister.h"
+#include <emulator/AddressMode.h>
+// #include "Bus.h
+#include <emulator/Instructions.h>
+#include <emulator/LoadRom.h>
+#include <emulator/StatusRegister.h>
 #include <filesystem>
-#include "../include/InstructionMap.h"
+#include <emulator/InstructionMap.h>
 namespace fs = std::filesystem;
 
 #define PC_RESET 0x8000

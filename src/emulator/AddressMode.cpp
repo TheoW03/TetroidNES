@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstdio>
-#include "../include/Bus.h"
-#include "../include/Computer.h"
+#include <emulator/Bus.h>
+#include <emulator/Computer.h>
 
 /**
  * @brief get PC because this is the address bus this. does the immediate address or

@@ -1,9 +1,9 @@
 #include <iostream>
-#include "./include/Computer.h"
-#include "./include/LoadRom.h"
+#include <emulator/Computer.h>
+#include <emulator/LoadRom.h>
 #include <vector>
 #include <bitset>
-#include "SetupSFML.h"
+// #include "SetupSFML.h"
 #include <cassert>
 
 int main(int argc, char *argv[])

@@ -1,7 +1,7 @@
 #include <iostream>
-#include "../include/PPU.h"
-#include "../include/LoadRom.h"
-#include "APU.h"
+#include <emulator/PPU.h>
+#include <emulator/LoadRom.h>
+#include <emulator/APU.h>
 
 #ifndef CONTROILER_H
 #define CONTROILER_H

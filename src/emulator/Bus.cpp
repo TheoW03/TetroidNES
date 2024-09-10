@@ -1,12 +1,15 @@
-#include "../include/Bus.h"
-#include "../include/PPU.h"
-#include "../include/APU.h"
+// #include "../include/Bus.h"
+// #include "../include/PPU.h"
+// #include "../include/APU.h"
+#include <emulator/APU.h>
+#include <emulator/Bus.h>
+#include <emulator/PPU.h>
 #include <SFML/Graphics.hpp>
 #include <bitset>
 #define TOP_STACK 0x1ff
 #define BOTTOM_STACK 0x100
 #define STACK_RESET 0xfd
-
+// #include "test.h"
 // const static uint8_t ram_end = 0x0FFF;
 // const static uint8_t ppu_end = 0x2000;
 

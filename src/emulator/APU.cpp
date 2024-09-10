@@ -1,4 +1,4 @@
-#include "../include/APU.h"
+#include <emulator/APU.h>
 
 APU::APU()
 {
