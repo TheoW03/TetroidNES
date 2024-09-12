@@ -193,6 +193,7 @@ void PPU::write_PPU_data(uint8_t val)
     }
     else
     {
+        // TODO: fails for some reason
         std::cout << "memory shouldnt be written at this addr" << std::endl;
         exit(EXIT_FAILURE);
     }

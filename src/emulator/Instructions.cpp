@@ -512,6 +512,7 @@ void BNE(AddressMode addressType, CPU &cpu)
 	if (check_zero(cpu))
 	{
 		std::cout << "BNE failed "<<std::endl;
+		
 		return;
 	}
 	uint16_t a = (uint16_t)((cpu.bus.get_PC() - 1) + (int8_t)new_PC);

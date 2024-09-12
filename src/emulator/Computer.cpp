@@ -4,7 +4,8 @@
 #include <map>
 #include <thread>
 #include <SFML/Graphics.hpp>
-#include <emulator/NESError.h>
+#include "./NESError.h"
+// #include <emulator/NESError.h>
 #include <emulator/BitOperations.h>
 
 #include <emulator/AddressMode.h>
