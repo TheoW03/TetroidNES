@@ -6,15 +6,15 @@
 #include <SFML/Graphics.hpp>
 #include "./NESError.h"
 // #include <emulator/NESError.h>
-#include <emulator/BitOperations.h>
+#include <Emulator/BitOperations.h>
 
-#include <emulator/AddressMode.h>
+#include <Emulator/AddressMode.h>
 // #include "Bus.h
-#include <emulator/Instructions.h>
-#include <emulator/LoadRom.h>
-#include <emulator/StatusRegister.h>
+#include <Emulator/Instructions.h>
+#include <Emulator/LoadRom.h>
+#include <Emulator/StatusRegister.h>
 #include <filesystem>
-#include <emulator/InstructionMap.h>
+#include <Emulator/InstructionMap.h>
 namespace fs = std::filesystem;
 
 #define PC_RESET 0x8000

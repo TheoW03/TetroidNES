@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include <emulator/BitOperations.h>
+#include <Emulator/BitOperations.h>
 // #include "Memory.h"
-#include <emulator/Computer.h>
-#include <emulator/AddressMode.h>
-#include <emulator/StatusRegister.h>
-#include <emulator/Bus.h>
+#include <Emulator/Computer.h>
+#include <Emulator/AddressMode.h>
+#include <Emulator/StatusRegister.h>
+#include <Emulator/Bus.h>
 
 uint16_t address_mode(AddressMode address, CPU &cpu)
 {

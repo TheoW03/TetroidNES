@@ -1,6 +1,7 @@
 // #include "PPU.h
 #include <SFML/Graphics.hpp>
-#include <emulator/PPU.h>
+#include <stdint.h>
+#include <Emulator/PPU.h>
 // #include "PPU.h"
 // #include <emulator
 PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)

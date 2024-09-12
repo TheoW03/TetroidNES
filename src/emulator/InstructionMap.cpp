@@ -1,5 +1,5 @@
 #include <map>
-#include <emulator/Instructions.h>
+#include <Emulator/Instructions.h>
 #include <stdint.h>
 using instructionPointer = void (*)(AddressMode, CPU &);
 
