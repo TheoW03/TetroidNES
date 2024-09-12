@@ -134,7 +134,6 @@ void STA(AddressMode addressType, CPU &cpu)
 {
 	// TODO store accumulator in mem
 
-	
 	uint16_t v = address_mode(addressType, cpu);
 	cpu.bus.write_8bit(v, cpu.A_Reg);
 }
@@ -508,11 +507,11 @@ void BNE(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-
 	if (check_zero(cpu))
 	{
-		std::cout << "BNE failed "<<std::endl;
-		
+		std::cout << "BNE failed " << std::endl;
+		printCPU_stats(cpu);
+
 		return;
 	}
 	uint16_t a = (uint16_t)((cpu.bus.get_PC() - 1) + (int8_t)new_PC);

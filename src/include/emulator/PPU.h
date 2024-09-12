@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-
 #ifndef PPU_H
 #define PPU_H
 class PPU
@@ -59,10 +58,12 @@ private:
         {
             struct
             {
-                unsigned V : 1;
-                unsigned S : 1;
-                unsigned O : 1;
                 unsigned padding : 4;
+
+                unsigned O : 1;
+                unsigned S : 1;
+
+                unsigned V : 1;
             };
             uint8_t val;
 

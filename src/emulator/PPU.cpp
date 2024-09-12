@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <stdint.h>
 #include <Emulator/PPU.h>
+#include <Emulator/Computer.h>
 // #include "PPU.h"
 // #include <emulator
 PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
@@ -154,12 +155,17 @@ void PPU::write_PPU_address(uint8_t val)
 {
     if (this->reg.high_ptr)
     {
-        this->reg.ppuAddr.lo = val;
+        this->reg.ppuAddr.hi = val;
     }
     else
     {
-        this->reg.ppuAddr.hi = val;
+        this->reg.ppuAddr.lo = val;
     }
+    //TODO: fix later
+    // std::cout << "ppu addr" << std::endl;
+    // printf("val:%x   \n", this->reg.ppuAddr.val);
+    // printf("hi: %x \n", this->reg.ppuAddr.hi);
+    // printf("lo: %x \n", this->reg.ppuAddr.lo);
 
     this->reg.high_ptr = !this->reg.high_ptr;
 }
@@ -192,13 +198,24 @@ void PPU::write_PPU_data(uint8_t val)
     {
         pallete[addr - 0x3f00] = val;
     }
+    else if (addr == 0x4014)
+    {
+        printf("%x\n", addr);
+
+        return;
+    }
     else
     {
         // TODO: fails for some reason
         std::cout << "memory shouldnt be written at this addr" << std::endl;
+        printf("%x\n", addr);
         exit(EXIT_FAILURE);
     }
     this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
+    if (reg.ppuAddr.val > 0x3fff)
+    {
+        this->reg.ppuAddr.val &= 0b11111111111111;
+    }
 }
 
 bool PPU::tick(uint8_t clock_cycles)
