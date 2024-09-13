@@ -44,6 +44,8 @@ filtercontrolframe::filtercontrolframe(QWidget *parent) : QFrame{parent}
     sort_mode_button_group->addButton(sort_mode_favorites, romlist::SortMode::Favorites);
     sort_mode_button_group->addButton(sort_mode_az, romlist::SortMode::AZ);
 
+    sort_mode_az->setChecked(true); // TODO: Make this more dynamic
+
     // setup search bar
     search_bar->setPlaceholderText(tr("Search..."));
 

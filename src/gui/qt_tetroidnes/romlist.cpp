@@ -2,9 +2,12 @@
 
 #include <QDebug>
 
-#include <algorithm>
+//#include <algorithm>
 // romlistData
 romlistData::romlistData(QObject *parent): QObject{parent}
+{
+}
+romlistData::~romlistData()
 {
 }
 
@@ -24,32 +27,23 @@ QByteArray romlistData::img() {return this->m_img;}
 bool romlistData::favorited() {return this->m_favorited;}
 
 // romlistItem
-romlistItem::romlistItem(QSharedPointer<romlistData> data, QWidget *parent): QWidget{parent}
+romlistItem::romlistItem(const QSharedPointer<romlistData> *data, QWidget *parent): QWidget{parent}
 {
-    title = new QLabel(data->title(), this);
+    title = new QLabel(this);
     img = new QLabel(this);
-    year = new QLabel(QString::number(data->year()), this);
+    year = new QLabel(this);
     buttons_frame = new QFrame(this);
     favorite_button = new QPushButton(buttons_frame);
     layout = new QVBoxLayout();
     buttons_layout = new QHBoxLayout();
 
     favorite_button->setCheckable(true);
-    favorite_button->setChecked(data->favorited());
     favorite_button->setText("Favorite button");
 
     title->setAlignment(Qt::AlignCenter);
     year->setAlignment(Qt::AlignCenter);
 
     img->setScaledContents(true);
-    if (data->img().isNull())
-    {
-        QPixmap *placeholder_img = new QPixmap(50, 50);
-        placeholder_img->fill(Qt::darkGreen);
-
-        img->setPixmap(*placeholder_img);
-    }
-    //else {img->setPixmap(QImage())
 
     layout->addWidget(buttons_frame);
     layout->addWidget(img);
@@ -62,7 +56,27 @@ romlistItem::romlistItem(QSharedPointer<romlistData> data, QWidget *parent): QWi
     buttons_layout->addWidget(favorite_button);
     buttons_frame->setLayout(buttons_layout);
 
-    show();
+    updateData(*data);
+}
+
+romlistItem::~romlistItem()
+{
+}
+
+void romlistItem::updateData(const QSharedPointer<romlistData> &data)
+{
+    title->setText(data->title());
+    year->setText(QString::number(data->year()));
+    if (data->img().isNull())
+    {
+        QPixmap *placeholder_img = new QPixmap(50, 50);
+        placeholder_img->fill(Qt::darkGreen);
+
+        img->setPixmap(*placeholder_img);
+    }
+    //else {img->setPixmap(QImage())
+
+    favorite_button->setChecked(data->favorited());
 }
 
 // romlist
@@ -73,6 +87,7 @@ romlist::romlist(QWidget *parent): QWidget{parent}
 
     setObjectName("RomList");
     setupList();
+    setItemsPerPage(8); // TODO: Change this so the program remembers what the user chose last time
     setCurrentMode(romlist::SortMode::AZ); // TODO: Change this so the program remembers what the user chose last time
     setCurrentOrder(Qt::SortOrder::AscendingOrder); // TODO: Change this so the program remembers what the user chose last time
 }
@@ -81,44 +96,68 @@ void romlist::setupList()
 {
     /*
      * Get roms via folder location(s) in config
-     * Make for loop iterating through how many widgets can be displayed at once
-     * The for loop start value should reflect on which page is selected
      * Also the condition should end at either when the end of the list is reached or i == i + amount of widgets shown
     */
 
     for (int i = 0; i < 10; i++)
     {
-        QSharedPointer<romlistData> listData = QSharedPointer<romlistData>(new romlistData);
+        QSharedPointer<romlistData> listData = QSharedPointer<romlistData>(new romlistData(this));
         listData->setData(i + 1980, QByteArray(), QString("Test") + QString::number(i), true);
-        addWidget(&listData);
+        data.append(listData);
     }
+}
+
+void romlist::setItemsPerPage(unsigned int newNum)
+{
+    if (newNum == items_per_page){return;}
+
+    if (newNum > items_per_page)
+    {
+        int dataIndex = items_per_page * current_page;
+        for(int i = 0; i < newNum-items_per_page; i++)
+        {
+            qDebug() << QString::number(i);
+            layout->addWidget(new romlistItem(&data.at(dataIndex), this));
+            dataIndex++;
+        }
+    }
+    else
+    {
+        QList<romlistItem> items = this->findChildren<romlistItem>();
+        for(int i = items_per_page; i == newNum; i--)
+        {
+            delete &items.at(i);
+        }
+    }
+
+    items_per_page = newNum;
+    updateList();
 }
 
 void romlist::updateList()
 {
-    QLayoutItem *item;
-    while(layout->itemAt(0))
+    int dataIndex = items_per_page * current_page - items_per_page;
+    QList<romlistItem*> items = findChildren<romlistItem*>();
+    for(int i = 0; dataIndex < data.length() && i < items_per_page; i++)
     {
-        item = layout->itemAt(0);
-        delete item;
+        items[i]->updateData(data.at(dataIndex));
+        dataIndex++;
     }
-
-    setupList();
 }
 
-const bool romlist::compare_year(QSharedPointer<romlistData> &a, QSharedPointer<romlistData> &b)
+const bool romlist::compare_year(const QSharedPointer<romlistData> &a, const QSharedPointer<romlistData> &b)
 {
     return (a->year() < b->year());
 }
 
-void romlist::addWidget(QSharedPointer<romlistData> *romData)
+void romlist::addWidget(const QSharedPointer<romlistData> *romData)
 {
-    data.append(*romData);
-    layout->addWidget(new romlistItem(*romData, this));
+    layout->addWidget(new romlistItem(romData, this));
 }
 
 void romlist::setCurrentMode(romlist::SortMode mode)
 {
+    qDebug() << QString::number(mode) << QString::number(current_mode);
     if (current_mode == mode)
         return;
 
@@ -140,7 +179,9 @@ void romlist::setCurrentOrder(Qt::SortOrder order)
         return;
 
     current_order = order;
-    // sorting goes here
+    std::reverse(data.begin(), data.end());
+
+    updateList();
 }
 
 Qt::SortOrder romlist::CurrentOrder()
