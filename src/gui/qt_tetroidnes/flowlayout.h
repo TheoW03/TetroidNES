@@ -16,8 +16,8 @@ public:
     ~FlowLayout();
 
     void addItem(QLayoutItem *item) override;
-    int horizontalSpacing() const;
-    int verticalSpacing() const;
+    int horizontal_spacing() const;
+    int vertical_spacing() const;
     Qt::Orientations expandingDirections() const override;
     bool hasHeightForWidth() const override;
     int heightForWidth(int) const override;
@@ -29,8 +29,8 @@ public:
     QLayoutItem *takeAt(int index) override;
 
 private:
-    int doLayout(const QRect &rect, bool testOnly) const;
-    int smartSpacing(QStyle::PixelMetric pm) const;
+    int do_layout(const QRect &rect, bool testOnly) const;
+    int smart_spacing(QStyle::PixelMetric pm) const;
 
     QList<QLayoutItem *> itemList;
     int m_hSpace;

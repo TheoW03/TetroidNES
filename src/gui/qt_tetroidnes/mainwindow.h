@@ -24,7 +24,7 @@ public:
 public slots:
     void sort_mode_button_released(int id);
     void sort_order_button_toggled(bool toggled);
-    //void search_bar_edited(QString string);
+    void search_bar_edited(QString string);
 private:
     romlist *rom_list;
     filtercontrolframe *sort_control_frame;

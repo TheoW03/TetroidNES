@@ -32,21 +32,21 @@ void FlowLayout::addItem(QLayoutItem *item)
 //! [3]
 
 //! [4]
-int FlowLayout::horizontalSpacing() const
+int FlowLayout::horizontal_spacing() const
 {
     if (m_hSpace >= 0) {
         return m_hSpace;
     } else {
-        return smartSpacing(QStyle::PM_LayoutHorizontalSpacing);
+        return smart_spacing(QStyle::PM_LayoutHorizontalSpacing);
     }
 }
 
-int FlowLayout::verticalSpacing() const
+int FlowLayout::vertical_spacing() const
 {
     if (m_vSpace >= 0) {
         return m_vSpace;
     } else {
-        return smartSpacing(QStyle::PM_LayoutVerticalSpacing);
+        return smart_spacing(QStyle::PM_LayoutVerticalSpacing);
     }
 }
 //! [4]
@@ -85,7 +85,7 @@ bool FlowLayout::hasHeightForWidth() const
 
 int FlowLayout::heightForWidth(int width) const
 {
-    int height = doLayout(QRect(0, 0, width, 0), true);
+    int height = do_layout(QRect(0, 0, width, 0), true);
     return height;
 }
 //! [7]
@@ -94,7 +94,7 @@ int FlowLayout::heightForWidth(int width) const
 void FlowLayout::setGeometry(const QRect &rect)
 {
     QLayout::setGeometry(rect);
-    doLayout(rect, false);
+    do_layout(rect, false);
 }
 
 QSize FlowLayout::sizeHint() const
@@ -115,7 +115,7 @@ QSize FlowLayout::minimumSize() const
 //! [8]
 
 //! [9]
-int FlowLayout::doLayout(const QRect &rect, bool testOnly) const
+int FlowLayout::do_layout(const QRect &rect, bool testOnly) const
 {
     int left, top, right, bottom;
     getContentsMargins(&left, &top, &right, &bottom);
@@ -128,11 +128,11 @@ int FlowLayout::doLayout(const QRect &rect, bool testOnly) const
     //! [10]
     for (QLayoutItem *item : std::as_const(itemList)) {
         const QWidget *wid = item->widget();
-        int spaceX = horizontalSpacing();
+        int spaceX = horizontal_spacing();
         if (spaceX == -1)
             spaceX = wid->style()->layoutSpacing(
                 QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Horizontal);
-        int spaceY = verticalSpacing();
+        int spaceY = vertical_spacing();
         if (spaceY == -1)
             spaceY = wid->style()->layoutSpacing(
                 QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
@@ -156,7 +156,7 @@ int FlowLayout::doLayout(const QRect &rect, bool testOnly) const
 }
 //! [11]
 //! [12]
-int FlowLayout::smartSpacing(QStyle::PixelMetric pm) const
+int FlowLayout::smart_spacing(QStyle::PixelMetric pm) const
 {
     QObject *parent = this->parent();
     if (!parent) {

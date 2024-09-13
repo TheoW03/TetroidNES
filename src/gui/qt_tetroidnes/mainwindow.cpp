@@ -33,34 +33,24 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
             [this](int id){sort_mode_button_released(id);});
     connect(sort_control_frame->findChild<QPushButton*>("SortOrder"), &QPushButton::toggled, this,
             [this](bool toggled){sort_order_button_toggled(toggled);});
-    // connect(sort_control_frame->findChild<QLineEdit*>(), &QLineEdit::textEdited, this,
-    //         [this](QString text){search_bar_edited(text);});
+    connect(sort_control_frame->findChild<QLineEdit*>(), &QLineEdit::textEdited, this,
+            [this](QString text){search_bar_edited(text);});
 }
 
 void MainWindow::sort_mode_button_released(int id)
 {
-    this->findChild<romlist*>()->setCurrentMode(romlist::SortMode(id));
+    this->findChild<romlist*>()->set_current_mode(romlist::SortMode(id));
 }
 
 void MainWindow::sort_order_button_toggled(bool toggled)
 {
-    this->findChild<romlist*>()->setCurrentOrder(Qt::SortOrder(toggled));
+    this->findChild<romlist*>()->set_current_order(Qt::SortOrder(toggled));
 }
 
-// void MainWindow::search_bar_edited(QString string)
-// {
-//     auto *p_romlist = findChild<romlist*>();
-//     auto search_list = p_romlist->findItems("*" + string + "*", Qt::MatchWildcard | Qt::MatchContains); // Might need some work
-//     auto all_items = p_romlist->findItems("*", Qt::MatchWildcard);
-//     if (all_items.length() == 0)
-//         return;
-//     QListWidgetItem *pitem;
-//     for (int i = 0; i <= all_items.length() - 1; i++)
-//     {
-//         pitem = all_items[i];
-//         pitem->setHidden(!(search_list.contains(pitem)));
-//     }
-// }
+void MainWindow::search_bar_edited(QString string)
+{
+    this->findChild<romlist*>()->sort_regex(string + QString("*"));
+}
 
 MainWindow::~MainWindow()
 {
