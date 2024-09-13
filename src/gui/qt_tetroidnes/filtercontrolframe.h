@@ -14,6 +14,7 @@ class filtercontrolframe : public QFrame
     Q_OBJECT
 public:
     explicit filtercontrolframe(QWidget *parent = nullptr);
+private:
     QLineEdit *search_bar;
     QFrame *sort_buttons_frame;
     QPushButton *sort_ascending_button;

@@ -26,6 +26,7 @@ qt_add_executable(${EXECUTABLE_NAME}
     main.cpp mainwindow.cpp mainwindow.h mainwindow.ui menubar.cpp menubar.h resources.qrc
     romlist.h romlist.cpp
     filtercontrolframe.h filtercontrolframe.cpp
+    flowlayout.h flowlayout.cpp
 )
 
 qt_add_translations(${EXECUTABLE_NAME} TS_FILES tetroidnes_en_US.ts)
