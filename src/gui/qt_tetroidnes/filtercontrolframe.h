@@ -9,11 +9,11 @@
 #include <QGroupBox>
 #include <QButtonGroup>
 
-class filtercontrolframe : public QFrame
+class FilterControlFrame : public QFrame
 {
     Q_OBJECT
 public:
-    explicit filtercontrolframe(QWidget *parent = nullptr);
+    explicit FilterControlFrame(QWidget *parent = nullptr);
 private:
     QLineEdit *search_bar;
     QFrame *sort_buttons_frame;

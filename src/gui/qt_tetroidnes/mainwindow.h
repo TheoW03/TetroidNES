@@ -26,8 +26,8 @@ public slots:
     void sort_order_button_toggled(bool toggled);
     void search_bar_edited(QString string);
 private:
-    romlist *rom_list;
-    filtercontrolframe *sort_control_frame;
+    RomList *rom_list;
+    FilterControlFrame *sort_control_frame;
 
 private:
     Ui::MainWindow *ui;

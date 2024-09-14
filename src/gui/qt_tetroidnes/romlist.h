@@ -15,12 +15,12 @@
 #include <QSharedPointer>
 #include <QScrollArea>
 
-class romlistData : public QObject
+class RomListData : public QObject
 {
     Q_OBJECT
 public:
-    explicit romlistData(QObject *parent = nullptr);
-    ~romlistData();
+    explicit RomListData(QObject *parent = nullptr);
+    ~RomListData();
     void set_data(short unsigned int year = 0, QByteArray img = QByteArray(), QString title = QString(), std::optional<bool> favorited = std::nullopt);
     short unsigned int year();
     QString title();
@@ -35,13 +35,13 @@ private:
     bool m_favorited = false;
 };
 
-class romlistItem: public QWidget
+class RomListItem: public QWidget
 {
     Q_OBJECT
 public:
-    explicit romlistItem(const QSharedPointer<romlistData> *data, QWidget *parent = nullptr);
-    ~romlistItem();
-    void update_data(const QSharedPointer<romlistData> &data);
+    explicit RomListItem(const QSharedPointer<RomListData> *data, QWidget *parent = nullptr);
+    ~RomListItem();
+    void update_data(const QSharedPointer<RomListData> &data);
 private:
     QLabel *title;
     QLabel *year;
@@ -54,14 +54,14 @@ private:
 signals:
 };
 
-class romlist : public QWidget
+class RomList : public QWidget
 {
     Q_OBJECT
 public:
     enum SortMode {Year, Favorites, AZ};
-    explicit romlist(QWidget *parent = nullptr);
-    ~romlist();
-    void add_widget(const QSharedPointer<romlistData> *romData);
+    explicit RomList(QWidget *parent = nullptr);
+    ~RomList();
+    void add_widget(const QSharedPointer<RomListData> *romData);
     void set_current_mode(const SortMode mode);
     SortMode current_mode() const;
     void set_current_order(const Qt::SortOrder order);
@@ -71,17 +71,17 @@ public:
     unsigned int current_page() const;
     unsigned int total_pages() const;
     void sort_regex(QString expr);
-    QSharedPointer<romlistData> find_data(const QString title) const;
+    QSharedPointer<RomListData> find_data(const QString title) const;
 private:
-    inline static const bool compare_year(const QSharedPointer<romlistData> &a, const QSharedPointer<romlistData> &b);
-    inline static const bool compare_favorite(const QSharedPointer<romlistData> &a, const QSharedPointer<romlistData> &b);
-    inline static const bool compare_initalchar(const QSharedPointer<romlistData> &a, const QSharedPointer<romlistData> &b);
+    inline static const bool compare_year(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b);
+    inline static const bool compare_favorite(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b);
+    inline static const bool compare_alphabet(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b);
     void setup_list();
     void update_list();
     FlowLayout *layout;
     QScrollArea *scroll_area;
-    QList<QSharedPointer<romlistData>> data;
-    romlist::SortMode m_current_mode;
+    QList<QSharedPointer<RomListData>> data;
+    RomList::SortMode m_current_mode;
     Qt::SortOrder m_current_order;
 
     unsigned int m_current_page = 1;

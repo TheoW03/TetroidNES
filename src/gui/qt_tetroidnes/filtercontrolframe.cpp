@@ -1,7 +1,7 @@
 #include "filtercontrolframe.h"
 #include "romlist.h"
 
-filtercontrolframe::filtercontrolframe(QWidget *parent) : QFrame{parent}
+FilterControlFrame::FilterControlFrame(QWidget *parent) : QFrame{parent}
 {
     QLineEdit *search_bar =                  new QLineEdit(this);
     QHBoxLayout *sort_control_frame_layout = new QHBoxLayout();
@@ -40,9 +40,9 @@ filtercontrolframe::filtercontrolframe(QWidget *parent) : QFrame{parent}
 
     // setup button group
     sort_mode_button_group->setExclusive(true);
-    sort_mode_button_group->addButton(sort_mode_year, romlist::SortMode::Year);
-    sort_mode_button_group->addButton(sort_mode_favorites, romlist::SortMode::Favorites);
-    sort_mode_button_group->addButton(sort_mode_az, romlist::SortMode::AZ);
+    sort_mode_button_group->addButton(sort_mode_year, RomList::SortMode::Year);
+    sort_mode_button_group->addButton(sort_mode_favorites, RomList::SortMode::Favorites);
+    sort_mode_button_group->addButton(sort_mode_az, RomList::SortMode::AZ);
 
     sort_mode_az->setChecked(true); // TODO: Make this more dynamic
 

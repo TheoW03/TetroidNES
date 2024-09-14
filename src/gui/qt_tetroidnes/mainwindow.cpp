@@ -13,9 +13,9 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->setupUi(this);
 
     QVBoxLayout *widget_layout =             new QVBoxLayout();
-    menubar *main_menubar =                  new menubar(this);
-    filtercontrolframe *sort_control_frame = new filtercontrolframe(ui->centralwidget);
-    romlist *rom_list =                      new romlist(ui->centralwidget);
+    MenuBar *main_menubar =                  new MenuBar(this);
+    FilterControlFrame *sort_control_frame = new FilterControlFrame(ui->centralwidget);
+    RomList *rom_list =                      new RomList(ui->centralwidget);
 
     // widget layout
     widget_layout->addWidget(sort_control_frame);
@@ -39,17 +39,19 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
 void MainWindow::sort_mode_button_released(int id)
 {
-    this->findChild<romlist*>()->set_current_mode(romlist::SortMode(id));
+    RomList *list = ui->centralwidget->findChild<RomList*>();
+    list->set_current_mode(RomList::SortMode(id));
+
 }
 
 void MainWindow::sort_order_button_toggled(bool toggled)
 {
-    this->findChild<romlist*>()->set_current_order(Qt::SortOrder(toggled));
+    this->findChild<RomList*>()->set_current_order(Qt::SortOrder(toggled));
 }
 
 void MainWindow::search_bar_edited(QString string)
 {
-    this->findChild<romlist*>()->sort_regex(string + QString("*"));
+    this->findChild<RomList*>()->sort_regex(string + QString("*"));
 }
 
 MainWindow::~MainWindow()

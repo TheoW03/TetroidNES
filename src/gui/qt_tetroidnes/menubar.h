@@ -3,12 +3,12 @@
 
 #include <QMenuBar>
 
-class menubar : public QMenuBar
+class MenuBar : public QMenuBar
 {
     Q_OBJECT
 public:
-    explicit menubar(QWidget *parent = nullptr);
-    ~menubar();
+    explicit MenuBar(QWidget *parent = nullptr);
+    ~MenuBar();
 
 };
 

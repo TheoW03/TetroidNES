@@ -2,7 +2,7 @@
 #include <QMenuBar>
 #include <QAction>
 
-menubar::menubar(QWidget *parent): QMenuBar{parent}
+MenuBar::MenuBar(QWidget *parent): QMenuBar{parent}
 {
 
     // declare vars
@@ -21,6 +21,6 @@ menubar::menubar(QWidget *parent): QMenuBar{parent}
     setNativeMenuBar(true);
 }
 
-menubar::~menubar()
+MenuBar::~MenuBar()
 {
 }
