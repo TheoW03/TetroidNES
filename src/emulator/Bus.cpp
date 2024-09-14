@@ -161,7 +161,8 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         {
             this->ppu.write_PPU_mask(value);
         }
-        else if(address == 0x2003){
+        else if (address == 0x2003)
+        {
             this->ppu.write_OAM_data(value);
         }
         else if (address == 0x2006)

@@ -1,6 +1,6 @@
 #include <map>
 // #include "../emulator/Computer.h"
-#include <emulator/Instructions.h>
+#include <Emulator/Instructions.h>
 
 // #include "../emulator/Computer.h"
 using instructionPointer = void (*)(AddressMode, CPU &);

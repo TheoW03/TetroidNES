@@ -194,7 +194,7 @@ CPU run(CPU cpu, std::string window_name)
 			// 	rgb_da
 			// }
 			// cpu.bus.render_texture(rgb_data);
-						window.clear(); // Change this to the desired color
+			window.clear(); // Change this to the desired color
 
 			texture.update(rgb_data);
 			// // printf("pc: 0x%x current instrcution 0x%x \n", cpu.bus.get_PC(), current_instruction);

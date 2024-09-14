@@ -16,3 +16,6 @@ out
 .vscode
 *.pdb
 /src/unitTests/TestRoms/*.nes
+Tetroid
+*.nes
+Emulator_tests

@@ -1,5 +1,5 @@
 #include <iostream>
-#include <emulator/Bus.h>
+#include <Emulator/Bus.h>
 #include <filesystem>
 
 // #include <SFML/Graphics.hpp>
