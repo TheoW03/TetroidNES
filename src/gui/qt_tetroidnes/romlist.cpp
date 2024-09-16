@@ -108,6 +108,7 @@ void RomListItem::update_data(const QSharedPointer<RomListData> &data)
 RomList::RomList(QWidget *parent): QWidget{parent}
 {
     layout = new FlowLayout();
+    layout->setContentsMargins(0, 20, 0, 250);
     setLayout(layout);
 
     setObjectName("RomList");
