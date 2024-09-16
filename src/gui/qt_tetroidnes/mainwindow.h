@@ -22,9 +22,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 public slots:
-    void sort_mode_button_released(int id);
-    void sort_order_button_toggled(bool toggled);
-    void search_bar_edited(QString string);
+    void sort_mode_button_released(const int id) const;
+    void sort_order_button_toggled(const bool toggled) const;
+    void search_bar_edited(QString string) const;
 private:
     RomList *rom_list;
     FilterControlFrame *sort_control_frame;

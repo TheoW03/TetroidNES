@@ -172,40 +172,53 @@ void RomList::update_list()
     }
 }
 
-const bool RomList::compare_year(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b)
+const bool RomList::compare_regex(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b, const QRegularExpression &expr, const SortMode &mode)
 {
-    return a->year() < b->year();
+    const bool match_a = expr.match(a->title()).hasMatch();
+    const bool match_b = expr.match(b->title()).hasMatch();
+
+    if (match_a != match_b)
+    {
+        return match_a;
+    }
+    else
+    {
+        switch(mode)
+        {
+        case Year:
+            return compare_year(a, b);
+        case Favorites:
+            return compare_favorite(a, b);
+        case AZ:
+            return compare_alphabet(a, b);
+        }
+        return false;
+    }
 }
 
-void RomList::sort_regex(QString expr)
+const bool RomList::compare_year(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b)
 {
-    // if (expr.isEmpty()){expr.append("*");}
-
-    // const QRegularExpression regex(expr);
-
-    // // insertion sort
-    // for(int i = 1; i < data.length(); i++)
-    // {
-    //     auto key = data.at(i);
-    //     int j = i - 1;
-    //     const QRegularExpressionMatch match = regex.match(data.at(j)->title());
-
-    //     while(j >= 0 && match.hasMatch())
-    //     {
-    //         data[j+1] = data[j];
-    //         j = j - 1;
-    //     }
-    //     data[j+1] = key;
-    // }
-
-    // setCurrentPage(0);
-    // updateList();
-
+    if (a->year() != b->year())
+    {
+        return a->year() < b->year();
+    }
+    else
+    {
+        return compare_alphabet(a, b);
+    }
 }
 
 const bool RomList::compare_favorite(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b)
 {
-    return a->favorited() <= b->favorited();
+    if (a->favorited() != b->favorited())
+    {
+        return a->favorited() < b->favorited();
+    }
+    else
+    {
+        return compare_alphabet(a, b);
+    }
+
 }
 
 const bool RomList::compare_alphabet(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b)
@@ -229,8 +242,37 @@ void RomList::add_widget(const QSharedPointer<RomListData> *romData)
     layout->addWidget(new_widget);
 }
 
-void RomList::set_current_mode(const SortMode mode)
+void RomList::search(QString &expr)
 {
+    auto regular_expression = QRegularExpression(expr);
+    SortMode mode = current_mode();
+
+    if (current_order() == Qt::AscendingOrder)
+    {
+        std::sort(data.begin(), data.end(),
+        [&regular_expression, &mode](const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b) {
+            return compare_regex(a, b, regular_expression, mode);
+        }
+        );
+    }
+    else
+    {
+        std::sort(data.rbegin(), data.rend(),
+        [&regular_expression, &mode](const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b) {
+            return compare_regex(a, b, regular_expression, mode);
+        }
+        );
+    }
+
+    update_list();
+}
+
+// TODO: Make this function not have two switch cases that essientially do the same thing
+void RomList::set_current_mode(const SortMode &mode, const bool update)
+{
+    m_current_mode = mode;
+    if (!update){return;}
+
     if (current_order() == Qt::AscendingOrder)
     {
         auto begin = data.begin();
@@ -268,7 +310,6 @@ void RomList::set_current_mode(const SortMode mode)
         }
     }
 
-    m_current_mode = mode;
     update_list();
 
 }

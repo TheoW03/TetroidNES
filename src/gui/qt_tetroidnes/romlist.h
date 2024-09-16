@@ -62,7 +62,7 @@ public:
     explicit RomList(QWidget *parent = nullptr);
     ~RomList();
     void add_widget(const QSharedPointer<RomListData> *romData);
-    void set_current_mode(const SortMode mode);
+    void set_current_mode(const SortMode &mode, const bool update = true);
     SortMode current_mode() const;
     void set_current_order(const Qt::SortOrder order);
     Qt::SortOrder current_order() const;
@@ -70,12 +70,13 @@ public:
     void set_current_page(unsigned int i);
     unsigned int current_page() const;
     unsigned int total_pages() const;
-    void sort_regex(QString expr);
     QSharedPointer<RomListData> find_data(const QString title) const;
+    void search(QString &expr);
 private:
     inline static const bool compare_year(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b);
     inline static const bool compare_favorite(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b);
     inline static const bool compare_alphabet(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b);
+    inline static const bool compare_regex(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b, const QRegularExpression &expr, const SortMode &mode);
     void setup_list();
     void update_list();
     FlowLayout *layout;

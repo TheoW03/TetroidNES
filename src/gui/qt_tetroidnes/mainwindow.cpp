@@ -37,21 +37,29 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
             [this](QString text){search_bar_edited(text);});
 }
 
-void MainWindow::sort_mode_button_released(int id)
+void MainWindow::sort_mode_button_released(const int id) const
 {
     RomList *list = ui->centralwidget->findChild<RomList*>();
-    list->set_current_mode(RomList::SortMode(id));
+    QString search_bar_text = ui->centralwidget->findChild<QLineEdit*>()->text();
+    const bool regex = search_bar_text.isEmpty();
+
+    list->set_current_mode(RomList::SortMode(id), regex);
+    if(!regex)
+    {list->search(search_bar_text);}
 
 }
 
-void MainWindow::sort_order_button_toggled(bool toggled)
+void MainWindow::sort_order_button_toggled(const bool toggled) const
 {
     this->findChild<RomList*>()->set_current_order(Qt::SortOrder(toggled));
 }
 
-void MainWindow::search_bar_edited(QString string)
+void MainWindow::search_bar_edited(QString string) const
 {
-    this->findChild<RomList*>()->sort_regex(string + QString("*"));
+    //if (!string.isEmpty())
+    //{string += QString("*");}
+
+    this->findChild<RomList*>()->search(string);
 }
 
 MainWindow::~MainWindow()
