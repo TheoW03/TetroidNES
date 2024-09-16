@@ -1,4 +1,4 @@
-#include "../emulator/Computer.h"
+#include <Emulator/Computer.h>
 #include <fstream>
 
 void cpu_to_log(std::string path)

@@ -1,15 +1,18 @@
 #include <iostream>
 #include <vector>
-#include <SFML/Graphics.hpp>
+// #include <SFML/Graphics.hpp>
 #include <bit>
 #include "LoadRom.h"
+
+#include <tuple>
 
 #ifndef PPU_H
 #define PPU_H
 class PPU
 {
 private:
-    sf::Color getColorFromByte(uint16_t byte);
+    std::tuple<uint8_t, uint8_t, uint8_t> getColorFromByte(uint16_t byte);
+    // sf::Color getColorFromByte(uint16_t byte);
     struct Registers
     {
         union
@@ -31,8 +34,8 @@ private:
         {
             struct
             {
-                uint8_t hi;
-                uint8_t lo;
+                unsigned lo : 8;
+                unsigned hi : 8;
             };
             uint16_t val;
         } ppuAddr;
@@ -55,18 +58,18 @@ private:
         {
             struct
             {
-                unsigned V : 1;
-                unsigned S : 1;
+                unsigned padding : 4;
+
                 unsigned O : 1;
-                unsigned unused1 : 1;
-                unsigned unused2 : 1;
-                unsigned unused3 : 1;
-                unsigned unused4 : 1;
+                unsigned S : 1;
+
+                unsigned V : 1;
             };
             uint8_t val;
 
         } ppuStatus;
         bool scrollLatch;
+        bool high_ptr;
     };
     uint8_t memory[0x800];
     Registers reg;
@@ -95,7 +98,8 @@ public:
     bool NMI_interrupt(uint8_t clock_cycles);
     bool tick(uint8_t clock_cycles);
     uint8_t read_status();
-    void render(sf::Texture &texture, int bank, int tile);
+    // void render(sf::Texture &texture, int bank, int tile);
+    std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
 };
 
 #endif

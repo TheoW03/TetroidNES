@@ -83,3 +83,6 @@ CMakeLists.txt.user*
 # MinGW generated files
 *.Debug
 *.Release
+Tetroid
+*.nes
+Emulator_tests

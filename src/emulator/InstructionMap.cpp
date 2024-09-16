@@ -1,6 +1,5 @@
 #include <map>
-// #include "../emulator/Computer.h"
-#include "../emulator/Instructions.h"
+#include <Emulator/Instructions.h>
 #include <stdint.h>
 using instructionPointer = void (*)(AddressMode, CPU &);
 
@@ -113,7 +112,7 @@ void initializeInstructionMap()
 
     instructionMap.insert(make_pair(0x84, Instruction{(instructionPointer)STY, AddressMode::ZERO_PAGE}));
     instructionMap.insert(make_pair(0x94, Instruction{(instructionPointer)STY, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0x8C, Instruction{(instructionPointer)STY, AddressMode::ZERO_PAGE_Y}));
+    instructionMap.insert(make_pair(0x8C, Instruction{(instructionPointer)STY, AddressMode::ABSOLUTE}));
 
     instructionMap.insert(make_pair(0x85, Instruction{(instructionPointer)STA, AddressMode::ZERO_PAGE}));
     instructionMap.insert(make_pair(0x95, Instruction{(instructionPointer)STA, AddressMode::ZERO_PAGE_X}));

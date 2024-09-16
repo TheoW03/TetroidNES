@@ -4,16 +4,17 @@
 #include <map>
 #include <thread>
 #include <SFML/Graphics.hpp>
-#include "NESError.h"
-#include "BitOperations.h"
+#include "./NESError.h"
+// #include <emulator/NESError.h>
+#include <Emulator/BitOperations.h>
 
-#include "AddressMode.h"
-#include "Bus.h"
-#include "Instructions.h"
-#include "LoadRom.h"
-#include "StatusRegister.h"
+#include <Emulator/AddressMode.h>
+// #include "Bus.h
+#include <Emulator/Instructions.h>
+#include <Emulator/LoadRom.h>
+#include <Emulator/StatusRegister.h>
 #include <filesystem>
-#include "../../src/emulator/InstructionMap.h"
+#include <Emulator/InstructionMap.h>
 namespace fs = std::filesystem;
 
 #define PC_RESET 0x8000
@@ -31,7 +32,7 @@ CPU init(std::string file_name)
 	CPU cpu;
 	bus.fill(bus.read_16bit(0xfffc));
 	cpu.A_Reg = 0;
-	cpu.status = 0;
+	cpu.status.val = 0;
 	cpu.X_Reg = 0;
 	cpu.Y_Reg = 0;
 	cpu.bus = bus;
@@ -49,19 +50,26 @@ void printCPU_stats(CPU cpu)
 	printf("Y Register:decimal: %d hexa: 0x%x \n", cpu.Y_Reg, cpu.Y_Reg);
 	printf("Program Counter: 0x%X \n", cpu.bus.get_PC());
 	cpu.bus.print_stack();
-	std::bitset<7> status(cpu.status);
+	std::bitset<7> status(cpu.status.val);
 	cpu.bus.print_clock();
 	std::cout << "cpu status register: 0b" << status << std::endl;
 }
 
 void HandleNMIInterrupts(CPU &cpu)
 {
-	cpu.bus.push_stack8(cpu.status);
+	cpu.bus.push_stack8(cpu.status.val);
 
 	cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
 	cpu.bus.fetch_next();
 	cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
 	set_interrupt_disabled(1, cpu);
+}
+void test(uint8_t arr[257])
+{
+	for (int i = 0; i < 257; i++)
+	{
+		arr[i] = i;
+	}
 }
 /**
  * Executes actual code
@@ -73,11 +81,13 @@ CPU run(CPU cpu, std::string window_name)
 
 	window.setFramerateLimit(144);
 	sf::Texture texture;
-	texture.create(200, 200);
+	texture.create(256, 240);
 	float scaleX = window.getSize().x / (float)(texture.getSize().x);
 	float scaleY = window.getSize().y / (float)(texture.getSize().y);
 	sf::Sprite sprite(texture);
 	sprite.setScale(scaleX, scaleY);
+	// uint8_t arr[257];
+	// uint8_t data[]
 
 	while (cpu.bus.get_PC() < PC_END && window.isOpen())
 	{
@@ -158,8 +168,7 @@ CPU run(CPU cpu, std::string window_name)
 		{
 			cpu.bus.write_controller1(Controller::SELECT, 0);
 		}
-		
-		
+
 		cpu.bus.write_8bit(0xfe, ((uint8_t)rand() % 16 + 1));
 
 		cpu.bus.tick();
@@ -171,17 +180,32 @@ CPU run(CPU cpu, std::string window_name)
 		}
 		current_instruction = cpu.bus.fetch_next();
 
-		cpu.bus.render(texture, 0, 0);
-		window.clear(); // Change this to the desired color
-		window.draw(sprite);
-		window.display();
 		if (InstructionValid(current_instruction))
 		{
 			Instruction a = GetInstruction(current_instruction);
 			a.i(a.addressmode, cpu);
+			std::vector rgb_data_vector = cpu.bus.render_texture({NES_RES_L, NES_RES_W});
+
+			uint8_t rgb_data[NES_RES_A * 4];
+			std::copy(rgb_data_vector.begin(), rgb_data_vector.end(), rgb_data);
+			// nes_cpu.
+			// for (int i = 0; i < nes_cpu.size(); i++)
+			// {
+			// 	rgb_da
+			// }
+			// cpu.bus.render_texture(rgb_data);
+			window.clear(); // Change this to the desired color
+
+			texture.update(rgb_data);
+			// // printf("pc: 0x%x current instrcution 0x%x \n", cpu.bus.get_PC(), current_instruction);
+			// // cpu.bus.render(texture, 0, 0);
+			// // cpu.bus.render()
+			window.draw(sprite);
+			window.display();
 		}
 		else
 		{
+			printf("instruction opcode 0x%x is unrecongnized \n", current_instruction);
 			program_failure("Unrecognized instruction encountered", cpu, 1);
 			cpu.error_code = EXIT_FAILURE;
 			return cpu;

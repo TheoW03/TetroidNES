@@ -1,12 +1,17 @@
-#include "Bus.h"
-#include "PPU.h"
-#include "APU.h"
+// #include "../include/Bus.h"
+// #include "../include/PPU.h"
+// #include "../include/APU.h"
+#include <Emulator/APU.h>
+#include <Emulator/Bus.h>
+#include <Emulator/PPU.h>
 #include <SFML/Graphics.hpp>
 #include <bitset>
+#include <Emulator/Bus.h>
+// #include "Bus.h>
 #define TOP_STACK 0x1ff
 #define BOTTOM_STACK 0x100
 #define STACK_RESET 0xfd
-
+// #include "test.h"
 // const static uint8_t ram_end = 0x0FFF;
 // const static uint8_t ppu_end = 0x2000;
 
@@ -91,13 +96,18 @@ uint8_t Bus::read_8bit(uint16_t address)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
+        // printf("ppuread: 0x%x \n", address);
+
         if (address >= 0x2008)
-            while (address >= 0x2007)
-                address = address & 0x2007;
+            return read_8bit(address & 0x2007);
         if (address == 0x2007)
             return this->ppu.read_PPU_data();
         else if (address == 0x2002)
             return this->ppu.read_status();
+        else if (address == 0x2004)
+        {
+            return this->ppu.read_OAM_data();
+        }
         else
         {
             this->stored_instructions[1] = 0x82;
@@ -141,12 +151,19 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        if (address >= 0x2008)
-            while (address >= 0x2007)
-                address = address & 0x2007;
+        // std::cout << "ppu write" << address << std::endl;
+
         if (address == 0x2000)
         {
             this->ppu.write_PPU_ctrl(value);
+        }
+        else if (address == 0x2001)
+        {
+            this->ppu.write_PPU_mask(value);
+        }
+        else if (address == 0x2003)
+        {
+            this->ppu.write_OAM_data(value);
         }
         else if (address == 0x2006)
         {
@@ -155,6 +172,15 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         else if (address == 0x2007)
         {
             this->ppu.write_PPU_data(value);
+        }
+        else if (address >= 0x2008)
+            this->write_8bit(address & 0x2007, value);
+        else
+        {
+            this->stored_instructions[1] = 0x82;
+            std::cout << "\033[91mforbidden access to PPU write only address\033[0m" << std::endl;
+            printf("address 0x%x \n", address);
+            std::cout << "" << std::endl;
         }
     }
     else if (address == 0x4016)
@@ -288,18 +314,16 @@ void Bus::tick()
     this->ppu.tick(this->clock_cycles * 3);
 }
 
-void Bus::render(sf::Texture &texture, int bank, int tile)
-{
-    this->ppu.render(texture, bank, tile);
-}
+// void Bus::render(sf::Texture &texture, int bank, int tile)
+// {
+//     this->ppu.render(texture, bank, tile);
+// }
 
 bool Bus::NMI_interrupt()
 {
     return this->ppu.NMI_interrupt(this->clock_cycles * 3);
 }
- 
 
- 
 uint8_t Bus::read_joypad()
 {
     if (button_idx > 7)
@@ -322,4 +346,9 @@ void Bus::write_controller1(Controller value, int isPressed)
         joy_pad_byte1 |= (uint8_t)value;
     else if (isPressed == 0)
         joy_pad_byte1 &= ~((uint8_t)(value));
+}
+
+std::vector<uint8_t> Bus::render_texture(std::tuple<size_t, size_t> res)
+{
+    return this->ppu.render_texture(res);
 }
