@@ -27,12 +27,15 @@ public slots:
     void sort_mode_button_released(const int id) const;
     void sort_order_button_toggled(const bool toggled) const;
     void search_bar_edited(QString string) const;
+    void rom_list_scroll_value_changed(const int value);
 private:
     RomList *rom_list;
     FilterControlFrame *sort_control_frame;
     QScrollArea *rom_list_scroll;
     MenuBar *main_menubar;
     QVBoxLayout *widget_layout;
+protected:
+    void wheelEvent(QWheelEvent *event) override;
 
 private:
     Ui::MainWindow *ui;

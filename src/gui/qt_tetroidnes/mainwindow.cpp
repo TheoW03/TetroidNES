@@ -5,6 +5,8 @@
 #include <QVBoxLayout>
 #include <QIcon>
 #include <QtLogging>
+#include <QScrollBar>
+#include <qevent.h>
 
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
@@ -41,6 +43,51 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
             [this](bool toggled){sort_order_button_toggled(toggled);});
     connect(sort_control_frame->findChild<QLineEdit*>(), &QLineEdit::textEdited, this,
             [this](QString text){search_bar_edited(text);});
+    connect(rom_list_scroll->verticalScrollBar(), &QScrollBar::valueChanged, this,
+            [this](int val){rom_list_scroll_value_changed(val);});
+}
+
+void MainWindow::wheelEvent(QWheelEvent *event)
+{
+
+    auto *list = this->findChild<RomList*>();
+    auto *scrollbar = this->findChild<QScrollArea*>()->verticalScrollBar();
+    const bool scrolled_up = (event->angleDelta().y() > 0);
+
+    if (scrollbar->isVisible()) {return;}
+
+    if (!scrolled_up && list->current_page() < list->total_pages())
+    {
+        list->set_current_page(list->current_page() + 1);
+        scrollbar->setSliderPosition(scrollbar->minimum() + scrollbar->singleStep());
+    }
+    else if (scrolled_up && list->current_page() > 1)
+    {
+        list->set_current_page(list->current_page() - 1);
+        scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->singleStep());
+    }
+}
+
+void MainWindow::rom_list_scroll_value_changed(const int value)
+{
+    auto *list = this->findChild<RomList*>();
+    auto *scrollbar = this->findChild<QScrollArea*>()->verticalScrollBar();
+    unsigned int current_page = list->current_page();
+    //qDebug() << "Current Page Before:" << current_page
+    //         << "Value:" << value
+    //         << "Max/Min Value:" << scrollbar->maximum() << "/" << scrollbar->minimum()
+    //         << "Total pages:" << list->total_pages();
+    if (value >= scrollbar->maximum() && current_page < list->total_pages())
+    {
+        list->set_current_page(current_page + 1);
+        scrollbar->setSliderPosition(scrollbar->minimum() + scrollbar->singleStep());
+    }
+    else if (value <= scrollbar->minimum() && current_page > 1)
+    {
+        list->set_current_page(current_page - 1);
+        scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->singleStep());
+    }
+    //qDebug() << "Current Page After:" << current_page;
 }
 
 void MainWindow::sort_mode_button_released(const int id) const
@@ -62,9 +109,6 @@ void MainWindow::sort_order_button_toggled(const bool toggled) const
 
 void MainWindow::search_bar_edited(QString string) const
 {
-    //if (!string.isEmpty())
-    //{string += QString("*");}
-
     this->findChild<RomList*>()->search(string);
 }
 

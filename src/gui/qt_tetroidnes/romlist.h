@@ -71,6 +71,8 @@ public:
     void set_current_page(unsigned int i);
     unsigned int current_page() const;
     unsigned int total_pages() const;
+    void update_total_pages();
+    unsigned int items_per_page() const;
     QSharedPointer<RomListData> find_data(const QString title) const;
     void search(QString &expr);
     void update_list();

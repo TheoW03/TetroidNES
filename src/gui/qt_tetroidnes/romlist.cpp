@@ -112,7 +112,8 @@ RomList::RomList(QWidget *parent): QWidget{parent}
 
     setObjectName("RomList");
     setup_list();
-    set_items_per_page(5000); // TODO: Change this so the program remembers what the user chose last time
+    set_items_per_page(10); // TODO: Change this so the program remembers what the user chose last time
+    update_total_pages();
     set_current_mode(RomList::SortMode::AZ); // TODO: Change this so the program remembers what the user chose last time
     set_current_order(Qt::SortOrder::AscendingOrder); // TODO: Change this so the program remembers what the user chose last time
 }
@@ -132,6 +133,8 @@ void RomList::setup_list()
     }
 }
 
+unsigned int RomList::items_per_page() const {return m_items_per_page;}
+
 void RomList::set_items_per_page(unsigned int newNum)
 {
     if (newNum == m_items_per_page){return;}
@@ -139,7 +142,7 @@ void RomList::set_items_per_page(unsigned int newNum)
     if (newNum > m_items_per_page)
     {
         int dataIndex = m_items_per_page * m_current_page;
-        for(int i = 0; i < newNum-m_items_per_page; i++, dataIndex++)
+        for(int i = 0; i < newNum-items_per_page(); i++, dataIndex++)
         {
             layout->addWidget(new RomListItem(&data.at(dataIndex), this));
         }
@@ -165,6 +168,11 @@ void RomList::set_current_page(unsigned int i)
 }
 
 unsigned int RomList::current_page() const {return m_current_page;}
+
+void RomList::update_total_pages()
+{
+    m_total_pages = (data.length() + (items_per_page()-1)) / items_per_page();
+}
 unsigned int RomList::total_pages() const {return m_total_pages;}
 
 void RomList::update_list()
