@@ -1,17 +1,36 @@
 #include <iostream>
-#include "Bus.h"
+#include <Emulator/Bus.h>
 #include <filesystem>
 
 // #include <SFML/Graphics.hpp>
+#define NES_RES_A 256 * 240
+#define NES_RES_W 240
+#define NES_RES_L 256
+
 #ifndef CPU_H
 #define CPU_H
 struct CPU
 {
+    uint8_t A_Reg;
     uint8_t X_Reg;
     uint8_t Y_Reg;
-    uint8_t A_Reg;
-    uint8_t status;
-    // sf::RenderWindow Render_window;
+
+    union
+    {
+        struct
+        {
+            unsigned C : 1; // Carry
+            unsigned Z : 1; // Zero
+            unsigned I : 1; // interrupt disabled
+            unsigned D : 1; // Decimal mode (un-used)
+            unsigned B : 1; // break
+            unsigned Unused : 1;
+            unsigned V : 1; // overflow
+            unsigned N : 1; // negative
+        };
+        uint8_t val;
+    } status;
+
     int error_code;
 
     Bus bus;

@@ -17,7 +17,7 @@ cmake -S . -B build
 
 # build amd run project
 cmake --build build --config Release
-./Release/tetroid.exe ${path to .nes rom file} 
+./Release/Tetroid.exe ${path to .nes rom file} 
 
 # build and run unit tests
 cmake --build build

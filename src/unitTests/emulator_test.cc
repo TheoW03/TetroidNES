@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../emulator/Computer.h"
+#include <Emulator/Computer.h>
 
 /**
  * @brief  tests the rom.PRG.

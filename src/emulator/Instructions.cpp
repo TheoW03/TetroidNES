@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "BitOperations.h"
+#include <Emulator/BitOperations.h>
 // #include "Memory.h"
-#include "Computer.h"
-#include "AddressMode.h"
-#include "StatusRegister.h"
-#include "Bus.h"
+#include <Emulator/Computer.h>
+#include <Emulator/AddressMode.h>
+#include <Emulator/StatusRegister.h>
+#include <Emulator/Bus.h>
 
 uint16_t address_mode(AddressMode address, CPU &cpu)
 {
@@ -99,7 +99,7 @@ void LDY(AddressMode addressType, CPU &cpu)
 void PLP(AddressMode addressType, CPU &cpu)
 {
 	// TODO: rotate left
-	cpu.status = cpu.bus.pop_stack8();
+	cpu.status.val = cpu.bus.pop_stack8();
 	// cpu.stack_pointer++;
 }
 
@@ -109,7 +109,7 @@ void PHP(AddressMode addressType, CPU &cpu)
 	// cpu.stack_pointer--;
 	// cpu.bus.write_8bit(cpu.stack_pointer, cpu.status);
 
-	cpu.bus.push_stack8(cpu.status);
+	cpu.bus.push_stack8(cpu.status.val);
 }
 
 void PHA(AddressMode addressType, CPU &cpu)
@@ -133,6 +133,7 @@ void PLA(AddressMode addressType, CPU &cpu)
 void STA(AddressMode addressType, CPU &cpu)
 {
 	// TODO store accumulator in mem
+
 	uint16_t v = address_mode(addressType, cpu);
 	cpu.bus.write_8bit(v, cpu.A_Reg);
 }
@@ -249,7 +250,7 @@ void BIT(AddressMode addressType, CPU &cpu)
 {
 	// TODO: bit test
 	uint8_t value = get_value(addressType, cpu);
-	uint8_t result = value & cpu.A_Reg;
+	uint8_t result = cpu.A_Reg & value;
 	set_zero(result, cpu);
 	set_overflow((value & 0b00100000) != 0, cpu);
 	set_negative(value, cpu);
@@ -477,7 +478,7 @@ void RTI(AddressMode addressType, CPU &cpu)
 {
 	// TODO:return from interrupt
 	cpu.bus.fill(cpu.bus.pop_stack16());
-	cpu.status = cpu.bus.pop_stack8();
+	cpu.status.val = cpu.bus.pop_stack8();
 	set_brk(cpu, 0);
 }
 #pragma endregion setFlags
@@ -494,7 +495,7 @@ void JMP(AddressMode addressType, CPU &cpu)
 void BEQ(AddressMode addressType, CPU &cpu)
 {
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
-	if (check_zero(cpu) == 0)
+	if (!check_zero(cpu))
 	{
 		return;
 	}
@@ -506,8 +507,11 @@ void BNE(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (check_zero(cpu) != 0)
+	if (check_zero(cpu))
 	{
+		std::cout << "BNE failed " << std::endl;
+		printCPU_stats(cpu);
+
 		return;
 	}
 	uint16_t a = (uint16_t)((cpu.bus.get_PC() - 1) + (int8_t)new_PC);
@@ -519,7 +523,7 @@ void BCC(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (check_carry(cpu) != 0)
+	if (check_carry(cpu))
 	{
 		return;
 	}
@@ -532,7 +536,7 @@ void BCS(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (check_carry(cpu) == 0)
+	if (!check_carry(cpu))
 	{
 		return;
 	}
@@ -543,7 +547,7 @@ void BCS(AddressMode addressType, CPU &cpu)
 void BPL(AddressMode addressType, CPU &cpu)
 {
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
-	if (check_negative(cpu) != 0)
+	if (check_negative(cpu))
 	{
 		return;
 	}
@@ -556,7 +560,7 @@ void BMI(AddressMode addressType, CPU &cpu)
 	// TODO: Branch if negative
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (check_negative(cpu) == 0)
+	if (!check_negative(cpu))
 	{
 		return;
 	}
@@ -569,7 +573,7 @@ void BVC(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (check_overflow(cpu) != 0)
+	if (check_overflow(cpu))
 	{
 		return;
 	}
@@ -582,7 +586,7 @@ void BVS(AddressMode addressType, CPU &cpu)
 {
 	// TODO: Branch if overflow set
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
-	if (check_overflow(cpu) == 0)
+	if (!check_overflow(cpu))
 	{
 		return;
 	}
@@ -647,7 +651,7 @@ void BRK(AddressMode addressType, CPU &cpu)
 		return;
 	}
 	set_brk(cpu, 1);
-	cpu.bus.push_stack8(cpu.status);
+	cpu.bus.push_stack8(cpu.status.val);
 	cpu.bus.fetch_next();
 	cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
 

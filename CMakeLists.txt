@@ -39,6 +39,7 @@ add_executable(${EXECUTABLE_NAME} src/main.cpp
     src/emulator/InstructionMap.cpp
 )
 
+include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
 
 enable_testing()
 
@@ -60,6 +61,7 @@ add_executable(
 
   
 )
+
 target_link_libraries(
   ${UNIT_TEST_EXE}
 
