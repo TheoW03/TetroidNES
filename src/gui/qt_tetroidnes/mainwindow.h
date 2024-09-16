@@ -3,9 +3,11 @@
 
 #include "filtercontrolframe.h"
 #include "romlist.h"
+#include "menubar.h"
 
 #include <QMainWindow>
 #include <QPushButton>
+#include <QScrollArea>
 #include <QLabel>
 
 QT_BEGIN_NAMESPACE
@@ -28,6 +30,9 @@ public slots:
 private:
     RomList *rom_list;
     FilterControlFrame *sort_control_frame;
+    QScrollArea *rom_list_scroll;
+    MenuBar *main_menubar;
+    QVBoxLayout *widget_layout;
 
 private:
     Ui::MainWindow *ui;

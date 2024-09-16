@@ -13,7 +13,6 @@
 #include <QVBoxLayout>
 #include <QFrame>
 #include <QSharedPointer>
-#include <QScrollArea>
 
 class RomListData : public QObject
 {
@@ -42,8 +41,9 @@ public:
     explicit RomListItem(const QSharedPointer<RomListData> *data, QWidget *parent = nullptr);
     ~RomListItem();
     void update_data(const QSharedPointer<RomListData> &data);
-private:
+private slots:
     void favorite_button_clicked(int checked);
+private:
     QLabel *title;
     QLabel *year;
     QLabel *img;
@@ -81,7 +81,6 @@ private:
     inline static const bool compare_regex(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b, const QRegularExpression &expr, const SortMode &mode);
     void setup_list();
     FlowLayout *layout;
-    QScrollArea *scroll_area;
     QList<QSharedPointer<RomListData>> data;
     RomList::SortMode m_current_mode;
     Qt::SortOrder m_current_order;

@@ -48,6 +48,4 @@ FilterControlFrame::FilterControlFrame(QWidget *parent) : QFrame{parent}
 
     // setup search bar
     search_bar->setPlaceholderText(tr("Search..."));
-
-    //qInfo() << QDebug::toString(sort_mode_button_group);
 }

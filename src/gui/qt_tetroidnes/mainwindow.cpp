@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "menubar.h"
 #include "filtercontrolframe.h"
 
 #include <QVBoxLayout>
@@ -15,12 +14,19 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     QVBoxLayout *widget_layout =             new QVBoxLayout();
     MenuBar *main_menubar =                  new MenuBar(this);
     FilterControlFrame *sort_control_frame = new FilterControlFrame(ui->centralwidget);
+    QScrollArea *rom_list_scroll =           new QScrollArea(ui->centralwidget);
     RomList *rom_list =                      new RomList(ui->centralwidget);
 
     // widget layout
     widget_layout->addWidget(sort_control_frame);
-    widget_layout->addWidget(rom_list);
+    widget_layout->addWidget(rom_list_scroll);
     widget_layout->setAlignment(Qt::AlignTop);
+
+    // rom list scroll bar
+    rom_list_scroll->setWidgetResizable(true);
+    rom_list_scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    rom_list_scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    rom_list_scroll->setWidget(rom_list);
 
     // central widget
     ui->centralwidget->setLayout(widget_layout);

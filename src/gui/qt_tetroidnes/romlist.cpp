@@ -112,7 +112,7 @@ RomList::RomList(QWidget *parent): QWidget{parent}
 
     setObjectName("RomList");
     setup_list();
-    set_items_per_page(8); // TODO: Change this so the program remembers what the user chose last time
+    set_items_per_page(5000); // TODO: Change this so the program remembers what the user chose last time
     set_current_mode(RomList::SortMode::AZ); // TODO: Change this so the program remembers what the user chose last time
     set_current_order(Qt::SortOrder::AscendingOrder); // TODO: Change this so the program remembers what the user chose last time
 }
@@ -124,7 +124,7 @@ void RomList::setup_list()
      * Also the condition should end at either when the end of the list is reached or i == i + amount of widgets shown
     */
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 5000; i++)
     {
         QSharedPointer<RomListData> listData = QSharedPointer<RomListData>(new RomListData(this));
         listData->set_data(i + 1980, QByteArray(), QString("Test") + QString::number(i), true);
@@ -139,11 +139,9 @@ void RomList::set_items_per_page(unsigned int newNum)
     if (newNum > m_items_per_page)
     {
         int dataIndex = m_items_per_page * m_current_page;
-        for(int i = 0; i < newNum-m_items_per_page; i++)
+        for(int i = 0; i < newNum-m_items_per_page; i++, dataIndex++)
         {
-            qDebug() << QString::number(i);
             layout->addWidget(new RomListItem(&data.at(dataIndex), this));
-            dataIndex++;
         }
     }
     else
