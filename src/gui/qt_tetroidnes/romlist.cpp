@@ -66,14 +66,22 @@ RomListItem::RomListItem(const QSharedPointer<RomListData> *data, QWidget *paren
 
     // Events
     connect(favorite_button, &QPushButton::clicked, this,
-        [this](int checked){
-            auto listData = this->parent()->findChild<RomListData*>(title->text());
-            if(listData)
-            {listData->set_favorited(checked);}
-            else
-            {qWarning() << "Could not find data object to update for " << title->text();}
-        }
+        [this](int checked){favorite_button_clicked(checked);}
     );
+}
+
+void RomListItem::favorite_button_clicked(int checked)
+{
+    RomList *rom_list = qobject_cast<RomList*>(this->parent());
+    auto listData = rom_list->findChild<RomListData*>(title->text());
+    if(listData)
+    {listData->set_favorited(checked);}
+    else
+    {qWarning() << "Could not find data object to update for " << title->text();}
+
+    // Refresh display
+    if(rom_list->current_mode() == RomList::SortMode::Favorites)
+    {rom_list->set_current_mode(RomList::SortMode::Favorites);}
 }
 
 RomListItem::~RomListItem()

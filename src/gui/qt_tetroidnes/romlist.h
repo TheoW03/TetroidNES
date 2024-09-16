@@ -43,6 +43,7 @@ public:
     ~RomListItem();
     void update_data(const QSharedPointer<RomListData> &data);
 private:
+    void favorite_button_clicked(int checked);
     QLabel *title;
     QLabel *year;
     QLabel *img;
@@ -72,13 +73,13 @@ public:
     unsigned int total_pages() const;
     QSharedPointer<RomListData> find_data(const QString title) const;
     void search(QString &expr);
+    void update_list();
 private:
     inline static const bool compare_year(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b);
     inline static const bool compare_favorite(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b);
     inline static const bool compare_alphabet(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b);
     inline static const bool compare_regex(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b, const QRegularExpression &expr, const SortMode &mode);
     void setup_list();
-    void update_list();
     FlowLayout *layout;
     QScrollArea *scroll_area;
     QList<QSharedPointer<RomListData>> data;
