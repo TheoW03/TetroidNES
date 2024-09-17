@@ -18,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     FilterControlFrame *sort_control_frame = new FilterControlFrame(ui->centralwidget);
     QScrollArea *rom_list_scroll =           new QScrollArea(ui->centralwidget);
     RomList *rom_list =                      new RomList(ui->centralwidget);
+    QLabel *page_info =                      new QLabel("Page 1 of 1", this);
+
+    QStatusBar *status_bar = this->statusBar();
 
     // widget layout
     widget_layout->addWidget(sort_control_frame);
@@ -35,6 +38,9 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     // setup
     setMenuBar(main_menubar);
+    page_info->setObjectName("PageInfo");
+    status_bar->addPermanentWidget(page_info);
+    update_page_info();
 
     // events
     connect(sort_control_frame->findChild<QButtonGroup*>(), &QButtonGroup::idReleased, this,
@@ -45,6 +51,16 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
             [this](QString text){search_bar_edited(text);});
     connect(rom_list_scroll->verticalScrollBar(), &QScrollBar::valueChanged, this,
             [this](int val){rom_list_scroll_value_changed(val);});
+}
+
+void MainWindow::update_page_info()
+{
+    RomList *list = this->findChild<RomList*>();
+
+    this->findChild<QLabel*>("PageInfo")->setText(
+        tr("Page ") + QString::number(list->current_page()) + tr(" of ") + QString::number(list->total_pages())
+        + " | " + QString::number(list->items_per_page()) + tr(" items per page")
+    );
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event)
@@ -66,6 +82,7 @@ void MainWindow::wheelEvent(QWheelEvent *event)
         list->set_current_page(list->current_page() - 1);
         scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->singleStep());
     }
+    update_page_info();
 }
 
 void MainWindow::rom_list_scroll_value_changed(const int value)
@@ -87,6 +104,7 @@ void MainWindow::rom_list_scroll_value_changed(const int value)
         list->set_current_page(current_page - 1);
         scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->singleStep());
     }
+    update_page_info();
     //qDebug() << "Current Page After:" << current_page;
 }
 

@@ -23,6 +23,7 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void update_page_info();
 public slots:
     void sort_mode_button_released(const int id) const;
     void sort_order_button_toggled(const bool toggled) const;
@@ -34,6 +35,7 @@ private:
     QScrollArea *rom_list_scroll;
     MenuBar *main_menubar;
     QVBoxLayout *widget_layout;
+    QLabel *page_info;
 protected:
     void wheelEvent(QWheelEvent *event) override;
 
