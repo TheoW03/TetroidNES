@@ -18,9 +18,9 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     FilterControlFrame *sort_control_frame = new FilterControlFrame(ui->centralwidget);
     QScrollArea *rom_list_scroll =           new QScrollArea(ui->centralwidget);
     RomList *rom_list =                      new RomList(ui->centralwidget);
-    QLabel *page_info =                      new QLabel("Page 1 of 1", this);
 
-    QStatusBar *status_bar = this->statusBar();
+    QStatusBar *status_bar = statusBar();
+    QLabel *page_info = new QLabel("Page 1 of 1", status_bar);
 
     // widget layout
     widget_layout->addWidget(sort_control_frame);
@@ -58,8 +58,14 @@ void MainWindow::update_page_info()
     RomList *list = this->findChild<RomList*>();
 
     this->findChild<QLabel*>("PageInfo")->setText(
-        tr("Page ") + QString::number(list->current_page()) + tr(" of ") + QString::number(list->total_pages())
-        + " | " + QString::number(list->items_per_page()) + tr(" items per page")
+        tr("%1 %2 %3 %4 | %5 %6").arg(
+            "Page",
+            QString::number(list->current_page()),
+            "of",
+            QString::number(list->total_pages()),
+            "Items displayed:",
+            QString::number(list->items_per_page())
+        )
     );
 }
 
@@ -94,17 +100,19 @@ void MainWindow::rom_list_scroll_value_changed(const int value)
     //         << "Value:" << value
     //         << "Max/Min Value:" << scrollbar->maximum() << "/" << scrollbar->minimum()
     //         << "Total pages:" << list->total_pages();
+
     if (value >= scrollbar->maximum() && current_page < list->total_pages())
     {
         list->set_current_page(current_page + 1);
         scrollbar->setSliderPosition(scrollbar->minimum() + scrollbar->singleStep());
+        update_page_info();
     }
     else if (value <= scrollbar->minimum() && current_page > 1)
     {
         list->set_current_page(current_page - 1);
         scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->singleStep());
+        update_page_info();
     }
-    update_page_info();
     //qDebug() << "Current Page After:" << current_page;
 }
 

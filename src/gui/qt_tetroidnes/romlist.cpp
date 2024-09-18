@@ -107,9 +107,9 @@ void RomListItem::update_data(const QSharedPointer<RomListData> &data)
 // RomList
 RomList::RomList(QWidget *parent): QWidget{parent}
 {
-    layout = new FlowLayout();
-    layout->setContentsMargins(0, 20, 0, 250);
-    setLayout(layout);
+    main_layout = new FlowLayout();
+    main_layout->setContentsMargins(0, 150, 0, 150);
+    setLayout(main_layout);
 
     setObjectName("RomList");
     setup_list();
@@ -145,7 +145,7 @@ void RomList::set_items_per_page(unsigned int newNum)
         int dataIndex = m_items_per_page * m_current_page;
         for(int i = 0; i < newNum-items_per_page(); i++, dataIndex++)
         {
-            layout->addWidget(new RomListItem(&data.at(dataIndex), this));
+            main_layout->addWidget(new RomListItem(&data.at(dataIndex), this));
         }
     }
     else
@@ -172,7 +172,7 @@ unsigned int RomList::current_page() const {return m_current_page;}
 
 void RomList::update_total_pages()
 {
-    m_total_pages = (data.length() + (items_per_page()-1)) / items_per_page();
+    m_total_pages = (data.length() + (items_per_page()-1)) / items_per_page(); // Always rounds up a page
 }
 unsigned int RomList::total_pages() const {return m_total_pages;}
 
@@ -254,7 +254,7 @@ const bool RomList::compare_alphabet(const QSharedPointer<RomListData> &a, const
 void RomList::add_widget(const QSharedPointer<RomListData> *romData)
 {
     auto *new_widget = new RomListItem(romData, this);
-    layout->addWidget(new_widget);
+    layout()->addWidget(new_widget);
 }
 
 void RomList::search(QString &expr)

@@ -82,7 +82,7 @@ private:
     inline static const bool compare_alphabet(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b);
     inline static const bool compare_regex(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b, const QRegularExpression &expr, const SortMode &mode);
     void setup_list();
-    FlowLayout *layout;
+    FlowLayout *main_layout;
     QList<QSharedPointer<RomListData>> data;
     RomList::SortMode m_current_mode;
     Qt::SortOrder m_current_order;
