@@ -7,7 +7,7 @@ set(EXECUTABLE_NAME Tetroid)
 set(UNIT_TEST_EXE Emulator_tests)
 string(APPEND CMAKE_CXX_FLAGS "-Wall")
 # string(APPEND CMAKE_CXX_FLAGS "-g")
-set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE Debug)
 include(FetchContent)
 FetchContent_Declare(
   googletest

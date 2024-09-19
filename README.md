@@ -14,7 +14,12 @@ glance at the Prerequisites page in the wiki to see what you need to download an
 
 ```SH
 # build Cmake you can set the -DUNITTESTS flag to build unit tests or the relase
-cmake -S . -B build 
+
+# this builds the project
+cmake -S . -B build -DUNITTESTS=OFF
+
+# this builds the unit tests
+cmake -S . -B build -DUNITTESTS=ON
 
 # build amd run project
 cmake --build build --config Release
