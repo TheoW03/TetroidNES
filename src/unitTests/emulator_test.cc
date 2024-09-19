@@ -8,7 +8,7 @@
  */
 TEST(HelloTest, TestRom)
 {
-    std::vector<uint8_t> raw = file_tobyte_vector("../src/unitTests/TestRoms/LDATest.nes");
+    std::vector<uint8_t> raw = file_tobyte_vector("./src/unitTests/TestRoms/LDATest.nes");
     Rom rom = load_rom(raw);
     EXPECT_EQ(rom.PRG.size() - 1, 0x7fff);
 }
@@ -18,7 +18,7 @@ TEST(HelloTest, TestRom)
  */
 TEST(HelloTest, TestLDA)
 {
-    CPU cpu = init("../src/unitTests/TestRoms/LDATest.nes");
+    CPU cpu = init("./src/unitTests/TestRoms/LDATest.nes");
     EXPECT_EQ(cpu.error_code, EXIT_SUCCESS);
     EXPECT_EQ(cpu.A_Reg, 5);
     EXPECT_EQ(cpu.X_Reg, 5);
@@ -32,7 +32,7 @@ TEST(HelloTest, TestLDA)
  */
 TEST(HelloTest, TestJMP)
 {
-    CPU cpu = init("../src/unitTests/TestRoms/JMPTest.nes");
+    CPU cpu = init("./src/unitTests/TestRoms/LDATest.nes");
     EXPECT_EQ(cpu.error_code, EXIT_SUCCESS);
     printf(" \n");
     printCPU_stats(cpu);
@@ -48,7 +48,7 @@ TEST(HelloTest, TestJMP)
  */
 TEST(HelloTest, TestASL)
 {
-    CPU cpu = init("../src/unitTests/TestRoms/TestAsl.nes");
+    CPU cpu = init("./src/unitTests/TestRoms/LDATest.nes");
     EXPECT_EQ(cpu.error_code, EXIT_SUCCESS);
     printf(" \n");
     printCPU_stats(cpu);

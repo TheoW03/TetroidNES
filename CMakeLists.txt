@@ -24,6 +24,46 @@ FetchContent_Declare(SFML
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
+
+
+if(DEFINED UNITTESTS AND UNITTESTS STREQUAL "ON")
+  enable_testing()
+  add_executable(
+  ${UNIT_TEST_EXE}
+  src/unitTests/RunUnitTests.cc
+  src/unitTests/emulator_test.cc
+    src/SetupSFML.cpp
+    src/emulator/APU.cpp
+    src/emulator/AddressMode.cpp
+    src/emulator/BitOperations.cpp
+    src/emulator/Bus.cpp
+    src/emulator/Computer.cpp
+    src/emulator/Instructions.cpp
+    src/emulator/LoadRom.cpp
+    src/emulator/PPU.cpp
+    src/emulator/StatusRegister.cpp
+    src/emulator/NESError.cpp
+    src/emulator/InstructionMap.cpp
+)
+target_link_libraries(
+  ${UNIT_TEST_EXE}
+
+  GTest::gtest_main
+)
+include_directories(${UNIT_TEST_EXE} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
+
+target_link_libraries(
+  ${UNIT_TEST_EXE}
+    sfml-graphics
+)
+include(GoogleTest)
+gtest_discover_tests(  ${UNIT_TEST_EXE})
+target_compile_features(  ${UNIT_TEST_EXE} PRIVATE cxx_std_20)
+
+
+install(TARGETS   ${UNIT_TEST_EXE}
+)
+else()
 add_executable(${EXECUTABLE_NAME} src/main.cpp
     src/SetupSFML.cpp
     src/emulator/APU.cpp
@@ -41,42 +81,14 @@ add_executable(${EXECUTABLE_NAME} src/main.cpp
 
 include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
 
-enable_testing()
-
-add_executable(
-  ${UNIT_TEST_EXE}
-  src/unitTests/emulator_test.cc
-    src/SetupSFML.cpp
-    src/emulator/APU.cpp
-    src/emulator/AddressMode.cpp
-    src/emulator/BitOperations.cpp
-    src/emulator/Bus.cpp
-    src/emulator/Computer.cpp
-    src/emulator/Instructions.cpp
-    src/emulator/LoadRom.cpp
-    src/emulator/PPU.cpp
-    src/emulator/StatusRegister.cpp
-    src/emulator/NESError.cpp
-    src/emulator/InstructionMap.cpp
-
-  
-)
-
-target_link_libraries(
-  ${UNIT_TEST_EXE}
-
-  GTest::gtest_main
-)
-target_link_libraries(
-  ${UNIT_TEST_EXE}
-    sfml-graphics
-)
-
-include(GoogleTest)
-gtest_discover_tests(  ${UNIT_TEST_EXE})
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE sfml-graphics)
 target_compile_features(${EXECUTABLE_NAME} PRIVATE cxx_std_20)
-target_compile_features(  ${UNIT_TEST_EXE} PRIVATE cxx_std_20)
+install(TARGETS ${EXECUTABLE_NAME})
+
+
+endif()
+
+
 
 # if(WIN32)
 # add_custom_command(
@@ -86,6 +98,3 @@ target_compile_features(  ${UNIT_TEST_EXE} PRIVATE cxx_std_20)
 # VERBATIM)
 # endif()
 # uncomment if you are running this in Visual Studio or if you get an error on windows with the current setup
-install(TARGETS ${EXECUTABLE_NAME})
-install(TARGETS   ${UNIT_TEST_EXE}
-)
