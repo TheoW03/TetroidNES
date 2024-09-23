@@ -50,7 +50,7 @@ target_link_libraries(
 
   GTest::gtest_main
 )
-include_directories(${UNIT_TEST_EXE} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
+target_include_directories(${UNIT_TEST_EXE} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
 
 target_link_libraries(
   ${UNIT_TEST_EXE}
@@ -79,7 +79,7 @@ add_executable(${EXECUTABLE_NAME} src/main.cpp
     src/emulator/InstructionMap.cpp
 )
 
-include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
+target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
 
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE sfml-graphics)
 target_compile_features(${EXECUTABLE_NAME} PRIVATE cxx_std_20)

@@ -185,7 +185,6 @@ CPU run(CPU cpu, std::string window_name)
 			Instruction a = GetInstruction(current_instruction);
 			a.i(a.addressmode, cpu);
 			std::vector rgb_data_vector = cpu.bus.render_texture({NES_RES_L, NES_RES_W});
-
 			uint8_t rgb_data[NES_RES_A * 4];
 			std::copy(rgb_data_vector.begin(), rgb_data_vector.end(), rgb_data);
 			// nes_cpu.
