@@ -2,10 +2,9 @@
 #include <QBuffer>
 #include <SFML/OpenGL.hpp>
 
-GameDisplay::GameDisplay(QWidget* parent):
-    QWidget{parent},
-    sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default),
-    initialized(false)
+GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
+                                            sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default),
+                                            initialized(false)
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -17,9 +16,7 @@ GameDisplay::GameDisplay(QWidget* parent):
 
     QTimer *frame_timer = new QTimer(this);
 
-
     frame_timer->setInterval(frame_time);
-
 }
 
 void GameDisplay::on_init()
@@ -30,16 +27,16 @@ void GameDisplay::on_init()
     buffer.open(QIODevice::WriteOnly);
     pixmap.save(&buffer, "JPG");
     buffer.close();
-    GetLastError();
+    // sf::GetLastError();
     texture.loadFromMemory(buffer.data().data(), buffer.data().size());
     sprite.setTexture(texture);
-    sprite.setOrigin(sprite.getTextureRect().width/2, sprite.getTextureRect().height/2);
+    sprite.setOrigin(sprite.getTextureRect().width / 2, sprite.getTextureRect().height / 2);
     sprite.setPosition(200, 200);
 }
 
 void GameDisplay::on_update()
 {
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     clear(sf::Color(128, 0, 0));
     sprite.rotate(0.0125);
 
@@ -47,7 +44,9 @@ void GameDisplay::on_update()
 }
 
 void GameDisplay::on_timeout()
-{repaint();}
+{
+    repaint();
+}
 
 void GameDisplay::showEvent(QShowEvent *event)
 {
@@ -68,8 +67,10 @@ void GameDisplay::showEvent(QShowEvent *event)
     }
 }
 
-QPaintEngine* GameDisplay::paintEngine() const
-{return nullptr;}
+QPaintEngine *GameDisplay::paintEngine() const
+{
+    return nullptr;
+}
 
 void GameDisplay::paintEvent(QPaintEvent *event)
 {
@@ -79,5 +80,4 @@ void GameDisplay::paintEvent(QPaintEvent *event)
 
 GameDisplay::~GameDisplay()
 {
-
 }

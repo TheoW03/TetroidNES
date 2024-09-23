@@ -74,8 +74,8 @@ private:
     uint8_t memory[0x800];
     Registers reg;
     std::vector<uint8_t> chr_rom;
-    uint8_t oam[0x80];
-    uint16_t oam_addr;
+    uint8_t oam[256];
+    uint8_t oam_addr;
     uint8_t pallete[0x20];
     MirrorType mirrorType;
     uint8_t internalDataBuffer;
@@ -95,6 +95,8 @@ public:
     void write_PPU_mask(uint8_t val);
     void write_PPU_data(uint8_t val);
     void write_OAM_data(uint8_t val);
+    void write_OAM_dma(uint8_t val[256]);
+    void write_OAM_address(uint8_t val);
     bool NMI_interrupt(uint8_t clock_cycles);
     bool tick(uint8_t clock_cycles);
     uint8_t read_status();

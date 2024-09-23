@@ -1,5 +1,6 @@
 # TetroidNES
 
+
 ![ci build][build] ![license][license]
 
 TetroidNES is an open source multi platform NES emulator.
@@ -12,26 +13,34 @@ glance at the Prerequisites page in the wiki to see what you need to download an
 [Prerequisites]
 
 ```SH
-# build Cmake
-cmake -S . -B build 
+# build Cmake you can set the -DUNITTESTS flag to build unit tests or the relase
+
+# this builds the project
+cmake -S . -B build -DUNITTESTS=OFF
+
+# this builds the unit tests
+cmake -S . -B build -DUNITTESTS=ON
 
 # build amd run project
 cmake --build build --config Release
-./Release/Tetroid.exe ${path to .nes rom file} 
 
-# build and run unit tests
-cmake --build build
-# make sure TestRoms are up to date
+./Release/Tetroid.exe ${path to .nes rom file}  # windws
+./Tetroid {path to .nes rom file} # linux
 
 # TODO  install cc65 assembler and add it to your PATH/bin directory 
 # if you want buildTestRoms.ps1 to work
 # downlaode page: 
+# make sure TestRoms are up to date
 
 # builds the Test Roms 
 . .\buildTestRoms.ps1  
 build 
-# run Unit Tests
-./Debug/Emulator_tests.exe
+
+
+./Emulator_tests # linux
+./Debug/Emulator_tests.exe # windows
+
+
 ```
 
 ## Documentation

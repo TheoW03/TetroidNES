@@ -112,7 +112,7 @@ uint8_t Bus::read_8bit(uint16_t address)
         {
             this->stored_instructions[1] = 0x82;
             std::cout << "\033[91mforbidden access to PPU write only address\033[0m" << std::endl;
-            printf("address 0x%x \n", address);
+            printf("\033[91m address 0x%x \033[0m \n", address);
             std::cout << "" << std::endl;
             return -1;
         }
@@ -120,8 +120,8 @@ uint8_t Bus::read_8bit(uint16_t address)
     else if (address == 0x4014)
     {
         this->stored_instructions[1] = 0x82;
-        std::cout << "\033[91mforbidden access to PPU write only address\033[0m" << std::endl;
-        printf("address %x \n", address);
+        std::cout << "\033[91mforbidden access to PPU write only address" << std::endl;
+        printf("address\033[0m %x \n", address);
         std::cout << "" << std::endl;
         return -1;
     }
@@ -143,7 +143,6 @@ uint8_t Bus::read_8bit(uint16_t address)
 void Bus::write_8bit(uint16_t address, uint8_t value)
 {
     this->clock_cycles++;
-
     if (address <= 0x1FFF)
     {
         uint16_t mirror_address = address & 0x7ff;
@@ -162,6 +161,10 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
             this->ppu.write_PPU_mask(value);
         }
         else if (address == 0x2003)
+        {
+            this->ppu.write_OAM_address(value);
+        }
+        else if (address == 0x2004)
         {
             this->ppu.write_OAM_data(value);
         }
@@ -182,6 +185,13 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
             printf("address 0x%x \n", address);
             std::cout << "" << std::endl;
         }
+    }
+    else if (address == 0x4014)
+    {
+        uint8_t startaddr = value << 8;
+
+        for (int i = 0; i < 256; i++)
+            this->ppu.write_OAM_data(this->read_8bit(startaddr | i));
     }
     else if (address == 0x4016)
     {
@@ -205,6 +215,10 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         std::cout << "" << std::endl;
 
         // exit(EXIT_FAILURE);
+    }
+    else
+    {
+        printf("forbidden: %x \n", address);
     }
 
     // memory[address] = value;

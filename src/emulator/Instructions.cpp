@@ -509,8 +509,8 @@ void BNE(AddressMode addressType, CPU &cpu)
 
 	if (check_zero(cpu))
 	{
-		std::cout << "BNE failed " << std::endl;
-		printCPU_stats(cpu);
+		// std::cout << "BNE failed " << std::endl;
+		// printCPU_stats(cpu);
 
 		return;
 	}

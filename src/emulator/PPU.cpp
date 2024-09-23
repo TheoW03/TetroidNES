@@ -87,23 +87,6 @@ std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte)
         {0x11, 0x11, 0x11} //
     };
 #pragma endregion
-    // sf::Color system_palette[64] = {
-    //     sf::Color(0x80, 0x80, 0x80), sf::Color(0x00, 0x3D, 0xA6), sf::Color(0x00, 0x12, 0xB0), sf::Color(0x44, 0x00, 0x96),
-    //     sf::Color(0xA1, 0x00, 0x5E), sf::Color(0xC7, 0x00, 0x28), sf::Color(0xBA, 0x06, 0x00), sf::Color(0x8C, 0x17, 0x00),
-    //     sf::Color(0x5C, 0x2F, 0x00), sf::Color(0x10, 0x45, 0x00), sf::Color(0x05, 0x4A, 0x00), sf::Color(0x00, 0x47, 0x2E),
-    //     sf::Color(0x00, 0x41, 0x66), sf::Color(0x00, 0x00, 0x00), sf::Color(0x05, 0x05, 0x05), sf::Color(0x05, 0x05, 0x05),
-    //     sf::Color(0xC7, 0xC7, 0xC7), sf::Color(0x00, 0x77, 0xFF), sf::Color(0x21, 0x55, 0xFF), sf::Color(0x82, 0x37, 0xFA),
-    //     sf::Color(0xEB, 0x2F, 0xB5), sf::Color(0xFF, 0x29, 0x50), sf::Color(0xFF, 0x22, 0x00), sf::Color(0xD6, 0x32, 0x00),
-    //     sf::Color(0xC4, 0x62, 0x00), sf::Color(0x35, 0x80, 0x00), sf::Color(0x05, 0x8F, 0x00), sf::Color(0x00, 0x8A, 0x55),
-    //     sf::Color(0x00, 0x99, 0xCC), sf::Color(0x21, 0x21, 0x21), sf::Color(0x09, 0x09, 0x09), sf::Color(0x09, 0x09, 0x09),
-    //     sf::Color(0xFF, 0xFF, 0xFF), sf::Color(0x0F, 0xD7, 0xFF), sf::Color(0x69, 0xA2, 0xFF), sf::Color(0xD4, 0x80, 0xFF),
-    //     sf::Color(0xFF, 0x45, 0xF3), sf::Color(0xFF, 0x61, 0x8B), sf::Color(0xFF, 0x88, 0x33), sf::Color(0xFF, 0x9C, 0x12),
-    //     sf::Color(0xFA, 0xBC, 0x20), sf::Color(0x9F, 0xE3, 0x0E), sf::Color(0x2B, 0xF0, 0x35), sf::Color(0x0C, 0xF0, 0xA4),
-    //     sf::Color(0x05, 0xFB, 0xFF), sf::Color(0x5E, 0x5E, 0x5E), sf::Color(0x0D, 0x0D, 0x0D), sf::Color(0x0D, 0x0D, 0x0D),
-    //     sf::Color(0xFF, 0xFF, 0xFF), sf::Color(0xA6, 0xFC, 0xFF), sf::Color(0xB3, 0xEC, 0xFF), sf::Color(0xDA, 0xAB, 0xEB),
-    //     sf::Color(0xFF, 0xA8, 0xF9), sf::Color(0xFF, 0xAB, 0xB3), sf::Color(0xFF, 0xD2, 0xB0), sf::Color(0xFF, 0xEF, 0xA6),
-    //     sf::Color(0xFF, 0xF7, 0x9C), sf::Color(0xD7, 0xE8, 0x95), sf::Color(0xA6, 0xED, 0xAF), sf::Color(0xA2, 0xF2, 0xDA),
-    //     sf::Color(0x99, 0xFF, 0xFC), sf::Color(0xDD, 0xDD, 0xDD), sf::Color(0x11, 0x11, 0x11), sf::Color(0x11, 0x11, 0x11)};
     return system_palette[byte];
 }
 uint16_t PPU::mirror(uint16_t address)
@@ -161,11 +144,11 @@ void PPU::write_PPU_address(uint8_t val)
     {
         this->reg.ppuAddr.lo = val;
     }
-    //TODO: fix later
-    // std::cout << "ppu addr" << std::endl;
-    // printf("val:%x   \n", this->reg.ppuAddr.val);
-    // printf("hi: %x \n", this->reg.ppuAddr.hi);
-    // printf("lo: %x \n", this->reg.ppuAddr.lo);
+    // TODO: fix later
+    //  std::cout << "ppu addr" << std::endl;
+    printf("val:%x   \n", this->reg.ppuAddr.val);
+    printf("hi: %x \n", this->reg.ppuAddr.hi);
+    printf("lo: %x \n", this->reg.ppuAddr.lo);
 
     this->reg.high_ptr = !this->reg.high_ptr;
 }
@@ -180,7 +163,6 @@ void PPU::write_PPU_mask(uint8_t val)
 void PPU::write_PPU_data(uint8_t val)
 {
     uint16_t addr = this->reg.ppuAddr.val;
-
     // std::cout << addr << std::endl;
     if (addr >= 0x2000 && addr <= 0x2fff)
     {
@@ -311,11 +293,10 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
     for (int ppu_idx = 0; ppu_idx <= 0x03c0; ppu_idx++)
     {
 
-        int tile = this->memory[ppu_idx];
+        uint16_t tile = this->memory[ppu_idx];
         int idx = ppu_idx % 32;
         int idy = ppu_idx / 32;
         std::vector<uint8_t> tile_list;
-
         for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
         {
 
@@ -353,5 +334,14 @@ uint8_t PPU::read_OAM_data()
 void PPU::write_OAM_data(uint8_t val)
 {
     oam[oam_addr] = val;
-    oam_addr++;
+    oam_addr += (oam_addr + 1) % 256;
+}
+void PPU::write_OAM_dma(uint8_t val[256])
+{
+    // oam[oam_addr] = val;
+    // oam_addr++;
+}
+void PPU::write_OAM_address(uint8_t val)
+{
+    this->oam_addr = val;
 }
