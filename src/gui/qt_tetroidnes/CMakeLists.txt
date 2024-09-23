@@ -12,6 +12,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(REQUIRED_COMPONENTS Widgets Core Gui LinguistTools)
 
+find_package(OpenGL REQUIRED COMPONENTS OpenGL)
+
+include(FetchContent)
+FetchContent_Declare(SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 2.6.x)
+FetchContent_MakeAvailable(SFML)
+
 find_package(Qt6 REQUIRED COMPONENTS
     ${REQUIRED_COMPONENTS}
 )
@@ -27,6 +35,7 @@ qt_add_executable(${EXECUTABLE_NAME}
     romlist.h romlist.cpp
     filtercontrolframe.h filtercontrolframe.cpp
     flowlayout.h flowlayout.cpp
+    gamedisplay.h gamedisplay.cpp
 )
 
 qt_add_translations(${EXECUTABLE_NAME} TS_FILES tetroidnes_en_US.ts)
@@ -39,6 +48,11 @@ endif()
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE Qt6::Widgets)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE Qt6::Core)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE Qt6::Gui)
+
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE sfml-graphics)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE sfml-window)
+
+#target_link_libraries(${EXECUTABLE_NAME} PRIVATE OpenGL::GLES2)
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     ${BUNDLE_ID_OPTION}

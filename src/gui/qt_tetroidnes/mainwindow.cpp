@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "filtercontrolframe.h"
+#include "gamedisplay.h"
 
 #include <QVBoxLayout>
 #include <QIcon>
@@ -41,6 +42,9 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     page_info->setObjectName("PageInfo");
     status_bar->addPermanentWidget(page_info);
     update_page_info();
+
+    GameDisplay *game_display = new GameDisplay();
+    game_display->show();
 
     // events
     connect(sort_control_frame->findChild<QButtonGroup*>(), &QButtonGroup::idReleased, this,
