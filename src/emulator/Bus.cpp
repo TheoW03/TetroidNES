@@ -218,7 +218,6 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else
     {
-        printf("forbidden: %x \n", address);
     }
 
     // memory[address] = value;
@@ -352,6 +351,10 @@ uint8_t Bus::read_joypad()
     return button;
 }
 
+void Bus::print_ppu()
+{
+    ppu.print_ppu_stats();
+}
 void Bus::write_controller1(Controller value, int isPressed)
 {
     // uint8_t v = (uint8_t) value;

@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <Emulator/PPU.h>
 #include <Emulator/Computer.h>
+#include <bitset>
 // #include "PPU.h"
 // #include <emulator
 PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
@@ -134,21 +135,32 @@ uint8_t PPU::read_status()
     reg.scrollLatch = false;
     return ret;
 }
+void PPU::print_ppu_stats()
+{
+
+    printf("ppu_addr:  decimal: %d hexa: 0x%x   \n", this->reg.ppuAddr.val, this->reg.ppuAddr.val);
+    printf("ppu_addr hi: descimal: %d hexa: 0x%x\n", this->reg.ppuAddr.hi, this->reg.ppuAddr.hi);
+    printf("ppu_addr lo: descimal:  %d hexa: 0x%x \n", this->reg.ppuAddr.lo, this->reg.ppuAddr.lo);
+    std::bitset<7> ppu_status(this->reg.ppuStatus.val);
+    std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
+    std::cout << "ppu status: 0b" << ppu_status << std::endl;
+    std::cout << "ppu ctrl: 0b" << ppu_ctrl << std::endl;
+}
 void PPU::write_PPU_address(uint8_t val)
 {
     if (this->reg.high_ptr)
     {
-        this->reg.ppuAddr.hi = val;
+        this->reg.ppuAddr.lo = val;
     }
     else
     {
-        this->reg.ppuAddr.lo = val;
+        this->reg.ppuAddr.hi = val;
     }
     // TODO: fix later
     //  std::cout << "ppu addr" << std::endl;
-    printf("val:%x   \n", this->reg.ppuAddr.val);
-    printf("hi: %x \n", this->reg.ppuAddr.hi);
-    printf("lo: %x \n", this->reg.ppuAddr.lo);
+    // printf("val:%x   \n", this->reg.ppuAddr.val);
+    // printf("hi: %x \n", this->reg.ppuAddr.hi);
+    // printf("lo: %x \n", this->reg.ppuAddr.lo);
 
     this->reg.high_ptr = !this->reg.high_ptr;
 }
@@ -232,6 +244,7 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
     }
     return false;
 }
+
 // void PPU::render(sf::Texture &texture, int bank, int tile)
 // {
 //     uint8_t data[256 * 240 * 4];

@@ -45,6 +45,7 @@ CPU init(std::string file_name)
 }
 void printCPU_stats(CPU cpu)
 {
+	cpu.bus.print_ppu();
 	printf("Accumaltor: decimal: %d hexa: 0x%x \n", cpu.A_Reg, cpu.A_Reg);
 	printf("X Register: decimal: %d hexa: 0x%x \n", cpu.X_Reg, cpu.X_Reg);
 	printf("Y Register:decimal: %d hexa: 0x%x \n", cpu.Y_Reg, cpu.Y_Reg);

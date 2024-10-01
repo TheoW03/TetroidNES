@@ -100,6 +100,8 @@ public:
     bool NMI_interrupt(uint8_t clock_cycles);
     bool tick(uint8_t clock_cycles);
     uint8_t read_status();
+    void print_ppu_stats();
+
     // void render(sf::Texture &texture, int bank, int tile);
     std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
 };
