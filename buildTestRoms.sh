@@ -2,6 +2,9 @@
 
 build() {
     # Define the list of ROM build commands
+    cmake -S . -B build -DUNITTESTS=ON
+
+    mkdir -p ./src/unitTests/TestRoms/
     RomList=(
         "nya~"
         "./src/unitTests/TestRomsSource/LDATest.s -o ./src/unitTests/TestRoms/LDATest.nes"
