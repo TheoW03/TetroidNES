@@ -138,15 +138,22 @@ uint8_t PPU::read_status()
 }
 void PPU::print_ppu_stats()
 {
+    printf("\n");
+
+    printf("===== PPU ON EXIT =========== \n");
+    printf("\n");
 
     printf("ppu_addr:  decimal: %d hexa: 0x%x   \n", this->reg.ppuAddr.val, this->reg.ppuAddr.val);
-    printf("ppu_addr hi: descimal: %d hexa: 0x%x\n", this->reg.ppuAddr.hi, this->reg.ppuAddr.hi);
-    printf("ppu_addr lo: descimal:  %d hexa: 0x%x \n", this->reg.ppuAddr.lo, this->reg.ppuAddr.lo);
+    printf("ppu_addr hi: decimal: %d hexa: 0x%x\n", this->reg.ppuAddr.hi, this->reg.ppuAddr.hi);
+    printf("ppu_addr lo: decimal:  %d hexa: 0x%x \n", this->reg.ppuAddr.lo, this->reg.ppuAddr.lo);
     std::bitset<7> ppu_status(this->reg.ppuStatus.val);
     std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
     std::cout << "ppu status: 0b" << ppu_status << std::endl;
     std::cout << "ppu ctrl: 0b" << ppu_ctrl << std::endl;
     printf("ppu cycles %d \n", this->cycles);
+    printf("OAM Addr hexa: 0x%x decimal: %d \n", this->oam_addr, this->oam_addr);
+    printf("\n============================= \n");
+    printf("\n");
 }
 void PPU::write_PPU_address(uint8_t val)
 {
@@ -305,13 +312,20 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
     int banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
     std::vector<uint8_t> rgb_ds;
     rgb_ds.resize(std::get<0>(res) * std::get<1>(res) * 4);
-    for (int ppu_idx = 0; ppu_idx <= 0x03c0; ppu_idx++)
-    {
 
-        uint16_t tile = this->memory[ppu_idx];
-        int idx = ppu_idx % 32;
-        int idy = ppu_idx / 32;
-        std::vector<uint8_t> tile_list;
+    for (int ppu_idx = 255; ppu_idx > 0; ppu_idx -= 4)
+    {
+        uint16_t tile = this->oam[ppu_idx + 1];
+        int idx = this->oam[ppu_idx + 3];
+        int idy = this->oam[ppu_idx];
+
+        // DEBUG STUFF
+        //  printf("x: %d  y: %d \n", idx, idy);
+        //  uint16_t tile = this->memory[ppu_idx];
+        //  int idx = ppu_idx % 32;
+        //  int idy = ppu_idx / 32;
+        std::vector<uint8_t>
+            tile_list;
         for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
         {
 
@@ -329,13 +343,20 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
                 lower >>= 1;
                 auto rgb = getColorFromByte(value);
                 // sf::Color rgb = getColorFromByte(value);
-                int tile_x = idx * 8 + x;
-                int tile_y = idy * 8 + y;
+                int tile_x = idx + x;
+                int tile_y = idy + y;
+                // printf("tile_x %d  tile_y: %d \n", tile_x, tile_y);
+
                 int b = (tile_y) * 4 * std::get<1>(res) + (tile_x) * 4;
-                rgb_ds[b] = std::get<0>(rgb);
-                rgb_ds[b + 1] = std::get<1>(rgb);
-                rgb_ds[b + 2] = std::get<2>(rgb);
-                rgb_ds[b + 3] = 0xff;
+                // printf("combined %d  \n", b);
+                // printf("%d \n", rgb_ds.size());
+                if (b < rgb_ds.size())
+                {
+                    rgb_ds[b] = std::get<0>(rgb);
+                    rgb_ds[b + 1] = std::get<1>(rgb);
+                    rgb_ds[b + 2] = std::get<2>(rgb);
+                    rgb_ds[b + 3] = 0xff;
+                }
             }
         }
     }
@@ -349,7 +370,6 @@ uint8_t PPU::read_OAM_data()
 void PPU::write_OAM_data(uint8_t val)
 {
     oam[oam_addr] = val;
-    std::cout << "write" << std::endl;
     oam_addr += (oam_addr + 1) % 256;
 }
 void PPU::write_OAM_dma(uint8_t val[256])
@@ -359,6 +379,7 @@ void PPU::write_OAM_dma(uint8_t val[256])
 }
 void PPU::write_OAM_address(uint8_t val)
 {
+    std::cout << "write to oam addr" << std::endl;
 
     this->oam_addr = val;
 }

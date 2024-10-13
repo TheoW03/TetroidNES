@@ -151,6 +151,7 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
         // std::cout << "ppu write" << address << std::endl;
+        // printf("%x \n", address);
 
         if (address == 0x2000)
         {
