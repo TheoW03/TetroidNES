@@ -62,16 +62,13 @@ void HandleNMIInterrupts(CPU &cpu)
 
 	cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
 	cpu.bus.fetch_next();
-	cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
 	set_interrupt_disabled(1, cpu);
+	std::cout << "test" << std::endl;
+
+	cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
+	printf("%x \n", cpu.bus.get_PC());
 }
-void test(uint8_t arr[257])
-{
-	for (int i = 0; i < 257; i++)
-	{
-		arr[i] = i;
-	}
-}
+
 /**
  * Executes actual code
  */
@@ -178,6 +175,7 @@ CPU run(CPU cpu, std::string window_name)
 		if (cpu.bus.NMI_interrupt())
 		{
 			HandleNMIInterrupts(cpu);
+			printf("%x \n", cpu.bus.get_PC());
 		}
 		current_instruction = cpu.bus.fetch_next();
 

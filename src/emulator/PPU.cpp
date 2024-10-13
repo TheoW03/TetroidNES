@@ -19,6 +19,7 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     this->reg.high_ptr = true;
     this->reg.scrollLatch = false;
     this->reg.ppumask.val = 0;
+    this->cycles = 0;
 }
 PPU::PPU() {}
 std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte)
@@ -145,6 +146,7 @@ void PPU::print_ppu_stats()
     std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
     std::cout << "ppu status: 0b" << ppu_status << std::endl;
     std::cout << "ppu ctrl: 0b" << ppu_ctrl << std::endl;
+    printf("ppu cycles %d \n", this->cycles);
 }
 void PPU::write_PPU_address(uint8_t val)
 {
@@ -347,6 +349,7 @@ uint8_t PPU::read_OAM_data()
 void PPU::write_OAM_data(uint8_t val)
 {
     oam[oam_addr] = val;
+    std::cout << "write" << std::endl;
     oam_addr += (oam_addr + 1) % 256;
 }
 void PPU::write_OAM_dma(uint8_t val[256])
@@ -356,5 +359,6 @@ void PPU::write_OAM_dma(uint8_t val[256])
 }
 void PPU::write_OAM_address(uint8_t val)
 {
+
     this->oam_addr = val;
 }
