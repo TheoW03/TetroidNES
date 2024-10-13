@@ -152,7 +152,7 @@ void PPU::print_ppu_stats()
     std::cout << "ppu ctrl: 0b" << ppu_ctrl << std::endl;
     printf("ppu cycles %d \n", this->cycles);
     printf("OAM Addr hexa: 0x%x decimal: %d \n", this->oam_addr, this->oam_addr);
-    printf("\n============================= \n");
+    printf("\n============================= \n"); //
     printf("\n");
 }
 void PPU::write_PPU_address(uint8_t val)
