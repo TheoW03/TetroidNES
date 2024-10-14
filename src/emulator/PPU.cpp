@@ -378,8 +378,7 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
         };
 
         uint16_t tile = this->oam[ppu_idx - 2];
-        if (tile != 0)
-            printf("%x \n", tile);
+
         int idx = this->oam[ppu_idx];
         int idy = this->oam[ppu_idx - 3];
         Attribute_byte attribbyte;
