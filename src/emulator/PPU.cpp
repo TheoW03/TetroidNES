@@ -20,6 +20,8 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     this->reg.scrollLatch = false;
     this->reg.ppumask.val = 0;
     this->cycles = 0;
+    for (int i = 0; i < 255; i++)
+        this->oam[i] = 0;
 }
 PPU::PPU() {}
 std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte)
@@ -138,15 +140,22 @@ uint8_t PPU::read_status()
 }
 void PPU::print_ppu_stats()
 {
+    printf("\n");
+
+    printf("===== PPU ON EXIT =========== \n");
+    printf("\n");
 
     printf("ppu_addr:  decimal: %d hexa: 0x%x   \n", this->reg.ppuAddr.val, this->reg.ppuAddr.val);
-    printf("ppu_addr hi: descimal: %d hexa: 0x%x\n", this->reg.ppuAddr.hi, this->reg.ppuAddr.hi);
-    printf("ppu_addr lo: descimal:  %d hexa: 0x%x \n", this->reg.ppuAddr.lo, this->reg.ppuAddr.lo);
+    printf("ppu_addr hi: decimal: %d hexa: 0x%x\n", this->reg.ppuAddr.hi, this->reg.ppuAddr.hi);
+    printf("ppu_addr lo: decimal:  %d hexa: 0x%x \n", this->reg.ppuAddr.lo, this->reg.ppuAddr.lo);
     std::bitset<7> ppu_status(this->reg.ppuStatus.val);
     std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
     std::cout << "ppu status: 0b" << ppu_status << std::endl;
     std::cout << "ppu ctrl: 0b" << ppu_ctrl << std::endl;
     printf("ppu cycles %d \n", this->cycles);
+    printf("OAM Addr hexa: 0x%x decimal: %d \n", this->oam_addr, this->oam_addr);
+    printf("\n============================= \n"); //
+    printf("\n");
 }
 void PPU::write_PPU_address(uint8_t val)
 {
@@ -182,7 +191,7 @@ void PPU::write_PPU_data(uint8_t val)
     {
         // uint8_t res = internalDataBuffer;
         this->memory[mirror(addr)] = val;
-        std::cout << "saving to vram" << std::endl;
+        // std::cout << "saving to vram" << std::endl;
         // internalDataBuffer = memory[mirror(addr)];
     }
     else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c)
@@ -299,19 +308,96 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
  * @param res
  * @return std::vector<uint8_t>
  */
+
 std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
 {
     // int bank = this->reg.ppuCtrl.B;
     int banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
     std::vector<uint8_t> rgb_ds;
     rgb_ds.resize(std::get<0>(res) * std::get<1>(res) * 4);
-    for (int ppu_idx = 0; ppu_idx <= 0x03c0; ppu_idx++)
+
+    for (int ppu_idx = 0; ppu_idx < 0x3c0; ppu_idx++)
     {
 
         uint16_t tile = this->memory[ppu_idx];
         int idx = ppu_idx % 32;
         int idy = ppu_idx / 32;
-        std::vector<uint8_t> tile_list;
+        std::vector<uint8_t>
+            tile_list;
+        for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
+        {
+
+            tile_list.push_back(chr_rom[i]);
+        }
+        for (int y = 0; y < 8; y++)
+        {
+            uint8_t upper = tile_list[y];
+            uint8_t lower = tile_list[y + 8];
+            for (int x = 7; x >= 0; x--)
+            {
+                uint16_t value = (1 & upper) << 1 | (1 & lower);
+                upper >>= 1;
+                lower >>= 1;
+
+                auto rgb = getColorFromByte(0x0f);
+                // if (value == 0)
+                //     continue;
+                // sf::Color rgb = getColorFromByte(value);
+                int tile_x = idx * 8 + x;
+                int tile_y = idy * 8 + y;
+                // printf("tile_x %d  tile_y: %d \n", tile_x, tile_y);
+
+                int b = (tile_y) * 4 * std::get<1>(res) + (tile_x) * 4;
+
+                rgb_ds[b] = std::get<0>(rgb);
+                rgb_ds[b + 1] = std::get<1>(rgb);
+                rgb_ds[b + 2] = std::get<2>(rgb);
+                rgb_ds[b + 3] = 0xff;
+                // printf("combined b %d  \n", b);
+
+                // printf("%d \n", rgb_ds.size());
+            }
+            // printf("=========\n");
+        }
+        // printf("\n ");
+    }
+
+    for (int ppu_idx = 255; ppu_idx > 0; ppu_idx -= 4)
+    {
+        union Attribute_byte
+        {
+            struct
+            {
+                unsigned pallete : 2;
+                unsigned padding : 3;
+                unsigned priority : 1;
+                unsigned flip_x : 1;
+                unsigned flip_y : 1;
+            };
+            uint8_t val;
+        };
+
+        uint16_t tile = this->oam[ppu_idx - 2];
+        if (tile != 0)
+            printf("%x \n", tile);
+        int idx = this->oam[ppu_idx];
+        int idy = this->oam[ppu_idx - 3];
+        Attribute_byte attribbyte;
+        attribbyte.val = this->oam[ppu_idx - 1];
+        // Attribute_byte b = this->oam[ppu_idx - 1];
+
+        // if (idy != 0)
+        // printf(" idx: %x  idy: %x \n", idx, idy);
+        // DEBUG STUFF
+        // if (idy == 0x94)
+        // printf("x: %x  y: %x \n tile: %x tle: %x\n", idx, idy, tile, idk);
+        // printf(" tile:%d \n", tile);
+        //  uint16_t tile = this->memory[ppu_idx];
+        //  int idx = ppu_idx % 32;
+        //  int idy = ppu_idx / 32;
+        std::vector<uint8_t>
+            tile_list;
+        banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
         for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
         {
 
@@ -328,16 +414,33 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
                 upper >>= 1;
                 lower >>= 1;
                 auto rgb = getColorFromByte(value);
-                // sf::Color rgb = getColorFromByte(value);
-                int tile_x = idx * 8 + x;
-                int tile_y = idy * 8 + y;
-                int b = (tile_y) * 4 * std::get<1>(res) + (tile_x) * 4;
+                if (value == 0)
+                    continue;
+                int tile_x = 0;
+                if (attribbyte.flip_x)
+                    tile_x = idx + 7 - x;
+                else
+                    tile_x = idx + x;
+
+                int tile_y = 0;
+                if (attribbyte.flip_y)
+                    tile_y = idy + 7 - y;
+                else
+                    tile_y = idy + y;
+                // printf("tile_x %d  tile_y: %d \n", tile_x, tile_y);
+                int b = (tile_y) * 4 * std::get<0>(res) + (tile_x) * 4;
+
                 rgb_ds[b] = std::get<0>(rgb);
                 rgb_ds[b + 1] = std::get<1>(rgb);
                 rgb_ds[b + 2] = std::get<2>(rgb);
                 rgb_ds[b + 3] = 0xff;
+
+                // printf("combined %d  \n", b);
+                // printf("%d \n", rgb_ds.size());
             }
+            // printf("=========\n");
         }
+        // printf("reset loop\n");s
     }
     return rgb_ds;
 }
@@ -349,8 +452,10 @@ uint8_t PPU::read_OAM_data()
 void PPU::write_OAM_data(uint8_t val)
 {
     oam[oam_addr] = val;
-    std::cout << "write" << std::endl;
-    oam_addr += (oam_addr + 1) % 256;
+    oam_addr++;
+    // oam_addr += (oam_addr + 1) % 256;
+    // printf("%x \n", oam_addr);
+    // std::cout << oam_addr << std::endl;
 }
 void PPU::write_OAM_dma(uint8_t val[256])
 {
@@ -359,6 +464,7 @@ void PPU::write_OAM_dma(uint8_t val[256])
 }
 void PPU::write_OAM_address(uint8_t val)
 {
+    // std::cout << "write to oam addr" << std::endl;
 
     this->oam_addr = val;
 }

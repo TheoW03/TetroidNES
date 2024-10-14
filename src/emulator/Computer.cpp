@@ -45,15 +45,20 @@ CPU init(std::string file_name)
 }
 void printCPU_stats(CPU cpu)
 {
+
 	cpu.bus.print_ppu();
+	printf("\n===== CPU ON EXIT =========== \n");
+	printf("\n");
 	printf("Accumaltor: decimal: %d hexa: 0x%x \n", cpu.A_Reg, cpu.A_Reg);
 	printf("X Register: decimal: %d hexa: 0x%x \n", cpu.X_Reg, cpu.X_Reg);
-	printf("Y Register:decimal: %d hexa: 0x%x \n", cpu.Y_Reg, cpu.Y_Reg);
+	printf("Y Register: decimal: %d hexa: 0x%x \n", cpu.Y_Reg, cpu.Y_Reg);
 	printf("Program Counter: 0x%X \n", cpu.bus.get_PC());
 	cpu.bus.print_stack();
 	std::bitset<7> status(cpu.status.val);
 	cpu.bus.print_clock();
 	std::cout << "cpu status register: 0b" << status << std::endl;
+	printf("\n============================= \n");
+	printf("\n");
 }
 
 void HandleNMIInterrupts(CPU &cpu)
@@ -175,9 +180,10 @@ CPU run(CPU cpu, std::string window_name)
 		if (cpu.bus.NMI_interrupt())
 		{
 			HandleNMIInterrupts(cpu);
-			printf("%x \n", cpu.bus.get_PC());
+			// printf("%x \n", cpu.bus.get_PC());
 		}
 		current_instruction = cpu.bus.fetch_next();
+		// printf("%x \n", cpu.bus.get_PC());
 
 		if (InstructionValid(current_instruction))
 		{
