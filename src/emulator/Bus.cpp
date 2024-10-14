@@ -108,6 +108,8 @@ uint8_t Bus::read_8bit(uint16_t address)
         {
             return this->ppu.read_OAM_data();
         }
+        else if (address == 0x2005)
+            return 0;
         else
         {
             this->stored_instructions[1] = 0x82;
@@ -169,6 +171,9 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         {
             this->ppu.write_OAM_data(value);
         }
+        else if (address == 0x2005)
+        {
+        }
         else if (address == 0x2006)
         {
             this->ppu.write_PPU_address(value);
@@ -182,7 +187,7 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         else
         {
             this->stored_instructions[1] = 0x82;
-            std::cout << "\033[91mforbidden access to PPU write only address\033[0m" << std::endl;
+            std::cout << "\033[91mforbidden access to PPU read only address\033[0m" << std::endl;
             printf("address 0x%x \n", address);
             std::cout << "" << std::endl;
         }
