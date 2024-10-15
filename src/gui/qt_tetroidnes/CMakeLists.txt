@@ -38,7 +38,7 @@ qt_add_executable(${EXECUTABLE_NAME}
     gamedisplay.h gamedisplay.cpp
 )
 
-qt_add_translations(${EXECUTABLE_NAME} TS_FILES tetroidnes_en_US.ts)
+qt_add_translations(${EXECUTABLE_NAME} TS_FILES translations/tetroidnes_en_US.ts)
 
 if(ANDROID)
     set_property(TARGET ${EXECUTABLE_NAME} APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
