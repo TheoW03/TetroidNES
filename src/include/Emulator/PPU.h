@@ -3,7 +3,7 @@
 // #include <SFML/Graphics.hpp>
 #include <bit>
 #include "LoadRom.h"
-
+#include <optional>
 #include <tuple>
 
 #ifndef PPU_H
@@ -93,7 +93,7 @@ public:
     void write_PPU_address(uint8_t val);
     void write_PPU_ctrl(uint8_t val);
     void write_PPU_mask(uint8_t val);
-    void write_PPU_data(uint8_t val);
+    std::optional<int> write_PPU_data(uint8_t val);
     void write_OAM_data(uint8_t val);
     void write_OAM_dma(uint8_t val[256]);
     void write_OAM_address(uint8_t val);

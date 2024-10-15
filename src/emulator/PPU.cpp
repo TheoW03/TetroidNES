@@ -183,7 +183,7 @@ void PPU::write_PPU_mask(uint8_t val)
 {
     this->reg.ppumask.val = val;
 }
-void PPU::write_PPU_data(uint8_t val)
+std::optional<int> PPU::write_PPU_data(uint8_t val)
 {
     uint16_t addr = this->reg.ppuAddr.val;
     // std::cout << addr << std::endl;
@@ -206,21 +206,21 @@ void PPU::write_PPU_data(uint8_t val)
     else if (addr == 0x4014)
     {
         printf("%x\n", addr);
-
-        return;
     }
     else
     {
         // TODO: fails for some reason
-        std::cout << "memory shouldnt be written at this addr" << std::endl;
-        printf("%x\n", addr);
-        exit(EXIT_FAILURE);
+        std::cout << "\033[91mAttempt to write into PPU READ_ONLY_MEM\033[0m" << std::endl;
+        printf("0x%x\n", addr);
+        // exit(EXIT_FAILURE);
+        return {};
     }
     this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
     if (reg.ppuAddr.val > 0x3fff)
     {
         this->reg.ppuAddr.val &= 0b11111111111111;
     }
+    return 1;
 }
 
 bool PPU::tick(uint8_t clock_cycles)

@@ -180,7 +180,12 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         }
         else if (address == 0x2007)
         {
-            this->ppu.write_PPU_data(value);
+            auto b = this->ppu.write_PPU_data(value);
+            if (b == std::nullopt)
+            {
+                this->stored_instructions[1] = 0x82;
+            }
+            // if ()
         }
         else if (address >= 0x2008)
             this->write_8bit(address & 0x2007, value);
