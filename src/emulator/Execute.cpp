@@ -17,6 +17,7 @@ CPU Execute::run()
         set_interrupt_disabled(1, cpu);
         cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
     }
+    cpu.bus.tick();
     auto current_instr = cpu.bus.get_current_instruction();
     if (InstructionValid(current_instruction))
     {
