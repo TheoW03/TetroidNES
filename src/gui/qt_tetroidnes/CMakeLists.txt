@@ -31,7 +31,7 @@ set(PROJECT_SOURCES
 qt_add_executable(${EXECUTABLE_NAME}
     MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
-    main.cpp mainwindow.cpp mainwindow.h mainwindow.ui menubar.cpp menubar.h resources.qrc
+    mainwindow.cpp mainwindow.h mainwindow.ui menubar.cpp menubar.h resources.qrc
     romlist.h romlist.cpp
     filtercontrolframe.h filtercontrolframe.cpp
     flowlayout.h flowlayout.cpp
