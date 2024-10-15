@@ -7,6 +7,7 @@
 #include <SFML/Graphics.hpp>
 #include <bitset>
 #include <Emulator/Bus.h>
+#include <Emulator/InstructionMap.h>
 // #include "Bus.h>
 #define TOP_STACK 0x1ff
 #define BOTTOM_STACK 0x100
