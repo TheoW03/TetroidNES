@@ -68,10 +68,10 @@ void HandleNMIInterrupts(CPU &cpu)
 	cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
 	cpu.bus.fetch_next();
 	set_interrupt_disabled(1, cpu);
-	std::cout << "test" << std::endl;
+	// std::cout << "test" << std::endl;
 
 	cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
-	printf("%x \n", cpu.bus.get_PC());
+	// printf("%x \n", cpu.bus.get_PC());
 }
 
 /**
