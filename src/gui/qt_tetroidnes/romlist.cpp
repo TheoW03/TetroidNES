@@ -3,9 +3,9 @@
 #include <QDebug>
 #include <QRegularExpression>
 
-//#include <algorithm>
-// RomListData
-RomListData::RomListData(QObject *parent): QObject{parent}
+// #include <algorithm>
+//  RomListData
+RomListData::RomListData(QObject *parent) : QObject{parent}
 {
 }
 RomListData::~RomListData()
@@ -14,26 +14,41 @@ RomListData::~RomListData()
 
 void RomListData::set_data(short unsigned int year, QByteArray img, QString title, std::optional<bool> favorited)
 {
-    if (year){this->m_year = year;}
-    if (!img.isNull()){this->m_img = img;}
+    if (year)
+    {
+        this->m_year = year;
+    }
+    if (!img.isNull())
+    {
+        this->m_img = img;
+    }
     if (!title.isNull())
     {
         this->setObjectName(title);
         this->m_title = title;
     }
-    else {this->m_title = QString("N/A");}
-    if (favorited.has_value()){this->m_favorited = favorited.value();}
-    else {this->m_favorited = false;}
+    else
+    {
+        this->m_title = QString("N/A");
+    }
+    if (favorited.has_value())
+    {
+        this->m_favorited = favorited.value();
+    }
+    else
+    {
+        this->m_favorited = false;
+    }
 }
 
-short unsigned int RomListData::year() {return this->m_year;}
-QString RomListData::title() {return this->m_title;}
-QByteArray RomListData::img() {return this->m_img;}
-bool RomListData::favorited() {return this->m_favorited;}
-void RomListData::set_favorited(const bool b) {this->m_favorited = b;}
+short unsigned int RomListData::year() { return this->m_year; }
+QString RomListData::title() { return this->m_title; }
+QByteArray RomListData::img() { return this->m_img; }
+bool RomListData::favorited() { return this->m_favorited; }
+void RomListData::set_favorited(const bool b) { this->m_favorited = b; }
 
 // RomListItem
-RomListItem::RomListItem(const QSharedPointer<RomListData> *data, QWidget *parent): QWidget{parent}
+RomListItem::RomListItem(const QSharedPointer<RomListData> *data, QWidget *parent) : QWidget{parent}
 {
     title = new QLabel(this);
     img = new QLabel(this);
@@ -66,22 +81,28 @@ RomListItem::RomListItem(const QSharedPointer<RomListData> *data, QWidget *paren
 
     // Events
     connect(favorite_button, &QPushButton::clicked, this,
-        [this](int checked){favorite_button_clicked(checked);}
-    );
+            [this](int checked)
+            { favorite_button_clicked(checked); });
 }
 
 void RomListItem::favorite_button_clicked(int checked)
 {
-    RomList *rom_list = qobject_cast<RomList*>(this->parent());
-    auto listData = rom_list->findChild<RomListData*>(title->text());
-    if(listData)
-    {listData->set_favorited(checked);}
+    RomList *rom_list = qobject_cast<RomList *>(this->parent());
+    auto listData = rom_list->findChild<RomListData *>(title->text());
+    if (listData)
+    {
+        listData->set_favorited(checked);
+    }
     else
-    {qWarning() << "Could not find data object to update for " << title->text();}
+    {
+        qWarning() << "Could not find data object to update for " << title->text();
+    }
 
     // Refresh display
-    if(rom_list->current_mode() == RomList::SortMode::Favorites)
-    {rom_list->set_current_mode(RomList::SortMode::Favorites);}
+    if (rom_list->current_mode() == RomList::SortMode::Favorites)
+    {
+        rom_list->set_current_mode(RomList::SortMode::Favorites);
+    }
 }
 
 RomListItem::~RomListItem()
@@ -99,13 +120,13 @@ void RomListItem::update_data(const QSharedPointer<RomListData> &data)
 
         img->setPixmap(*placeholder_img);
     }
-    //else {img->setPixmap(QImage())
+    // else {img->setPixmap(QImage())
 
     favorite_button->setChecked(data->favorited());
 }
 
 // RomList
-RomList::RomList(QWidget *parent): QWidget{parent}
+RomList::RomList(QWidget *parent) : QWidget{parent}
 {
     main_layout = new FlowLayout();
     main_layout->setContentsMargins(0, 150, 0, 150);
@@ -115,7 +136,7 @@ RomList::RomList(QWidget *parent): QWidget{parent}
     setup_list();
     set_items_per_page(10); // TODO: Change this so the program remembers what the user chose last time
     update_total_pages();
-    set_current_mode(RomList::SortMode::AZ); // TODO: Change this so the program remembers what the user chose last time
+    set_current_mode(RomList::SortMode::AZ);          // TODO: Change this so the program remembers what the user chose last time
     set_current_order(Qt::SortOrder::AscendingOrder); // TODO: Change this so the program remembers what the user chose last time
 }
 
@@ -124,7 +145,7 @@ void RomList::setup_list()
     /*
      * Get roms via folder location(s) in config
      * Also the condition should end at either when the end of the list is reached or i == i + amount of widgets shown
-    */
+     */
 
     for (int i = 0; i < 5000; i++)
     {
@@ -134,24 +155,27 @@ void RomList::setup_list()
     }
 }
 
-unsigned int RomList::items_per_page() const {return m_items_per_page;}
+unsigned int RomList::items_per_page() const { return m_items_per_page; }
 
 void RomList::set_items_per_page(unsigned int newNum)
 {
-    if (newNum == m_items_per_page){return;}
+    if (newNum == m_items_per_page)
+    {
+        return;
+    }
 
     if (newNum > m_items_per_page)
     {
         int dataIndex = m_items_per_page * m_current_page;
-        for(int i = 0; i < newNum-items_per_page(); i++, dataIndex++)
+        for (int i = 0; i < newNum - items_per_page(); i++, dataIndex++)
         {
             main_layout->addWidget(new RomListItem(&data.at(dataIndex), this));
         }
     }
     else
     {
-        QList<RomListItem*> items = this->findChildren<RomListItem*>();
-        for(int i = m_items_per_page; i == newNum; i--)
+        QList<RomListItem *> items = this->findChildren<RomListItem *>();
+        for (int i = m_items_per_page; i == newNum; i--)
         {
             delete &items[i];
         }
@@ -163,24 +187,27 @@ void RomList::set_items_per_page(unsigned int newNum)
 
 void RomList::set_current_page(unsigned int i)
 {
-    if (i == m_current_page) {return;}
+    if (i == m_current_page)
+    {
+        return;
+    }
     m_current_page = i;
     update_list();
 }
 
-unsigned int RomList::current_page() const {return m_current_page;}
+unsigned int RomList::current_page() const { return m_current_page; }
 
 void RomList::update_total_pages()
 {
-    m_total_pages = (data.length() + (items_per_page()-1)) / items_per_page(); // Always rounds up a page
+    m_total_pages = (data.length() + (items_per_page() - 1)) / items_per_page(); // Always rounds up a page
 }
-unsigned int RomList::total_pages() const {return m_total_pages;}
+unsigned int RomList::total_pages() const { return m_total_pages; }
 
 void RomList::update_list()
 {
     int dataIndex = m_items_per_page * m_current_page - m_items_per_page;
-    QList<RomListItem*> items = findChildren<RomListItem*>();
-    for(int i = 0; dataIndex < data.length() && i < m_items_per_page; i++)
+    QList<RomListItem *> items = findChildren<RomListItem *>();
+    for (int i = 0; dataIndex < data.length() && i < m_items_per_page; i++)
     {
         items[i]->update_data(data.at(dataIndex));
         dataIndex++;
@@ -198,7 +225,7 @@ const bool RomList::compare_regex(const QSharedPointer<RomListData> &a, const QS
     }
     else
     {
-        switch(mode)
+        switch (mode)
         {
         case Year:
             return compare_year(a, b);
@@ -233,17 +260,18 @@ const bool RomList::compare_favorite(const QSharedPointer<RomListData> &a, const
     {
         return compare_alphabet(a, b);
     }
-
 }
 
 const bool RomList::compare_alphabet(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b)
 {
     // Decide the lowest length to prevent out of bounds error
     const int lowestLength = (a->title().length() > b->title().length()) ? b->title().length() : a->title().length();
-    for(int i = 0; i < lowestLength; i++)
+    for (int i = 0; i < lowestLength; i++)
     {
-        if(a->title().at(i).toLower() == b->title().at(i).toLower())
-        {continue;}
+        if (a->title().at(i).toLower() == b->title().at(i).toLower())
+        {
+            continue;
+        }
 
         return a->title().at(i).toLower() < b->title().at(i).toLower();
     }
@@ -265,18 +293,18 @@ void RomList::search(QString &expr)
     if (current_order() == Qt::AscendingOrder)
     {
         std::sort(data.begin(), data.end(),
-        [&regular_expression, &mode](const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b) {
-            return compare_regex(a, b, regular_expression, mode);
-        }
-        );
+                  [&regular_expression, &mode](const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b)
+                  {
+                      return compare_regex(a, b, regular_expression, mode);
+                  });
     }
     else
     {
         std::sort(data.rbegin(), data.rend(),
-        [&regular_expression, &mode](const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b) {
-            return compare_regex(a, b, regular_expression, mode);
-        }
-        );
+                  [&regular_expression, &mode](const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b)
+                  {
+                      return compare_regex(a, b, regular_expression, mode);
+                  });
     }
 
     update_list();
@@ -286,7 +314,10 @@ void RomList::search(QString &expr)
 void RomList::set_current_mode(const SortMode &mode, const bool update)
 {
     m_current_mode = mode;
-    if (!update){return;}
+    if (!update)
+    {
+        return;
+    }
 
     if (current_order() == Qt::AscendingOrder)
     {
@@ -326,11 +357,12 @@ void RomList::set_current_mode(const SortMode &mode, const bool update)
     }
 
     update_list();
-
 }
 
 RomList::SortMode RomList::current_mode() const
-{return m_current_mode;}
+{
+    return m_current_mode;
+}
 
 void RomList::set_current_order(const Qt::SortOrder order)
 {
@@ -344,9 +376,10 @@ void RomList::set_current_order(const Qt::SortOrder order)
 }
 
 Qt::SortOrder RomList::current_order() const
-{return m_current_order;}
+{
+    return m_current_order;
+}
 
 RomList::~RomList()
 {
-
 }

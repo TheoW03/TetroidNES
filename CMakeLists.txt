@@ -9,7 +9,7 @@ set(EXECUTABLE_NAME qt_tetroidnes)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+if(WIN32)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 set(DLL_DEPENDENCIES
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-graphics-d-2.dll
@@ -23,7 +23,7 @@ set(DLL_DEPENDENCIES
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-window-2.dll
 )
 endif()
-
+endif()
 set(QT_REQUIRED_COMPONENTS Widgets Core Gui LinguistTools)
 
 set(QT_TRANSLATION_FILES
@@ -109,10 +109,10 @@ install(TARGETS ${EXECUTABLE_NAME}
 install(CODE
     file(GET_RUNTIME_DEPENDENCIES DIRECTORY ${QT_REQUIRED_COMPONENTS})
 )
-
+if(WIN32)
 add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${DLL_DEPENDENCIES} $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
 )
-
+endif()
 qt_finalize_executable(${EXECUTABLE_NAME})
