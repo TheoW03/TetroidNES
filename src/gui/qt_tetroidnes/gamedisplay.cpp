@@ -1,6 +1,5 @@
-#include "gamedisplay.h"
+#include <gamedisplay.h>
 #include <QBuffer>
-#include <SFML/OpenGL.hpp>
 
 GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
                                             sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default),

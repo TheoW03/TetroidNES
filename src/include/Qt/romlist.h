@@ -1,7 +1,7 @@
 #ifndef ROMLIST_H
 #define ROMLIST_H
 
-#include "flowlayout.h"
+#include <flowlayout.h>
 
 #include <QWidget>
 #include <QObject>

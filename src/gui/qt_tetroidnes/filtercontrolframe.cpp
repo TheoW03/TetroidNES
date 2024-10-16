@@ -1,5 +1,5 @@
-#include "filtercontrolframe.h"
-#include "romlist.h"
+#include <filtercontrolframe.h>
+#include <romlist.h>
 
 FilterControlFrame::FilterControlFrame(QWidget *parent) : QFrame{parent}
 {

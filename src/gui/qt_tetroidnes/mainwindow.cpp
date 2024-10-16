@@ -1,7 +1,7 @@
-#include "mainwindow.h"
+#include <mainwindow.h>
+#include <filtercontrolframe.h>
+#include <gamedisplay.h>
 #include "ui_mainwindow.h"
-#include "filtercontrolframe.h"
-#include "gamedisplay.h"
 
 #include <QVBoxLayout>
 #include <QIcon>

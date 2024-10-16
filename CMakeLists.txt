@@ -1,100 +1,118 @@
 cmake_minimum_required(VERSION 3.16)
-project(CMakeSFMLProject LANGUAGES CXX)
 
-set(CMAKE_EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/..)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/..)
-set(EXECUTABLE_NAME Tetroid)
-set(UNIT_TEST_EXE Emulator_tests)
-# string(APPEND CMAKE_CXX_FLAGS "-Wall")
-string(APPEND CMAKE_CXX_FLAGS " -g")
-# set(CMAKE_BUILD_TYPE Debug)
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+project(tetroidnes VERSION 0.1 LANGUAGES CXX)
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(EXECUTABLE_NAME qt_tetroidnes)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+set(DLL_DEPENDENCIES
+    ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-graphics-d-2.dll
+    ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-system-d-2.dll
+    ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-window-d-2.dll
 )
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
+else()
+set(DLL_DEPENDENCIES
+    ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-graphics-2.dll
+    ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-system-2.dll
+    ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-window-2.dll
+)
+endif()
 
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+set(QT_REQUIRED_COMPONENTS Widgets Core Gui LinguistTools)
+
+set(QT_TRANSLATION_FILES
+    src/gui/qt_tetroidnes/translations/tetroidnes_en_US.ts
+)
+
+set(QT_PROJECT_SOURCES
+    src/gui/qt_tetroidnes/main.cpp
+    src/gui/qt_tetroidnes/mainwindow.cpp
+	src/gui/qt_tetroidnes/menubar.cpp
+	src/gui/qt_tetroidnes/romlist.cpp
+	src/gui/qt_tetroidnes/filtercontrolframe.cpp
+	src/gui/qt_tetroidnes/flowlayout.cpp
+	src/gui/qt_tetroidnes/gamedisplay.cpp
+)
+
+set(QT_RCC_FILES
+    src/gui/qt_tetroidnes/resources.qrc
+)
+
+set(QT_HEADERS
+    src/include/Qt/filtercontrolframe.h
+    src/include/Qt/flowlayout.h
+    src/include/Qt/gamedisplay.h
+    src/include/Qt/mainwindow.h
+    src/include/Qt/menubar.h
+    src/include/Qt/romlist.h
+)
+
+set(QT_UI_FILES
+    src/gui/qt_tetroidnes/mainwindow.ui
+)
+
+find_package(OpenGL REQUIRED COMPONENTS OpenGL)
+
+find_package(Qt6 REQUIRED COMPONENTS
+    ${QT_REQUIRED_COMPONENTS}
+)
+
 include(FetchContent)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
     GIT_TAG 2.6.x)
 FetchContent_MakeAvailable(SFML)
 
-
-
-if(DEFINED UNITTESTS AND UNITTESTS STREQUAL "ON")
-  enable_testing()
-  add_executable(
-  ${UNIT_TEST_EXE}
-  src/unitTests/RunUnitTests.cc
-  src/unitTests/emulator_test.cc
-    src/SetupSFML.cpp
-    src/emulator/APU.cpp
-    src/emulator/AddressMode.cpp
-    src/emulator/BitOperations.cpp
-    src/emulator/Bus.cpp
-    src/emulator/Computer.cpp
-    src/emulator/Instructions.cpp
-    src/emulator/LoadRom.cpp
-    src/emulator/PPU.cpp
-    src/emulator/StatusRegister.cpp
-    src/emulator/NESError.cpp
-    src/emulator/InstructionMap.cpp
-)
-target_link_libraries(
-  ${UNIT_TEST_EXE}
-
-  GTest::gtest_main
-)
-target_include_directories(${UNIT_TEST_EXE} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
-
-target_link_libraries(
-  ${UNIT_TEST_EXE}
-    sfml-graphics
-)
-include(GoogleTest)
-gtest_discover_tests(  ${UNIT_TEST_EXE})
-target_compile_features(  ${UNIT_TEST_EXE} PRIVATE cxx_std_20)
-
-
-install(TARGETS   ${UNIT_TEST_EXE}
-)
-else()
-add_executable(${EXECUTABLE_NAME} src/main.cpp
-    src/SetupSFML.cpp
-    src/emulator/APU.cpp
-    src/emulator/AddressMode.cpp
-    src/emulator/BitOperations.cpp
-    src/emulator/Bus.cpp
-    src/emulator/Computer.cpp
-    src/emulator/Instructions.cpp
-    src/emulator/LoadRom.cpp
-    src/emulator/PPU.cpp
-    src/emulator/StatusRegister.cpp
-    src/emulator/NESError.cpp
-    src/emulator/InstructionMap.cpp
+include_directories(${EXECUTABLE_NAME} PRIVATE src/include/Qt)
+qt_add_executable(${EXECUTABLE_NAME}
+    MANUAL_FINALIZATION
+    ${QT_RCC_FILES}
+    ${QT_PROJECT_SOURCES}
+    ${QT_HEADERS}
+    ${QT_UI_FILES}
 )
 
-target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
+qt_add_translations(${EXECUTABLE_NAME} TS_FILES ${QT_TRANSLATION_FILES})
 
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE sfml-graphics)
-target_compile_features(${EXECUTABLE_NAME} PRIVATE cxx_std_20)
-install(TARGETS ${EXECUTABLE_NAME})
-
-
+if(ANDROID)
+    set_property(TARGET ${EXECUTABLE_NAME} APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/android)
 endif()
 
+include_directories(${EXECUTABLE_NAME} PRIVATE src/include/emulator)
 
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE Qt6::Widgets Qt6::Gui Qt6::Core)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE sfml-system sfml-graphics sfml-window)
 
-# if(WIN32)
-# add_custom_command(
-# TARGET ${EXECUTABLE_NAME}
-# COMMENT "Copy OpenAL DLL"
-# PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
-# VERBATIM)
-# endif()
-# uncomment if you are running this in Visual Studio or if you get an error on windows with the current setup
+#target_link_libraries(${EXECUTABLE_NAME} PRIVATE OpenGL::GLES2)
+
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES
+    ${BUNDLE_ID_OPTION}
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+    WIN32_EXECUTABLE TRUE
+)
+
+include(GNUInstallDirs)
+install(TARGETS ${EXECUTABLE_NAME}
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(CODE
+    file(GET_RUNTIME_DEPENDENCIES DIRECTORY ${QT_REQUIRED_COMPONENTS})
+)
+
+add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${DLL_DEPENDENCIES} $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
+)
+
+qt_finalize_executable(${EXECUTABLE_NAME})

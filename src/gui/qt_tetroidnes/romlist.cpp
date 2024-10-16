@@ -1,4 +1,4 @@
-#include "romlist.h"
+#include <romlist.h>
 
 #include <QDebug>
 #include <QRegularExpression>
