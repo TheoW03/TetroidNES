@@ -1,5 +1,6 @@
 #include <Emulator/Execute.h>
-#include "Execute.h"
+#include <Emulator/InstructionMap.h>
+#include <Emulator/StatusRegister.h>
 
 Execute::Execute(CPU cpu)
 {
@@ -19,9 +20,9 @@ CPU Execute::run()
     }
     cpu.bus.tick();
     auto current_instr = cpu.bus.get_current_instruction();
-    if (InstructionValid(current_instruction))
+    if (InstructionValid(current_instr))
     {
-        Instruction a = GetInstruction(current_instruction);
+        Instruction a = GetInstruction(current_instr);
         a.i(a.addressmode, cpu);
 
         cpu.error_code = EXIT_SUCCESS;

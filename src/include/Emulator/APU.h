@@ -2,6 +2,7 @@
 
 #ifndef APU_H
 #define APU_H
+#include <cstdint>
 class APU
 {
 private:

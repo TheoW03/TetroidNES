@@ -49,6 +49,7 @@ set(EMULATOR_SOURCES
     src/emulator/StatusRegister.cpp
     src/emulator/NESError.cpp
     src/emulator/InstructionMap.cpp
+    src/emulator/Execute.cpp
 )
 
 set(QT_PROJECT_SOURCES

@@ -19,6 +19,7 @@ enum class Controller
 #endif
 #ifndef BUS_H
 #define BUS_H
+#include <cstdint>
 class Bus
 {
 private:

@@ -8,6 +8,7 @@
 
 #ifndef PPU_H
 #define PPU_H
+#include <cstdint>
 class PPU
 {
 private:

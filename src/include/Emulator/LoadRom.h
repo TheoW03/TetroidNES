@@ -12,6 +12,7 @@ enum MirrorType
 #endif
 #ifndef ROM_H
 #define ROM_H
+#include <cstdint>
 struct Rom
 {
     std::vector<uint8_t> PRG;
