@@ -50,13 +50,13 @@ void RomListData::set_favorited(const bool b) { this->m_favorited = b; }
 // RomListItem
 RomListItem::RomListItem(const QSharedPointer<RomListData> *data, QWidget *parent) : QWidget{parent}
 {
-    title = new QLabel(this);
-    img = new QLabel(this);
-    year = new QLabel(this);
-    buttons_frame = new QFrame(this);
+    title =           new QLabel(this);
+    img =             new QLabel(this);
+    year =            new QLabel(this);
+    buttons_frame =   new QFrame(this);
     favorite_button = new QPushButton(buttons_frame);
-    layout = new QVBoxLayout();
-    buttons_layout = new QHBoxLayout();
+    layout =          new QVBoxLayout();
+    buttons_layout =  new QHBoxLayout();
 
     favorite_button->setCheckable(true);
     favorite_button->setText("Favorite button");
@@ -115,7 +115,7 @@ void RomListItem::update_data(const QSharedPointer<RomListData> &data)
     year->setText(QString::number(data->year()));
     if (data->img().isNull())
     {
-        QPixmap *placeholder_img = new QPixmap(50, 50);
+        auto *placeholder_img = new QPixmap(50, 50);
         placeholder_img->fill(Qt::darkGreen);
 
         img->setPixmap(*placeholder_img);

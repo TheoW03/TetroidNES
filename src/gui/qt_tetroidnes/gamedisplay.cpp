@@ -1,5 +1,7 @@
 #include <gamedisplay.h>
 #include <QBuffer>
+#include <QIODevice>
+#include <QCoreApplication>
 
 GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
                                             sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default),
@@ -9,7 +11,8 @@ GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_NoSystemBackground);
 
-    setWindowTitle(tr("TetroidNES - %1").arg("Game name goes here!!!!"));
+    auto *app_instance = QCoreApplication::instance();
+    setWindowTitle(QString("%1 - %2").arg(app_instance->applicationName(),"Game name goes here!!!!"));
 
     setFocusPolicy(Qt::StrongFocus);
 

@@ -3,10 +3,69 @@
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
+#include <QDebug>
+#include <QFile>
+#include <QIODevice>
+#include <QTextStream>
+
+#include <stdio.h>
+#include <stdlib.h>
+
+QtMessageHandler originalHandler = nullptr;
+
+void logToFile(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QString message = qFormatLogMessage(type, context, msg);
+    static FILE *f = fopen("log.txt", "a");
+    fprintf(f, "%s\n", qPrintable(message));
+    fflush(f);
+
+    if (originalHandler)
+    {
+        originalHandler(type, context, msg);
+    }
+        
+}
 
 int main(int argc, char *argv[])
 {
+
+    originalHandler = qInstallMessageHandler(logToFile);
+    qSetMessagePattern("%{type} | %{function}:%{line} | %{time h:mm:ss.zzz} | %{message}");
+
     QApplication a(argc, argv);
+    a.setApplicationName("TetroidNES");
+
+    QFile file("version");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qWarning() << "Could not open version file!";
+        a.setApplicationVersion("Version file could not be opened");
+    }
+    else
+    {
+        QTextStream stream(&file);
+        while(!stream.atEnd())
+        {
+            QString line = file.readLine();
+            qDebug() << "Reading version file:" << line;
+            if (line.startsWith("version="))
+            {
+                a.setApplicationVersion(line.split("=").back());
+                break;
+            }
+        }
+        // Checking if a version was found
+        if(a.applicationVersion().isEmpty())
+        {
+            qWarning() << "Could not find version in version file!";
+            a.setApplicationVersion("Version could not be found");
+        }
+        stream.flush();
+    }
+    
+    qInfo() << "STARTING" << a.applicationName() << "VERSION" << a.applicationVersion();
+
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
     for (const QString &locale : uiLanguages)
@@ -18,6 +77,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
+
     MainWindow w;
     w.show();
     return a.exec();
