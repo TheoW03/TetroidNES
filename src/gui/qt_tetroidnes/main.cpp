@@ -1,4 +1,4 @@
-#define VERSION "UNDEFINED" // DO NOT EDIT: CMake handles this
+#define VERSION "1.0.0" // DO NOT EDIT: CMake handles this
 
 #include <mainwindow.h>
 
@@ -12,8 +12,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#define VERSION "1.0.0"
 
 QtMessageHandler originalHandler = nullptr;
 
@@ -38,35 +36,7 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     a.setApplicationName("TetroidNES");
-    // QFile file("version");
     a.setApplicationVersion(VERSION);
-    // if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    // {
-    //     qWarning() << "Could not open version file!";
-    //     a.setApplicationVersion("Version file could not be opened");
-    // }
-    // else
-    // {
-    //     QTextStream stream(&file);
-
-    //     while (!stream.atEnd())
-    //     {
-    //         QString line = file.readLine();
-    //         qDebug() << "Reading version file:" << line;
-    //         if (line.startsWith("version="))
-    //         {
-    //             a.setApplicationVersion(line.split("=").back());
-    //             break;
-    //         }
-    //     }
-    //     // Checking if a version was found
-    //     if (a.applicationVersion().isEmpty())
-    //     {
-    //         qWarning() << "Could not find version in version file!";
-    //         a.setApplicationVersion("Version could not be found");
-    //     }
-    //     stream.flush();
-    // }
 
     qInfo() << "STARTING" << a.applicationName() << "VERSION" << a.applicationVersion();
 
