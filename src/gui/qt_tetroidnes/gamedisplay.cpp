@@ -1,11 +1,14 @@
 #include <gamedisplay.h>
-#include <QBuffer>
+
 #include <QIODevice>
 #include <QCoreApplication>
+#include <QtLogging>
+
+#include <Emulator/InstructionMap.h>
+#include <Emulator/LoadRom.h>
 
 GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
-                                            sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default),
-                                            initialized(false)
+                                            sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -22,25 +25,36 @@ GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
 
 void GameDisplay::on_init()
 {
-    QPixmap pixmap("C:\\Users\\tyler\\Downloads\\silly.jpg");
-    QByteArray bArray;
-    QBuffer buffer(&bArray);
-    buffer.open(QIODevice::WriteOnly);
-    pixmap.save(&buffer, "JPG");
-    buffer.close();
-    // sf::GetLastError();
-    texture.loadFromMemory(buffer.data().data(), buffer.data().size());
-    sprite.setTexture(texture);
+    initializeInstructionMap();
+    Rom rom = load_rom(file_tobyte_vector("C:/Users/tyler/Downloads/Demo.nes"));
+    Bus bus = Bus(rom, NES_START);
+    bus.fill(bus.read_16bit(0xfffc));
+    cpu.bus = bus;
+    cpu.A_Reg = 0;
+    cpu.status.val = 0;
+    cpu.X_Reg = 0;
+    cpu.Y_Reg = 0;
+    cpu.bus.clock_cycles = 0;
+
+    texture.create(NES_RES_L, NES_RES_W);
+
     sprite.setOrigin(sprite.getTextureRect().width / 2, sprite.getTextureRect().height / 2);
-    sprite.setPosition(200, 200);
+    sprite.setPosition(256, 240);
+    sprite.setTexture(texture);
+    update_game_scale();
+
+    exe = Execute(cpu);
 }
 
 void GameDisplay::on_update()
 {
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    clear(sf::Color(128, 0, 0));
-    sprite.rotate(0.0125);
-
+    auto frame = exe.render();
+    auto rgb_data_vector = cpu.bus.render_texture({NES_RES_L, NES_RES_W});
+    uint8_t rgb_data[NES_RES_A * 4];
+    std::copy(rgb_data_vector.begin(), rgb_data_vector.end(), rgb_data);
+    clear();
+    texture.update(rgb_data);
+    exe.run();
     draw(sprite);
 }
 
@@ -68,6 +82,21 @@ void GameDisplay::showEvent(QShowEvent *event)
     }
 }
 
+void GameDisplay::update_game_scale()
+{
+    QSize widget_size = size();
+    sf::Vector2u texture_size = texture.getSize();
+    sprite.setScale(
+        static_cast<float>(widget_size.width()) / texture_size.x,
+        static_cast<float>(widget_size.height()) / texture_size.y
+    );
+}
+
+void GameDisplay::center_display()
+{
+    
+}
+
 QPaintEngine *GameDisplay::paintEngine() const
 {
     return nullptr;
@@ -77,6 +106,11 @@ void GameDisplay::paintEvent(QPaintEvent *event)
 {
     on_update();
     display();
+}
+
+void GameDisplay::resizeEvent(QResizeEvent *event)
+{
+    update_game_scale();
 }
 
 GameDisplay::~GameDisplay()
