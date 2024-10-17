@@ -1,0 +1,7 @@
+info | unknown:0 | 11:08:37.876 | STARTING "TetroidNES" VERSION "1.0.0"
+info | unknown:0 | 11:09:58.531 | STARTING "TetroidNES" VERSION "1.0.0"
+info | unknown:0 | 11:10:46.035 | STARTING "TetroidNES" VERSION "1.0.0"
+info | unknown:0 | 11:11:25.333 | STARTING "TetroidNES" VERSION "1.0.0"
+info | unknown:0 | 11:11:28.489 | ENDING "TetroidNES" VERSION "1.0.0" 0
+info | unknown:0 | 11:12:25.470 | STARTING "TetroidNES" VERSION "1.0.0"
+info | unknown:0 | 11:12:30.660 | ENDING "TetroidNES" VERSION "1.0.0" EXIT CODE 0
