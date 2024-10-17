@@ -11,8 +11,7 @@ GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_NoSystemBackground);
 
-    auto *app_instance = QCoreApplication::instance();
-    setWindowTitle(QString("%1 - %2").arg(app_instance->applicationName(),"Game name goes here!!!!"));
+    setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(),"Game name goes here!!!!"));
 
     setFocusPolicy(Qt::StrongFocus);
 
