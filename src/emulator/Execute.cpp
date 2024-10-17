@@ -34,3 +34,7 @@ std::vector<uint8_t> Execute::render()
 {
     return cpu.bus.render_texture({NES_RES_L, NES_RES_W});
 }
+
+void Execute::log_Cpu()
+{
+}

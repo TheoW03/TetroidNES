@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define VERSION "1.0.0"
+
 QtMessageHandler originalHandler = nullptr;
 
 void logToFile(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -26,7 +28,6 @@ void logToFile(QtMsgType type, const QMessageLogContext &context, const QString 
     {
         originalHandler(type, context, msg);
     }
-        
 }
 
 int main(int argc, char *argv[])
@@ -37,8 +38,36 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     a.setApplicationName("TetroidNES");
+    // QFile file("version");
     a.setApplicationVersion(VERSION);
-    
+    // if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    // {
+    //     qWarning() << "Could not open version file!";
+    //     a.setApplicationVersion("Version file could not be opened");
+    // }
+    // else
+    // {
+    //     QTextStream stream(&file);
+
+    //     while (!stream.atEnd())
+    //     {
+    //         QString line = file.readLine();
+    //         qDebug() << "Reading version file:" << line;
+    //         if (line.startsWith("version="))
+    //         {
+    //             a.setApplicationVersion(line.split("=").back());
+    //             break;
+    //         }
+    //     }
+    //     // Checking if a version was found
+    //     if (a.applicationVersion().isEmpty())
+    //     {
+    //         qWarning() << "Could not find version in version file!";
+    //         a.setApplicationVersion("Version could not be found");
+    //     }
+    //     stream.flush();
+    // }
+
     qInfo() << "STARTING" << a.applicationName() << "VERSION" << a.applicationVersion();
 
     QTranslator translator;
@@ -55,5 +84,7 @@ int main(int argc, char *argv[])
 
     MainWindow w;
     w.show();
-    return a.exec();
+    int exit_code = a.exec();
+    qInfo() << "ENDING" << a.applicationName() << "VERSION" << a.applicationVersion() << "EXIT CODE" << exit_code;
+    return exit_code;
 }

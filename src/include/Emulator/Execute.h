@@ -13,5 +13,6 @@ public:
     Execute(CPU cpu);
     CPU run();
     std::vector<uint8_t> render();
+    void log_Cpu();
 };
 #endif
