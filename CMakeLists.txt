@@ -9,16 +9,15 @@ set(EXECUTABLE_NAME qt_tetroidnes)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 if(WIN32)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-set(VERSION_DEF "#define VERSION \"${PROJECT_VERSION}-Debug\"")
 set(DLL_DEPENDENCIES
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-graphics-d-2.dll
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-system-d-2.dll
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-window-d-2.dll
 )
 else()
-set(VERSION_DEF "#define VERSION \"${PROJECT_VERSION}\"")
 set(DLL_DEPENDENCIES
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-graphics-2.dll
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-system-2.dll
@@ -26,6 +25,13 @@ set(DLL_DEPENDENCIES
 )
 endif()
 endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+set(VERSION_DEF "#define VERSION \"${PROJECT_VERSION}-Debug\"")
+else()
+set(VERSION_DEF "#define VERSION \"${PROJECT_VERSION}\"")
+endif()
+
 set(QT_REQUIRED_COMPONENTS Widgets Core Gui LinguistTools)
 
 set(QT_TRANSLATION_FILES
@@ -68,6 +74,7 @@ set(QT_HEADERS
     src/include/Qt/mainwindow.h
     src/include/Qt/menubar.h
     src/include/Qt/romlist.h
+    src/include/Qt/util.h
 )
 
 set(QT_UI_FILES
