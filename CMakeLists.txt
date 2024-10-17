@@ -11,12 +11,14 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(WIN32)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+set(VERSION_DEF "#define VERSION \"${PROJECT_VERSION}-Debug\"")
 set(DLL_DEPENDENCIES
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-graphics-d-2.dll
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-system-d-2.dll
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-window-d-2.dll
 )
 else()
+set(VERSION_DEF "#define VERSION \"${PROJECT_VERSION}\"")
 set(DLL_DEPENDENCIES
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-graphics-2.dll
     ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-system-2.dll
@@ -42,6 +44,7 @@ set(EMULATOR_SOURCES
     src/emulator/NESError.cpp
     src/emulator/InstructionMap.cpp
 )
+
 set(QT_PROJECT_SOURCES
     src/gui/qt_tetroidnes/main.cpp
     src/gui/qt_tetroidnes/mainwindow.cpp
@@ -133,10 +136,19 @@ add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
         ${DLL_DEPENDENCIES} $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
 )
 endif()
-# Write version file
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/version
-    "WARNING. DO NOT EDIT THE VERSION OF THE FILE OR ELSE ISSUE TRACKING WILL BE MORE DIFFICULT "
-    "AND UPDATE DETECTION MAY NOT WORK AS EXPECTED\n"
-    "version=${PROJECT_VERSION}"
-)
+
+# Update version macro if needed
+file(READ src/gui/qt_tetroidnes/main.cpp FILE_CONTENT)
+string(REGEX MATCH "#define VERSION \"[^\"]*\"" FIRST_LINE "${FILE_CONTENT}")
+#message(STATUS "First line: ${FIRST_LINE} Replacing to: ${VERSION_DEF}")
+string(REPLACE "${FIRST_LINE}" "${VERSION_DEF}" NEW_CONTENT "${FILE_CONTENT}")
+#message(STATUS "New Content:\n${NEW_CONTENT}")
+
+if(NOT NEW_CONTENT STREQUAL FILE_CONTENT)
+    file(WRITE src/gui/qt_tetroidnes/main.cpp
+        "${NEW_CONTENT}"
+    )
+else()
+    message(STATUS "Version line not found or is the same")
+endif()
 qt_finalize_executable(${EXECUTABLE_NAME})
