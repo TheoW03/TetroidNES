@@ -29,7 +29,19 @@ set(QT_REQUIRED_COMPONENTS Widgets Core Gui LinguistTools)
 set(QT_TRANSLATION_FILES
     src/gui/qt_tetroidnes/translations/tetroidnes_en_US.ts
 )
-
+set(EMULATOR_SOURCES 
+    src/emulator/APU.cpp
+    src/emulator/AddressMode.cpp
+    src/emulator/BitOperations.cpp
+    src/emulator/Bus.cpp
+    src/emulator/Computer.cpp
+    src/emulator/Instructions.cpp
+    src/emulator/LoadRom.cpp
+    src/emulator/PPU.cpp
+    src/emulator/StatusRegister.cpp
+    src/emulator/NESError.cpp
+    src/emulator/InstructionMap.cpp
+)
 set(QT_PROJECT_SOURCES
     src/gui/qt_tetroidnes/main.cpp
     src/gui/qt_tetroidnes/mainwindow.cpp
@@ -38,6 +50,8 @@ set(QT_PROJECT_SOURCES
 	src/gui/qt_tetroidnes/filtercontrolframe.cpp
 	src/gui/qt_tetroidnes/flowlayout.cpp
 	src/gui/qt_tetroidnes/gamedisplay.cpp
+
+    
 )
 
 set(QT_RCC_FILES
@@ -70,11 +84,14 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 include_directories(${EXECUTABLE_NAME} PRIVATE src/include/Qt)
+
 qt_add_executable(${EXECUTABLE_NAME}
     MANUAL_FINALIZATION
     ${QT_RCC_FILES}
     ${QT_PROJECT_SOURCES}
+    ${EMULATOR_SOURCES}
     ${QT_HEADERS}
+
     ${QT_UI_FILES}
 )
 
@@ -85,7 +102,7 @@ if(ANDROID)
         ${CMAKE_CURRENT_SOURCE_DIR}/android)
 endif()
 
-include_directories(${EXECUTABLE_NAME} PRIVATE src/include/emulator)
+include_directories(${EXECUTABLE_NAME} PRIVATE src/include/)
 
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE Qt6::Widgets Qt6::Gui Qt6::Core)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE sfml-system sfml-graphics sfml-window)
