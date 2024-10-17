@@ -38,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->centralwidget->setLayout(widget_layout);
 
     // setup
+    auto *app_instance = QCoreApplication::instance();
+    setWindowTitle(QString("%1 - %2").arg(app_instance->applicationName(), app_instance->applicationVersion()));
     setMenuBar(main_menubar);
     page_info->setObjectName("PageInfo");
     status_bar->addPermanentWidget(page_info);

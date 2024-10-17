@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(tetroidnes VERSION 0.1 LANGUAGES CXX)
+project(tetroidnes VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -110,9 +110,16 @@ install(CODE
     file(GET_RUNTIME_DEPENDENCIES DIRECTORY ${QT_REQUIRED_COMPONENTS})
 )
 if(WIN32)
+# Copy DLL Depencencies
 add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${DLL_DEPENDENCIES} $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
 )
 endif()
+# Write version file
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/version
+    "WARNING. DO NOT EDIT THE VERSION OF THE FILE OR ELSE ISSUE TRACKING WILL BE MORE DIFFICULT "
+    "AND UPDATE DETECTION MAY NOT WORK AS EXPECTED\n"
+    "version=${PROJECT_VERSION}"
+)
 qt_finalize_executable(${EXECUTABLE_NAME})
