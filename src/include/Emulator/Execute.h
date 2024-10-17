@@ -1,5 +1,7 @@
 #include <Emulator/Computer.h>
 
+#define NES_START 0x8000
+
 #ifndef EXECUTE_H
 #define EXECUTE_H
 class Execute
