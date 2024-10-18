@@ -19,12 +19,11 @@ CPU Execute::run()
         cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
     }
     cpu.bus.tick();
-    auto current_instr = cpu.bus.get_current_instruction();
+    auto current_instr = cpu.bus.fetch_next();
     if (InstructionValid(current_instr))
     {
         Instruction a = GetInstruction(current_instr);
         a.i(a.addressmode, cpu);
-
         cpu.error_code = EXIT_SUCCESS;
         return cpu;
     }

@@ -14,7 +14,7 @@ GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_NoSystemBackground);
 
-    setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(),"Game name goes here!!!!"));
+    setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(), "Game name goes here!!!!"));
 
     setFocusPolicy(Qt::StrongFocus);
 
@@ -26,7 +26,7 @@ GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
 void GameDisplay::on_init()
 {
     initializeInstructionMap();
-    Rom rom = load_rom(file_tobyte_vector("C:/Users/tyler/Downloads/Demo.nes"));
+    Rom rom = load_rom(file_tobyte_vector("Test.nes"));
     Bus bus = Bus(rom, NES_START);
     bus.fill(bus.read_16bit(0xfffc));
     cpu.bus = bus;
@@ -48,13 +48,20 @@ void GameDisplay::on_init()
 
 void GameDisplay::on_update()
 {
-    auto frame = exe.render();
+    // auto frame = exe.render();
     auto rgb_data_vector = cpu.bus.render_texture({NES_RES_L, NES_RES_W});
     uint8_t rgb_data[NES_RES_A * 4];
     std::copy(rgb_data_vector.begin(), rgb_data_vector.end(), rgb_data);
     clear();
     texture.update(rgb_data);
-    exe.run();
+    // printf("in run ======");
+
+    CPU result = exe.run();
+    if (a.error_code == EXIT_FAILURE)
+    {
+        // TODO: close error and log the CPU stats
+    }
+
     draw(sprite);
 }
 
@@ -88,13 +95,11 @@ void GameDisplay::update_game_scale()
     sf::Vector2u texture_size = texture.getSize();
     sprite.setScale(
         static_cast<float>(widget_size.width()) / texture_size.x,
-        static_cast<float>(widget_size.height()) / texture_size.y
-    );
+        static_cast<float>(widget_size.height()) / texture_size.y);
 }
 
 void GameDisplay::center_display()
 {
-    
 }
 
 QPaintEngine *GameDisplay::paintEngine() const
