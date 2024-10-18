@@ -7,6 +7,13 @@
 #include <Emulator/InstructionMap.h>
 #include <Emulator/LoadRom.h>
 
+// REMOVE WHEN ROMS CAN BE ADDED THROUGH GUI
+#ifdef _WIN32
+#define TEST_ROM_LOCATION "C:/Users/tyler/Downloads/Demo.nes"
+#else
+#define TEST_ROM_LOCATION "Test.nes"
+#endif
+
 GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
                                             sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)
 {
@@ -26,7 +33,7 @@ GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
 void GameDisplay::on_init()
 {
     initializeInstructionMap();
-    Rom rom = load_rom(file_tobyte_vector("Test.nes"));
+    Rom rom = load_rom(file_tobyte_vector(TEST_ROM_LOCATION));
     Bus bus = Bus(rom, NES_START);
     bus.fill(bus.read_16bit(0xfffc));
     cpu.bus = bus;
@@ -36,10 +43,12 @@ void GameDisplay::on_init()
     cpu.Y_Reg = 0;
     cpu.bus.clock_cycles = 0;
 
-    texture.create(NES_RES_L, NES_RES_W);
+    if (!texture.create(NES_RES_L, NES_RES_W))
+    {
+        qCritical() << "Texture failed to be created!";
+    }
 
     sprite.setOrigin(sprite.getTextureRect().width / 2, sprite.getTextureRect().height / 2);
-    sprite.setPosition(256, 240);
     sprite.setTexture(texture);
     update_game_scale();
 
@@ -48,20 +57,22 @@ void GameDisplay::on_init()
 
 void GameDisplay::on_update()
 {
-    // auto frame = exe.render();
-    auto rgb_data_vector = cpu.bus.render_texture({NES_RES_L, NES_RES_W});
-    uint8_t rgb_data[NES_RES_A * 4];
-    std::copy(rgb_data_vector.begin(), rgb_data_vector.end(), rgb_data);
-    clear();
-    texture.update(rgb_data);
-    // printf("in run ======");
-
+    // Process CPU
     CPU result = exe.run();
-    if (a.error_code == EXIT_FAILURE)
+    if (result.error_code == EXIT_FAILURE)
     {
+        qCritical() << "CPU EXIT FAILURE";
         // TODO: close error and log the CPU stats
     }
 
+    // Generate next frame
+    auto rgb_data_vector = exe.render();
+    uint8_t rgb_data[NES_RES_A * 4];
+    std::copy(rgb_data_vector.begin(), rgb_data_vector.end(), rgb_data);
+
+    // Display next frame
+    clear();
+    texture.update(rgb_data);
     draw(sprite);
 }
 
