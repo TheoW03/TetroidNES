@@ -19,11 +19,11 @@ inline QString num_to_hexa(uint8_t num)
 inline bool is_a_game_running()
 {
 
-    foreach(auto *widget, qApp->topLevelWidgets())
+    for(auto &widget: qApp->topLevelWidgets())
     {
         if (widget->inherits("MainWindow"))
         {
-            foreach(auto *gamedisplay, widget->findChildren<GameDisplay*>())
+            for(auto &gamedisplay : widget->findChildren<GameDisplay*>())
             {
                 if(gamedisplay->initialized()){return true;}
             }

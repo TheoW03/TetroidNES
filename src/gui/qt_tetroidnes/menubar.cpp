@@ -48,7 +48,7 @@ void MenuBar::open_rom()
     if (file_dialog.exec() == QFileDialog::Accepted && !file_dialog.selectedUrls().isEmpty())
     {
         MainWindow *mw = static_cast<MainWindow*>(parent());
-        foreach(QUrl url, file_dialog.selectedUrls())
+        for(auto &url : file_dialog.selectedUrls())
         {
             mw->create_display(url.toLocalFile());
         }
