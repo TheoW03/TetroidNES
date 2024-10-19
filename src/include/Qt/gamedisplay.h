@@ -17,6 +17,7 @@ public:
     explicit GameDisplay(QWidget *parent = nullptr, QString rom_url = QString());
     void update_game_scale();
     void center_display();
+    bool initialized() const;
     ~GameDisplay();
 
 private:
@@ -26,7 +27,7 @@ private:
     float frame_time = 33.33; // Milliseconds, 30 FPS
     sf::Texture texture;
     sf::Sprite sprite;
-    bool initialized = false;
+    bool m_initialized = false;
     Execute exe = Execute(CPU()); // Will throw errors if given nothing in args
     QString m_rom_url;
 

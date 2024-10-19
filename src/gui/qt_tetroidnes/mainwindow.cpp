@@ -2,12 +2,14 @@
 #include <filtercontrolframe.h>
 #include <gamedisplay.h>
 #include "ui_mainwindow.h"
+#include <util.h>
 
 #include <QVBoxLayout>
 #include <QIcon>
 #include <QtLogging>
 #include <QScrollBar>
 #include <QMimeData>
+#include <QMessageBox>
 #include <qevent.h>
 
 
@@ -41,7 +43,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     // setup
     setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(), qApp->applicationVersion()));
     setMenuBar(main_menubar);
-    setAcceptDrops(true);
     page_info->setObjectName("PageInfo");
     status_bar->addPermanentWidget(page_info);
     update_page_info();
@@ -93,6 +94,8 @@ void MainWindow::wheelEvent(QWheelEvent *event)
         scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->singleStep());
     }
     update_page_info();
+
+    QMainWindow::wheelEvent(event);
 }
 
 void MainWindow::rom_list_scroll_value_changed(const int value)
@@ -169,18 +172,49 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event)
         event->setDropAction(Qt::DropAction::IgnoreAction);
     }
     
+    QMainWindow::dragEnterEvent(event);
 }
 
 void MainWindow::dragMoveEvent(QDragMoveEvent *event)
 {
     event->setDropAction(Qt::DropAction::MoveAction);
     event->accept();
+    QMainWindow::dragMoveEvent(event);
 }
 
 void MainWindow::dropEvent(QDropEvent *event)
 {
     auto *display = new GameDisplay(this, event->mimeData()->urls()[0].toLocalFile());
     display->show();
+    QMainWindow::dropEvent(event);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+
+    qDebug() << "Quitting... games are running: " << is_a_game_running();
+    if(is_a_game_running())
+    {
+        QMessageBox message_box;
+        message_box.setWindowTitle(tr("TetroidNES - Confirmation"));
+        message_box.setText(tr("Are you sure you want to quit?\n(Games are still running)"));
+        message_box.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+
+        if (message_box.exec() == QMessageBox::No)
+        {
+            event->ignore();
+        }
+        else
+        {
+            event->accept();
+        }
+    }
+    else
+    {
+        event->accept();
+    }
+
+    QMainWindow::closeEvent(event);
 }
 
 MainWindow::~MainWindow()

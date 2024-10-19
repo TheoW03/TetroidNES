@@ -4,6 +4,7 @@
 #include <QCoreApplication>
 #include <QtLogging>
 #include <QUrl>
+#include <QMessageBox>
 
 #include <Emulator/InstructionMap.h>
 #include <Emulator/LoadRom.h>
@@ -87,7 +88,7 @@ void GameDisplay::on_timeout()
 void GameDisplay::showEvent(QShowEvent *event)
 {
     // Initial initialization of the SFML widget
-    if (!initialized)
+    if (!m_initialized)
     {
         // Create an SFML window for rendering with the id of the window in which the drawing will be done
         RenderWindow::create(sf::WindowHandle(winId()));
@@ -105,7 +106,7 @@ void GameDisplay::showEvent(QShowEvent *event)
         connect(&frame_timer, &QTimer::timeout, this, &GameDisplay::on_timeout);
         frame_timer.start();
 
-        initialized = true;
+        m_initialized = true;
     }
 }
 
@@ -121,6 +122,8 @@ void GameDisplay::update_game_scale()
 void GameDisplay::center_display()
 {
 }
+
+bool GameDisplay::initialized() const {return m_initialized;}
 
 QPaintEngine *GameDisplay::paintEngine() const
 {
