@@ -32,6 +32,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     QTimer *frame_timer = new QTimer(this);
 
     frame_timer->setInterval(frame_time);
+    qInfo() << "Started game " << QUrl(rom_url).fileName().split(".").front();
 }
 
 void GameDisplay::on_init()
@@ -68,7 +69,7 @@ void GameDisplay::on_update()
     if (result.error_code == EXIT_FAILURE)
     {
         this->exe.log_Cpu();
-        qInfo() << "CPU exited unsuccessfully";
+        qInfo() << "potential error with the cpu";
         QMessageBox::critical(this,
                               "TetroidNES - " + tr("Error"),
                               tr("potential error with the CPU"));

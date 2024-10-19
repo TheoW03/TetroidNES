@@ -9,20 +9,26 @@
 #include <QFile>
 #include <QIODevice>
 #include <QTextStream>
-
+#include <ctime>
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-
+#include <stdint.h>
+#include <filesystem>
 QtMessageHandler originalHandler = nullptr;
 
 void logToFile(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QString message = qFormatLogMessage(type, context, msg);
-    static FILE *f = fopen("log.txt", "a");
+    std::filesystem::create_directories("logs");
+    std::time_t t = std::time(0); // t is an integer type
+    // char *intStr = itoa(t);
+    // std::string str = std::string(intStr);
+    std::string time_stamp = std::to_string(t);
+    auto file = "logs/log_" + time_stamp + ".txt";
+    static FILE *f = fopen(file.c_str(), "a");
     fprintf(f, "%s\n", qPrintable(message));
     fflush(f);
-
     if (originalHandler)
     {
         originalHandler(type, context, msg);
