@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define VERSION "1.0.0"
+
 QtMessageHandler originalHandler = nullptr;
 
 void logToFile(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -36,6 +38,7 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     a.setApplicationName("TetroidNES");
+
     a.setApplicationVersion(VERSION);
 
     qInfo() << "STARTING" << a.applicationName() << "VERSION" << a.applicationVersion();

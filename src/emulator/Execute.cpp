@@ -1,6 +1,7 @@
 #include <Emulator/Execute.h>
 #include <Emulator/InstructionMap.h>
 #include <Emulator/StatusRegister.h>
+#include <QDebug>
 
 Execute::Execute(CPU cpu)
 {
@@ -12,7 +13,7 @@ CPU Execute::run()
     if (cpu.bus.NMI_interrupt())
     {
         cpu.bus.push_stack8(cpu.status.val);
-
+        qInfo() << "NMI interrupt, should be rendering";
         cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
         cpu.bus.fetch_next();
         set_interrupt_disabled(1, cpu);
