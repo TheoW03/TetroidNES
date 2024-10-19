@@ -1,4 +1,3 @@
-#define VERSION "1.0.0" // DO NOT EDIT: CMake handles this
 
 #include <mainwindow.h>
 
@@ -13,7 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define VERSION "1.0.0"
+#define VERSION "1.0.0" // DO NOT EDIT: CMake desides what this should be
 
 QtMessageHandler originalHandler = nullptr;
 
