@@ -5,12 +5,12 @@
 #include <QtLogging>
 #include <QUrl>
 #include <QMessageBox>
-
+#include <Qt/util.h>
 #include <Emulator/InstructionMap.h>
 #include <Emulator/LoadRom.h>
 
 GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
-                                            sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)
+                                                             sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -24,7 +24,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     setWindowTitle(QString("%1 - %2").arg(
         qApp->applicationName(),
         QUrl(rom_url).fileName().split(".").front() // Should probably clean this up
-    ));
+        ));
 
     setFocusPolicy(Qt::StrongFocus);
 
@@ -63,10 +63,16 @@ void GameDisplay::on_init()
 void GameDisplay::on_update()
 {
     // Process CPU
-    CPU result = exe.run();
+    // this->cpu = exe.run();
+    auto result = exe.run();
     if (result.error_code == EXIT_FAILURE)
     {
-        qCritical() << "CPU EXIT FAILURE";
+        this->exe.log_Cpu();
+        qInfo() << "CPU exited unsuccessfully";
+        QMessageBox::critical(this,
+                              "TetroidNES - " + tr("Error"),
+                              tr("potential error with the CPU"));
+
         // TODO: close error and log the CPU stats
     }
 
@@ -94,7 +100,7 @@ void GameDisplay::showEvent(QShowEvent *event)
         // Create an SFML window for rendering with the id of the window in which the drawing will be done
         RenderWindow::create(sf::WindowHandle(winId()));
         // Initializing drawing objects
-        if(!m_rom_url.isEmpty())
+        if (!m_rom_url.isEmpty())
         {
             on_init();
         }
@@ -120,11 +126,10 @@ void GameDisplay::closeEvent(QCloseEvent *event)
     }
 
     int message_box_result = QMessageBox::question(
-            this,
-            "TetroidNES - " + tr("Confirmation"),
-            tr("Are you sure you want to quit?")+"\n"+tr("(Remember to save before quitting!)"),
-            QMessageBox::Yes | QMessageBox::No
-        );
+        this,
+        "TetroidNES - " + tr("Confirmation"),
+        tr("Are you sure you want to quit?") + "\n" + tr("(Remember to save before quitting!)"),
+        QMessageBox::Yes | QMessageBox::No);
 
     if (message_box_result == QMessageBox::No)
     {
@@ -132,6 +137,8 @@ void GameDisplay::closeEvent(QCloseEvent *event)
     }
     else
     {
+        exe.log_Cpu();
+        qInfo() << "CPU exited successfully";
         event->accept();
     }
 }
@@ -149,7 +156,7 @@ void GameDisplay::center_display()
 {
 }
 
-bool GameDisplay::initialized() const {return m_initialized;}
+bool GameDisplay::initialized() const { return m_initialized; }
 
 QPaintEngine *GameDisplay::paintEngine() const
 {

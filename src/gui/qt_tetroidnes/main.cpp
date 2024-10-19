@@ -1,3 +1,5 @@
+#define VERSION "1.0.0" // DO NOT EDIT: CMake handles this
+
 #include <mainwindow.h>
 
 #include <QApplication>
@@ -10,8 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#define VERSION "1.0.0" // DO NOT EDIT: CMake desides what this should be
+#include <iostream>
 
 QtMessageHandler originalHandler = nullptr;
 
@@ -27,6 +28,11 @@ void logToFile(QtMsgType type, const QMessageLogContext &context, const QString 
         originalHandler(type, context, msg);
     }
 }
+void cleanUp()
+{
+    std::cout << "Application is about to quit. Performing clean-up..." << std::endl;
+    // Add your custom clean-up logic here
+}
 
 int main(int argc, char *argv[])
 {
@@ -35,11 +41,13 @@ int main(int argc, char *argv[])
     qSetMessagePattern("%{type} | %{function}:%{line} | %{time h:mm:ss.zzz} | %{message}");
 
     QApplication a(argc, argv);
+    // auto a = make
     a.setApplicationName("TetroidNES");
 
     a.setApplicationVersion(VERSION);
 
     qInfo() << "STARTING" << a.applicationName() << "VERSION" << a.applicationVersion();
+    QObject::connect(&a, &QApplication::aboutToQuit, cleanUp);
 
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
@@ -54,8 +62,11 @@ int main(int argc, char *argv[])
     }
 
     MainWindow w;
+
+    // int exit_code = a.exec();
+
+    // qInfo() << "ENDING" << a.applicationName() << "VERSION" << a.applicationVersion() << "EXIT CODE" << exit_code;
     w.show();
-    int exit_code = a.exec();
-    qInfo() << "ENDING" << a.applicationName() << "VERSION" << a.applicationVersion() << "EXIT CODE" << exit_code;
-    return exit_code;
+
+    return a.exec();
 }

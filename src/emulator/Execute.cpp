@@ -2,6 +2,7 @@
 #include <Emulator/InstructionMap.h>
 #include <Emulator/StatusRegister.h>
 #include <QDebug>
+#include <Qt/util.h>
 
 Execute::Execute(CPU cpu)
 {
@@ -28,6 +29,8 @@ CPU Execute::run()
         cpu.error_code = EXIT_SUCCESS;
         return cpu;
     }
+    qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
+
     cpu.error_code = EXIT_FAILURE;
     return cpu;
 }
@@ -38,4 +41,8 @@ std::vector<uint8_t> Execute::render()
 
 void Execute::log_Cpu()
 {
+    qInfo() << "CPU on quit";
+    qInfo() << "A register on exit: " << this->cpu.A_Reg;
+    qInfo() << "X register on exit: " << this->cpu.X_Reg;
+    qInfo() << "Y register on exit: " << this->cpu.Y_Reg;
 }

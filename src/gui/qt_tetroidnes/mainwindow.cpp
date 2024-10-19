@@ -12,7 +12,7 @@
 #include <QMessageBox>
 #include <qevent.h>
 
-MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -20,11 +20,11 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     setAttribute(Qt::WA_QuitOnClose, true);
     setAttribute(Qt::WA_DeleteOnClose, true);
 
-    QVBoxLayout *widget_layout =             new QVBoxLayout();
-    MenuBar *main_menubar =                  new MenuBar(this);
+    QVBoxLayout *widget_layout = new QVBoxLayout();
+    MenuBar *main_menubar = new MenuBar(this);
     FilterControlFrame *sort_control_frame = new FilterControlFrame(ui->centralwidget);
-    QScrollArea *rom_list_scroll =           new QScrollArea(ui->centralwidget);
-    RomList *rom_list =                      new RomList(ui->centralwidget);
+    QScrollArea *rom_list_scroll = new QScrollArea(ui->centralwidget);
+    RomList *rom_list = new RomList(ui->centralwidget);
 
     QStatusBar *status_bar = statusBar();
     QLabel *page_info = new QLabel("Page 1 of 1", status_bar);
@@ -51,14 +51,18 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     update_page_info();
 
     // events
-    connect(sort_control_frame->findChild<QButtonGroup*>(), &QButtonGroup::idReleased, this,
-            [this](int id){sort_mode_button_released(id);});
-    connect(sort_control_frame->findChild<QPushButton*>("SortOrder"), &QPushButton::toggled, this,
-            [this](bool toggled){sort_order_button_toggled(toggled);});
-    connect(sort_control_frame->findChild<QLineEdit*>(), &QLineEdit::textEdited, this,
-            [this](QString text){search_bar_edited(text);});
+    connect(sort_control_frame->findChild<QButtonGroup *>(), &QButtonGroup::idReleased, this,
+            [this](int id)
+            { sort_mode_button_released(id); });
+    connect(sort_control_frame->findChild<QPushButton *>("SortOrder"), &QPushButton::toggled, this,
+            [this](bool toggled)
+            { sort_order_button_toggled(toggled); });
+    connect(sort_control_frame->findChild<QLineEdit *>(), &QLineEdit::textEdited, this,
+            [this](QString text)
+            { search_bar_edited(text); });
     connect(rom_list_scroll->verticalScrollBar(), &QScrollBar::valueChanged, this,
-            [this](int val){rom_list_scroll_value_changed(val);});
+            [this](int val)
+            { rom_list_scroll_value_changed(val); });
 }
 
 void MainWindow::create_display(QString rom_link)
@@ -70,28 +74,22 @@ void MainWindow::create_display(QString rom_link)
 
 void MainWindow::update_page_info()
 {
-    RomList *list = this->findChild<RomList*>();
+    RomList *list = this->findChild<RomList *>();
 
-    this->findChild<QLabel*>("PageInfo")->setText(
-        tr("%1 %2 %3 %4 | %5 %6").arg(
-            "Page",
-            QString::number(list->current_page()),
-            "of",
-            QString::number(list->total_pages()),
-            "Items displayed:",
-            QString::number(list->items_per_page())
-        )
-    );
+    this->findChild<QLabel *>("PageInfo")->setText(tr("%1 %2 %3 %4 | %5 %6").arg("Page", QString::number(list->current_page()), "of", QString::number(list->total_pages()), "Items displayed:", QString::number(list->items_per_page())));
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
 
-    auto *list = this->findChild<RomList*>();
-    auto *scrollbar = this->findChild<QScrollArea*>()->verticalScrollBar();
+    auto *list = this->findChild<RomList *>();
+    auto *scrollbar = this->findChild<QScrollArea *>()->verticalScrollBar();
     const bool scrolled_up = (event->angleDelta().y() > 0);
 
-    if (scrollbar->isVisible()) {return;}
+    if (scrollbar->isVisible())
+    {
+        return;
+    }
 
     if (!scrolled_up && list->current_page() < list->total_pages())
     {
@@ -110,13 +108,13 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 
 void MainWindow::rom_list_scroll_value_changed(const int value)
 {
-    auto *list = this->findChild<RomList*>();
-    auto *scrollbar = this->findChild<QScrollArea*>()->verticalScrollBar();
+    auto *list = this->findChild<RomList *>();
+    auto *scrollbar = this->findChild<QScrollArea *>()->verticalScrollBar();
     unsigned int current_page = list->current_page();
-    //qDebug() << "Current Page Before:" << current_page
-    //         << "Value:" << value
-    //         << "Max/Min Value:" << scrollbar->maximum() << "/" << scrollbar->minimum()
-    //         << "Total pages:" << list->total_pages();
+    // qDebug() << "Current Page Before:" << current_page
+    //          << "Value:" << value
+    //          << "Max/Min Value:" << scrollbar->maximum() << "/" << scrollbar->minimum()
+    //          << "Total pages:" << list->total_pages();
 
     if (value >= scrollbar->maximum() && current_page < list->total_pages())
     {
@@ -130,29 +128,30 @@ void MainWindow::rom_list_scroll_value_changed(const int value)
         scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->singleStep());
         update_page_info();
     }
-    //qDebug() << "Current Page After:" << current_page;
+    // qDebug() << "Current Page After:" << current_page;
 }
 
 void MainWindow::sort_mode_button_released(const int id) const
 {
-    RomList *list = ui->centralwidget->findChild<RomList*>();
-    QString search_bar_text = ui->centralwidget->findChild<QLineEdit*>()->text();
+    RomList *list = ui->centralwidget->findChild<RomList *>();
+    QString search_bar_text = ui->centralwidget->findChild<QLineEdit *>()->text();
     const bool regex = search_bar_text.isEmpty();
 
     list->set_current_mode(RomList::SortMode(id), regex);
-    if(!regex)
-    {list->search(search_bar_text);}
-
+    if (!regex)
+    {
+        list->search(search_bar_text);
+    }
 }
 
 void MainWindow::sort_order_button_toggled(const bool toggled) const
 {
-    this->findChild<RomList*>()->set_current_order(Qt::SortOrder(toggled));
+    this->findChild<RomList *>()->set_current_order(Qt::SortOrder(toggled));
 }
 
 void MainWindow::search_bar_edited(QString string) const
 {
-    this->findChild<RomList*>()->search(string);
+    this->findChild<RomList *>()->search(string);
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
@@ -181,7 +180,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event)
         qDebug() << "Drag enter event data is not a valid QUrl:" << url;
         event->setDropAction(Qt::DropAction::IgnoreAction);
     }
-    
+
     QMainWindow::dragEnterEvent(event);
 }
 
@@ -200,16 +199,15 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-
-    qDebug() << "Quitting... games are running: " << is_a_game_running();
-    if(is_a_game_running())
+    bool game_run = is_a_game_running();
+    qDebug() << "Quitting... games are running: " << game_run;
+    if (game_run)
     {
         int message_box_result = QMessageBox::question(
             this,
             tr("TetroidNES - Confirmation"),
             tr("Are you sure you want to quit?\n(Games are still running)"),
-            QMessageBox::Yes | QMessageBox::No
-        );
+            QMessageBox::Yes | QMessageBox::No);
 
         if (message_box_result == QMessageBox::No)
         {
@@ -222,6 +220,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
     else
     {
+        if (event == nullptr)
+            std::cout << "nul" << std::endl;
+        qDebug() << "closing window";
+
         event->accept();
     }
 }

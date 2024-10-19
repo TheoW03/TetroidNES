@@ -34,11 +34,12 @@ private:
 
 private slots:
     void on_timeout();
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
-    QPaintEngine* paintEngine() const override;
+    QPaintEngine *paintEngine() const override;
     void resizeEvent(QResizeEvent *event) override;
 
 signals:
