@@ -12,10 +12,13 @@
 #include <QMessageBox>
 #include <qevent.h>
 
-
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    setAttribute(Qt::WA_AcceptDrops, true);
+    setAttribute(Qt::WA_QuitOnClose, true);
+    setAttribute(Qt::WA_DeleteOnClose, true);
 
     QVBoxLayout *widget_layout =             new QVBoxLayout();
     MenuBar *main_menubar =                  new MenuBar(this);
@@ -56,6 +59,13 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
             [this](QString text){search_bar_edited(text);});
     connect(rom_list_scroll->verticalScrollBar(), &QScrollBar::valueChanged, this,
             [this](int val){rom_list_scroll_value_changed(val);});
+}
+
+void MainWindow::create_display(QString rom_link)
+{
+    auto *display = new GameDisplay(this, rom_link);
+    installEventFilter(display);
+    display->show();
 }
 
 void MainWindow::update_page_info()
@@ -184,8 +194,7 @@ void MainWindow::dragMoveEvent(QDragMoveEvent *event)
 
 void MainWindow::dropEvent(QDropEvent *event)
 {
-    auto *display = new GameDisplay(this, event->mimeData()->urls()[0].toLocalFile());
-    display->show();
+    create_display(event->mimeData()->urls()[0].toLocalFile());
     QMainWindow::dropEvent(event);
 }
 
@@ -195,12 +204,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
     qDebug() << "Quitting... games are running: " << is_a_game_running();
     if(is_a_game_running())
     {
-        QMessageBox message_box;
-        message_box.setWindowTitle(tr("TetroidNES - Confirmation"));
-        message_box.setText(tr("Are you sure you want to quit?\n(Games are still running)"));
-        message_box.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+        int message_box_result = QMessageBox::question(
+            this,
+            tr("TetroidNES - Confirmation"),
+            tr("Are you sure you want to quit?\n(Games are still running)"),
+            QMessageBox::Yes | QMessageBox::No
+        );
 
-        if (message_box.exec() == QMessageBox::No)
+        if (message_box_result == QMessageBox::No)
         {
             event->ignore();
         }
@@ -213,8 +224,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     {
         event->accept();
     }
-
-    QMainWindow::closeEvent(event);
 }
 
 MainWindow::~MainWindow()

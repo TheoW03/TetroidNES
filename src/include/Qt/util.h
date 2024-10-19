@@ -1,4 +1,6 @@
-#include <QGuiApplication>
+#include <QApplication>
+#include <QtLogging>
+
 #include <gamedisplay.h>
 
 #ifndef UTIL_H
@@ -16,16 +18,17 @@ inline QString num_to_hexa(uint8_t num)
 
 inline bool is_a_game_running()
 {
-    auto list = qApp->findChildren<GameDisplay*>();
 
-    if (list.isEmpty())
+    foreach(auto *widget, qApp->topLevelWidgets())
     {
-        return false;
-    }
-
-    foreach(auto game_display, list)
-    {
-        if (game_display->initialized()){return true;}
+        if (widget->inherits("MainWindow"))
+        {
+            foreach(auto *gamedisplay, widget->findChildren<GameDisplay*>())
+            {
+                if(gamedisplay->initialized()){return true;}
+            }
+        }
+        
     }
 
     // Code reaches this point if all game display objects are not initialized

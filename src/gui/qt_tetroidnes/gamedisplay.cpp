@@ -15,6 +15,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_NoSystemBackground);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     // TODO: MAKE THIS MORE FLEXIBLE WHEN WE ADD USER SETTINGS
     setWindowFlag(Qt::WindowType::Window);
@@ -107,6 +108,31 @@ void GameDisplay::showEvent(QShowEvent *event)
         frame_timer.start();
 
         m_initialized = true;
+    }
+}
+
+void GameDisplay::closeEvent(QCloseEvent *event)
+{
+    if (!m_initialized)
+    {
+        event->accept();
+        return;
+    }
+
+    int message_box_result = QMessageBox::question(
+            this,
+            "TetroidNES - " + tr("Confirmation"),
+            tr("Are you sure you want to quit?")+"\n"+tr("(Remember to save before quitting!)"),
+            QMessageBox::Yes | QMessageBox::No
+        );
+
+    if (message_box_result == QMessageBox::No)
+    {
+        event->ignore();
+    }
+    else
+    {
+        event->accept();
     }
 }
 

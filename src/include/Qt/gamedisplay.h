@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QTimer>
+#include <QCloseEvent>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
@@ -36,6 +37,7 @@ private slots:
 protected:
     void paintEvent(QPaintEvent *event) override;
     void showEvent(QShowEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
     QPaintEngine* paintEngine() const override;
     void resizeEvent(QResizeEvent *event) override;
 

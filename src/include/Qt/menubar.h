@@ -10,6 +10,9 @@ public:
     explicit MenuBar(QWidget *parent = nullptr);
     ~MenuBar();
 
+public slots:
+    void open_rom();
+
 };
 
 #endif // MENUBAR_H

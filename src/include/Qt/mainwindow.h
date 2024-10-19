@@ -24,6 +24,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void update_page_info();
+    void create_display(QString rom_link);
 public slots:
     void sort_mode_button_released(const int id) const;
     void sort_order_button_toggled(const bool toggled) const;
@@ -41,6 +42,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dragMoveEvent(QDragMoveEvent *event) override;
     void dropEvent(QDropEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::MainWindow *ui;
