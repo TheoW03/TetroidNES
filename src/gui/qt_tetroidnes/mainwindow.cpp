@@ -7,6 +7,7 @@
 #include <QIcon>
 #include <QtLogging>
 #include <QScrollBar>
+#include <QMimeData>
 #include <qevent.h>
 
 
@@ -40,12 +41,10 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     // setup
     setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(), qApp->applicationVersion()));
     setMenuBar(main_menubar);
+    setAcceptDrops(true);
     page_info->setObjectName("PageInfo");
     status_bar->addPermanentWidget(page_info);
     update_page_info();
-
-    GameDisplay *game_display = new GameDisplay();
-    game_display->show();
 
     // events
     connect(sort_control_frame->findChild<QButtonGroup*>(), &QButtonGroup::idReleased, this,
@@ -141,6 +140,47 @@ void MainWindow::sort_order_button_toggled(const bool toggled) const
 void MainWindow::search_bar_edited(QString string) const
 {
     this->findChild<RomList*>()->search(string);
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    auto mime_data = event->mimeData();
+    auto url = QUrl();
+    if (mime_data->hasUrls() && !mime_data->urls().isEmpty())
+    {
+        url = mime_data->urls()[0];
+    }
+    else
+    {
+        qDebug() << "Drag enter event data does not have urls or is empty";
+        event->setDropAction(Qt::DropAction::IgnoreAction);
+        return;
+    }
+
+    if (url.isValid() && url.isLocalFile() && url.toLocalFile().endsWith(".nes"))
+    {
+        qDebug() << "Drag enter event data is a valid QUrl:" << url.toLocalFile();
+        event->setDropAction(Qt::DropAction::MoveAction);
+        event->accept();
+    }
+    else
+    {
+        qDebug() << "Drag enter event data is not a valid QUrl:" << url;
+        event->setDropAction(Qt::DropAction::IgnoreAction);
+    }
+    
+}
+
+void MainWindow::dragMoveEvent(QDragMoveEvent *event)
+{
+    event->setDropAction(Qt::DropAction::MoveAction);
+    event->accept();
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    auto *display = new GameDisplay(this, event->mimeData()->urls()[0].toLocalFile());
+    display->show();
 }
 
 MainWindow::~MainWindow()

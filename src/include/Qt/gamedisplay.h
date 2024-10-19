@@ -14,7 +14,7 @@ class GameDisplay : public QWidget, public sf::RenderWindow
 {
     Q_OBJECT
 public:
-    explicit GameDisplay(QWidget *parent = nullptr);
+    explicit GameDisplay(QWidget *parent = nullptr, QString rom_url = QString());
     void update_game_scale();
     void center_display();
     ~GameDisplay();
@@ -23,12 +23,12 @@ private:
     void on_update();
     void on_init();
     QTimer frame_timer;
-    float frame_time = 33.33; // 30 FPS
+    float frame_time = 33.33; // Milliseconds, 30 FPS
     sf::Texture texture;
     sf::Sprite sprite;
     bool initialized = false;
-    CPU cpu;
-    Execute exe = Execute(CPU()); // Will throw errors if not given the correct arguments
+    Execute exe = Execute(CPU()); // Will throw errors if given nothing in args
+    QString m_rom_url;
 
 private slots:
     void on_timeout();

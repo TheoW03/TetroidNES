@@ -12,6 +12,7 @@ compile.bat
 /games/
 output
 
+log*.txt
 /Release/
 build
 out

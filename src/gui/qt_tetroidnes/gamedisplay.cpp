@@ -3,28 +3,30 @@
 #include <QIODevice>
 #include <QCoreApplication>
 #include <QtLogging>
+#include <QUrl>
 
 #include <Emulator/InstructionMap.h>
 #include <Emulator/LoadRom.h>
 
-// REMOVE WHEN ROMS CAN BE ADDED THROUGH GUI
-#ifdef _WIN32
-#define TEST_ROM_LOCATION "C:/Users/tyler/Downloads/Demo.nes"
-#else
-#define TEST_ROM_LOCATION "Test.nes"
-#endif
-
-GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
+GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
                                             sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_NoSystemBackground);
 
-    setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(), "Game name goes here!!!!"));
+    // TODO: MAKE THIS MORE FLEXIBLE WHEN WE ADD USER SETTINGS
+    setWindowFlag(Qt::WindowType::Window);
+    resize(800, 600);
+
+    setWindowTitle(QString("%1 - %2").arg(
+        qApp->applicationName(),
+        QUrl(rom_url).fileName().split(".").front() // Should probably clean this up
+    ));
 
     setFocusPolicy(Qt::StrongFocus);
 
+    m_rom_url = rom_url;
     QTimer *frame_timer = new QTimer(this);
 
     frame_timer->setInterval(frame_time);
@@ -33,8 +35,9 @@ GameDisplay::GameDisplay(QWidget *parent) : QWidget{parent},
 void GameDisplay::on_init()
 {
     initializeInstructionMap();
-    Rom rom = load_rom(file_tobyte_vector(TEST_ROM_LOCATION));
+    Rom rom = load_rom(file_tobyte_vector(m_rom_url.toStdString()));
     Bus bus = Bus(rom, NES_START);
+    CPU cpu = CPU();
     bus.fill(bus.read_16bit(0xfffc));
     cpu.bus = bus;
     cpu.A_Reg = 0;
@@ -88,9 +91,15 @@ void GameDisplay::showEvent(QShowEvent *event)
     {
         // Create an SFML window for rendering with the id of the window in which the drawing will be done
         RenderWindow::create(sf::WindowHandle(winId()));
-
         // Initializing drawing objects
-        on_init();
+        if(!m_rom_url.isEmpty())
+        {
+            on_init();
+        }
+        else
+        {
+            qInfo() << "Started game display without url, will not initialize";
+        }
 
         // Setting the timer to restart the widget's rendering
         connect(&frame_timer, &QTimer::timeout, this, &GameDisplay::on_timeout);
