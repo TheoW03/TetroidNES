@@ -32,7 +32,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     QTimer *frame_timer = new QTimer(this);
 
     frame_timer->setInterval(frame_time);
-    qInfo() << "Started game " << QUrl(rom_url).fileName().split(".").front();
+    qInfo() << "Started game " << QUrl(rom_url).fileName();
 }
 
 void GameDisplay::on_init()

@@ -60,8 +60,8 @@ set(QT_PROJECT_SOURCES
 	src/gui/qt_tetroidnes/filtercontrolframe.cpp
 	src/gui/qt_tetroidnes/flowlayout.cpp
 	src/gui/qt_tetroidnes/gamedisplay.cpp
-
-    
+    src/gui/qt_tetroidnes/settings.cpp
+    src/gui/qt_tetroidnes/settingsdisplay.cpp 
 )
 
 set(QT_RCC_FILES
@@ -76,6 +76,8 @@ set(QT_HEADERS
     src/include/Qt/menubar.h
     src/include/Qt/romlist.h
     src/include/Qt/util.h
+    src/include/Qt/settings.h
+    src/include/Qt/settingsdisplay.h
 )
 
 set(QT_UI_FILES

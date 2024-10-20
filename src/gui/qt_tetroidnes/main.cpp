@@ -1,4 +1,4 @@
-#define VERSION "1.0.0" // DO NOT EDIT: CMake handles this
+#define VERSION "1.0.0-Debug" // DO NOT EDIT: CMake handles this
 
 #include <mainwindow.h>
 
@@ -15,6 +15,7 @@
 #include <iostream>
 #include <stdint.h>
 #include <filesystem>
+
 QtMessageHandler originalHandler = nullptr;
 
 void logToFile(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -34,6 +35,7 @@ void logToFile(QtMsgType type, const QMessageLogContext &context, const QString 
         originalHandler(type, context, msg);
     }
 }
+
 void cleanUp()
 {
     std::cout << "Application is about to quit. Performing clean-up..." << std::endl;

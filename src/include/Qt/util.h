@@ -2,6 +2,7 @@
 #include <QtLogging>
 
 #include <gamedisplay.h>
+#include <mainwindow.h>
 
 #ifndef UTIL_H
 #define UTIL_H
@@ -35,6 +36,19 @@ inline bool is_a_game_running()
 
     // Code reaches this point if all game display objects are not initialized
     return false;
+}
+
+inline void start_game(QString path)
+{
+    for (auto &widget : qApp->topLevelWidgets())
+    {
+        if (widget->inherits("MainWindow"))
+        {
+            qDebug() << "File path:" << path;
+            qobject_cast<MainWindow*>(widget)->create_display(path);
+            break;
+        }
+    }
 }
 
 #endif // UTIL_H

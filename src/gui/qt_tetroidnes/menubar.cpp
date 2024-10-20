@@ -1,5 +1,6 @@
 #include <menubar.h>
 #include <mainwindow.h>
+#include <settings.h>
 
 #include <QMenuBar>
 #include <QAction>
@@ -13,6 +14,7 @@ MenuBar::MenuBar(QWidget *parent): QMenuBar{parent}
     QMenu *file;
     QAction *file_open;
     QMenu *edit;
+    QAction *settings_open;
     QMenu *tools;
     QMenu *help;
 
@@ -29,10 +31,22 @@ MenuBar::MenuBar(QWidget *parent): QMenuBar{parent}
     // file
     file_open = file->addAction("Open");
     file_open->setShortcut(QKeySequence("Ctrl+O"));
+
+    // edit
+    settings_open = edit->addAction("Settings");
+    settings_open->setShortcut(QKeySequence("Ctrl+B"));
     
 
     // events
     connect(file_open, &QAction::triggered, this, &MenuBar::open_rom);
+    connect(settings_open, &QAction::triggered, this, &MenuBar::open_settings);
+}
+
+void MenuBar::open_settings()
+{
+    MainWindow *mw = static_cast<MainWindow*>(parent());
+    SettingsWidget *settings = new SettingsWidget(mw);
+    settings->show();
 }
 
 void MenuBar::open_rom()

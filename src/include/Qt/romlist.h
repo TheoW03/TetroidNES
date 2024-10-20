@@ -14,25 +14,30 @@
 #include <QFrame>
 #include <QSharedPointer>
 
+
 class RomListData : public QObject
 {
     Q_OBJECT
 public:
     explicit RomListData(QObject *parent = nullptr);
     ~RomListData();
-    void set_data(short unsigned int year = 0, QByteArray img = QByteArray(), QString title = QString(), std::optional<bool> favorited = std::nullopt);
+    void set_data(short unsigned int year = 0, QByteArray img = QByteArray(), QString title = QString(), std::optional<bool> favorited = std::nullopt, QUrl path = QUrl());
     short unsigned int year();
     QString title();
     QByteArray img();
     bool favorited();
     void set_favorited(const bool b);
+    QUrl path();
+    void set_path(QUrl path);
 
 private:
     short unsigned int m_year = 0;
     QByteArray m_img = QByteArray();
     QString m_title = QString();
     bool m_favorited = false;
+    QUrl m_path;
 };
+
 
 class RomListItem: public QWidget
 {
@@ -43,17 +48,20 @@ public:
     void update_data(const QSharedPointer<RomListData> &data);
 private slots:
     void favorite_button_clicked(int checked);
+    void play_button_clicked();
 private:
     QLabel *title;
     QLabel *year;
-    QLabel *img;
+    QPushButton *play;
     QFrame *buttons_frame;
     QPushButton *favorite_button;
     QVBoxLayout *layout;
     QHBoxLayout *buttons_layout;
+    
 
 signals:
 };
+
 
 class RomList : public QWidget
 {
@@ -73,7 +81,7 @@ public:
     unsigned int total_pages() const;
     void update_total_pages();
     unsigned int items_per_page() const;
-    QSharedPointer<RomListData> find_data(const QString title) const;
+    QSharedPointer<RomListData> find_data(const QString title) const; // TODO: Not implemented, find a way to identify each rom in the list
     void search(QString &expr);
     void update_list();
 private:

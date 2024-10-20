@@ -1,7 +1,12 @@
 #include <romlist.h>
+#include <util.h>
 
-#include <QDebug>
+#include <QtLogging>
 #include <QRegularExpression>
+#include <QSettings>
+#include <QFileInfo>
+#include <QUrl>
+#include <QDir>
 
 // #include <algorithm>
 //  RomListData
@@ -12,46 +17,56 @@ RomListData::~RomListData()
 {
 }
 
-void RomListData::set_data(short unsigned int year, QByteArray img, QString title, std::optional<bool> favorited)
+void RomListData::set_data(short unsigned int year, QByteArray img, QString title, std::optional<bool> favorited, QUrl path)
 {
     if (year)
     {
-        this->m_year = year;
+        m_year = year;
     }
     if (!img.isNull())
     {
-        this->m_img = img;
+        m_img = img;
     }
     if (!title.isNull())
     {
-        this->setObjectName(title);
-        this->m_title = title;
+        setObjectName(title);
+        m_title = title;
     }
     else
     {
-        this->m_title = QString("N/A");
+        m_title = QString("N/A");
     }
     if (favorited.has_value())
     {
-        this->m_favorited = favorited.value();
+        m_favorited = favorited.value();
     }
     else
     {
-        this->m_favorited = false;
+        m_favorited = false;
+    }
+    if (!path.isEmpty() && path.isValid())
+    {
+        m_path = path;
+    }
+    else
+    {
+        qWarning() << "Path for" << title << "was empty or invalid!";
     }
 }
 
-short unsigned int RomListData::year() { return this->m_year; }
-QString RomListData::title() { return this->m_title; }
-QByteArray RomListData::img() { return this->m_img; }
-bool RomListData::favorited() { return this->m_favorited; }
-void RomListData::set_favorited(const bool b) { this->m_favorited = b; }
+short unsigned int RomListData::year() { return m_year; }
+QString RomListData::title() { return m_title; }
+QByteArray RomListData::img() { return m_img; }
+bool RomListData::favorited() { return m_favorited; }
+void RomListData::set_favorited(const bool b) { m_favorited = b; }
+QUrl RomListData::path(){return m_path; }
+void RomListData::set_path(QUrl path) {m_path = path; }
 
 // RomListItem
 RomListItem::RomListItem(const QSharedPointer<RomListData> *data, QWidget *parent) : QWidget{parent}
 {
     title =           new QLabel(this);
-    img =             new QLabel(this);
+    play =            new QPushButton(this);
     year =            new QLabel(this);
     buttons_frame =   new QFrame(this);
     favorite_button = new QPushButton(buttons_frame);
@@ -64,10 +79,8 @@ RomListItem::RomListItem(const QSharedPointer<RomListData> *data, QWidget *paren
     title->setAlignment(Qt::AlignCenter);
     year->setAlignment(Qt::AlignCenter);
 
-    img->setScaledContents(true);
-
     layout->addWidget(buttons_frame);
-    layout->addWidget(img);
+    layout->addWidget(play);
     layout->addWidget(title);
     layout->addWidget(year);
     setLayout(layout);
@@ -83,11 +96,12 @@ RomListItem::RomListItem(const QSharedPointer<RomListData> *data, QWidget *paren
     connect(favorite_button, &QPushButton::clicked, this,
             [this](int checked)
             { favorite_button_clicked(checked); });
+    connect(play, &QPushButton::clicked, this, &RomListItem::play_button_clicked);
 }
 
 void RomListItem::favorite_button_clicked(int checked)
 {
-    RomList *rom_list = qobject_cast<RomList *>(this->parent());
+    RomList *rom_list = qobject_cast<RomList *>(parent());
     auto listData = rom_list->findChild<RomListData *>(title->text());
     if (listData)
     {
@@ -115,14 +129,39 @@ void RomListItem::update_data(const QSharedPointer<RomListData> &data)
     year->setText(QString::number(data->year()));
     if (data->img().isNull())
     {
-        auto *placeholder_img = new QPixmap(50, 50);
+        auto *placeholder_img = new QPixmap(175, 175);
         placeholder_img->fill(Qt::darkGreen);
-
-        img->setPixmap(*placeholder_img);
+        play->setIcon(QIcon(*placeholder_img));
+        play->setIconSize(placeholder_img->size());
     }
-    // else {img->setPixmap(QImage())
+    // else {play->setIcon(QIcon());)
 
     favorite_button->setChecked(data->favorited());
+}
+
+void RomListItem::play_button_clicked()
+{
+    RomList *rom_list = qobject_cast<RomList *>(parent());
+    auto listData = rom_list->findChild<RomListData *>(title->text());
+
+    if (!listData)
+    {
+        qCritical() << "Cannot find rom data in memory!";
+        return;
+    }
+
+    auto path = listData->path();
+
+    if (!path.isValid())
+    {
+        qCritical() << "Path is not valid (Try restarting the program)";
+        return;
+    }
+
+    qInfo() << "Starting" << title->text();
+    qDebug() << "Path:" << path;
+    start_game(path.toString());
+
 }
 
 // RomList
@@ -134,10 +173,11 @@ RomList::RomList(QWidget *parent) : QWidget{parent}
 
     setObjectName("RomList");
     setup_list();
-    set_items_per_page(10); // TODO: Change this so the program remembers what the user chose last time
     update_total_pages();
+    set_items_per_page(10); // TODO: Change this so the program remembers what the user chose last time
     set_current_mode(RomList::SortMode::AZ);          // TODO: Change this so the program remembers what the user chose last time
     set_current_order(Qt::SortOrder::AscendingOrder); // TODO: Change this so the program remembers what the user chose last time
+    qInfo() << "Finished setting up romlist";
 }
 
 void RomList::setup_list()
@@ -147,36 +187,80 @@ void RomList::setup_list()
      * Also the condition should end at either when the end of the list is reached or i == i + amount of widgets shown
      */
 
-    for (int i = 0; i < 5000; i++)
+    QSettings settings = QSettings("config.cfg", QSettings::IniFormat);
+    const QStringList rom_dirs = settings.value("rom_dirs", QStringList()).toStringList();
+
+    if (rom_dirs.isEmpty())
     {
-        QSharedPointer<RomListData> listData = QSharedPointer<RomListData>(new RomListData(this));
-        listData->set_data(i + 1980, QByteArray(), QString("Test") + QString::number(i), true);
-        data.append(listData);
+        qDebug() << "Rom dirs were empty";
+        return;
     }
+
+    qDebug() << "Searching rom dirs, size:" << rom_dirs.length();
+
+    for (auto &directory_url : rom_dirs)
+    {
+
+        auto dir = QDir(directory_url);
+
+        if (!dir.isAbsolute() || !dir.exists() || dir.isEmpty()) {continue;}
+
+        QString title = "Test";
+        short unsigned int year = 1980;
+        QByteArray image;
+        bool favorite = false;
+
+        const QStringList files = dir.entryList(QDir::Files | QDir::NoSymLinks).filter(QRegularExpression(R"(\.nes$)"));
+        if (files.isEmpty())
+        {
+            qDebug() << dir.dirName() << "is empty, skipping iteration...";
+            continue;
+        }
+
+        for (auto &url : files)
+        {
+            qDebug() << "File:" << url;
+            title = url.section('/', -1).section('\\', -1); // Getting only the file name, make this get rid of the file extension
+
+            QSharedPointer<RomListData> listData = QSharedPointer<RomListData>(new RomListData(this));
+            listData->set_data(year, image, title, favorite, QUrl(dir.absoluteFilePath(url)));
+            data.append(listData);
+        }
+
+    }
+    qDebug() << "Finished!";
 }
 
 unsigned int RomList::items_per_page() const { return m_items_per_page; }
 
 void RomList::set_items_per_page(unsigned int newNum)
 {
-    if (newNum == m_items_per_page)
+
+    if (newNum == m_items_per_page || data.isEmpty())
     {
         return;
     }
 
+    qDebug() << newNum << "items per page are being set";
+
     if (newNum > m_items_per_page)
     {
+        qDebug() << "Adding more widgets to page, condition: i <" << newNum - items_per_page() << "items per page: " << items_per_page();
         int dataIndex = m_items_per_page * m_current_page;
-        for (int i = 0; i < newNum - items_per_page(); i++, dataIndex++)
+        for (int i = 0; i < newNum - items_per_page() && i < data.length(); i++, dataIndex++)
         {
+            qDebug() << "Data index:" << dataIndex << "i:" << i;
             main_layout->addWidget(new RomListItem(&data.at(dataIndex), this));
         }
+        qDebug() << "Finished adding widgets to page";
     }
     else
     {
         QList<RomListItem *> items = this->findChildren<RomListItem *>();
+        qDebug() << "Deleting widgets from page";
         for (int i = m_items_per_page; i == newNum; i--)
         {
+            qDebug() << "Index:" << i;
             delete &items[i];
         }
     }
@@ -199,12 +283,22 @@ unsigned int RomList::current_page() const { return m_current_page; }
 
 void RomList::update_total_pages()
 {
-    m_total_pages = (data.length() + (items_per_page() - 1)) / items_per_page(); // Always rounds up a page
+    if (data.length() <= 1)
+    {
+        qInfo() << "Data length is lower or equal to 1! Setting total pages to 1";
+        m_total_pages = 1;
+    }
+    else
+    {
+        m_total_pages = (data.length() + (items_per_page() - 1)) / items_per_page(); // Always rounds up a page
+    }
+    
 }
 unsigned int RomList::total_pages() const { return m_total_pages; }
 
 void RomList::update_list()
 {
+    qDebug() << "Updating list";
     int dataIndex = m_items_per_page * m_current_page - m_items_per_page;
     QList<RomListItem *> items = findChildren<RomListItem *>();
     for (int i = 0; dataIndex < data.length() && i < m_items_per_page; i++)
@@ -212,6 +306,7 @@ void RomList::update_list()
         items[i]->update_data(data.at(dataIndex));
         dataIndex++;
     }
+    qDebug() << "Done updating list";
 }
 
 const bool RomList::compare_regex(const QSharedPointer<RomListData> &a, const QSharedPointer<RomListData> &b, const QRegularExpression &expr, const SortMode &mode)

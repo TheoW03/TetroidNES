@@ -12,6 +12,7 @@ public:
 
 public slots:
     void open_rom();
+    void open_settings();
 
 };
 
