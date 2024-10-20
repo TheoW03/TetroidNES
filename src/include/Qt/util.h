@@ -40,6 +40,11 @@ inline bool is_a_game_running()
 
 inline void start_game(QString path)
 {
+    if (is_a_game_running())
+    {
+        qInfo() << "canr open game while game is running";
+        return;
+    }
     for (auto &widget : qApp->topLevelWidgets())
     {
         if (widget->inherits("MainWindow"))

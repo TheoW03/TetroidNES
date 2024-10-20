@@ -3,7 +3,7 @@
 #include <Emulator/StatusRegister.h>
 #include <QDebug>
 #include <Qt/util.h>
-
+#include <bitset>
 Execute::Execute(CPU cpu)
 {
     this->cpu = cpu;
@@ -11,6 +11,9 @@ Execute::Execute(CPU cpu)
     // std::cout << this->cpu.bus.get_PC() << std::end
 }
 
+Execute::Execute()
+{
+}
 CPU Execute::run()
 {
     if (cpu.bus.NMI_interrupt())
@@ -56,4 +59,6 @@ void Execute::log_Cpu()
     qInfo() << "X register on exit: " << this->cpu.X_Reg;
     qInfo() << "Y register on exit: " << this->cpu.Y_Reg;
     qInfo() << "PC on exit: 0x: " << num_to_hexa(this->cpu.bus.get_PC());
+    std::bitset<7> status(this->cpu.status.val);
+    qInfo() << "status: 0b" << status.to_string();
 }

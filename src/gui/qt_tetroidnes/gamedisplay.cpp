@@ -32,7 +32,6 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     QTimer *frame_timer = new QTimer(this);
 
     frame_timer->setInterval(frame_time);
-    qInfo() << "Started game " << QUrl(rom_url).fileName();
 }
 
 void GameDisplay::on_init()
@@ -61,6 +60,7 @@ void GameDisplay::on_init()
     sprite.setOrigin(sprite.getTextureRect().width / 2, sprite.getTextureRect().height / 2);
     sprite.setTexture(texture);
     update_game_scale();
+    qInfo() << "Started game " << QUrl(m_rom_url).fileName();
 
     exe = Execute(cpu);
 }

@@ -67,8 +67,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 void MainWindow::create_display(QString rom_link)
 {
+    // std::shared_ptr<GameDisplay> display = std::make_shared<GameDisplay>(this, rom_link);
     auto *display = new GameDisplay(this, rom_link);
-    installEventFilter(display);
+    // installEventFilter(display.get());
+    // installEventFilter(display);
     display->show();
 }
 

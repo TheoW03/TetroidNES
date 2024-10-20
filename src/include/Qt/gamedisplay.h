@@ -29,7 +29,7 @@ private:
     sf::Texture texture;
     sf::Sprite sprite;
     bool m_initialized = false;
-    Execute exe = Execute(CPU()); // Will throw errors if given nothing in args
+    Execute exe; // Will throw errors if given nothing in args
     QString m_rom_url;
     int err_code;
 
