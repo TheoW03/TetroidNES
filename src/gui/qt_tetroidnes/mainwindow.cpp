@@ -20,14 +20,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setAttribute(Qt::WA_QuitOnClose, true);
     setAttribute(Qt::WA_DeleteOnClose, true);
 
-    QVBoxLayout *widget_layout = new QVBoxLayout();
-    MenuBar *main_menubar = new MenuBar(this);
-    FilterControlFrame *sort_control_frame = new FilterControlFrame(ui->centralwidget);
-    QScrollArea *rom_list_scroll = new QScrollArea(ui->centralwidget);
-    RomList *rom_list = new RomList(ui->centralwidget);
-
-    QStatusBar *status_bar = statusBar();
-    QLabel *page_info = new QLabel("Page 1 of 1", status_bar);
+    auto *widget_layout = new QVBoxLayout();
+    main_menubar =        new MenuBar(this);
+    sort_control_frame =  new FilterControlFrame(ui->centralwidget);
+    rom_list_scroll =     new QScrollArea(ui->centralwidget);
+    rom_list =            new RomList(ui->centralwidget);
+    page_info =           new QLabel("Page 1 of 1", this);
 
     // widget layout
     widget_layout->addWidget(sort_control_frame);
@@ -47,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(), qApp->applicationVersion()));
     setMenuBar(main_menubar);
     page_info->setObjectName("PageInfo");
-    status_bar->addPermanentWidget(page_info);
+    statusBar()->addPermanentWidget(page_info);
     update_page_info();
 
     // events
@@ -76,9 +74,9 @@ void MainWindow::create_display(QString rom_link)
 
 void MainWindow::update_page_info()
 {
-    RomList *list = this->findChild<RomList *>();
+    RomList *list = findChild<RomList *>();
 
-    this->findChild<QLabel *>("PageInfo")->setText(tr("%1 %2 %3 %4 | %5 %6").arg("Page", QString::number(list->current_page()), "of", QString::number(list->total_pages()), "Items displayed:", QString::number(list->items_per_page())));
+    findChild<QLabel *>("PageInfo")->setText(tr("%1 %2 %3 %4 | %5 %6").arg("Page", QString::number(list->current_page()), "of", QString::number(list->total_pages()), "Items displayed:", QString::number(list->items_per_page())));
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event)
@@ -110,8 +108,8 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 
 void MainWindow::rom_list_scroll_value_changed(const int value)
 {
-    auto *list = this->findChild<RomList *>();
-    auto *scrollbar = this->findChild<QScrollArea *>()->verticalScrollBar();
+    auto *list = findChild<RomList *>();
+    auto *scrollbar = findChild<QScrollArea *>()->verticalScrollBar();
     unsigned int current_page = list->current_page();
     // qDebug() << "Current Page Before:" << current_page
     //          << "Value:" << value
@@ -148,18 +146,18 @@ void MainWindow::sort_mode_button_released(const int id) const
 
 void MainWindow::sort_order_button_toggled(const bool toggled) const
 {
-    this->findChild<RomList *>()->set_current_order(Qt::SortOrder(toggled));
+    findChild<RomList *>()->set_current_order(Qt::SortOrder(toggled));
 }
 
 void MainWindow::search_bar_edited(QString string) const
 {
-    this->findChild<RomList *>()->search(string);
+    findChild<RomList *>()->search(string);
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
     auto mime_data = event->mimeData();
-    auto url = QUrl();
+    QUrl url;
     if (mime_data->hasUrls() && !mime_data->urls().isEmpty())
     {
         url = mime_data->urls()[0];
@@ -202,7 +200,7 @@ void MainWindow::dropEvent(QDropEvent *event)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     bool game_run = is_a_game_running();
-    qDebug() << "Quitting... games are running: " << game_run;
+    qInfo() << "Quitting... games are running: " << game_run;
     if (game_run)
     {
         int message_box_result = QMessageBox::question(

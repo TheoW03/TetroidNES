@@ -13,8 +13,9 @@ SettingsWidget::SettingsWidget(QWidget *parent) : QWidget{parent}
     setWindowFlag(Qt::WindowType::Window);
     setWindowTitle(tr("TetroidNES - Settings"));
 
-    layout =           new QVBoxLayout();
-    layout_controls =  new QHBoxLayout();
+    auto *layout =          new QVBoxLayout();
+    auto *layout_controls = new QHBoxLayout();
+    
     controls_frame =   new QFrame(this);
     setting_category = new QListWidget(this);
     setting_display =  new SettingsDisplay(this);

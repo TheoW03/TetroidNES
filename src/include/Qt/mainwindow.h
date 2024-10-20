@@ -35,7 +35,6 @@ private:
     FilterControlFrame *sort_control_frame;
     QScrollArea *rom_list_scroll;
     MenuBar *main_menubar;
-    QVBoxLayout *widget_layout;
     QLabel *page_info;
 protected:
     void wheelEvent(QWheelEvent *event) override;

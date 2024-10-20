@@ -65,13 +65,15 @@ void RomListData::set_path(QUrl path) {m_path = path; }
 // RomListItem
 RomListItem::RomListItem(const QSharedPointer<RomListData> *data, QWidget *parent) : QWidget{parent}
 {
+
+    auto *layout =         new QVBoxLayout();
+    auto *buttons_layout = new QHBoxLayout();
+
     title =           new QLabel(this);
     play =            new QPushButton(this);
     year =            new QLabel(this);
     buttons_frame =   new QFrame(this);
     favorite_button = new QPushButton(buttons_frame);
-    layout =          new QVBoxLayout();
-    buttons_layout =  new QHBoxLayout();
 
     favorite_button->setCheckable(true);
     favorite_button->setText("Favorite button");

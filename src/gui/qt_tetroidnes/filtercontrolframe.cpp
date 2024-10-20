@@ -3,17 +3,18 @@
 
 FilterControlFrame::FilterControlFrame(QWidget *parent) : QFrame{parent}
 {
-    QLineEdit *search_bar =                  new QLineEdit(this);
     QHBoxLayout *sort_control_frame_layout = new QHBoxLayout();
-    QFrame *sort_buttons_frame =             new QFrame(this);
     QVBoxLayout *sort_buttons_frame_layout = new QVBoxLayout();
-    QPushButton *sort_ascending_button =     new QPushButton(tr("Sort"), sort_buttons_frame);
-    QGroupBox *sort_mode_groupbox =          new QGroupBox(sort_buttons_frame);
     QHBoxLayout *groupbox_layout =           new QHBoxLayout();
-    QPushButton *sort_mode_az =              new QPushButton(tr("A-Z"), sort_mode_groupbox);
-    QPushButton *sort_mode_year =            new QPushButton(tr("Year"), sort_mode_groupbox);
-    QPushButton *sort_mode_favorites =       new QPushButton(tr("Favorites"), sort_mode_groupbox);
-    QButtonGroup *sort_mode_button_group =   new QButtonGroup(sort_mode_groupbox);
+
+    search_bar =             new QLineEdit(this);
+    sort_buttons_frame =     new QFrame(this);
+    sort_ascending_button =  new QPushButton(tr("Sort"), sort_buttons_frame);
+    sort_mode_groupbox =     new QGroupBox(sort_buttons_frame);
+    sort_mode_az =           new QPushButton(tr("A-Z"), sort_mode_groupbox);
+    sort_mode_year =         new QPushButton(tr("Year"), sort_mode_groupbox);
+    sort_mode_favorites =    new QPushButton(tr("Favorites"), sort_mode_groupbox);
+    sort_mode_button_group = new QButtonGroup(sort_mode_groupbox);
 
     // setup sort buttons frame layout
     sort_buttons_frame_layout->addWidget(sort_ascending_button);
@@ -29,7 +30,7 @@ FilterControlFrame::FilterControlFrame(QWidget *parent) : QFrame{parent}
     // setup this layout
     sort_control_frame_layout->addWidget(search_bar);
     sort_control_frame_layout->addWidget(sort_buttons_frame);
-    this->setLayout(sort_control_frame_layout);
+    setLayout(sort_control_frame_layout);
 
     // setup buttons
     sort_ascending_button->setCheckable(true);

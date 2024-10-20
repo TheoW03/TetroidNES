@@ -13,9 +13,9 @@
 
 SettingsDisplay::SettingsDisplay(QWidget *parent) : QStackedWidget{parent}
 {
-    general = new QWidget(this);
+    general =  new QWidget(this);
     emulator = new QWidget(this);
-    about = new QWidget(this);
+    about =    new QWidget(this);
 
     setup_general(general);
     setup_emulator(emulator);
@@ -75,7 +75,7 @@ void SettingsDisplay::setup_about(QWidget *about)
 
 void SettingsDisplay::on_add_directory_clicked()
 {
-    QFileDialog file_dialog = QFileDialog();
+    QFileDialog file_dialog;
     QTextEdit *text_edit = findChild<QTextEdit*>("rom_directory");
     
     file_dialog.setFileMode(QFileDialog::Directory);

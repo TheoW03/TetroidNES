@@ -9,15 +9,6 @@
 
 MenuBar::MenuBar(QWidget *parent): QMenuBar{parent}
 {
-
-    // declare vars
-    QMenu *file;
-    QAction *file_open;
-    QMenu *edit;
-    QAction *settings_open;
-    QMenu *tools;
-    QMenu *help;
-
     // assign vars
     file = addMenu(tr("File"));
     edit = addMenu(tr("Edit"));
@@ -44,8 +35,7 @@ MenuBar::MenuBar(QWidget *parent): QMenuBar{parent}
 
 void MenuBar::open_settings()
 {
-    MainWindow *mw = static_cast<MainWindow*>(parent());
-    SettingsWidget *settings = new SettingsWidget(mw);
+    SettingsWidget *settings = new SettingsWidget(qobject_cast<MainWindow*>(parent()));
     settings->show();
 }
 
@@ -61,7 +51,7 @@ void MenuBar::open_rom()
 
     if (file_dialog.exec() == QFileDialog::Accepted && !file_dialog.selectedUrls().isEmpty())
     {
-        MainWindow *mw = static_cast<MainWindow*>(parent());
+        MainWindow *mw = qobject_cast<MainWindow*>(parent());
         for(auto &url : file_dialog.selectedUrls())
         {
             mw->create_display(url.toLocalFile());

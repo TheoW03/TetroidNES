@@ -24,13 +24,13 @@ public:
 private:
     void on_update();
     void on_init();
-    QTimer frame_timer;
+    QTimer *frame_timer;
     float frame_time = 33.33; // Milliseconds, 30 FPS
+    bool m_initialized = false;
+    QString m_rom_url;
     sf::Texture texture;
     sf::Sprite sprite;
-    bool m_initialized = false;
     Execute exe; // Will throw errors if given nothing in args
-    QString m_rom_url;
     int err_code;
 
 private slots:

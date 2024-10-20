@@ -55,9 +55,6 @@ private:
     QPushButton *play;
     QFrame *buttons_frame;
     QPushButton *favorite_button;
-    QVBoxLayout *layout;
-    QHBoxLayout *buttons_layout;
-    
 
 signals:
 };

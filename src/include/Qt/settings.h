@@ -22,8 +22,6 @@ public:
 
 private:
     QListWidget *setting_category;
-    QVBoxLayout *layout;
-    QHBoxLayout *layout_controls;
     SettingsDisplay *setting_display;
     QFrame *controls_frame;
     QPushButton *apply_changes;

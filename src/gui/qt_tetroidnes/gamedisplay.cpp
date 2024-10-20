@@ -29,9 +29,9 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     setFocusPolicy(Qt::StrongFocus);
 
     m_rom_url = rom_url;
-    QTimer *frame_timer = new QTimer(this);
-
+    frame_timer = new QTimer(this);
     frame_timer->setInterval(frame_time);
+    connect(frame_timer, &QTimer::timeout, this, &GameDisplay::on_timeout);
 }
 
 void GameDisplay::on_init()
@@ -123,9 +123,7 @@ void GameDisplay::showEvent(QShowEvent *event)
             qInfo() << "Started game display without url, will not initialize";
         }
 
-        // Setting the timer to restart the widget's rendering
-        connect(&frame_timer, &QTimer::timeout, this, &GameDisplay::on_timeout);
-        frame_timer.start();
+        frame_timer->start();
 
         m_initialized = true;
     }
