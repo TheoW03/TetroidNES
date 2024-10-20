@@ -8,6 +8,8 @@
 #include <bitset>
 #include <Emulator/Bus.h>
 #include <Emulator/InstructionMap.h>
+#include <Qt/util.h>
+// #include "Bus.h"
 // #include "Bus.h>
 #define TOP_STACK 0x1ff
 #define BOTTOM_STACK 0x100
@@ -33,6 +35,7 @@ Bus::Bus(Rom rom, uint16_t pc_start)
     this->ppu = nes_ppu; // test
     // this->ppu.chr_rom = rom.CHR;
     // this->ppu.mirrorType = rom.mirror;
+    this->err_string = std::nullopt;
 
     APU APU();
     this->apu = apu; // test
@@ -182,20 +185,23 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         else if (address == 0x2007)
         {
             auto b = this->ppu.write_PPU_data(value);
-            if (b == std::nullopt)
-            {
-                this->stored_instructions[1] = 0x82;
-            }
+
+            // if (b == std::nullopt)
+            // {
+            // this->stored_instructions[1] = 0x82;
+            // }
             // if ()
         }
         else if (address >= 0x2008)
             this->write_8bit(address & 0x2007, value);
         else
         {
-            this->stored_instructions[1] = 0x82;
-            std::cout << "\033[91mforbidden access to PPU read only address\033[0m" << std::endl;
-            printf("address 0x%x \n", address);
-            std::cout << "" << std::endl;
+            // this->stored_instructions[1] = 0x82;
+            // std::cout << "\033[91mforbidden access to PPU read only address\033[0m" << std::endl;
+            // printf("address 0x%x \n", address);
+            // this->err_string = {"\033[91mforbidden access to PPU read only address\033[0m"};
+            // std::cout << "" << std::endl;
+            this->err_string = "Address 0x" + num_to_hexa(address) + " is a PPU read only address";
         }
     }
     else if (address == 0x4014)
@@ -380,4 +386,18 @@ void Bus::write_controller1(Controller value, int isPressed)
 std::vector<uint8_t> Bus::render_texture(std::tuple<size_t, size_t> res)
 {
     return this->ppu.render_texture(res);
+}
+
+std::optional<std::string> Bus::check_error()
+{
+    if (this->err_string.has_value())
+    {
+        return this->err_string;
+    }
+    else if (this->ppu.err_string.has_value())
+    {
+        return this->ppu.err_string;
+    }
+    return std::nullopt;
+    // return std::optional<std::string>();
 }

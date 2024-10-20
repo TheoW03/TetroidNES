@@ -2,7 +2,7 @@
 #include <Emulator/PPU.h>
 #include <Emulator/LoadRom.h>
 #include <Emulator/APU.h>
-
+#include <optional>
 #ifndef CONTROILER_H
 #define CONTROILER_H
 enum class Controller
@@ -32,6 +32,7 @@ private:
     uint8_t stack_pointer;
     uint16_t stack;
     uint8_t button_idx;
+    std::optional<std::string> err_string;
 
 public:
     size_t clock_cycles;
@@ -72,5 +73,6 @@ public:
     uint8_t read_joypad();
     void write_controller1(Controller value, int isPressed);
     std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
+    std::optional<std::string> check_error();
 };
 #endif

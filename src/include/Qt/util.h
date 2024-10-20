@@ -7,9 +7,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-inline QString num_to_hexa(uint16_t num)
+inline std::string num_to_hexa(uint16_t num)
 {
-    return QString::number(num, 16).toUpper();
+    return QString::number(num, 16).toUpper().toStdString();
 }
 
 // inline QString num_to_hexa(uint8_t num)
@@ -45,7 +45,7 @@ inline void start_game(QString path)
         if (widget->inherits("MainWindow"))
         {
             qDebug() << "File path:" << path;
-            qobject_cast<MainWindow*>(widget)->create_display(path);
+            qobject_cast<MainWindow *>(widget)->create_display(path);
             break;
         }
     }

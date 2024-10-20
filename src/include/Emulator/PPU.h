@@ -90,6 +90,7 @@ public:
 
     uint8_t read_PPU_data();
     uint8_t read_OAM_data();
+    std::optional<std::string> err_string;
 
     void write_PPU_address(uint8_t val);
     void write_PPU_ctrl(uint8_t val);

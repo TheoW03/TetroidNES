@@ -42,12 +42,16 @@ void GameDisplay::on_init()
     Bus bus = Bus(rom, NES_START);
     CPU cpu = CPU();
     bus.fill(bus.read_16bit(0xfffc));
+    printf("0x%x\n", bus.get_PC());
+
     cpu.bus = bus;
     cpu.A_Reg = 0;
     cpu.status.val = 0;
     cpu.X_Reg = 0;
     cpu.Y_Reg = 0;
     cpu.bus.clock_cycles = 0;
+    err_code = EXIT_SUCCESS;
+    std::cout << "err_code: " << cpu.status.val << std::endl;
 
     if (!texture.create(NES_RES_L, NES_RES_W))
     {
@@ -66,13 +70,22 @@ void GameDisplay::on_update()
     // Process CPU
     // this->cpu = exe.run();
     auto result = exe.run();
+
+    // printf("0x%x\n", result.bus.get_PC());
+
+    // this->cpu = result;
     if (result.error_code == EXIT_FAILURE)
     {
-        this->exe.log_Cpu();
+        // this->exe.log_Cpu();
         qInfo() << "potential error with the cpu";
         QMessageBox::critical(this,
                               "TetroidNES - " + tr("Error"),
                               tr("potential error with the CPU"));
+        this->err_code = EXIT_FAILURE;
+        this->QWidget::close();
+        // this->sf::Window::close();
+
+        return;
 
         // TODO: close error and log the CPU stats
     }
@@ -120,8 +133,11 @@ void GameDisplay::showEvent(QShowEvent *event)
 
 void GameDisplay::closeEvent(QCloseEvent *event)
 {
+
     if (!m_initialized)
     {
+        this->sf::Window::close();
+
         event->accept();
         return;
     }
@@ -139,7 +155,15 @@ void GameDisplay::closeEvent(QCloseEvent *event)
     else
     {
         exe.log_Cpu();
-        qInfo() << "CPU exited successfully";
+        if (this->err_code == EXIT_SUCCESS)
+        {
+            qInfo() << "CPU exited successfully";
+        }
+        else
+        {
+            qInfo() << "CPU exited unsuccessfully";
+        }
+        this->sf::Window::close();
         event->accept();
     }
 }

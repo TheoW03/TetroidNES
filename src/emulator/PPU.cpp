@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <Emulator/PPU.h>
 #include <Emulator/Computer.h>
+#include <Qt/util.h>
 #include <bitset>
 // #include "PPU.h"
 // #include <emulator
@@ -19,7 +20,9 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     this->reg.high_ptr = true;
     this->reg.scrollLatch = false;
     this->reg.ppumask.val = 0;
+    this->scanline = 0;
     this->cycles = 0;
+    this->err_string = std::nullopt;
     for (int i = 0; i < 255; i++)
         this->oam[i] = 0;
 }
@@ -210,9 +213,11 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
     else
     {
         // TODO: fails for some reason
-        std::cout << "\033[91mAttempt to write into PPU READ_ONLY_MEM\033[0m" << std::endl;
-        printf("0x%x\n", addr);
+        // std::cout << "\033[91mAttempt to write into PPU READ_ONLY_MEM\033[0m" << std::endl;
+        // printf("0x%x\n", addr);
         // exit(EXIT_FAILURE);
+        this->err_string = std::optional<std::string>{"Address 0x" + num_to_hexa(addr) + " is a PPU read only address"};
+
         return {};
     }
     this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;

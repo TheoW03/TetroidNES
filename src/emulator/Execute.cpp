@@ -7,6 +7,8 @@
 Execute::Execute(CPU cpu)
 {
     this->cpu = cpu;
+    printf("%x \n", this->cpu.bus.get_PC());
+    // std::cout << this->cpu.bus.get_PC() << std::end
 }
 
 CPU Execute::run()
@@ -19,6 +21,14 @@ CPU Execute::run()
         cpu.bus.fetch_next();
         set_interrupt_disabled(1, cpu);
         cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
+    }
+    if (cpu.bus.check_error().has_value())
+    {
+        qCritical() << "ERROR WITH THE CPU" << cpu.bus.check_error().value();
+        cpu.error_code = EXIT_FAILURE;
+
+        return cpu;
+        // qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
     }
     cpu.bus.tick();
     auto current_instr = cpu.bus.fetch_next();
@@ -45,4 +55,5 @@ void Execute::log_Cpu()
     qInfo() << "A register on exit: " << this->cpu.A_Reg;
     qInfo() << "X register on exit: " << this->cpu.X_Reg;
     qInfo() << "Y register on exit: " << this->cpu.Y_Reg;
+    qInfo() << "PC on exit: 0x: " << num_to_hexa(this->cpu.bus.get_PC());
 }

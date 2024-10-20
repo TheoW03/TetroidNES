@@ -31,6 +31,7 @@ private:
     bool m_initialized = false;
     Execute exe = Execute(CPU()); // Will throw errors if given nothing in args
     QString m_rom_url;
+    int err_code;
 
 private slots:
     void on_timeout();
