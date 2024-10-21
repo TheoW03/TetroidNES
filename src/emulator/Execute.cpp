@@ -44,6 +44,8 @@ CPU Execute::run()
     }
     qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
 
+    qInfo() << "potential error with the cpu";
+
     cpu.error_code = EXIT_FAILURE;
     return cpu;
 }

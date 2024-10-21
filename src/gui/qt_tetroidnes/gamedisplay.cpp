@@ -78,9 +78,10 @@ void GameDisplay::on_update()
     {
         // this->exe.log_Cpu();
         qInfo() << "potential error with the cpu";
+        auto err_mess = QString::fromStdString(result.bus.check_error().value());
         QMessageBox::critical(this,
                               "TetroidNES - " + tr("Error"),
-                              tr("potential error with the CPU"));
+                              (err_mess) + "-- at PC addr= 0x" + QString::fromStdString(num_to_hexa(result.bus.get_PC())));
         this->err_code = EXIT_FAILURE;
         this->QWidget::close();
         // this->sf::Window::close();
