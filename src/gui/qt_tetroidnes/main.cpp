@@ -1,22 +1,12 @@
-#define VERSION "1.0.0" // DO NOT EDIT: CMake handles this
-
-#include <mainwindow.h>
+#define VERSION "1.0.0-Debug" // DO NOT EDIT: CMake handles this
 
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
-#include <QDebug>
-#include <QFile>
-#include <QIODevice>
-#include <QTextStream>
-#include <ctime>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <stdint.h>
-#include <filesystem>
-#include <QDir>
-#include <Qt/log.h>
+#include <QtLogging>
+
+#include <mainwindow.h>
+#include <log.h>
 
 int main(int argc, char *argv[])
 {
