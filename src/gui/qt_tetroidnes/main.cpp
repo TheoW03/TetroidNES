@@ -15,6 +15,7 @@
 #include <iostream>
 #include <stdint.h>
 #include <filesystem>
+#include <QDir>
 
 QtMessageHandler originalHandler = nullptr;
 
@@ -42,11 +43,33 @@ void cleanUp()
     // Add your custom clean-up logic here
 }
 
+void check_log_dir()
+{
+    const short int max_size = 32;
+    QStringList log_dir = QDir("logs", "*.txt", QDir::Name, QDir::Files).entryList();
+    auto log_dir_size = log_dir.length();
+
+    if (log_dir_size > max_size)
+    {
+        auto logs_to_be_deleted = log_dir.sliced(0, log_dir_size - max_size);
+        qDebug() << "Over" << max_size << "logs reached, deleting older logs:" << logs_to_be_deleted;
+        for(auto &file_name : logs_to_be_deleted)
+        {
+            if(!QFile::remove("logs/" + file_name))
+            {
+                qWarning() << "Could not remove log file:" << file_name;
+            }
+        }
+        
+    }
+}
+
 int main(int argc, char *argv[])
 {
-
     originalHandler = qInstallMessageHandler(logToFile);
     qSetMessagePattern("%{type} | %{function}:%{line} | %{time h:mm:ss.zzz} | %{message}");
+
+    check_log_dir();
 
     QApplication a(argc, argv);
     // auto a = make
