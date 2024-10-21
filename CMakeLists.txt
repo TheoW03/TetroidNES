@@ -62,6 +62,7 @@ set(QT_PROJECT_SOURCES
 	src/gui/qt_tetroidnes/gamedisplay.cpp
     src/gui/qt_tetroidnes/settings.cpp
     src/gui/qt_tetroidnes/settingsdisplay.cpp 
+    src/gui/qt_tetroidnes/log.cpp
 )
 
 set(QT_RCC_FILES
