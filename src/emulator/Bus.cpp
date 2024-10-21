@@ -226,11 +226,11 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     // }
     else if (address >= 0x8000 && address <= 0xFFFF)
     {
-        this->stored_instructions[1] = 0x82;
-
-        std::cout << "\033[91mAttempt to write into READ_ONLY_MEM\033[0m" << std::endl;
-        printf("address 0x%x \n", address);
-        std::cout << "" << std::endl;
+        // this->stored_instructions[1] = 0x82;
+        this->err_string = "Address 0x" + num_to_hexa(address) + " is READ_ONLY on this emulator";
+        // std::cout << "\033[91mAttempt to write into READ_ONLY_MEM\033[0m" << std::endl;
+        // printf("address 0x%x \n", address);
+        // std::cout << "" << std::endl;
 
         // exit(EXIT_FAILURE);
     }
@@ -286,9 +286,12 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
 
     else if (address >= 0x8000 && address <= 0xFFFF)
     {
-        this->stored_instructions[1] = 0x82;
+        // this->stored_instructions[1] = 0x82;
+        // write_8bit(address + 1, value >> 8);
+        // write_8bit(address, value);
+        this->err_string = "Address 0x" + num_to_hexa(address) + " is READ_ONLY on this emulator";
 
-        std::cout << "Attempt to write into READ_ONLY_MEM" << std::endl;
+        // std::cout << "Attempt to write into READ_ONLY_MEM" << std::endl;
     }
 }
 
