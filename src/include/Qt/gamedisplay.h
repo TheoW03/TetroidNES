@@ -11,7 +11,7 @@
 #include <Emulator/Execute.h>
 #include <Emulator/Bus.h>
 
-class GameDisplay : public QWidget, public sf::RenderWindow
+class GameDisplay : public QWidget
 {
     Q_OBJECT
 public:
@@ -19,13 +19,18 @@ public:
     void update_game_scale();
     void center_display();
     bool initialized() const;
+    inline static float framerate_to_msec(const float frame_rate)
+    {
+        return 1 / frame_rate * 1000;
+    }
     ~GameDisplay();
 
 private:
     void on_update();
     void on_init();
     QTimer *frame_timer;
-    float frame_time = 16.665; // Milliseconds, 60 FPS
+    QScopedPointer<sf::RenderWindow> render_window;
+    float frame_time = framerate_to_msec(60);
     bool m_initialized = false;
     QString m_rom_url;
     sf::Texture texture;

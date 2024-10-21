@@ -10,7 +10,7 @@
 #include <Emulator/LoadRom.h>
 
 GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
-                                                             sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)
+                                                            render_window(new sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default))
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -29,8 +29,11 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     setFocusPolicy(Qt::StrongFocus);
 
     m_rom_url = rom_url;
+
     frame_timer = new QTimer(this);
     frame_timer->setInterval(frame_time);
+
+    // Events
     connect(frame_timer, &QTimer::timeout, this, &GameDisplay::on_timeout);
 }
 
@@ -97,9 +100,9 @@ void GameDisplay::on_update()
     std::copy(rgb_data_vector.begin(), rgb_data_vector.end(), rgb_data);
 
     // Display next frame
-    clear();
+    render_window->clear();
     texture.update(rgb_data);
-    draw(sprite);
+    render_window->draw(sprite);
 }
 
 void GameDisplay::on_timeout()
@@ -113,7 +116,7 @@ void GameDisplay::showEvent(QShowEvent *event)
     if (!m_initialized)
     {
         // Create an SFML window for rendering with the id of the window in which the drawing will be done
-        RenderWindow::create(sf::WindowHandle(winId()));
+        render_window->create(sf::WindowHandle(winId()));
         // Initializing drawing objects
         if (!m_rom_url.isEmpty())
         {
@@ -135,7 +138,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
 
     if (!m_initialized)
     {
-        this->sf::Window::close();
+        render_window->close();
 
         event->accept();
         return;
@@ -162,7 +165,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
         {
             qInfo() << "CPU exited unsuccessfully";
         }
-        this->sf::Window::close();
+        render_window->close();
         event->accept();
     }
 }
@@ -190,7 +193,7 @@ QPaintEngine *GameDisplay::paintEngine() const
 void GameDisplay::paintEvent(QPaintEvent *event)
 {
     on_update();
-    display();
+    render_window->display();
 }
 
 void GameDisplay::resizeEvent(QResizeEvent *event)
