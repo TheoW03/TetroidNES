@@ -25,7 +25,7 @@ private:
     void on_update();
     void on_init();
     QTimer *frame_timer;
-    float frame_time = 33.33; // Milliseconds, 30 FPS
+    float frame_time = 16.665; // Milliseconds, 60 FPS
     bool m_initialized = false;
     QString m_rom_url;
     sf::Texture texture;
