@@ -74,16 +74,16 @@ void MainWindow::create_display(QString rom_link)
 
 void MainWindow::update_page_info()
 {
-    RomList *list = findChild<RomList *>();
-
-    findChild<QLabel *>("PageInfo")->setText(tr("%1 %2 %3 %4 | %5 %6").arg("Page", QString::number(list->current_page()), "of", QString::number(list->total_pages()), "Items displayed:", QString::number(list->items_per_page())));
+    page_info->setText(tr("%1 %2 %3 %4 | %5 %6").arg(
+        "Page", QString::number(rom_list->current_page()),
+        "of", QString::number(rom_list->total_pages()),
+        "Items displayed:", QString::number(rom_list->items_per_page())));
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event)
 {
 
-    auto *list = this->findChild<RomList *>();
-    auto *scrollbar = this->findChild<QScrollArea *>()->verticalScrollBar();
+    auto *scrollbar = rom_list_scroll->verticalScrollBar();
     const bool scrolled_up = (event->angleDelta().y() > 0);
 
     if (scrollbar->isVisible())
@@ -91,14 +91,14 @@ void MainWindow::wheelEvent(QWheelEvent *event)
         return;
     }
 
-    if (!scrolled_up && list->current_page() < list->total_pages())
+    if (!scrolled_up && rom_list->current_page() < rom_list->total_pages())
     {
-        list->set_current_page(list->current_page() + 1);
+        rom_list->set_current_page(rom_list->current_page() + 1);
         scrollbar->setSliderPosition(scrollbar->minimum() + scrollbar->singleStep());
     }
-    else if (scrolled_up && list->current_page() > 1)
+    else if (scrolled_up && rom_list->current_page() > 1)
     {
-        list->set_current_page(list->current_page() - 1);
+        rom_list->set_current_page(rom_list->current_page() - 1);
         scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->singleStep());
     }
     update_page_info();
@@ -108,23 +108,22 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 
 void MainWindow::rom_list_scroll_value_changed(const int value)
 {
-    auto *list = findChild<RomList *>();
-    auto *scrollbar = findChild<QScrollArea *>()->verticalScrollBar();
-    unsigned int current_page = list->current_page();
+    auto *scrollbar = rom_list_scroll->verticalScrollBar();
+    unsigned int current_page = rom_list->current_page();
     // qDebug() << "Current Page Before:" << current_page
     //          << "Value:" << value
     //          << "Max/Min Value:" << scrollbar->maximum() << "/" << scrollbar->minimum()
     //          << "Total pages:" << list->total_pages();
 
-    if (value >= scrollbar->maximum() && current_page < list->total_pages())
+    if (value >= scrollbar->maximum() && current_page < rom_list->total_pages())
     {
-        list->set_current_page(current_page + 1);
+        rom_list->set_current_page(current_page + 1);
         scrollbar->setSliderPosition(scrollbar->minimum() + scrollbar->singleStep());
         update_page_info();
     }
     else if (value <= scrollbar->minimum() && current_page > 1)
     {
-        list->set_current_page(current_page - 1);
+        rom_list->set_current_page(current_page - 1);
         scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->singleStep());
         update_page_info();
     }
@@ -133,25 +132,24 @@ void MainWindow::rom_list_scroll_value_changed(const int value)
 
 void MainWindow::sort_mode_button_released(const int id) const
 {
-    RomList *list = ui->centralwidget->findChild<RomList *>();
-    QString search_bar_text = ui->centralwidget->findChild<QLineEdit *>()->text();
+    QString search_bar_text = sort_control_frame->findChild<QLineEdit*>()->text();
     const bool regex = search_bar_text.isEmpty();
 
-    list->set_current_mode(RomList::SortMode(id), regex);
+    rom_list->set_current_mode(RomList::SortMode(id), regex);
     if (!regex)
     {
-        list->search(search_bar_text);
+        rom_list->search(search_bar_text);
     }
 }
 
 void MainWindow::sort_order_button_toggled(const bool toggled) const
 {
-    findChild<RomList *>()->set_current_order(Qt::SortOrder(toggled));
+    rom_list->set_current_order(Qt::SortOrder(toggled));
 }
 
 void MainWindow::search_bar_edited(QString string) const
 {
-    findChild<RomList *>()->search(string);
+    rom_list->search(string);
 }
 
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)

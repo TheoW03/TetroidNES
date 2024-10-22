@@ -63,6 +63,8 @@ set(QT_PROJECT_SOURCES
     src/gui/qt_tetroidnes/settings.cpp
     src/gui/qt_tetroidnes/settingsdisplay.cpp 
     src/gui/qt_tetroidnes/log.cpp
+    src/gui/qt_tetroidnes/romdata.cpp
+    src/gui/qt_tetroidnes/romlistitem.cpp
 )
 
 set(QT_RCC_FILES
@@ -79,6 +81,8 @@ set(QT_HEADERS
     src/include/Qt/util.h
     src/include/Qt/settings.h
     src/include/Qt/settingsdisplay.h
+    src/include/Qt/romdata.h
+    src/include/Qt/romlistitem.h
 )
 
 set(QT_UI_FILES

@@ -86,7 +86,7 @@ void GameDisplay::on_update()
                               "TetroidNES - " + tr("Error"),
                               (err_mess) + "-- at PC addr= 0x" + QString::fromStdString(num_to_hexa(result.bus.get_PC())));
         this->err_code = EXIT_FAILURE;
-        this->QWidget::close();
+        this->close();
         // this->sf::Window::close();
 
         return;

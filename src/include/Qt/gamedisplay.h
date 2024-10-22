@@ -35,7 +35,7 @@ private:
     QString m_rom_url;
     sf::Texture texture;
     sf::Sprite sprite;
-    Execute exe; // Will throw errors if given nothing in args
+    Execute exe;
     int err_code;
 
 private slots:
