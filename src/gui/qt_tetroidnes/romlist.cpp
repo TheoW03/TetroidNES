@@ -44,7 +44,10 @@ void RomList::setup_display()
 
         auto dir = QDir(directory_url);
 
-        if (!dir.isAbsolute() || !dir.exists() || dir.isEmpty()) {continue;}
+        if (!dir.isAbsolute() || !dir.exists() || dir.isEmpty())
+        {
+            continue;
+        }
 
         u_short year = 1980;
         QByteArray image;
@@ -59,14 +62,13 @@ void RomList::setup_display()
 
         for (auto &url : files)
         {
-            qDebug() 
-            << "File:" << url
-            << "Title:" << url.section('.', 0, 0);
+            qDebug()
+                << "File:" << url
+                << "Title:" << url.section('.', 0, 0);
 
             shptr_romdata romdata = shptr_romdata(new RomData(nullptr, year, image, url.section('.', 0, 0), favorite, QUrl(dir.absoluteFilePath(url))));
             data.append(romdata);
         }
-
     }
     qDebug() << "Finished!";
 }
@@ -84,8 +86,7 @@ shptr_romdata RomList::get_romdata(const int page, int index)
             nullptr,
             "TetroidNes - " + tr("Error"),
             error_msg,
-            QMessageBox::Ok
-        );
+            QMessageBox::Ok);
         return shptr_romdata(new RomData());
     }
 
@@ -114,9 +115,9 @@ unsigned int RomList::current_page() const { return m_current_page; }
 
 void RomList::update_total_pages()
 {
-    qDebug() 
-    << "Data length:" << data.length()
-    << "Items per page:" << items_per_page();
+    qDebug()
+        << "Data length:" << data.length()
+        << "Items per page:" << items_per_page();
     if (data.length() <= 1)
     {
         qInfo() << "Data length is lower or equal to 1! Setting total pages to 1";
@@ -126,28 +127,26 @@ void RomList::update_total_pages()
     {
         m_total_pages = (data.length() + (items_per_page() - 1)) / items_per_page(); // Always rounds up a page
     }
-    
 }
 unsigned int RomList::total_pages() const { return m_total_pages; }
-
 
 // Probably needs another refactor?
 void RomList::update_display()
 {
 
-    auto romlistitem_list = findChildren<RomListItem*>();
+    auto romlistitem_list = findChildren<RomListItem *>();
     int romlistitem_index = romlistitem_list.size() - 1;
     int items_per_page_index = m_items_per_page - 1;
     bool changes_made = false;
-    auto romdata_index = data.size() - 1;
+    auto romdata_index = data.size(); // removed the "-1" due to seg fault.
     // Can return -1 in some cases
     int start_index = std::clamp<int>(m_items_per_page * (m_current_page - 1) - 1, 0, romdata_index);
 
-    qDebug() 
-    << "Updating display, start index:" << start_index 
-    << "Items per page:" << m_items_per_page
-    << "Rom list item max index:" << romlistitem_index
-    << "Rom data max index:" << romdata_index;
+    qDebug()
+        << "Updating display, start index:" << start_index
+        << "Items per page:" << m_items_per_page
+        << "Rom list item max index:" << romlistitem_index
+        << "Rom data max index:" << romdata_index;
 
     // Remove widgets if current item count is higher than items_per_page or there are extra slots
     if (m_items_per_page < romlistitem_index + 1 || start_index + items_per_page_index > romdata_index)
@@ -179,24 +178,24 @@ void RomList::update_display()
 
     if (changes_made)
     {
-        romlistitem_list = findChildren<RomListItem*>();
+        romlistitem_list = findChildren<RomListItem *>();
         romlistitem_index = romlistitem_list.size() - 1;
     }
 
-    qDebug() 
-    << "Updating widgets\nstart & end index:" << start_index 
-    << "Items per page:" << m_items_per_page
-    << "Rom list item max index:" << romlistitem_index
-    << "Rom data max index:" << romdata_index;
+    qDebug()
+        << "Updating widgets\nstart & end index:" << start_index
+        << "Items per page:" << m_items_per_page
+        << "Rom list item max index:" << romlistitem_index
+        << "Rom data max index:" << romdata_index;
 
     // Update all widgets
     // j has to start at 1 if the current page is 2 or above otherwise the data displayed won't be synced
     for (int i = 0, j = ((m_current_page == 1) ? 0 : 1) + start_index; i <= romlistitem_index && j <= romdata_index; i++, j++)
     {
-        qDebug() << i << i+start_index;
+        qDebug() << i << i + start_index;
         romlistitem_list[i]->set_romdata(data[j]);
     }
-    
+
     qDebug() << "Done updating display";
 }
 
