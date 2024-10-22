@@ -118,13 +118,13 @@ void MainWindow::rom_list_scroll_value_changed(const int value)
     if (value >= scrollbar->maximum() && current_page < rom_list->total_pages())
     {
         rom_list->set_current_page(current_page + 1);
-        scrollbar->setSliderPosition(scrollbar->minimum() + scrollbar->singleStep());
+        scrollbar->setSliderPosition(scrollbar->minimum() + scrollbar->pageStep()*0.1);
         update_page_info();
     }
     else if (value <= scrollbar->minimum() && current_page > 1)
     {
         rom_list->set_current_page(current_page - 1);
-        scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->singleStep());
+        scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->pageStep()*0.5);
         update_page_info();
     }
     // qDebug() << "Current Page After:" << current_page;

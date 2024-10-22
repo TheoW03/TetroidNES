@@ -18,8 +18,8 @@ RomList::RomList(QWidget *parent) : QWidget{parent}
 
     setObjectName("RomList");
     setup_display();
-    update_total_pages();
     set_items_per_page(10); // TODO: Change this so the program remembers what the user chose last time
+    update_total_pages();
     set_current_mode(RomList::SortMode::AZ);          // TODO: Change this so the program remembers what the user chose last time
     set_current_order(Qt::SortOrder::AscendingOrder); // TODO: Change this so the program remembers what the user chose last time
     qInfo() << "Finished setting up romlist";
@@ -114,6 +114,9 @@ unsigned int RomList::current_page() const { return m_current_page; }
 
 void RomList::update_total_pages()
 {
+    qDebug() 
+    << "Data length:" << data.length()
+    << "Items per page:" << items_per_page();
     if (data.length() <= 1)
     {
         qInfo() << "Data length is lower or equal to 1! Setting total pages to 1";
@@ -133,41 +136,41 @@ void RomList::update_display()
 {
 
     auto romlistitem_list = findChildren<RomListItem*>();
-    int romlistitem_count = romlistitem_list.size();
-    int start_index = m_items_per_page * (m_current_page - 1);
-    int end_index = start_index;
+    int romlistitem_index = romlistitem_list.size() - 1;
+    int items_per_page_index = m_items_per_page - 1;
     bool changes_made = false;
-    auto romdata_count = data.size();
-    // Clamping end index so it doesn't go out of bounds
-    auto romdata_list = data.sliced(
-        start_index, 
-        std::clamp<int>(end_index + m_items_per_page, end_index, romdata_count));
+    auto romdata_index = data.size() - 1;
+    // Can return -1 in some cases
+    int start_index = std::clamp<int>(m_items_per_page * (m_current_page - 1) - 1, 0, romdata_index);
 
     qDebug() 
-    << "Updating display, start & end index:" << start_index 
+    << "Updating display, start index:" << start_index 
     << "Items per page:" << m_items_per_page
-    << "Rom list item count:" << romlistitem_count
-    << "Rom data list:" << romdata_list
-    << "Rom data count:" << romdata_count;
+    << "Rom list item max index:" << romlistitem_index
+    << "Rom data max index:" << romdata_index;
 
-    // Remove widgets if current item count is higher than items_per_page
-    if (m_items_per_page < romlistitem_count)
+    // Remove widgets if current item count is higher than items_per_page or there are extra slots
+    if (m_items_per_page < romlistitem_index + 1 || start_index + items_per_page_index > romdata_index)
     {
         qDebug() << "Removing widgets";
 
-        for (int i = romlistitem_count; i > 0 && i >= m_items_per_page - 1; i--)
+        // i has to be higher than items per page or has to be out of bounds for romdata
+        for (int i = romlistitem_index; i > items_per_page_index || start_index + i >= romdata_index; i--)
         {
-            main_layout->removeWidget(romlistitem_list[i]);
+            qDebug() << i;
+            // deleteLater() does not delete fast enough for findChildren() called later in the function
+            romlistitem_list[i]->setParent(nullptr);
+            romlistitem_list[i]->deleteLater();
         }
         changes_made = true;
     }
     // Add widgets if current item count is lower than items_per_page
-    else if (m_items_per_page > romlistitem_count)
+    else if (m_items_per_page > romlistitem_index + 1)
     {
         qDebug() << "Adding widgets";
 
         // 2nd condition is so we also don't make any empty widgets if there are extra item slots left
-        for (int i = romlistitem_count; i <= m_items_per_page && start_index + i <= romdata_count - 1; i++)
+        for (int i = romlistitem_index + 1; i <= items_per_page_index && start_index + i <= romdata_index; i++)
         {
             main_layout->addWidget(new RomListItem(shptr_romdata(new RomData()), this));
         }
@@ -177,19 +180,21 @@ void RomList::update_display()
     if (changes_made)
     {
         romlistitem_list = findChildren<RomListItem*>();
-        romlistitem_count = romlistitem_list.size();
+        romlistitem_index = romlistitem_list.size() - 1;
     }
 
     qDebug() 
     << "Updating widgets\nstart & end index:" << start_index 
     << "Items per page:" << m_items_per_page
-    << "Rom list item count:" << romlistitem_count
-    << "Rom data count:" << romdata_count;
+    << "Rom list item max index:" << romlistitem_index
+    << "Rom data max index:" << romdata_index;
 
     // Update all widgets
-    for (int i = 0; i <= romlistitem_count-1; i++)
+    // j has to start at 1 if the current page is 2 or above otherwise the data displayed won't be synced
+    for (int i = 0, j = ((m_current_page == 1) ? 0 : 1) + start_index; i <= romlistitem_index && j <= romdata_index; i++, j++)
     {
-        romlistitem_list[i]->set_romdata(romdata_list[i]);
+        qDebug() << i << i+start_index;
+        romlistitem_list[i]->set_romdata(data[j]);
     }
     
     qDebug() << "Done updating display";
