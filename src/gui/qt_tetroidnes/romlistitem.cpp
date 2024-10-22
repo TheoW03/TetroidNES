@@ -32,7 +32,7 @@ RomListItem::RomListItem(shptr_romdata data, QWidget *parent) : QWidget{parent}
     buttons_layout->addWidget(favorite_button);
     buttons_frame->setLayout(buttons_layout);
 
-    set_romdata(*data);
+    set_romdata(data);
 
     qDebug() << m_romdata->title();
 
@@ -47,7 +47,7 @@ RomListItem::~RomListItem()
 {
 }
 
-void RomListItem::set_romdata(shptr_romdata *data)
+void RomListItem::set_romdata(shptr_romdata data)
 {
     m_romdata = data;
     update_data();

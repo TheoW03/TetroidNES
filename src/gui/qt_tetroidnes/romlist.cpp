@@ -73,7 +73,7 @@ void RomList::setup_display()
 
 shptr_romdata RomList::get_romdata(const int page, int index)
 {
-    index = m_items_per_page * page - m_items_per_page + index;
+    index = m_items_per_page * (page - 1) + index;
 
     if (data.size() - 1 > index || index < 0)
     {
@@ -134,7 +134,7 @@ void RomList::update_display()
 
     auto romlistitem_list = findChildren<RomListItem*>();
     int romlistitem_count = romlistitem_list.size();
-    int start_index = m_items_per_page * m_current_page - m_items_per_page;
+    int start_index = m_items_per_page * (m_current_page - 1);
     int end_index = start_index;
     bool changes_made = false;
     auto romdata_count = data.size();

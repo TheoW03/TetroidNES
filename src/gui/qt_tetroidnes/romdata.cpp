@@ -6,7 +6,7 @@ RomData::RomData(QObject *parent, u_short year, QByteArray img, QString title, b
 {
     m_year = year;
     m_img = img;
-    title = title;
+    m_title = title;
     m_favorited = favorited;
     m_path = path;
 }
