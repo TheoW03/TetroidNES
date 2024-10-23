@@ -3,7 +3,7 @@
 #include <Qt/util.h>
 #include <Qt/romlistitem.h>
 
-RomListItem::RomListItem(shptr_romdata data, QWidget *parent) : QWidget{parent}
+RomListItem::RomListItem(std::optional<shptr_romdata> data, QWidget *parent) : QWidget{parent}
 {
 
     setMinimumSize(250, 250);
@@ -32,9 +32,11 @@ RomListItem::RomListItem(shptr_romdata data, QWidget *parent) : QWidget{parent}
     buttons_layout->addWidget(favorite_button);
     buttons_frame->setLayout(buttons_layout);
 
-    set_romdata(data);
-
-    qDebug() << m_romdata->title();
+    if (data)
+    {
+        set_romdata(data.value());
+        qDebug() << m_romdata->title();
+    }
 
     // Events
     connect(favorite_button, &QPushButton::clicked, this,

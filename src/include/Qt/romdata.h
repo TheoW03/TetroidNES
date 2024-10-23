@@ -28,6 +28,7 @@ public:
     void set_favorited(const bool b);
     QUrl path();
     void set_path(QUrl path);
+    bool is_empty() const;
 
 private:
     u_short m_year;

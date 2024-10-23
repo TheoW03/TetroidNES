@@ -12,7 +12,7 @@ class RomListItem: public QWidget
 {
     Q_OBJECT
 public:
-    explicit RomListItem(shptr_romdata data, QWidget *parent = nullptr);
+    explicit RomListItem(std::optional<shptr_romdata> data = std::nullopt, QWidget *parent = nullptr);
     ~RomListItem();
     shptr_romdata romdata();
     void set_romdata(shptr_romdata data);

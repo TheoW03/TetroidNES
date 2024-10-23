@@ -14,6 +14,9 @@ RomData::~RomData()
 {
 }
 
+bool RomData::is_empty() const
+{ return m_path.isEmpty() || !m_path.isValid(); }
+
 u_short RomData::year()
 { return m_year; }
 
