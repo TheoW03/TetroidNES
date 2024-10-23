@@ -12,7 +12,8 @@
 class PPU
 {
 private:
-    std::tuple<uint8_t, uint8_t, uint8_t> getColorFromByte(uint16_t byte);
+    std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> bg_pallete(size_t row, size_t column);
+    std::tuple<uint8_t, uint8_t, uint8_t> getColorFromByte(uint16_t byte, std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> pallete);
     // sf::Color getColorFromByte(uint16_t byte);
     struct Registers
     {
@@ -44,6 +45,7 @@ private:
         {
             struct
             {
+
                 unsigned P : 1; // PPU master/slave
                 unsigned V : 1; // NMI enable
                 unsigned H : 1; // sprite height

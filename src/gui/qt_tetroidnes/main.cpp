@@ -1,4 +1,4 @@
-#define VERSION "1.0.0-Debug" // DO NOT EDIT: CMake handles this
+#define VERSION "1.0.0" // DO NOT EDIT: CMake handles this
 
 #include <QApplication>
 #include <QLocale>
@@ -20,8 +20,6 @@ int main(int argc, char *argv[])
     a.setApplicationVersion(VERSION);
 
     qInfo() << "STARTING" << a.applicationName() << "VERSION" << a.applicationVersion();
-    // QObject::connect(&a, &QApplication::aboutToQuit, cleanUp);
-
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
     for (const QString &locale : uiLanguages)

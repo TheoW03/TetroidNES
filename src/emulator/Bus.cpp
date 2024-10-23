@@ -107,7 +107,10 @@ uint8_t Bus::read_8bit(uint16_t address)
         if (address == 0x2007)
             return this->ppu.read_PPU_data();
         else if (address == 0x2002)
+        {
+            // std::cout << "sta" << std::endl;
             return this->ppu.read_status();
+        }
         else if (address == 0x2004)
         {
             return this->ppu.read_OAM_data();
@@ -180,6 +183,8 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         }
         else if (address == 0x2006)
         {
+            std::cout << "write to addr" << std::endl;
+
             this->ppu.write_PPU_address(value);
         }
         else if (address == 0x2007)

@@ -4,6 +4,7 @@
 #include <gamedisplay.h>
 #include <mainwindow.h>
 
+#define SAVE_DIR "./save/config.cfg"
 #ifndef UTIL_H
 #define UTIL_H
 

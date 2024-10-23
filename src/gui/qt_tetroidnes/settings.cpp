@@ -1,6 +1,7 @@
 #include <settings.h>
 
 #include <QMessageBox>
+#include <Qt/util.h>
 #include <QSettings>
 #include <QTextEdit>
 #include <QFileInfo>
@@ -13,15 +14,15 @@ SettingsWidget::SettingsWidget(QWidget *parent) : QWidget{parent}
     setWindowFlag(Qt::WindowType::Window);
     setWindowTitle(tr("TetroidNES - Settings"));
 
-    auto *layout =          new QVBoxLayout();
+    auto *layout = new QVBoxLayout();
     auto *layout_controls = new QHBoxLayout();
-    
-    controls_frame =   new QFrame(this);
+
+    controls_frame = new QFrame(this);
     setting_category = new QListWidget(this);
-    setting_display =  new SettingsDisplay(this);
+    setting_display = new SettingsDisplay(this);
     button_statusbar = new QStatusBar(this);
-    apply_changes =    new QPushButton(tr("Apply"), button_statusbar);
-    cancel_changes =   new QPushButton(tr("Cancel"), button_statusbar);
+    apply_changes = new QPushButton(tr("Apply"), button_statusbar);
+    cancel_changes = new QPushButton(tr("Cancel"), button_statusbar);
 
     // setting_category setup
     QStringList items;
@@ -49,30 +50,28 @@ SettingsWidget::SettingsWidget(QWidget *parent) : QWidget{parent}
 
     // Events
     connect(setting_category, &QListWidget::itemClicked, this,
-        [this](QListWidgetItem *item){on_setting_category_item_clicked(setting_category->row(item));}
-    );
+            [this](QListWidgetItem *item)
+            { on_setting_category_item_clicked(setting_category->row(item)); });
     connect(apply_changes, &QPushButton::clicked, this, &SettingsWidget::on_apply_changes_clicked);
     connect(cancel_changes, &QPushButton::clicked, this, &SettingsWidget::on_cancel_changes_clicked);
-
 }
 
 SettingsWidget::~SettingsWidget()
 {
-
 }
 
 void SettingsWidget::on_setting_category_item_clicked(const int index)
 {
-    findChild<SettingsDisplay*>()->setCurrentIndex(index);
+    findChild<SettingsDisplay *>()->setCurrentIndex(index);
 }
 
 void SettingsWidget::on_apply_changes_clicked()
 {
 
     QStringList string_list;
-    QTextEdit *rom_dir = findChild<QTextEdit*>("rom_directory");
-    QSettings settings = QSettings("config.cfg", QSettings::IniFormat);
-    
+    QTextEdit *rom_dir = findChild<QTextEdit *>("rom_directory");
+    QSettings settings = QSettings(SAVE_DIR, QSettings::IniFormat);
+
     for (auto &string : rom_dir->toPlainText().split("\n"))
     {
         if (QFileInfo(string).isDir() && QFileInfo(string).isAbsolute())
@@ -82,18 +81,21 @@ void SettingsWidget::on_apply_changes_clicked()
     }
 
     settings.setValue("rom_dirs", string_list);
+    qInfo() << "saving settings in " << SAVE_DIR;
+    QMessageBox::information(this, tr("Settings saved"),
+                             tr("your settings have been saved"));
 }
 
 void SettingsWidget::on_cancel_changes_clicked()
 {
-
 }
 
 void SettingsWidget::closeEvent(QCloseEvent *event)
 {
-    if (!findChild<QPushButton*>("apply")->isEnabled())
+    if (!findChild<QPushButton *>("apply")->isEnabled())
     {
         QWidget::closeEvent(event);
+        qInfo() << "you didnt save your settings ";
         return;
     }
 
@@ -101,8 +103,7 @@ void SettingsWidget::closeEvent(QCloseEvent *event)
         this,
         tr("TetroidNES - Confirmation"),
         tr("Settings are unsaved!\nAre you sure you want to close the settings?"),
-        QMessageBox::Yes | QMessageBox::Cancel
-    );
+        QMessageBox::Yes | QMessageBox::Cancel);
 
     if (message_box_result == QMessageBox::Yes)
     {

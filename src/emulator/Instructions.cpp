@@ -479,7 +479,10 @@ void RTI(AddressMode addressType, CPU &cpu)
 	// TODO:return from interrupt
 	cpu.bus.fill(cpu.bus.pop_stack16());
 	cpu.status.val = cpu.bus.pop_stack8();
+	// std::cout << "nmi" << std::endl;
+	// printf("%x \n", cpu.bus.get_PC());
 	set_brk(cpu, 0);
+	set_interrupt_disabled(0, cpu);
 }
 #pragma endregion setFlags
 

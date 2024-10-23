@@ -10,12 +10,13 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QSettings>
+#include <Qt/util.h>
 
 SettingsDisplay::SettingsDisplay(QWidget *parent) : QStackedWidget{parent}
 {
-    general =  new QWidget(this);
+    general = new QWidget(this);
     emulator = new QWidget(this);
-    about =    new QWidget(this);
+    about = new QWidget(this);
 
     setup_general(general);
     setup_emulator(emulator);
@@ -30,20 +31,19 @@ SettingsDisplay::SettingsDisplay(QWidget *parent) : QStackedWidget{parent}
 
 SettingsDisplay::~SettingsDisplay()
 {
-
 }
 
 void SettingsDisplay::setup_general(QWidget *general)
 {
-    QSettings settings = QSettings("config.cfg", QSettings::IniFormat);
+    QSettings settings = QSettings(SAVE_DIR, QSettings::IniFormat);
     auto settings_rom_dirs = settings.value("rom_dirs", QStringList()).toStringList();
 
     QVBoxLayout *layout = new QVBoxLayout();
     // Search directories groupbox
-    QGroupBox *directory_groupbox =          new QGroupBox(tr("Search Directories:"), general);
+    QGroupBox *directory_groupbox = new QGroupBox(tr("Search Directories:"), general);
     QVBoxLayout *directory_groupbox_layout = new QVBoxLayout();
-    QTextEdit *directories =                 new QTextEdit(directory_groupbox);
-    QPushButton *add_directory =             new QPushButton(directory_groupbox);
+    QTextEdit *directories = new QTextEdit(directory_groupbox);
+    QPushButton *add_directory = new QPushButton(directory_groupbox);
 
     add_directory->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::ListAdd));
 
@@ -60,24 +60,21 @@ void SettingsDisplay::setup_general(QWidget *general)
     general->setLayout(layout);
 
     connect(add_directory, &QPushButton::clicked, this, &SettingsDisplay::on_add_directory_clicked);
-
 }
 
 void SettingsDisplay::setup_emulator(QWidget *emulator)
 {
-
 }
 
 void SettingsDisplay::setup_about(QWidget *about)
 {
-
 }
 
 void SettingsDisplay::on_add_directory_clicked()
 {
     QFileDialog file_dialog;
-    QTextEdit *text_edit = findChild<QTextEdit*>("rom_directory");
-    
+    QTextEdit *text_edit = findChild<QTextEdit *>("rom_directory");
+
     file_dialog.setFileMode(QFileDialog::Directory);
 
     if (file_dialog.exec())

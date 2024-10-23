@@ -28,7 +28,7 @@ RomList::RomList(QWidget *parent) : QWidget{parent}
 void RomList::setup_display()
 {
 
-    QSettings settings = QSettings("config.cfg", QSettings::IniFormat);
+    QSettings settings = QSettings(SAVE_DIR, QSettings::IniFormat);
     const QStringList rom_dirs = settings.value("rom_dirs", QStringList()).toStringList();
 
     if (rom_dirs.isEmpty())
@@ -79,10 +79,10 @@ shptr_romdata RomList::get_romdata(const int page, int index)
 
     if (data.size() - 1 < index || index < 0)
     {
-        qDebug() 
-        << "Out of bounds, returning empty rom data, page:" << page 
-        << "index:" << index 
-        << "Rom data size:" << data.size();
+        qDebug()
+            << "Out of bounds, returning empty rom data, page:" << page
+            << "index:" << index
+            << "Rom data size:" << data.size();
         return shptr_romdata(new RomData());
     }
 
@@ -129,7 +129,7 @@ unsigned int RomList::total_pages() const { return m_total_pages; }
 // Probably needs another refactor?
 void RomList::update_display()
 {
-    auto list_of_widgets = findChildren<RomListItem*>();
+    auto list_of_widgets = findChildren<RomListItem *>();
     int widgets_count = list_of_widgets.size();
 
     qDebug() << "Updating display, Widgets count:" << widgets_count;
@@ -148,7 +148,6 @@ void RomList::update_display()
             list_of_widgets.append(new_widget);
         }
         widgets_count = list_of_widgets.size();
-
     }
     // Remove widgets if there are more items than items that need to be shown
     else if (m_items_per_page < widgets_count)
@@ -177,7 +176,6 @@ void RomList::update_display()
 
         // Hide empty items and show valid items
         romdata->is_empty() ? romlistitem->hide() : romlistitem->show();
-
     }
 
     qDebug() << "Done updating display";
