@@ -1,8 +1,8 @@
-#include <mainwindow.h>
-#include <filtercontrolframe.h>
-#include <gamedisplay.h>
+#include <Qt/mainwindow.h>
+#include <Qt/filtercontrolframe.h>
+#include <Qt/gamedisplay.h>
 #include "ui_mainwindow.h"
-#include <util.h>
+#include <Qt/util.h>
 
 #include <QVBoxLayout>
 #include <QIcon>
@@ -10,7 +10,7 @@
 #include <QScrollBar>
 #include <QMimeData>
 #include <QMessageBox>
-#include <qevent.h>
+#include <QEvent>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {

@@ -1,8 +1,6 @@
 #ifndef ROMLIST_H
 #define ROMLIST_H
 
-#include <flowlayout.h>
-
 #include <QWidget>
 #include <QObject>
 #include <QByteArray>
@@ -14,6 +12,7 @@
 #include <QFrame>
 #include <QSharedPointer>
 
+#include <Qt/flowlayout.h>
 #include <Qt/romlistitem.h>
 #include <Qt/romdata.h>
 

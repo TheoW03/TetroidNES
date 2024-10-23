@@ -1,8 +1,8 @@
 #include <QApplication>
 #include <QtLogging>
 
-#include <gamedisplay.h>
-#include <mainwindow.h>
+#include <Qt/gamedisplay.h>
+#include <Qt/mainwindow.h>
 
 #define SAVE_DIR "./save/config.cfg"
 #ifndef UTIL_H

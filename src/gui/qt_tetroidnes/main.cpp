@@ -5,8 +5,8 @@
 #include <QTranslator>
 #include <QtLogging>
 
-#include <mainwindow.h>
-#include <log.h>
+#include <Qt/mainwindow.h>
+#include <Qt/log.h>
 
 int main(int argc, char *argv[])
 {

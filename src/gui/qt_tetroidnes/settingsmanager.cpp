@@ -1,4 +1,4 @@
-#include <settingsmanager.h>
+#include <Qt/settingsmanager.h>
 
 SettingsManager::SettingsManager()
 {

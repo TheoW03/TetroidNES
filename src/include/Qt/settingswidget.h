@@ -1,8 +1,6 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <settingsdisplay.h>
-
 #include <QListWidget>
 #include <QStackedWidget>
 #include <QHBoxLayout>
@@ -11,6 +9,8 @@
 #include <QStatusBar>
 #include <QCloseEvent>
 #include <QFrame>
+
+#include <Qt/settingsdisplay.h>
 
 class SettingsWidget : public QWidget
 {
