@@ -1,10 +1,10 @@
-#include <settings.h>
-
 #include <QMessageBox>
-#include <Qt/util.h>
-#include <QSettings>
 #include <QTextEdit>
 #include <QFileInfo>
+
+#include <Qt/settingswidget.h>
+#include <Qt/settingsmanager.h>
+#include <Qt/util.h>
 
 SettingsWidget::SettingsWidget(QWidget *parent) : QWidget{parent}
 {
@@ -70,7 +70,7 @@ void SettingsWidget::on_apply_changes_clicked()
 
     QStringList string_list;
     QTextEdit *rom_dir = findChild<QTextEdit *>("rom_directory");
-    QSettings settings = QSettings(SAVE_DIR, QSettings::IniFormat);
+    auto &settings = SettingsManager::instance();
 
     for (auto &string : rom_dir->toPlainText().split("\n"))
     {
@@ -80,7 +80,7 @@ void SettingsWidget::on_apply_changes_clicked()
         }
     }
 
-    settings.setValue("rom_dirs", string_list);
+    settings.set_rom_dir(string_list);
     qInfo() << "saving settings in " << SAVE_DIR;
     QMessageBox::information(this, tr("Settings saved"),
                              tr("your settings have been saved"));

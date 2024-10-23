@@ -1,6 +1,6 @@
-#include <menubar.h>
-#include <mainwindow.h>
-#include <settings.h>
+#include <Qt/menubar.h>
+#include <Qt/mainwindow.h>
+#include <Qt/settingswidget.h>
 
 #include <QMenuBar>
 #include <QAction>

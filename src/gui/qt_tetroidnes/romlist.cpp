@@ -1,6 +1,5 @@
 #include <QtLogging>
 #include <QRegularExpression>
-#include <QSettings>
 #include <QFileInfo>
 #include <QUrl>
 #include <QDir>
@@ -9,6 +8,7 @@
 #include <Qt/romlist.h>
 #include <Qt/romlistitem.h>
 #include <Qt/util.h>
+#include <Qt/settingsmanager.h>
 
 RomList::RomList(QWidget *parent) : QWidget{parent}
 {
@@ -27,9 +27,7 @@ RomList::RomList(QWidget *parent) : QWidget{parent}
 
 void RomList::setup_display()
 {
-
-    QSettings settings = QSettings(SAVE_DIR, QSettings::IniFormat);
-    const QStringList rom_dirs = settings.value("rom_dirs", QStringList()).toStringList();
+    const QStringList rom_dirs = SettingsManager::instance().get_rom_dirs();
 
     if (rom_dirs.isEmpty())
     {

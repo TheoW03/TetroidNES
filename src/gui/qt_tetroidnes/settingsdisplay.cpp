@@ -9,8 +9,8 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QSettings>
 #include <Qt/util.h>
+#include <Qt/settingsmanager.h>
 
 SettingsDisplay::SettingsDisplay(QWidget *parent) : QStackedWidget{parent}
 {
@@ -35,8 +35,7 @@ SettingsDisplay::~SettingsDisplay()
 
 void SettingsDisplay::setup_general(QWidget *general)
 {
-    QSettings settings = QSettings(SAVE_DIR, QSettings::IniFormat);
-    auto settings_rom_dirs = settings.value("rom_dirs", QStringList()).toStringList();
+    auto settings_rom_dirs = SettingsManager::instance().get_rom_dirs();
 
     QVBoxLayout *layout = new QVBoxLayout();
     // Search directories groupbox
