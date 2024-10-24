@@ -1,5 +1,5 @@
 #include <QMessageBox>
-#include <QTextEdit>
+#include <QPlainTextEdit>
 #include <QFileInfo>
 
 #include <Qt/settingswidget.h>
@@ -71,7 +71,7 @@ void SettingsWidget::on_apply_changes_clicked()
 {
 
     QStringList string_list;
-    QTextEdit *rom_dir = setting_display->findChild<QTextEdit *>("rom_directory");
+    QPlainTextEdit *rom_dir = setting_display->findChild<QPlainTextEdit *>("rom_directory");
     auto &settings = SettingsManager::instance();
 
     for (auto &string : rom_dir->toPlainText().split("\n"))

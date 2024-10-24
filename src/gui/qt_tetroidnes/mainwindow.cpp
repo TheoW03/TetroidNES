@@ -84,22 +84,31 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 {
 
     auto *scrollbar = rom_list_scroll->verticalScrollBar();
-    const bool scrolled_up = (event->angleDelta().y() > 0);
 
     if (scrollbar->isVisible())
     {
         return;
     }
 
-    if (!scrolled_up && rom_list->current_page() < rom_list->total_pages())
+    const bool scrolled_up = (event->angleDelta().y() > 0);
+    const int current_page = rom_list->current_page();
+    const int total_pages = rom_list->total_pages();
+    const int min = scrollbar->minimum();
+    int max = scrollbar->maximum();
+
+    if (!scrolled_up && current_page < total_pages)
     {
-        rom_list->set_current_page(rom_list->current_page() + 1);
-        scrollbar->setSliderPosition(scrollbar->minimum() + scrollbar->singleStep());
+        rom_list->set_current_page(current_page + 1);
+        qApp->processEvents(); // Makes sure scroll bar updates max/min values
+        max = scrollbar->maximum();
+        scrollbar->setSliderPosition(min + max * 0.1);
     }
-    else if (scrolled_up && rom_list->current_page() > 1)
+    else if (scrolled_up && current_page > 1)
     {
-        rom_list->set_current_page(rom_list->current_page() - 1);
-        scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->singleStep());
+        rom_list->set_current_page(current_page - 1);
+        qApp->processEvents(); // Makes sure scroll bar updates max/min values
+        max = scrollbar->maximum();
+        scrollbar->setSliderPosition(max - max * 0.1);
     }
     update_page_info();
 
@@ -107,24 +116,35 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 }
 
 void MainWindow::rom_list_scroll_value_changed(const int value)
-{
+{   
     auto *scrollbar = rom_list_scroll->verticalScrollBar();
-    unsigned int current_page = rom_list->current_page();
-    // qDebug() << "Current Page Before:" << current_page
+    const auto current_page = rom_list->current_page();
+    const int total_pages = rom_list->total_pages();
+    const int min = scrollbar->minimum();
+    int max = scrollbar->maximum();
+    //qDebug()  << "Current Page Before:" << current_page
     //          << "Value:" << value
     //          << "Max/Min Value:" << scrollbar->maximum() << "/" << scrollbar->minimum()
-    //          << "Total pages:" << list->total_pages();
+    //          << "Total pages:" << rom_list->total_pages();
 
-    if (value >= scrollbar->maximum() && current_page < rom_list->total_pages())
+    if (value >= max && current_page < total_pages)
     {
+        //qDebug() << "Going up from page" << current_page << "to" << current_page + 1;
+
         rom_list->set_current_page(current_page + 1);
-        scrollbar->setSliderPosition(scrollbar->minimum() + scrollbar->pageStep()*0.1);
+        qApp->processEvents(); // Makes sure scroll bar updates max/min values
+        max = scrollbar->maximum();
+        scrollbar->setSliderPosition(min + max * 0.1);
         update_page_info();
     }
-    else if (value <= scrollbar->minimum() && current_page > 1)
+    else if (value <= min && current_page > 1)
     {
+        //qDebug() << "Going down from page" << current_page << "to" << current_page - 1;
+
         rom_list->set_current_page(current_page - 1);
-        scrollbar->setSliderPosition(scrollbar->maximum() - scrollbar->pageStep()*0.5);
+        qApp->processEvents(); // Makes sure scroll bar updates max/min values
+        max = scrollbar->maximum();
+        scrollbar->setSliderPosition(max - max * 0.1);
         update_page_info();
     }
     // qDebug() << "Current Page After:" << current_page;
