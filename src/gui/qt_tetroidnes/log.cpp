@@ -61,5 +61,5 @@ void InitLogs()
 {
     originalHandler = qInstallMessageHandler(logToFile);
     check_log_dir();
-    qSetMessagePattern("%{type} | %{function}:%{line} | %{time h:mm:ss.zzz} | %{message}");
+    qSetMessagePattern("%{type} | %{function}:%{line} | %{time dd/MM/yyyy h:mm:ss} | %{message}");
 }
