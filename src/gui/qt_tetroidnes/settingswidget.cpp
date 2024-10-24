@@ -8,11 +8,13 @@
 
 SettingsWidget::SettingsWidget(QWidget *parent) : QWidget{parent}
 {
+    const int stretch_setting_display = 100;
+
     setAttribute(Qt::WA_DeleteOnClose, true);
     setAttribute(Qt::WA_AcceptDrops, false);
 
     setWindowFlag(Qt::WindowType::Window);
-    setWindowTitle(tr("TetroidNES - Settings"));
+    setWindowTitle("TetroidNES - " + tr("Settings"));
 
     auto *layout = new QVBoxLayout();
     auto *layout_controls = new QHBoxLayout();
@@ -41,7 +43,7 @@ SettingsWidget::SettingsWidget(QWidget *parent) : QWidget{parent}
 
     // Apply layouts
     layout_controls->addWidget(setting_category);
-    layout_controls->addWidget(setting_display, 100);
+    layout_controls->addWidget(setting_display, stretch_setting_display);
     controls_frame->setLayout(layout_controls);
 
     layout->addWidget(controls_frame);
@@ -62,14 +64,14 @@ SettingsWidget::~SettingsWidget()
 
 void SettingsWidget::on_setting_category_item_clicked(const int index)
 {
-    findChild<SettingsDisplay *>()->setCurrentIndex(index);
+    setting_display->setCurrentIndex(index);
 }
 
 void SettingsWidget::on_apply_changes_clicked()
 {
 
     QStringList string_list;
-    QTextEdit *rom_dir = findChild<QTextEdit *>("rom_directory");
+    QTextEdit *rom_dir = setting_display->findChild<QTextEdit *>("rom_directory");
     auto &settings = SettingsManager::instance();
 
     for (auto &string : rom_dir->toPlainText().split("\n"))
@@ -83,7 +85,7 @@ void SettingsWidget::on_apply_changes_clicked()
     settings.set_rom_dir(string_list);
     qInfo() << "saving settings in " << SAVE_DIR;
     QMessageBox::information(this, tr("Settings saved"),
-                             tr("your settings have been saved"));
+                             tr("Your settings have been saved"));
 }
 
 void SettingsWidget::on_cancel_changes_clicked()
@@ -92,16 +94,16 @@ void SettingsWidget::on_cancel_changes_clicked()
 
 void SettingsWidget::closeEvent(QCloseEvent *event)
 {
-    if (!findChild<QPushButton *>("apply")->isEnabled())
+    if (!apply_changes->isEnabled())
     {
         QWidget::closeEvent(event);
-        qInfo() << "you didnt save your settings ";
+        qInfo() << "You didnt save your settings ";
         return;
     }
 
     int message_box_result = QMessageBox::question(
         this,
-        tr("TetroidNES - Confirmation"),
+        "TetroidNES - " + tr("Confirmation"),
         tr("Settings are unsaved!\nAre you sure you want to close the settings?"),
         QMessageBox::Yes | QMessageBox::Cancel);
 

@@ -8,6 +8,7 @@
 #include <QGroupBox>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QPlainTextEdit>
 #include <QFileInfo>
 #include <Qt/util.h>
 #include <Qt/settingsmanager.h>
@@ -35,29 +36,34 @@ SettingsDisplay::~SettingsDisplay()
 
 void SettingsDisplay::setup_general(QWidget *general)
 {
-    auto settings_rom_dirs = SettingsManager::instance().get_rom_dirs();
+    const auto settings_rom_dirs = SettingsManager::instance().get_rom_dirs();
 
     QVBoxLayout *layout = new QVBoxLayout();
+
     // Search directories groupbox
+
     QGroupBox *directory_groupbox = new QGroupBox(tr("Search Directories:"), general);
     QVBoxLayout *directory_groupbox_layout = new QVBoxLayout();
-    QTextEdit *directories = new QTextEdit(directory_groupbox);
+    QPlainTextEdit *directories = new QPlainTextEdit(directory_groupbox);
     QPushButton *add_directory = new QPushButton(directory_groupbox);
 
     add_directory->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::ListAdd));
+    add_directory->setToolTip(tr("Add directory for TetroidNES to search for ROMs in"));
 
-    directories->setAcceptRichText(false);
     directories->setObjectName("rom_directory");
-    directories->setText(settings_rom_dirs.join("\n"));
+    directories->setPlainText(settings_rom_dirs.join("\n"));
+    directories->setToolTip(tr("Add/Remove/Edit directories for TetroidNES to search for ROMs in"));
 
     directory_groupbox_layout->addWidget(directories);
     directory_groupbox_layout->addWidget(add_directory);
     directory_groupbox_layout->setAlignment(add_directory, Qt::AlignLeft);
     directory_groupbox->setLayout(directory_groupbox_layout);
 
+    // Layouts
     layout->addWidget(directory_groupbox);
     general->setLayout(layout);
 
+    // Events
     connect(add_directory, &QPushButton::clicked, this, &SettingsDisplay::on_add_directory_clicked);
 }
 
@@ -67,18 +73,27 @@ void SettingsDisplay::setup_emulator(QWidget *emulator)
 
 void SettingsDisplay::setup_about(QWidget *about)
 {
+    QVBoxLayout *layout = new QVBoxLayout();
+
+    QTextEdit *about_text = new QTextEdit("Dummy text", about);
+    about_text->setReadOnly(true);
+
+    // Layouts
+    layout->addWidget(about_text);
+
+    about->setLayout(layout);
 }
 
 void SettingsDisplay::on_add_directory_clicked()
 {
     QFileDialog file_dialog;
-    QTextEdit *text_edit = findChild<QTextEdit *>("rom_directory");
+    QPlainTextEdit *text_edit = findChild<QPlainTextEdit *>("rom_directory");
 
     file_dialog.setFileMode(QFileDialog::Directory);
 
     if (file_dialog.exec())
     {
-        text_edit->append(file_dialog.selectedFiles().join("\n"));
+        text_edit->appendPlainText(file_dialog.selectedFiles().join("\n"));
     }
 }
 
