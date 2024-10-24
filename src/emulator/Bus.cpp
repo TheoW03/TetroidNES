@@ -9,8 +9,6 @@
 #include <Emulator/Bus.h>
 #include <Emulator/InstructionMap.h>
 #include <Qt/util.h>
-// #include "Bus.h"
-// #include "Bus.h>
 #define TOP_STACK 0x1ff
 #define BOTTOM_STACK 0x100
 #define STACK_RESET 0xfd
@@ -408,4 +406,9 @@ std::optional<std::string> Bus::check_error()
     }
     return std::nullopt;
     // return std::optional<std::string>();
+}
+
+void Bus::log_ppu()
+{
+    this->ppu.log_ppu();
 }

@@ -10,7 +10,7 @@
 #include <Emulator/LoadRom.h>
 
 GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
-                                                            render_window(new sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default))
+                                                             render_window(new sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default))
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -156,7 +156,9 @@ void GameDisplay::closeEvent(QCloseEvent *event)
     }
     else
     {
+        qInfo() << "exiting game " << QUrl(m_rom_url).fileName();
         exe.log_Cpu();
+
         if (this->err_code == EXIT_SUCCESS)
         {
             qInfo() << "CPU exited successfully";

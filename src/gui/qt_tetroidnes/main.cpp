@@ -1,4 +1,4 @@
-#define VERSION "1.0.0-Debug" // DO NOT EDIT: CMake handles this
+#define VERSION "1.0.0" // DO NOT EDIT: CMake handles this
 
 #include <QApplication>
 #include <QLocale>

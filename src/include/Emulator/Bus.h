@@ -74,5 +74,6 @@ public:
     void write_controller1(Controller value, int isPressed);
     std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
     std::optional<std::string> check_error();
+    void log_ppu();
 };
 #endif

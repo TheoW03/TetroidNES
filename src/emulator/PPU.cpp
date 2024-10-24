@@ -5,6 +5,9 @@
 #include <Emulator/Computer.h>
 #include <Qt/util.h>
 #include <bitset>
+#include <Qt/util.h>
+#include <QDebug>
+
 // #include "PPU.h"
 // #include <emulator
 PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
@@ -224,6 +227,22 @@ void PPU::print_ppu_stats()
     printf("OAM Addr hexa: 0x%x decimal: %d \n", this->oam_addr, this->oam_addr);
     printf("\n============================= \n"); //
     printf("\n");
+}
+void PPU::log_ppu()
+{
+    std::bitset<7> ppu_status(this->reg.ppuStatus.val);
+    std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
+
+    qInfo() << "===== PPU ON EXIT ===========";
+    qInfo() << "PPU addr:  " << num_to_hexa(this->reg.ppuAddr.val);
+    qInfo() << "lo:  " << num_to_hexa(this->reg.ppuAddr.lo);
+    qInfo() << "hi:  " << num_to_hexa(this->reg.ppuAddr.hi);
+    qInfo() << "===== PPU status ====";
+    qInfo() << "VBlank: " << this->reg.ppuStatus.V;
+    qInfo() << "status: " << ppu_status.to_string();
+    qInfo() << "===== PPU ctrl ====";
+    qInfo() << "ctrl: " << ppu_ctrl.to_string();
+    qInfo() << "oam addr: " << num_to_hexa(this->oam_addr);
 }
 void PPU::write_PPU_address(uint8_t val)
 {
@@ -482,6 +501,7 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
     }
     return rgb_ds;
 }
+
 uint8_t PPU::read_OAM_data()
 {
 

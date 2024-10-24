@@ -22,7 +22,7 @@ struct CPU
             unsigned C : 1; // Carry
             unsigned Z : 1; // Zero
             unsigned I : 1; // interrupt disabled
-            unsigned D : 1; // Decimal mode (un-used)
+            unsigned D : 1; // Decimal mode (un-used in the NES)
             unsigned B : 1; // break
             unsigned Unused : 1;
             unsigned V : 1; // overflow

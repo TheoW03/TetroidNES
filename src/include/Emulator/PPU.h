@@ -5,7 +5,6 @@
 #include "LoadRom.h"
 #include <optional>
 #include <tuple>
-
 #ifndef PPU_H
 #define PPU_H
 #include <cstdint>
@@ -108,6 +107,7 @@ public:
 
     // void render(sf::Texture &texture, int bank, int tile);
     std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
+    void log_ppu();
 };
 
 #endif

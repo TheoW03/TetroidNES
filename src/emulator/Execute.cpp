@@ -63,12 +63,27 @@ std::vector<uint8_t> Execute::render()
 
 void Execute::log_Cpu()
 {
-    qInfo() << "CPU on quit";
+    this->cpu.bus.log_ppu();
+    qInfo() << "=====CPU on quit======";
     qInfo() << "A register on exit: " << this->cpu.A_Reg;
     qInfo() << "X register on exit: " << this->cpu.X_Reg;
     qInfo() << "Y register on exit: " << this->cpu.Y_Reg;
     qInfo() << "PC on exit: 0x" << num_to_hexa(this->cpu.bus.get_PC());
-    std::bitset<7> status(this->cpu.status.val);
-    qInfo() << "status: 0b" << status.to_string();
+    qInfo() << "Stack pointer " << num_to_hexa(this->cpu.bus.get_stack_pointer());
+    std::bitset<7>
+        status(this->cpu.status.val);
+
+    qInfo() << "====STATUS REGTISTER BITS====";
+    qInfo() << "Carry: " << this->cpu.status.C;
+    qInfo() << "Zero: " << this->cpu.status.Z;
+    qInfo() << "Break: " << this->cpu.status.B;
+    qInfo() << "Interrupt disabled: " << this->cpu.status.I;
+    qInfo() << "decimal mode: " << this->cpu.status.D;
+
+    qInfo() << "Overflow: " << this->cpu.status.V;
+    qInfo() << "Negative: " << this->cpu.status.N;
+    qInfo() << "value: " << status.to_string();
+    qInfo() << "===============";
     qInfo() << "clock cycles: " << this->cpu.bus.clock_cycles;
+    qInfo() << "";
 }
