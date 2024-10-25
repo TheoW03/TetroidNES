@@ -12,6 +12,8 @@
 
 RomList::RomList(QWidget *parent) : QWidget{parent}
 {
+    auto &settings = SettingsManager::instance();
+
     main_layout = new FlowLayout();
     main_layout->setContentsMargins(0, 150, 0, 150);
     setLayout(main_layout);
@@ -20,8 +22,8 @@ RomList::RomList(QWidget *parent) : QWidget{parent}
     setup_display();
     set_items_per_page(10); // TODO: Change this so the program remembers what the user chose last time
     update_total_pages();
-    set_current_mode(RomList::SortMode::AZ);          // TODO: Change this so the program remembers what the user chose last time
-    set_current_order(Qt::SortOrder::AscendingOrder); // TODO: Change this so the program remembers what the user chose last time
+    set_current_mode(settings.sort_mode());
+    set_current_order(settings.ascending_order());
     qInfo() << "Finished setting up romlist";
 }
 
@@ -47,6 +49,7 @@ void RomList::setup_display()
             continue;
         }
 
+        // TODO: MAKE A WAY TO PARSE INFO TO SET THESE
         u_short year = 1980;
         QByteArray image;
         bool favorite = false;

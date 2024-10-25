@@ -2,6 +2,7 @@
 #include <Qt/filtercontrolframe.h>
 #include <Qt/gamedisplay.h>
 #include "ui_mainwindow.h"
+#include <Qt/settingsmanager.h>
 #include <Qt/util.h>
 
 #include <QVBoxLayout>
@@ -11,6 +12,8 @@
 #include <QMimeData>
 #include <QMessageBox>
 #include <QEvent>
+
+constexpr const float slide_pos_multiplier = 0.1f;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -65,6 +68,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
 void MainWindow::create_display(QString rom_link)
 {
+    if (SettingsManager::instance().minimize_gui_on_game_start())
+    {
+        setWindowState(Qt::WindowMinimized);
+    }
+
     // std::shared_ptr<GameDisplay> display = std::make_shared<GameDisplay>(this, rom_link);
     auto *display = new GameDisplay(this, rom_link);
     // installEventFilter(display.get());
@@ -101,14 +109,14 @@ void MainWindow::wheelEvent(QWheelEvent *event)
         rom_list->set_current_page(current_page + 1);
         qApp->processEvents(); // Makes sure scroll bar updates max/min values
         max = scrollbar->maximum();
-        scrollbar->setSliderPosition(min + (int)(max * 0.1));
+        scrollbar->setSliderPosition(min + (int)(max * slide_pos_multiplier));
     }
     else if (scrolled_up && current_page > 1)
     {
         rom_list->set_current_page(current_page - 1);
         qApp->processEvents(); // Makes sure scroll bar updates max/min values
         max = scrollbar->maximum();
-        scrollbar->setSliderPosition(max - (int)(max * 0.1));
+        scrollbar->setSliderPosition(max - (int)(max * slide_pos_multiplier));
     }
     update_page_info();
 
@@ -134,7 +142,7 @@ void MainWindow::rom_list_scroll_value_changed(const int value)
         rom_list->set_current_page(current_page + 1);
         qApp->processEvents(); // Makes sure scroll bar updates max/min values
         max = scrollbar->maximum();
-        scrollbar->setSliderPosition(min + (int)(max * 0.1));
+        scrollbar->setSliderPosition(min + (int)(max * slide_pos_multiplier));
         update_page_info();
     }
     else if (value <= min && current_page > 1)
@@ -144,7 +152,7 @@ void MainWindow::rom_list_scroll_value_changed(const int value)
         rom_list->set_current_page(current_page - 1);
         qApp->processEvents(); // Makes sure scroll bar updates max/min values
         max = scrollbar->maximum();
-        scrollbar->setSliderPosition(max - (int)(max * 0.1));
+        scrollbar->setSliderPosition(max - (int)(max * slide_pos_multiplier));
         update_page_info();
     }
     // qDebug() << "Current Page After:" << current_page;
@@ -152,11 +160,20 @@ void MainWindow::rom_list_scroll_value_changed(const int value)
 
 void MainWindow::sort_mode_button_released(const int id) const
 {
-    QString search_bar_text = sort_control_frame->findChild<QLineEdit*>()->text();
-    const bool regex = search_bar_text.isEmpty();
+    const auto sort_mode = RomList::SortMode(id);
+    auto &settings = SettingsManager::instance();
+    QString search_bar_text = sort_control_frame->findChild<QLineEdit *>()->text();
+    const bool regex = !search_bar_text.isEmpty();
 
-    rom_list->set_current_mode(RomList::SortMode(id), regex);
-    if (!regex)
+    if (sort_mode == settings.sort_mode())
+    {
+        return;
+    }
+
+    rom_list->set_current_mode(sort_mode, regex);
+    settings.set_sort_mode(sort_mode);
+
+    if (regex)
     {
         rom_list->search(search_bar_text);
     }
@@ -164,7 +181,10 @@ void MainWindow::sort_mode_button_released(const int id) const
 
 void MainWindow::sort_order_button_toggled(const bool toggled) const
 {
-    rom_list->set_current_order(Qt::SortOrder(toggled));
+    const auto sort_order = Qt::SortOrder(!toggled);
+    
+    rom_list->set_current_order(sort_order);
+    SettingsManager::instance().set_ascending_order(sort_order);
 }
 
 void MainWindow::search_bar_edited(QString string) const
@@ -217,13 +237,13 @@ void MainWindow::dropEvent(QDropEvent *event)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    bool game_run = is_a_game_running();
+    const bool game_run = is_a_game_running();
     qInfo() << "Quitting... games are running: " << game_run;
     if (game_run)
     {
         int message_box_result = QMessageBox::question(
             this,
-            tr("TetroidNES - Confirmation"),
+            "TetroidNES - " + tr("Confirmation"),
             tr("Are you sure you want to quit?\n(Games are still running)"),
             QMessageBox::Yes | QMessageBox::No);
 

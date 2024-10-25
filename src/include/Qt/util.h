@@ -43,7 +43,7 @@ inline void start_game(QString path)
 {
     if (is_a_game_running())
     {
-        qInfo() << "canr open game while game is running";
+        qInfo() << "Can't open game while a game is already running";
         return;
     }
     for (auto &widget : qApp->topLevelWidgets())

@@ -45,7 +45,7 @@ private:
     FlowLayout *main_layout;
     QList<shptr_romdata> data;
     RomList::SortMode m_current_mode;
-    Qt::SortOrder m_current_order;
+    Qt::SortOrder m_current_order = Qt::AscendingOrder;
 
     unsigned int m_current_page = 1;
     unsigned int m_total_pages = 1;
