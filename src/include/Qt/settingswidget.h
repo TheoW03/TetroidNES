@@ -29,7 +29,7 @@ private:
     QStatusBar *button_statusbar;
 
 private slots:
-    void on_setting_category_item_clicked(const int index);
+    void on_setting_category_item_clicked(const QListWidgetItem *item);
     void on_apply_changes_clicked();
     void on_cancel_changes_clicked();
 

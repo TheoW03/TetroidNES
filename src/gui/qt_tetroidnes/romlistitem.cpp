@@ -39,10 +39,8 @@ RomListItem::RomListItem(std::optional<shptr_romdata> data, QWidget *parent) : Q
     }
 
     // Events
-    connect(favorite_button, &QPushButton::clicked, this,
-            [this](int checked)
-            { favorite_button_clicked(checked); });
-    connect(play, &QPushButton::clicked, this, &RomListItem::play_button_clicked);
+    connect(favorite_button, &QPushButton::clicked, this, &favorite_button_clicked);
+    connect(play, &QPushButton::clicked, this, &play_button_clicked);
 }
 
 RomListItem::~RomListItem()

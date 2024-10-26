@@ -30,6 +30,7 @@ public slots:
     void sort_order_button_toggled(const bool toggled) const;
     void search_bar_edited(QString string) const;
     void rom_list_scroll_value_changed(const int value);
+    void on_gamedisplay_destroyed();
 private:
     RomList *rom_list;
     FilterControlFrame *sort_control_frame;

@@ -1,6 +1,7 @@
 #include <QMessageBox>
 #include <QPlainTextEdit>
 #include <QFileInfo>
+#include <QCheckBox>
 
 #include <Qt/settingswidget.h>
 #include <Qt/settingsmanager.h>
@@ -51,28 +52,29 @@ SettingsWidget::SettingsWidget(QWidget *parent) : QWidget{parent}
     setLayout(layout);
 
     // Events
-    connect(setting_category, &QListWidget::itemClicked, this,
-            [this](QListWidgetItem *item)
-            { on_setting_category_item_clicked(setting_category->row(item)); });
-    connect(apply_changes, &QPushButton::clicked, this, &SettingsWidget::on_apply_changes_clicked);
-    connect(cancel_changes, &QPushButton::clicked, this, &SettingsWidget::on_cancel_changes_clicked);
+    connect(setting_category, &QListWidget::itemClicked, this, &on_setting_category_item_clicked);
+    connect(apply_changes, &QPushButton::clicked, this, &on_apply_changes_clicked);
+    connect(cancel_changes, &QPushButton::clicked, this, &on_cancel_changes_clicked);
 }
 
 SettingsWidget::~SettingsWidget()
 {
 }
 
-void SettingsWidget::on_setting_category_item_clicked(const int index)
+void SettingsWidget::on_setting_category_item_clicked(const QListWidgetItem *item)
 {
-    setting_display->setCurrentIndex(index);
+    const int category_index = setting_category->row(item);
+    setting_display->setCurrentIndex(category_index);
 }
 
 void SettingsWidget::on_apply_changes_clicked()
 {
 
+    auto &settings = SettingsManager::instance();
+
+    // ROM Directories
     QStringList string_list;
     QPlainTextEdit *rom_dir = setting_display->findChild<QPlainTextEdit *>("rom_directory");
-    auto &settings = SettingsManager::instance();
 
     for (auto &string : rom_dir->toPlainText().split("\n"))
     {
@@ -82,7 +84,20 @@ void SettingsWidget::on_apply_changes_clicked()
         }
     }
 
-    settings.set_rom_dir(string_list);
+    if (string_list != settings.get_rom_dirs())
+    {
+        settings.set_rom_dir(string_list);
+    }
+
+    // Minimize GUI on game start
+    QCheckBox *min_gui_on_game_start = setting_display->findChild<QCheckBox *>("min_gui_on_game_start");
+    const bool min_gui_on_game_start_checked = min_gui_on_game_start->isChecked();
+
+    if (min_gui_on_game_start_checked != settings.minimize_gui_on_game_start())
+    {
+        settings.set_minimize_gui_on_game_start(min_gui_on_game_start_checked);
+    }
+
     qInfo() << "saving settings in " << SAVE_DIR;
     QMessageBox::information(this, tr("Settings saved"),
                              tr("Your settings have been saved"));

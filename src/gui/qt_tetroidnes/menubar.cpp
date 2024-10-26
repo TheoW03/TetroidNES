@@ -29,8 +29,8 @@ MenuBar::MenuBar(QWidget *parent): QMenuBar{parent}
     
 
     // events
-    connect(file_open, &QAction::triggered, this, &MenuBar::open_rom);
-    connect(settings_open, &QAction::triggered, this, &MenuBar::open_settings);
+    connect(file_open, &QAction::triggered, this, &open_rom);
+    connect(settings_open, &QAction::triggered, this, &open_settings);
 }
 
 void MenuBar::open_settings()

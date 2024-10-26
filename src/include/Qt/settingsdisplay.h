@@ -22,6 +22,7 @@ private:
 
 private slots:
     void on_add_directory_clicked();
+    void on_min_gui_on_start_checkbox_toggled(const bool toggled);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *ev) override;

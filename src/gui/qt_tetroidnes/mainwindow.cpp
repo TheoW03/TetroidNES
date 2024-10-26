@@ -52,32 +52,33 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     update_page_info();
 
     // events
-    connect(sort_control_frame->findChild<QButtonGroup *>(), &QButtonGroup::idReleased, this,
-            [this](int id)
-            { sort_mode_button_released(id); });
-    connect(sort_control_frame->findChild<QPushButton *>("SortOrder"), &QPushButton::toggled, this,
-            [this](bool toggled)
-            { sort_order_button_toggled(toggled); });
-    connect(sort_control_frame->findChild<QLineEdit *>(), &QLineEdit::textEdited, this,
-            [this](QString text)
-            { search_bar_edited(text); });
-    connect(rom_list_scroll->verticalScrollBar(), &QScrollBar::valueChanged, this,
-            [this](int val)
-            { rom_list_scroll_value_changed(val); });
+    connect(sort_control_frame->sort_mode_button_group, &QButtonGroup::idReleased, this, &sort_mode_button_released);
+    connect(sort_control_frame->sort_ascending_button, &QPushButton::toggled, this, &sort_order_button_toggled);
+    connect(sort_control_frame->search_bar, &QLineEdit::textEdited, this, &search_bar_edited);
+    connect(rom_list_scroll->verticalScrollBar(), &QScrollBar::valueChanged, this, &rom_list_scroll_value_changed);
 }
 
 void MainWindow::create_display(QString rom_link)
 {
+
+    // std::shared_ptr<GameDisplay> display = std::make_shared<GameDisplay>(this, rom_link);
+    auto *display = new GameDisplay(nullptr, rom_link);
+    connect(display, &QWidget::destroyed, this, &on_gamedisplay_destroyed);
+
+    display->show();
+
     if (SettingsManager::instance().minimize_gui_on_game_start())
     {
         setWindowState(Qt::WindowMinimized);
     }
+}
 
-    // std::shared_ptr<GameDisplay> display = std::make_shared<GameDisplay>(this, rom_link);
-    auto *display = new GameDisplay(this, rom_link);
-    // installEventFilter(display.get());
-    // installEventFilter(display);
-    display->show();
+void MainWindow::on_gamedisplay_destroyed()
+{
+    if (isMinimized() && !is_a_game_running())
+    {
+        showNormal();
+    }
 }
 
 void MainWindow::update_page_info()
@@ -162,7 +163,7 @@ void MainWindow::sort_mode_button_released(const int id) const
 {
     const auto sort_mode = RomList::SortMode(id);
     auto &settings = SettingsManager::instance();
-    QString search_bar_text = sort_control_frame->findChild<QLineEdit *>()->text();
+    QString search_bar_text = sort_control_frame->search_bar->text();
     const bool regex = !search_bar_text.isEmpty();
 
     if (sort_mode == settings.sort_mode())

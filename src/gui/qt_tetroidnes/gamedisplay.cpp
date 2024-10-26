@@ -21,7 +21,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     setAttribute(Qt::WA_DeleteOnClose);
 
     // TODO: MAKE THIS MORE FLEXIBLE WHEN WE ADD USER SETTINGS
-    setWindowFlag(Qt::WindowType::Window);
+    setWindowFlags(Qt::Window);
     resize(800, 600);
 
     setWindowTitle(QString("%1 - %2").arg(
@@ -37,7 +37,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     frame_timer->setInterval(frame_time);
 
     // Events
-    connect(frame_timer, &QTimer::timeout, this, &GameDisplay::on_timeout);
+    connect(frame_timer, &QTimer::timeout, this, &on_timeout);
 }
 
 void GameDisplay::on_init()

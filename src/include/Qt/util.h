@@ -23,14 +23,11 @@ inline bool is_a_game_running()
 
     for (auto &widget : qApp->topLevelWidgets())
     {
-        if (widget->inherits("MainWindow"))
+        if (widget->inherits("GameDisplay"))
         {
-            for (auto &gamedisplay : widget->findChildren<GameDisplay *>())
+            if (qobject_cast<GameDisplay *>(widget)->initialized())
             {
-                if (gamedisplay->initialized())
-                {
-                    return true;
-                }
+                return true;
             }
         }
     }

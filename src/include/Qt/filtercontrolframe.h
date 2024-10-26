@@ -14,6 +14,8 @@ class FilterControlFrame : public QFrame
     Q_OBJECT
 public:
     explicit FilterControlFrame(QWidget *parent = nullptr);
+
+    friend class MainWindow; // Handles FilterControlFrame
 private:
     QLineEdit *search_bar;
     QFrame *sort_buttons_frame;
