@@ -8,13 +8,13 @@ RomListItem::RomListItem(std::optional<shptr_romdata> data, QWidget *parent) : Q
 
     setMinimumSize(250, 250);
 
-    auto *layout =         new QVBoxLayout();
+    auto *layout = new QVBoxLayout();
     auto *buttons_layout = new QHBoxLayout();
 
-    title =           new QLabel(this);
-    play =            new QPushButton(this);
-    year =            new QLabel(this);
-    buttons_frame =   new QFrame(this);
+    title = new QLabel(this);
+    play = new QPushButton(this);
+    year = new QLabel(this);
+    buttons_frame = new QFrame(this);
     favorite_button = new QPushButton(buttons_frame);
 
     favorite_button->setCheckable(true);
@@ -39,8 +39,8 @@ RomListItem::RomListItem(std::optional<shptr_romdata> data, QWidget *parent) : Q
     }
 
     // Events
-    connect(favorite_button, &QPushButton::clicked, this, &favorite_button_clicked);
-    connect(play, &QPushButton::clicked, this, &play_button_clicked);
+    connect(favorite_button, &QPushButton::clicked, this, &RomListItem::favorite_button_clicked);
+    connect(play, &QPushButton::clicked, this, &RomListItem::play_button_clicked);
 }
 
 RomListItem::~RomListItem()
@@ -101,5 +101,4 @@ void RomListItem::play_button_clicked()
     qInfo() << "Starting" << title->text();
     qDebug() << "Path:" << path;
     start_game(path.toString());
-
 }

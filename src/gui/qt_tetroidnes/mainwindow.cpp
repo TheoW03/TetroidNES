@@ -24,11 +24,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setAttribute(Qt::WA_DeleteOnClose, true);
 
     auto *widget_layout = new QVBoxLayout();
-    main_menubar =        new MenuBar(this);
-    sort_control_frame =  new FilterControlFrame(ui->centralwidget);
-    rom_list_scroll =     new QScrollArea(ui->centralwidget);
-    rom_list =            new RomList(ui->centralwidget);
-    page_info =           new QLabel("Page 1 of 1", this);
+    main_menubar = new MenuBar(this);
+    sort_control_frame = new FilterControlFrame(ui->centralwidget);
+    rom_list_scroll = new QScrollArea(ui->centralwidget);
+    rom_list = new RomList(ui->centralwidget);
+    page_info = new QLabel("Page 1 of 1", this);
 
     // widget layout
     widget_layout->addWidget(sort_control_frame);
@@ -52,10 +52,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     update_page_info();
 
     // events
-    connect(sort_control_frame->sort_mode_button_group, &QButtonGroup::idReleased, this, &sort_mode_button_released);
-    connect(sort_control_frame->sort_ascending_button, &QPushButton::toggled, this, &sort_order_button_toggled);
-    connect(sort_control_frame->search_bar, &QLineEdit::textEdited, this, &search_bar_edited);
-    connect(rom_list_scroll->verticalScrollBar(), &QScrollBar::valueChanged, this, &rom_list_scroll_value_changed);
+    connect(sort_control_frame->sort_mode_button_group, &QButtonGroup::idReleased, this, &MainWindow::sort_mode_button_released);
+    connect(sort_control_frame->sort_ascending_button, &QPushButton::toggled, this, &MainWindow::sort_order_button_toggled);
+    connect(sort_control_frame->search_bar, &QLineEdit::textEdited, this, &MainWindow::search_bar_edited);
+    connect(rom_list_scroll->verticalScrollBar(), &QScrollBar::valueChanged, this, &MainWindow::rom_list_scroll_value_changed);
 }
 
 void MainWindow::create_display(QString rom_link)
@@ -63,7 +63,7 @@ void MainWindow::create_display(QString rom_link)
 
     // std::shared_ptr<GameDisplay> display = std::make_shared<GameDisplay>(this, rom_link);
     auto *display = new GameDisplay(nullptr, rom_link);
-    connect(display, &QWidget::destroyed, this, &on_gamedisplay_destroyed);
+    connect(display, &QWidget::destroyed, this, &MainWindow::on_gamedisplay_destroyed);
 
     display->show();
 
@@ -83,10 +83,7 @@ void MainWindow::on_gamedisplay_destroyed()
 
 void MainWindow::update_page_info()
 {
-    page_info->setText(tr("%1 %2 %3 %4 | %5 %6").arg(
-        "Page", QString::number(rom_list->current_page()),
-        "of", QString::number(rom_list->total_pages()),
-        "Items displayed:", QString::number(rom_list->items_per_page())));
+    page_info->setText(tr("%1 %2 %3 %4 | %5 %6").arg("Page", QString::number(rom_list->current_page()), "of", QString::number(rom_list->total_pages()), "Items displayed:", QString::number(rom_list->items_per_page())));
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event)
@@ -125,20 +122,20 @@ void MainWindow::wheelEvent(QWheelEvent *event)
 }
 
 void MainWindow::rom_list_scroll_value_changed(const int value)
-{   
+{
     auto *scrollbar = rom_list_scroll->verticalScrollBar();
     const auto current_page = rom_list->current_page();
     const int total_pages = rom_list->total_pages();
     const int min = scrollbar->minimum();
     int max = scrollbar->maximum();
-    //qDebug()  << "Current Page Before:" << current_page
-    //          << "Value:" << value
-    //          << "Max/Min Value:" << scrollbar->maximum() << "/" << scrollbar->minimum()
-    //          << "Total pages:" << rom_list->total_pages();
+    // qDebug()  << "Current Page Before:" << current_page
+    //           << "Value:" << value
+    //           << "Max/Min Value:" << scrollbar->maximum() << "/" << scrollbar->minimum()
+    //           << "Total pages:" << rom_list->total_pages();
 
     if (value >= max && current_page < total_pages)
     {
-        //qDebug() << "Going up from page" << current_page << "to" << current_page + 1;
+        // qDebug() << "Going up from page" << current_page << "to" << current_page + 1;
 
         rom_list->set_current_page(current_page + 1);
         qApp->processEvents(); // Makes sure scroll bar updates max/min values
@@ -148,7 +145,7 @@ void MainWindow::rom_list_scroll_value_changed(const int value)
     }
     else if (value <= min && current_page > 1)
     {
-        //qDebug() << "Going down from page" << current_page << "to" << current_page - 1;
+        // qDebug() << "Going down from page" << current_page << "to" << current_page - 1;
 
         rom_list->set_current_page(current_page - 1);
         qApp->processEvents(); // Makes sure scroll bar updates max/min values
@@ -183,7 +180,7 @@ void MainWindow::sort_mode_button_released(const int id) const
 void MainWindow::sort_order_button_toggled(const bool toggled) const
 {
     const auto sort_order = Qt::SortOrder(!toggled);
-    
+
     rom_list->set_current_order(sort_order);
     SettingsManager::instance().set_ascending_order(sort_order);
 }

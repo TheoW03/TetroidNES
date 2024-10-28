@@ -37,7 +37,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     frame_timer->setInterval(frame_time);
 
     // Events
-    connect(frame_timer, &QTimer::timeout, this, &on_timeout);
+    connect(frame_timer, &QTimer::timeout, this, &GameDisplay::on_timeout);
 }
 
 void GameDisplay::on_init()

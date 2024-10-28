@@ -47,8 +47,8 @@ void SettingsDisplay::setup_general(QWidget *general)
     QVBoxLayout *layout = new QVBoxLayout();
 
     // General settings groupbox
-    QGroupBox *general_groupbox =                   new QGroupBox(tr("General"), general);
-    QVBoxLayout *general_groupbox_layout =          new QVBoxLayout();
+    QGroupBox *general_groupbox = new QGroupBox(tr("General"), general);
+    QVBoxLayout *general_groupbox_layout = new QVBoxLayout();
     QCheckBox *general_min_on_game_start_checkbox = new QCheckBox(tr("Minimize GUI on game start"), general_groupbox);
 
     general_min_on_game_start_checkbox->setObjectName("min_gui_on_game_start");
@@ -59,10 +59,10 @@ void SettingsDisplay::setup_general(QWidget *general)
 
     // Search directories groupbox
 
-    QGroupBox *directory_groupbox =          new QGroupBox(tr("Search Directories"), general);
+    QGroupBox *directory_groupbox = new QGroupBox(tr("Search Directories"), general);
     QVBoxLayout *directory_groupbox_layout = new QVBoxLayout();
-    QPlainTextEdit *directories =            new QPlainTextEdit(directory_groupbox);
-    QPushButton *add_directory =             new QPushButton(directory_groupbox);
+    QPlainTextEdit *directories = new QPlainTextEdit(directory_groupbox);
+    QPushButton *add_directory = new QPushButton(directory_groupbox);
 
     add_directory->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::ListAdd));
     add_directory->setToolTip(tr("Add directory for TetroidNES to search for ROMs in"));
@@ -82,8 +82,8 @@ void SettingsDisplay::setup_general(QWidget *general)
     general->setLayout(layout);
 
     // Events
-    connect(add_directory, &QPushButton::clicked, this, &on_add_directory_clicked);
-    connect(general_min_on_game_start_checkbox, &QCheckBox::toggled, this, &on_min_gui_on_start_checkbox_toggled);
+    connect(add_directory, &QPushButton::clicked, this, &SettingsDisplay::on_add_directory_clicked);
+    connect(general_min_on_game_start_checkbox, &QCheckBox::toggled, this, &SettingsDisplay::on_min_gui_on_start_checkbox_toggled);
 }
 
 void SettingsDisplay::setup_emulator(QWidget *emulator)
@@ -118,7 +118,6 @@ void SettingsDisplay::on_add_directory_clicked()
 
 void SettingsDisplay::on_min_gui_on_start_checkbox_toggled(const bool toggled)
 {
-
 }
 
 bool SettingsDisplay::eventFilter(QObject *obj, QEvent *ev)

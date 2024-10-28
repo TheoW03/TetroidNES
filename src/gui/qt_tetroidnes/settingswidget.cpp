@@ -52,9 +52,9 @@ SettingsWidget::SettingsWidget(QWidget *parent) : QWidget{parent}
     setLayout(layout);
 
     // Events
-    connect(setting_category, &QListWidget::itemClicked, this, &on_setting_category_item_clicked);
-    connect(apply_changes, &QPushButton::clicked, this, &on_apply_changes_clicked);
-    connect(cancel_changes, &QPushButton::clicked, this, &on_cancel_changes_clicked);
+    connect(setting_category, &QListWidget::itemClicked, this, &SettingsWidget::on_setting_category_item_clicked);
+    connect(apply_changes, &QPushButton::clicked, this, &SettingsWidget::on_apply_changes_clicked);
+    connect(cancel_changes, &QPushButton::clicked, this, &SettingsWidget::on_cancel_changes_clicked);
 }
 
 SettingsWidget::~SettingsWidget()
