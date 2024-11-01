@@ -26,22 +26,23 @@ CPU run(CPU cpu, std::string file_name);
 
 CPU init(std::string file_name)
 {
-	initializeInstructionMap();
-	std::vector<uint8_t> v = file_tobyte_vector(file_name);
-	Bus bus(load_rom(v), 0x8000);
+	// initializeInstructionMap();
+	// std::vector<uint8_t> v = file_tobyte_vector(file_name);
+	// Bus bus(load_rom(v), 0x8000);
 	CPU cpu;
-	bus.fill(bus.read_16bit(0xfffc));
-	cpu.A_Reg = 0;
-	cpu.status.val = 0;
-	cpu.X_Reg = 0;
-	cpu.Y_Reg = 0;
-	cpu.bus = bus;
-	cpu.bus.clock_cycles = 0;
-	std::string window_name = fs::path(file_name)
-								  .filename()
-								  .replace_extension()
-								  .string();
-	return run(cpu, window_name);
+	// bus.fill(bus.read_16bit(0xfffc));
+	// cpu.A_Reg = 0;
+	// cpu.status.val = 0;
+	// cpu.X_Reg = 0;
+	// cpu.Y_Reg = 0;
+	// cpu.bus = bus;
+	// cpu.bus.clock_cycles = 0;
+	// std::string window_name = fs::path(file_name)
+	// 							  .filename()
+	// 							  .replace_extension()
+	// 							  .string();
+	// return run(cpu, window_name);
+	return cpu;
 }
 void printCPU_stats(CPU cpu)
 {

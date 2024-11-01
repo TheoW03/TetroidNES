@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-
+#include <optional>
 #ifndef MIRROR_TYPE_H
 #define MIRROR_TYPE_H
 enum MirrorType
@@ -23,4 +23,4 @@ struct Rom
 #endif
 
 std::vector<uint8_t> file_tobyte_vector(std::string file_name);
-Rom load_rom(std::vector<uint8_t> instructions);
+std::optional<Rom> load_rom(std::vector<uint8_t> instructions);

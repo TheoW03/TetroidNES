@@ -43,8 +43,17 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
 void GameDisplay::on_init()
 {
     initializeInstructionMap();
-    Rom rom = load_rom(file_tobyte_vector(m_rom_url.toStdString()));
-    Bus bus = Bus(rom, NES_START);
+    auto rom = load_rom(file_tobyte_vector(m_rom_url.toStdString()));
+    if (rom.has_value() == 0)
+    {
+        qCritical() << "unrecongnized file format needs to be NES v1.0 format";
+        QMessageBox::critical(this,
+                              "TetroidNES - " + tr("Error"),
+                              "unrecongnized file format");
+        return;
+    }
+
+    Bus bus = Bus(rom.value(), NES_START);
     CPU cpu = CPU();
     bus.fill(bus.read_16bit(0xfffc));
     printf("0x%x\n", bus.get_PC());

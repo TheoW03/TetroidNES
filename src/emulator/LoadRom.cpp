@@ -4,6 +4,7 @@
 #include <sstream>
 #include <cstdio>
 #include <cstring>
+#include <optional>
 #include <cstdint>
 
 #define PRG_ROM_SIZE 16384
@@ -71,8 +72,12 @@ std::vector<uint8_t> file_tobyte_vector(std::string file_name)
     return instructions;
 }
 
-Rom load_rom(std::vector<uint8_t> instructions)
+std::optional<Rom> load_rom(std::vector<uint8_t> instructions)
 {
+    if (instructions.size() == 1)
+    {
+        return {};
+    }
 
     Rom rom;
     NESHeader nes_header;
@@ -86,8 +91,7 @@ Rom load_rom(std::vector<uint8_t> instructions)
          && nes_header.ident[3] != 0x1a) // all man style should be the default in the VS code formatiro
         || nes_header.flag7.inesverif == 0xc)
     {
-        std::cout << "not NES Rom or NES 1.0 format" << std::endl;
-        exit(EXIT_FAILURE);
+        return {};
     }
     // uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);
     rom.mapper = nes_header.flag7.mapper_upper | nes_header.flag6.mapper_lower;
