@@ -12,9 +12,8 @@ int main(int argc, char *argv[])
 {
     // originalHandler = qInstallMessageHandler(logToFile);
     InitLogs();
-
+    // int &c = argc
     QApplication a(argc, argv);
-    // auto a = make
     a.setApplicationName("TetroidNES");
 
     a.setApplicationVersion(VERSION);

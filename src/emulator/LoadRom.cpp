@@ -17,6 +17,12 @@ enum MirrorType
     FOUR_SCREEN,
 };
 
+enum ColorEncoding
+{
+    Pal,
+    Ntsc
+};
+
 // easier to understand over doing bytes and bit operations
 typedef uint8_t byte_t;
 struct NESHeader
@@ -46,6 +52,18 @@ struct NESHeader
         };
         byte_t val;
     } flag7;
+
+    byte_t flag8;
+
+    union
+    {
+        struct
+        {
+            unsigned color_encoding : 1; // NTSC vs pal
+            unsigned padding : 7;
+        };
+        byte_t val;
+    } flag9;
 };
 struct Rom
 {
@@ -53,6 +71,7 @@ struct Rom
     std::vector<uint8_t> CHR;
     uint8_t mapper;
     MirrorType mirror;
+    ColorEncoding color_encoding;
 };
 std::vector<uint8_t> file_tobyte_vector(std::string file_name)
 {
@@ -118,5 +137,6 @@ std::optional<Rom> load_rom(std::vector<uint8_t> instructions)
     {
         rom.CHR.push_back(instructions[i]);
     }
+    rom.color_encoding = (nes_header.flag9.color_encoding == 1) ? ColorEncoding::Pal : ColorEncoding::Ntsc;
     return rom;
 }

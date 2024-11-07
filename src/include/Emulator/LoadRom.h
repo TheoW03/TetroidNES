@@ -9,6 +9,12 @@ enum MirrorType
     HORIZONTAL,
     FOUR_SCREEN,
 };
+
+enum ColorEncoding
+{
+    Pal,
+    Ntsc
+};
 #endif
 #ifndef ROM_H
 #define ROM_H
@@ -19,6 +25,7 @@ struct Rom
     std::vector<uint8_t> CHR;
     uint8_t mapper;
     MirrorType mirror;
+    ColorEncoding color_encoding;
 };
 #endif
 

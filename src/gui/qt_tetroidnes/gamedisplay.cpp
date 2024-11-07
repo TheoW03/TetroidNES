@@ -47,9 +47,11 @@ void GameDisplay::on_init()
     if (rom.has_value() == 0)
     {
         qCritical() << "unrecongnized file format needs to be NES v1.0 format";
+        this->err_code = EXIT_FAILURE;
         QMessageBox::critical(this,
                               "TetroidNES - " + tr("Error"),
-                              "unrecongnized file format");
+                              "wrong NES file format");
+        this->close();
         return;
     }
 
