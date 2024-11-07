@@ -78,11 +78,6 @@ std::vector<uint8_t> file_tobyte_vector(std::string file_name)
     std::vector<uint8_t> instructions;
     std::ifstream infile(file_name, std::ios::binary); // Open the file for reading
     std::string line;
-    if (!infile)
-    {
-        std::cerr << "Error opening file." << std::endl;
-        exit(EXIT_FAILURE);
-    }
     while (infile)
     {
         uint8_t a = (uint8_t)infile.get();
