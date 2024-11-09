@@ -1,44 +1,59 @@
 #include <settingsdisplay.h>
 
-#include <QTextEdit>
 #include <QVBoxLayout>
-#include <QLabel>
 #include <QFocusEvent>
 #include <QEvent>
-#include <QGroupBox>
-#include <QPushButton>
 #include <QFileDialog>
-#include <QPlainTextEdit>
-#include <QCheckBox>
 
-#include <QFileInfo>
 #include <Qt/util.h>
 #include <Qt/settingsmanager.h>
 
-#define ABOUT_TEXT "dummy text"
+#define ABOUT_TEXT "dummy text" // Placeholder until we figure out how to store long strings of text
 
 SettingsDisplay::SettingsDisplay(QWidget *parent) : QStackedWidget{parent}
 {
-    general = new QWidget(this);
-    emulator = new QWidget(this);
-    about = new QWidget(this);
-
-    setup_general(general);
-    setup_emulator(emulator);
-    setup_about(about);
+    general = new GeneralSettingsDisplay(this);
+    emulator = new EmulatorSettingsDisplay(this);
+    about = new About(this);
 
     addWidget(general);
     addWidget(emulator);
     addWidget(about);
 
     setCurrentIndex(0);
+
+    // Events
+    connect(general->add_directory, &QPushButton::clicked, this, &SettingsDisplay::on_add_directory_clicked);
+    connect(general->min_on_game_start_checkbox, &QCheckBox::toggled, this, &SettingsDisplay::on_min_gui_on_start_checkbox_toggled);
+
+    connect(emulator->speed_combobox, &QComboBox::currentIndexChanged, this, &SettingsDisplay::on_speed_index_changed);
 }
 
 SettingsDisplay::~SettingsDisplay()
 {
 }
 
-void SettingsDisplay::setup_general(QWidget *general)
+void SettingsDisplay::on_speed_index_changed(const int idx)
+{
+}
+
+void SettingsDisplay::on_add_directory_clicked()
+{
+    QFileDialog file_dialog;
+
+    file_dialog.setFileMode(QFileDialog::Directory);
+
+    if (file_dialog.exec())
+    {
+        general->directories->appendPlainText(file_dialog.selectedFiles().join("\n"));
+    }
+}
+
+void SettingsDisplay::on_min_gui_on_start_checkbox_toggled(const bool toggled)
+{
+}
+
+GeneralSettingsDisplay::GeneralSettingsDisplay(QWidget *parent) : QWidget{parent}
 {
     SettingsManager &settings = SettingsManager::instance();
     const auto settings_rom_dirs = settings.get_rom_dirs();
@@ -47,22 +62,22 @@ void SettingsDisplay::setup_general(QWidget *general)
     QVBoxLayout *layout = new QVBoxLayout();
 
     // General settings groupbox
-    QGroupBox *general_groupbox = new QGroupBox(tr("General"), general);
+    general_groupbox = new QGroupBox(tr("General"), this);
     QVBoxLayout *general_groupbox_layout = new QVBoxLayout();
-    QCheckBox *general_min_on_game_start_checkbox = new QCheckBox(tr("Minimize GUI on game start"), general_groupbox);
+    min_on_game_start_checkbox = new QCheckBox(tr("Minimize GUI on game start"), general_groupbox);
 
-    general_min_on_game_start_checkbox->setObjectName("min_gui_on_game_start");
-    general_min_on_game_start_checkbox->setChecked(settings_min_on_game_start);
+    min_on_game_start_checkbox->setObjectName("min_gui_on_game_start");
+    min_on_game_start_checkbox->setChecked(settings_min_on_game_start);
 
-    general_groupbox_layout->addWidget(general_min_on_game_start_checkbox);
+    general_groupbox_layout->addWidget(min_on_game_start_checkbox);
     general_groupbox->setLayout(general_groupbox_layout);
 
     // Search directories groupbox
 
-    QGroupBox *directory_groupbox = new QGroupBox(tr("Search Directories"), general);
+    directory_groupbox = new QGroupBox(tr("Search Directories"), this);
     QVBoxLayout *directory_groupbox_layout = new QVBoxLayout();
-    QPlainTextEdit *directories = new QPlainTextEdit(directory_groupbox);
-    QPushButton *add_directory = new QPushButton(directory_groupbox);
+    directories = new QPlainTextEdit(directory_groupbox);
+    add_directory = new QPushButton(directory_groupbox);
 
     add_directory->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::ListAdd));
     add_directory->setToolTip(tr("Add directory for TetroidNES to search for ROMs in"));
@@ -79,48 +94,78 @@ void SettingsDisplay::setup_general(QWidget *general)
     // Layout
     layout->addWidget(general_groupbox);
     layout->addWidget(directory_groupbox);
-    general->setLayout(layout);
+    setLayout(layout);
 
-    // Events
-    connect(add_directory, &QPushButton::clicked, this, &SettingsDisplay::on_add_directory_clicked);
-    connect(general_min_on_game_start_checkbox, &QCheckBox::toggled, this, &SettingsDisplay::on_min_gui_on_start_checkbox_toggled);
 }
 
-void SettingsDisplay::setup_emulator(QWidget *emulator)
+GeneralSettingsDisplay::~GeneralSettingsDisplay()
 {
 }
 
-void SettingsDisplay::setup_about(QWidget *about)
+EmulatorSettingsDisplay::EmulatorSettingsDisplay(QWidget *parent) : QWidget{parent}
+{
+    SettingsManager &settings = SettingsManager::instance();
+    const auto settings_speed = settings.speed();
+    const auto default_combobox_key = QString("100%");
+    int speed_combobox_current_idx;
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    QVBoxLayout *emulator_groupbox_layout = new QVBoxLayout();
+
+    emulator_groupbox = new QGroupBox(tr("Emulator"), this);
+
+    speed_combobox = new QComboBox(emulator_groupbox);
+    speed_combobox->setObjectName("speed");
+    speed_combobox->addItem("25%", QVariant(0.25f));
+    speed_combobox->addItem("50%", QVariant(0.5f));
+    speed_combobox->addItem("75%", QVariant(0.75f));
+    speed_combobox->addItem(default_combobox_key, QVariant(1.f));
+    speed_combobox->addItem("200%", QVariant(2.f));
+    speed_combobox->addItem("400%", QVariant(4.f));
+    speed_combobox->addItem("Unlimited", QVariant(0.f));
+
+    speed_combobox_current_idx = speed_combobox->findData(QVariant(settings_speed));
+    if (speed_combobox_current_idx == -1)
+    {
+        float default_combobox_value;
+
+        qWarning()
+        << "Emulation speed multiplier"
+        << settings.speed()
+        << "was not found in speed_combobox, setting to"
+        << default_combobox_key;
+
+        speed_combobox_current_idx = speed_combobox->findText(default_combobox_key);
+
+        default_combobox_value = speed_combobox->itemData(speed_combobox_current_idx).toFloat();
+
+        settings.set_speed(default_combobox_value); // Correct invalid speed value to default
+    }
+    speed_combobox->setCurrentIndex(speed_combobox_current_idx);
+
+    emulator_groupbox_layout->addWidget(speed_combobox);
+    emulator_groupbox->setLayout(emulator_groupbox_layout);
+
+    layout->addWidget(emulator_groupbox);
+    setLayout(layout);
+}
+
+EmulatorSettingsDisplay::~EmulatorSettingsDisplay()
+{
+}
+
+About::About(QWidget *parent) : QWidget{parent}
 {
     QVBoxLayout *layout = new QVBoxLayout();
 
-    QLabel *about_text = new QLabel(ABOUT_TEXT, about);
-    about_text->setTextFormat(Qt::PlainText);
+    text = new QLabel(ABOUT_TEXT, this);
+    text->setTextFormat(Qt::PlainText); // PlainText is placeholder until we decide what text format we want
 
-    // Layouts
-    layout->addWidget(about_text);
+    layout->addWidget(text);
 
-    about->setLayout(layout);
+    setLayout(layout);
 }
 
-void SettingsDisplay::on_add_directory_clicked()
+About::~About()
 {
-    QFileDialog file_dialog;
-    QPlainTextEdit *text_edit = findChild<QPlainTextEdit *>("rom_directory");
-
-    file_dialog.setFileMode(QFileDialog::Directory);
-
-    if (file_dialog.exec())
-    {
-        text_edit->appendPlainText(file_dialog.selectedFiles().join("\n"));
-    }
-}
-
-void SettingsDisplay::on_min_gui_on_start_checkbox_toggled(const bool toggled)
-{
-}
-
-bool SettingsDisplay::eventFilter(QObject *obj, QEvent *ev)
-{
-    return QStackedWidget::eventFilter(obj, ev);
 }

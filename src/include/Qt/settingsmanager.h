@@ -32,14 +32,17 @@ public:
     bool minimize_gui_on_game_start() const;
     void set_minimize_gui_on_game_start(const bool b);
 
-    float frame_rate() const;
-    void set_frame_rate(const float frame_rate);
+    float speed() const;
+    void set_speed(const float speed);
 
     RomList::SortMode sort_mode() const;
     void set_sort_mode(const RomList::SortMode sort_mode);
 
     Qt::SortOrder ascending_order() const;
     void set_ascending_order(const Qt::SortOrder sort_order);
+
+signals:
+    void speed_changed(float speed);
 
 private:
     SettingsManager();

@@ -2,6 +2,7 @@
 #include <QPlainTextEdit>
 #include <QFileInfo>
 #include <QCheckBox>
+#include <QDoubleSpinBox>
 
 #include <Qt/settingswidget.h>
 #include <Qt/settingsmanager.h>
@@ -71,10 +72,12 @@ void SettingsWidget::on_apply_changes_clicked()
 {
 
     auto &settings = SettingsManager::instance();
+    auto rom_dir = setting_display->findChild<QPlainTextEdit *>("rom_directory");
+    auto min_gui_on_game_start = setting_display->findChild<QCheckBox *>("min_gui_on_game_start");
+    auto speed = setting_display->findChild<QComboBox *>("speed");
 
     // ROM Directories
     QStringList string_list;
-    QPlainTextEdit *rom_dir = setting_display->findChild<QPlainTextEdit *>("rom_directory");
 
     for (auto &string : rom_dir->toPlainText().split("\n"))
     {
@@ -90,14 +93,20 @@ void SettingsWidget::on_apply_changes_clicked()
     }
 
     // Minimize GUI on game start
-    QCheckBox *min_gui_on_game_start = setting_display->findChild<QCheckBox *>("min_gui_on_game_start");
     const bool min_gui_on_game_start_checked = min_gui_on_game_start->isChecked();
-
     if (min_gui_on_game_start_checked != settings.minimize_gui_on_game_start())
     {
         settings.set_minimize_gui_on_game_start(min_gui_on_game_start_checked);
     }
 
+    // Game speed multiplier
+    const float speed_multipler = speed->currentData().toFloat();
+    if (speed_multipler != settings.speed())
+    {
+        settings.set_speed(speed_multipler);
+    }
+
+    // Finished saving settings
     qInfo() << "saving settings in " << SAVE_DIR;
     QMessageBox::information(this, tr("Settings saved"),
                              tr("Your settings have been saved"));

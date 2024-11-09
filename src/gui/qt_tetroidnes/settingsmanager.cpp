@@ -2,7 +2,7 @@
 
 constexpr const auto key_romdir = "romdir";
 constexpr const auto key_min_game_on_start = "minimize_gui_on_game_start";
-constexpr const auto key_frame_rate = "frame_rate";
+constexpr const auto key_speed = "emu_speed";
 constexpr const auto key_sort_mode = "QOL/sort_mode";
 constexpr const auto key_ascend_order = "QOL/ascending_order";
 
@@ -48,14 +48,15 @@ void SettingsManager::set_minimize_gui_on_game_start(const bool b)
     return m_settings.setValue(key_min_game_on_start, b);
 }
 
-float SettingsManager::frame_rate() const
+float SettingsManager::speed() const
 {
-    return m_settings.value(key_frame_rate, 60.f).toFloat();
+    return m_settings.value(key_speed, 1.f).toFloat();
 }
 
-void SettingsManager::set_frame_rate(const float frame_rate)
+void SettingsManager::set_speed(const float speed)
 {
-    m_settings.setValue(key_frame_rate, frame_rate);
+    m_settings.setValue(key_speed, speed);
+    emit speed_changed(speed);
 }
 
 void SettingsManager::set_sort_mode(const RomList::SortMode sort_mode)

@@ -107,14 +107,14 @@ void MainWindow::wheelEvent(QWheelEvent *event)
         rom_list->set_current_page(current_page + 1);
         qApp->processEvents(); // Makes sure scroll bar updates max/min values
         max = scrollbar->maximum();
-        scrollbar->setSliderPosition(min + (int)(max * slide_pos_multiplier));
+        scrollbar->setSliderPosition(min + static_cast<int>(max * slide_pos_multiplier));
     }
     else if (scrolled_up && current_page > 1)
     {
         rom_list->set_current_page(current_page - 1);
         qApp->processEvents(); // Makes sure scroll bar updates max/min values
         max = scrollbar->maximum();
-        scrollbar->setSliderPosition(max - (int)(max * slide_pos_multiplier));
+        scrollbar->setSliderPosition(max - static_cast<int>(max * slide_pos_multiplier));
     }
     update_page_info();
 
@@ -140,7 +140,7 @@ void MainWindow::rom_list_scroll_value_changed(const int value)
         rom_list->set_current_page(current_page + 1);
         qApp->processEvents(); // Makes sure scroll bar updates max/min values
         max = scrollbar->maximum();
-        scrollbar->setSliderPosition(min + (int)(max * slide_pos_multiplier));
+        scrollbar->setSliderPosition(min + static_cast<int>(max * slide_pos_multiplier));
         update_page_info();
     }
     else if (value <= min && current_page > 1)
@@ -150,7 +150,7 @@ void MainWindow::rom_list_scroll_value_changed(const int value)
         rom_list->set_current_page(current_page - 1);
         qApp->processEvents(); // Makes sure scroll bar updates max/min values
         max = scrollbar->maximum();
-        scrollbar->setSliderPosition(max - (int)(max * slide_pos_multiplier));
+        scrollbar->setSliderPosition(max - static_cast<int>(max * slide_pos_multiplier));
         update_page_info();
     }
     // qDebug() << "Current Page After:" << current_page;
