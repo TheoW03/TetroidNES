@@ -26,11 +26,10 @@ public:
     bool initialized() const;
     inline static std::chrono::nanoseconds framerate_to_ns(const float frame_rate)
     {
-        const auto duration = std::chrono::duration<double>(1.f / frame_rate);
-        const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
-        const auto ns = std::chrono::nanoseconds(ms);
+        const auto ms = std::chrono::duration<double, std::milli>(1.0 / static_cast<double>(frame_rate) * 1000.);
+        const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(ms);
 
-        //qDebug() << "frame_rate:" << frame_rate << "duration:" << duration.count() << "ms:" << ms.count() << "ns:" << ns.count();
+        //qDebug() << "frame_rate:" << frame_rate << "ms:" << ms.count() << "ns:" << ns.count();
         return ns;
     }
     int speed_percent(const float frame_rate) const;
