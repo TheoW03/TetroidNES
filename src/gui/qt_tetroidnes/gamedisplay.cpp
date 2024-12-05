@@ -79,6 +79,8 @@ void GameDisplay::on_init()
     cpu.X_Reg = 0;
     cpu.Y_Reg = 0;
     cpu.bus.clock_cycles = 0;
+    cpu.interrupt = {};
+
     err_code = EXIT_SUCCESS;
     std::cout << "err_code: " << cpu.status.val << std::endl;
 

@@ -133,14 +133,17 @@ void PLA(AddressMode addressType, CPU &cpu)
 void STA(AddressMode addressType, CPU &cpu)
 {
 	// TODO store accumulator in mem
-
 	uint16_t v = address_mode(addressType, cpu);
+	// printf("%x \n", v);
+	// printf("%x \n", cpu.bus.get_PC());
 	cpu.bus.write_8bit(v, cpu.A_Reg);
 }
 
 void STX(AddressMode addressType, CPU &cpu)
 {
 	uint16_t v = address_mode(addressType, cpu);
+	// printf("%x \n", v);
+	// printf("%x \n", cpu.bus.get_PC());
 	cpu.bus.write_8bit(v, cpu.X_Reg);
 }
 
@@ -486,6 +489,8 @@ void RTI(AddressMode addressType, CPU &cpu)
 	// printf("%x \n", cpu.bus.get_PC());
 	set_brk(cpu, 0);
 	set_interrupt_disabled(0, cpu);
+
+	cpu.interrupt = {};
 }
 #pragma endregion setFlags
 

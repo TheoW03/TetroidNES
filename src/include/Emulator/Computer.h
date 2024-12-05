@@ -1,7 +1,7 @@
 #include <iostream>
 #include <Emulator/Bus.h>
 #include <filesystem>
-
+#include <optional>
 // #include <SFML/Graphics.hpp>
 #define NES_RES_A 256 * 240
 #define NES_RES_W 240
@@ -34,6 +34,7 @@ struct CPU
     int error_code;
 
     Bus bus;
+    std::optional<int> interrupt;
 };
 #endif
 #ifndef ADDRESS_MODE

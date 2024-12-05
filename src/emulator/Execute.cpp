@@ -19,18 +19,22 @@ CPU Execute::run()
     // std::bitset<7> status(this->cpu.status.val);
     // std::cout << status << std::endl;
 
-    if (cpu.bus.NMI_interrupt())
+    if (cpu.bus.NMI_interrupt() && !cpu.interrupt.has_value())
     {
         cpu.bus.push_stack8(cpu.status.val);
-        qInfo() << "NMI interrupt, should be rendering";
-        printf("%x \n", cpu.bus.get_PC());
+        // qInfo() << "NMI interrupt, should be rendering";
+        // printf("%x \n", cpu.bus.get_PC());
         cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
-        // cpu.status.I = 1;
+        // printf("the pc %x \n", cpu.bus.get_PC());
+        // printf("print");
+        cpu.interrupt = 1;
         set_interrupt_disabled(1, cpu);
         cpu.bus.fetch_next();
         // set_interrupt_disabled(1, cpu);
         set_brk(cpu, 1);
         cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
+        cpu.bus.tick();
+        cpu.bus.tick();
     }
     if (cpu.bus.check_error().has_value())
     {
@@ -54,6 +58,7 @@ CPU Execute::run()
     qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
 
     qInfo() << "potential error with the cpu";
+    printf("print");
 
     cpu.error_code = EXIT_FAILURE;
     return cpu;

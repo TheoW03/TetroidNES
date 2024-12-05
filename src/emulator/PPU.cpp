@@ -278,17 +278,22 @@ void PPU::write_PPU_ctrl(uint8_t val)
 }
 void PPU::write_PPU_mask(uint8_t val)
 {
+
+    std::bitset<7> ppu_status2(val);
+    std::cout << "mask: " << ppu_status2 << std::endl;
     std::cout << "ppu mask being written to" << std::endl;
     this->reg.ppumask.val = val;
+    std::bitset<7> ppu_status(this->reg.ppumask.val);
+    std::cout << "mask: " << ppu_status << std::endl;
+    // exit(EXIT_FAILURE);
 }
 std::optional<int> PPU::write_PPU_data(uint8_t val)
 {
-    // if (this->reg.ppumask.s == 0)
-    // {
-    //     printf("sprite disabled \n");
+    if (this->reg.ppumask.s == 0)
+    {
 
-    //     return 1;
-    // }
+        return 1;
+    }
     uint16_t addr = this->reg.ppuAddr.val;
     // printf("%x \n", addr);
 
@@ -375,6 +380,7 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
             return true;
         }
     }
+    // std::cout << "n"
     return false;
 }
 
