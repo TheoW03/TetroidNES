@@ -150,8 +150,9 @@ std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> PPU::bg_pallete(size_t row, size_
         idx = (attr_byte >> 6) & 0b11;
     }
     size_t pallete_offset = 1 + idx * 4;
-    // printf(" bg palete 1: %x 2: %x 3: %x 4: %x\n", this->pallete[pallete_offset], this->pallete[pallete_offset + 1], this->pallete[pallete_offset + 2]);
     // printf(" ofset 1 %d \n", pallete_offset);
+
+    // printf(" bg palete 1: %x 2: %x 3: %x 4: %x\n", this->pallete[pallete_offset], this->pallete[pallete_offset + 1], this->pallete[pallete_offset + 2]);
 
     return {
         0,
@@ -196,18 +197,22 @@ uint8_t PPU::read_PPU_data()
     }
     else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c)
     {
+        printf("addr before %x \n", addr);
+
         addr = addr - 0x10;
+        printf("addr after: %x \n", addr);
+
         return pallete[addr - 0x3f00];
     }
     return 0;
 }
 uint8_t PPU::read_status()
 {
-    uint8_t ret = reg.ppuStatus.val;
+    uint8_t ret = this->reg.ppuStatus.val;
     // reg.ppuStatus.V = 0;
     reg.high_ptr = true;
     reg.scrollLatch = false;
-    return ret;
+    return this->reg.ppuStatus.val;
 }
 void PPU::print_ppu_stats()
 {
@@ -232,6 +237,7 @@ void PPU::log_ppu()
 {
     std::bitset<7> ppu_status(this->reg.ppuStatus.val);
     std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
+    std::bitset<7> ppu_mask(this->reg.ppumask.val);
 
     qInfo() << "===== PPU ON EXIT ===========";
     qInfo() << "PPU addr:  " << num_to_hexa(this->reg.ppuAddr.val);
@@ -243,22 +249,26 @@ void PPU::log_ppu()
     qInfo() << "===== PPU ctrl ====";
     qInfo() << "ctrl: " << ppu_ctrl.to_string();
     qInfo() << "oam addr: " << num_to_hexa(this->oam_addr);
+
+    qInfo() << "===== PPU mask ====";
+    qInfo() << "ppu mask: " << ppu_mask.to_string();
 }
 void PPU::write_PPU_address(uint8_t val)
 {
+
     if (this->reg.high_ptr)
-    {
-        this->reg.ppuAddr.lo = val;
-    }
-    else
     {
         this->reg.ppuAddr.hi = val;
     }
+    else
+    {
+        this->reg.ppuAddr.lo = val;
+    }
     // TODO: fix later
     //  std::cout << "ppu addr" << std::endl;
-    // printf("val:%x   \n", this->reg.ppuAddr.val);
-    // printf("hi: %x \n", this->reg.ppuAddr.hi);
-    // printf("lo: %x \n", this->reg.ppuAddr.lo);
+    printf("val:%x   \n", this->reg.ppuAddr.val);
+    printf("hi: %x \n", this->reg.ppuAddr.hi);
+    printf("lo: %x \n", this->reg.ppuAddr.lo);
 
     this->reg.high_ptr = !this->reg.high_ptr;
 }
@@ -268,12 +278,19 @@ void PPU::write_PPU_ctrl(uint8_t val)
 }
 void PPU::write_PPU_mask(uint8_t val)
 {
+    std::cout << "ppu mask being written to" << std::endl;
     this->reg.ppumask.val = val;
 }
 std::optional<int> PPU::write_PPU_data(uint8_t val)
 {
+    // if (this->reg.ppumask.s == 0)
+    // {
+    //     printf("sprite disabled \n");
+
+    //     return 1;
+    // }
     uint16_t addr = this->reg.ppuAddr.val;
-    printf("pallete \n");
+    // printf("%x \n", addr);
 
     // std::cout << addr << std::endl;
     if (addr >= 0x2000 && addr <= 0x2fff)
@@ -290,12 +307,13 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
     }
     else if (addr >= 0x3f00 && addr <= 0x3fff)
     {
+        // printf("%x \n", addr - 0x3f00);
         this->pallete[addr - 0x3f00] = val;
-        printf("pallete \n");
+        // printf("pallete \n");
     }
     else if (addr == 0x4014)
     {
-        printf("%x\n", addr);
+        // printf("%x\n", addr);
     }
     else
     {
@@ -350,8 +368,8 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
         if (this->reg.ppuCtrl.V == 0)
         {
             this->reg.ppuStatus.V = 1;
-            std::bitset<7> ppu_status(this->reg.ppuStatus.val);
-            std::cout << ppu_status << std::endl;
+            // std::bitset<7> ppu_status(this->reg.ppuStatus.val);
+            // std::cout << "status: " << ppu_status << std::endl;
             // printf("%d \n",)
 
             return true;
@@ -439,6 +457,7 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
 
         int idx = this->oam[ppu_idx];
         int idy = this->oam[ppu_idx - 3];
+        // std::cout << "a" << std::endl;
         Attribute_byte attribbyte;
         attribbyte.val = this->oam[ppu_idx - 1];
         // Attribute_byte b = this->oam[ppu_idx - 1];
@@ -509,6 +528,8 @@ uint8_t PPU::read_OAM_data()
 }
 void PPU::write_OAM_data(uint8_t val)
 {
+    if (this->reg.ppumask.s == 0)
+        return;
     oam[oam_addr] = val;
     oam_addr++;
     // oam_addr += (oam_addr + 1) % 256;

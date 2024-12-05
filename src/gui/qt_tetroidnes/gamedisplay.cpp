@@ -55,6 +55,8 @@ void GameDisplay::on_init()
 {
     initializeInstructionMap();
     auto rom = load_rom(file_tobyte_vector(m_rom_url.toStdString()));
+    frame_timer->start();
+    frames_per_sec_timer->start();
     if (rom.has_value() == 0)
     {
         qCritical() << "unrecongnized file format needs to be NES v1.0 format";
@@ -91,9 +93,6 @@ void GameDisplay::on_init()
     qInfo() << "Started game " << QUrl(m_rom_url).fileName();
 
     exe = Execute(cpu);
-
-    frame_timer->start();
-    frames_per_sec_timer->start();
 }
 
 void GameDisplay::on_update()
@@ -142,8 +141,7 @@ void GameDisplay::on_timeout()
 void GameDisplay::on_framerate_timer_timeout()
 {
     setWindowTitle(
-        QString("Speed: %%1 | FPS: %2").arg(QString::number(speed_percent(ntsc_frame_rate)), QString::number(frames_within_second))
-    );
+        QString("Speed: %%1 | FPS: %2").arg(QString::number(speed_percent(ntsc_frame_rate)), QString::number(frames_within_second)));
     frames_within_second = 0;
 }
 

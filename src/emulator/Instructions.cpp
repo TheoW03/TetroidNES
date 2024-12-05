@@ -250,6 +250,7 @@ void BIT(AddressMode addressType, CPU &cpu)
 {
 	// TODO: bit test
 	uint8_t value = get_value(addressType, cpu);
+
 	uint8_t result = cpu.A_Reg & value;
 	set_zero(result, cpu);
 	set_overflow((value & 0b00100000) != 0, cpu);
@@ -479,7 +480,9 @@ void RTI(AddressMode addressType, CPU &cpu)
 	// TODO:return from interrupt
 	cpu.bus.fill(cpu.bus.pop_stack16());
 	cpu.status.val = cpu.bus.pop_stack8();
-	// std::cout << "nmi" << std::endl;
+
+	std::cout << "nmi ended" << std::endl;
+
 	// printf("%x \n", cpu.bus.get_PC());
 	set_brk(cpu, 0);
 	set_interrupt_disabled(0, cpu);

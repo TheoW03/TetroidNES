@@ -64,6 +64,7 @@ private:
 
                 unsigned O : 1;
                 unsigned S : 1;
+                unsigned : 1;
 
                 unsigned V : 1;
             };
