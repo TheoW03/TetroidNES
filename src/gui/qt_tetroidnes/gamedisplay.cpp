@@ -101,6 +101,8 @@ void GameDisplay::on_update()
 {
     // Process CPU
     // this->cpu = exe.run();
+    // for (int i = 0; i < 100; i++)
+    // {
     auto result = exe.run();
 
     // printf("0x%x\n", result.bus.get_PC());
@@ -121,6 +123,7 @@ void GameDisplay::on_update()
         // TODO: close error and log the CPU stats
     }
 
+    //
     // Generate next frame
     auto rgb_data_vector = exe.render();
     uint8_t rgb_data[rgb_data_size];
@@ -132,6 +135,7 @@ void GameDisplay::on_update()
     render_window->draw(sprite);
 
     frames_within_second += 1;
+    // }
 }
 
 void GameDisplay::on_timeout()

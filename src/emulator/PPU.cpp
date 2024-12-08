@@ -381,12 +381,12 @@ bool PPU::tick(uint8_t clock_cycles)
     // }
 
     this->cycles += clock_cycles;
-    qInfo() << "ppu cycles: " << this->cycles;
+    // qInfo() << "ppu cycles: " << this->cycles;
     if (this->cycles >= 341)
     {
         this->scanline += 1;
         this->cycles -= 341;
-        qInfo() << "scanline: " << this->scanline;
+        // qInfo() << "scanline: " << this->scanline;
         if (scanline == 241)
         {
             reg.ppuStatus.V = 1;

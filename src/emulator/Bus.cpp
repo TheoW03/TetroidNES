@@ -360,9 +360,9 @@ void Bus::tick()
 {
     this->clock_cycles++;
     this->ppu.tick(3);
-    std::cout << "clock cycles: " << this->clock_cycles << std::endl;
+    // std::cout << "clock cycles: " << this->clock_cycles << std::endl;
     // this->ppu.tick(this->clock_cycles * 3);
-    qInfo() << "cpu clock cyles: " << clock_cycles;
+    // qInfo() << "cpu clock cyles: " << clock_cycles;
     // qInfo() << "cpu clock cyles * 3: " << clock_cycles * 3;
 }
 
