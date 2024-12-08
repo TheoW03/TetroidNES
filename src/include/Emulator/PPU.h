@@ -5,6 +5,8 @@
 #include "LoadRom.h"
 #include <optional>
 #include <tuple>
+#include <chrono>
+
 #ifndef PPU_H
 #define PPU_H
 #include <cstdint>
@@ -107,7 +109,7 @@ public:
     uint8_t read_PPU_data();
     uint8_t read_OAM_data();
     std::optional<std::string> err_string;
-
+    std::chrono::high_resolution_clock::time_point start;
     void write_PPU_address(uint8_t val);
     void write_PPU_ctrl(uint8_t val);
     void write_PPU_mask(uint8_t val);

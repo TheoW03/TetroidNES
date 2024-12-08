@@ -9,6 +9,9 @@
 #include <QDebug>
 
 // #include "PPU.h"
+#define VBLANK_MS 17
+#define RESET_SCAN 40
+
 // #include <emulator
 PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
 {
@@ -28,6 +31,8 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     this->scanline = 0;
     this->cycles = 0;
     this->err_string = std::nullopt;
+    this->start = std::chrono::high_resolution_clock::now();
+
     for (int i = 0; i < 255; i++)
         this->oam[i] = 0;
     for (int i = 0; i < 32; i++)
@@ -347,53 +352,93 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
 
 bool PPU::tick(uint8_t clock_cycles)
 {
-    this->cycles += clock_cycles;
-    if (this->cycles >= 341)
+    auto reset_scan = this->start + std::chrono::milliseconds(RESET_SCAN);
+    if (std::chrono::high_resolution_clock::now() > reset_scan)
     {
-        this->scanline += 1;
-        this->cycles -= 341;
-        if (scanline == 241)
-        {
-            reg.ppuStatus.V = 1;
+        reg.ppuStatus.V = 0;
+        this->start = std::chrono::high_resolution_clock::now();
+        return true;
+        // if (this->reg.ppuCtrl.V == 1)
+        // {
+        //     // printf("NMI?");
+        //     std::bitset<8> ppu_status(this->reg.ppuCtrl.val);
+        //     std::cout << "after NMI ctrl: " << ppu_status << std::endl;
+        //     return true;
+        // }
+    }
 
-            if (this->reg.ppuCtrl.V == 1)
-            {
-                printf("NMI?");
-                std::bitset<8> ppu_status(this->reg.ppuCtrl.val);
-                std::cout << "after NMI ctrl: " << ppu_status << std::endl;
-                return true;
-            }
-        }
-        if (scanline >= 262)
+    auto vblank = this->start + std::chrono::milliseconds(VBLANK_MS);
+    if (std::chrono::high_resolution_clock::now() > vblank)
+    {
+        reg.ppuStatus.V = 1;
+        if (this->reg.ppuCtrl.V == 1)
         {
-
-            scanline = 0;
-            this->reg.ppuStatus.V = 0;
-            std::bitset<8> ppu_status(this->reg.ppuStatus.val);
-            std::cout << "after NMI status: " << ppu_status << std::endl;
+            // printf("NMI?");
+            std::bitset<8> ppu_status(this->reg.ppuCtrl.val);
+            std::cout << "after NMI ctrl: " << ppu_status << std::endl;
             return true;
         }
     }
+
+    // this->cycles += clock_cycles;
+    // if (this->cycles >= 341)
+    // {
+    //     this->scanline += 1;
+    //     this->cycles -= 341;
+    //     if (scanline == 241)
+    //     {
+    //         reg.ppuStatus.V = 1;
+
+    //         if (this->reg.ppuCtrl.V == 1)
+    //         {
+    //             // printf("NMI?");
+    //             std::bitset<8> ppu_status(this->reg.ppuCtrl.val);
+    //             std::cout << "after NMI ctrl: " << ppu_status << std::endl;
+    //             return true;
+    //         }
+    //     }
+    //     if (scanline >= 262)
+    //     {
+
+    //         scanline = 0;
+    //         this->reg.ppuStatus.V = 0;
+    //         std::bitset<8> ppu_status(this->reg.ppuStatus.val);
+    //         std::cout << "after NMI status: " << ppu_status << std::endl;
+    //         return true;
+    //     }
+    // }
     return false;
 }
 
 bool PPU::NMI_interrupt(uint8_t clock_cycles)
 {
 
-    if (this->scanline == 241)
+    auto vblank = this->start + std::chrono::milliseconds(VBLANK_MS);
+    if (std::chrono::high_resolution_clock::now() > vblank)
     {
-        this->reg.ppuStatus.V = 1;
-        std::bitset<8> ppu_status(this->reg.ppuStatus.val);
-        std::cout << "nmi status: " << ppu_status << std::endl;
+        reg.ppuStatus.V = 1;
 
         if (this->reg.ppuCtrl.V == 1)
         {
-
-            // printf("%d \n",)
-
+            // printf("NMI?");
+            std::bitset<8> ppu_status(this->reg.ppuCtrl.val);
             return true;
         }
     }
+    // if (this->scanline == 241)
+    // {
+    //     this->reg.ppuStatus.V = 1;
+    //     std::bitset<8> ppu_status(this->reg.ppuStatus.val);
+    //     std::cout << "nmi status: " << ppu_status << std::endl;
+
+    //     if (this->reg.ppuCtrl.V == 1)
+    //     {
+
+    //         // printf("%d \n",)
+
+    //         return true;
+    //     }
+    // }
     // std::cout << "n"
     return false;
 }
