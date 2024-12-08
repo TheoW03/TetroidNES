@@ -71,6 +71,8 @@ uint8_t Bus::fetch_next()
     stored_instructions[1] = stored_instructions[0];
     // printf(" fetch: current_instrcution: 0x%x  pc: 0x%x \n", current_instruction, this->program_counter);
     program_counter++;
+    this->tick();
+    this->tick();
     stored_instructions[0] = rom.PRG[this->program_counter - reset_vector];
 
     return current_instruction;
@@ -80,7 +82,9 @@ void Bus::fill(uint16_t pc)
 {
     stored_instructions[0] = rom.PRG[(pc + 1) - reset_vector];
     stored_instructions[1] = rom.PRG[(pc - reset_vector)];
-    clock_cycles += 2;
+    // clock_cycles += 2;
+    this->tick();
+    this->tick();
     this->program_counter = pc;
     // printf("current_instrcution: 0x%x  pc: 0x%x \n", current_instruction, this->program_counter);
     // printf(" fill: proram counter: 0x%x current: 0x%x \n", pc, stored_instructions[1]);
@@ -90,7 +94,9 @@ void Bus::fill(uint16_t pc)
 
 uint8_t Bus::read_8bit(uint16_t address)
 {
-    this->clock_cycles++;
+    // this->clock_cycles++;
+    // this->ppu.tick(3);
+    this->tick();
     if (address < 0x1FFF)
     {
         uint16_t mirror_address = address & 0x7ff;
@@ -148,7 +154,10 @@ uint8_t Bus::read_8bit(uint16_t address)
 
 void Bus::write_8bit(uint16_t address, uint8_t value)
 {
-    this->clock_cycles++;
+    // this->clock_cycles++;
+    // this->ppu.tick(3);
+    this->tick();
+    // this->tick();
     if (address <= 0x1FFF)
     {
         uint16_t mirror_address = address & 0x7ff;
@@ -243,13 +252,14 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
 
 uint16_t Bus::read_16bit(uint16_t address)
 {
-    clock_cycles += 2;
+    // clock_cycles += 2;
 
     if (address < 0x1FFF)
     {
-        uint16_t mirror_address = address & 0x7ff;
-        uint16_t value = (uint16_t)(v_memory[mirror_address + 1] << 8) | v_memory[mirror_address];
-        return value;
+        // uint16_t mirror_address = address & 0x7ff;
+        // uint16_t value = (uint16_t)(v_memory[mirror_address + 1] << 8) | v_memory[mirror_address];
+        return read_8bit(address + 1) << 8 | read_8bit(address);
+        // return value;
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
@@ -258,24 +268,27 @@ uint16_t Bus::read_16bit(uint16_t address)
     else if (address >= 0x8000 && address <= 0xFFFF)
     {
 
-        uint8_t lsb = rom.PRG[address - reset_vector];
-        uint8_t msb = rom.PRG[(address + 1) - reset_vector];
-        return (uint16_t)(msb << 8) | lsb;
+        // uint8_t lsb = rom.PRG[address - reset_vector];
+        // uint8_t msb = rom.PRG[(address + 1) - reset_vector];
+        // return (uint16_t)(msb << 8) | lsb;
+        return read_8bit(address + 1) << 8 | read_8bit(address);
     }
     return 0;
 }
 
 void Bus::write_16bit(uint16_t address, uint16_t value)
 {
-    clock_cycles += 2;
+    // clock_cycles += 2;
 
     if (address < 0x1FFF)
     {
-        uint16_t mirror_address = address & 0x7ff;
-        uint8_t msb = (uint8_t)(value >> 8);
-        uint8_t lsb = (uint8_t)(value & 0xFF);
-        v_memory[mirror_address] = lsb;
-        v_memory[mirror_address + 1] = msb;
+        // uint16_t mirror_address = address & 0x7ff;
+        // uint8_t msb = (uint8_t)(value >> 8);
+        // uint8_t lsb = (uint8_t)(value & 0xFF);
+        // v_memory[mirror_address] = lsb;
+        // v_memory[mirror_address + 1] = msb;
+        write_8bit(address + 1, value >> 8);
+        write_8bit(address, value);
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
@@ -345,7 +358,12 @@ void Bus::print_stack()
 
 void Bus::tick()
 {
-    this->ppu.tick(this->clock_cycles * 3);
+    this->clock_cycles++;
+    this->ppu.tick(3);
+    std::cout << "clock cycles: " << this->clock_cycles << std::endl;
+    // this->ppu.tick(this->clock_cycles * 3);
+    qInfo() << "cpu clock cyles: " << clock_cycles;
+    // qInfo() << "cpu clock cyles * 3: " << clock_cycles * 3;
 }
 
 // void Bus::render(sf::Texture &texture, int bank, int tile)

@@ -44,8 +44,8 @@ CPU Execute::run()
         return cpu;
         // qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
     }
-    cpu.bus.tick();
     auto current_instr = cpu.bus.fetch_next();
+
     // qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
     // printf("0x%x \n", current_instr);
     if (InstructionValid(current_instr))
@@ -54,6 +54,7 @@ CPU Execute::run()
         Instruction a = GetInstruction(current_instr);
         a.i(a.addressmode, cpu);
         cpu.error_code = EXIT_SUCCESS;
+        // cpu.bus.tick();
 
         return cpu;
     }
