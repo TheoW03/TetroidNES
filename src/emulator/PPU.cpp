@@ -34,6 +34,7 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     {
         this->pallete[i] = 0;
     }
+    this->oam_addr = 0;
 }
 PPU::PPU() {}
 
@@ -209,10 +210,10 @@ uint8_t PPU::read_PPU_data()
 uint8_t PPU::read_status()
 {
     uint8_t ret = this->reg.ppuStatus.val;
-    // reg.ppuStatus.V = 0;
+    this->reg.ppuStatus.V = 0;
     reg.high_ptr = true;
     reg.scrollLatch = false;
-    return this->reg.ppuStatus.val;
+    return ret;
 }
 void PPU::print_ppu_stats()
 {
@@ -235,9 +236,9 @@ void PPU::print_ppu_stats()
 }
 void PPU::log_ppu()
 {
-    std::bitset<7> ppu_status(this->reg.ppuStatus.val);
-    std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
-    std::bitset<7> ppu_mask(this->reg.ppumask.val);
+    std::bitset<8> ppu_status(this->reg.ppuStatus.val);
+    std::bitset<8> ppu_ctrl(this->reg.ppuCtrl.val);
+    std::bitset<8> ppu_mask(this->reg.ppumask.val);
 
     qInfo() << "===== PPU ON EXIT ===========";
     qInfo() << "PPU addr:  " << num_to_hexa(this->reg.ppuAddr.val);
@@ -274,7 +275,13 @@ void PPU::write_PPU_address(uint8_t val)
 }
 void PPU::write_PPU_ctrl(uint8_t val)
 {
+    auto before = this->reg.ppuCtrl;
+
     this->reg.ppuCtrl.val = val;
+    if (before.V == 0 && this->reg.ppuCtrl.V == 1 && this->reg.ppuStatus.V == 1)
+    {
+        this->reg.ppuCtrl.V = 1;
+    }
 }
 void PPU::write_PPU_mask(uint8_t val)
 {
@@ -291,7 +298,7 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
 {
     if (this->reg.ppumask.s == 0)
     {
-
+        printf("is 0 \n");
         return 1;
     }
     uint16_t addr = this->reg.ppuAddr.val;
@@ -308,12 +315,12 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
     else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c)
     {
         addr = addr - 0x10;
-        this->pallete[addr - 0x3f00] = val;
+        // this->pallete[addr - 0x3f00] = val;
     }
     else if (addr >= 0x3f00 && addr <= 0x3fff)
     {
         // printf("%x \n", addr - 0x3f00);
-        this->pallete[addr - 0x3f00] = val;
+        // this->pallete[addr - 0x3f00] = val;
         // printf("pallete \n");
     }
     else if (addr == 0x4014)
@@ -347,9 +354,13 @@ bool PPU::tick(uint8_t clock_cycles)
         this->cycles -= 341;
         if (scanline == 241)
         {
+            reg.ppuStatus.V = 1;
+
             if (this->reg.ppuCtrl.V == 1)
             {
-                reg.ppuStatus.V = 1;
+                printf("NMI?");
+                std::bitset<8> ppu_status(this->reg.ppuCtrl.val);
+                std::cout << "after NMI ctrl: " << ppu_status << std::endl;
                 return true;
             }
         }
@@ -357,7 +368,9 @@ bool PPU::tick(uint8_t clock_cycles)
         {
 
             scanline = 0;
-            reg.ppuStatus.V = 0;
+            this->reg.ppuStatus.V = 0;
+            std::bitset<8> ppu_status(this->reg.ppuStatus.val);
+            std::cout << "after NMI status: " << ppu_status << std::endl;
             return true;
         }
     }
@@ -369,12 +382,13 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
 
     if (this->scanline == 241)
     {
+        this->reg.ppuStatus.V = 1;
+        std::bitset<8> ppu_status(this->reg.ppuStatus.val);
+        std::cout << "nmi status: " << ppu_status << std::endl;
 
-        if (this->reg.ppuCtrl.V == 0)
+        if (this->reg.ppuCtrl.V == 1)
         {
-            this->reg.ppuStatus.V = 1;
-            // std::bitset<7> ppu_status(this->reg.ppuStatus.val);
-            // std::cout << "status: " << ppu_status << std::endl;
+
             // printf("%d \n",)
 
             return true;
@@ -535,7 +549,10 @@ uint8_t PPU::read_OAM_data()
 void PPU::write_OAM_data(uint8_t val)
 {
     if (this->reg.ppumask.s == 0)
+    {
+        // printf("is 0 \n");
         return;
+    }
     oam[oam_addr] = val;
     oam_addr++;
     // oam_addr += (oam_addr + 1) % 256;

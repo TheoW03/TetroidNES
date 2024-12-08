@@ -22,7 +22,7 @@ CPU Execute::run()
     if (cpu.bus.NMI_interrupt() && !cpu.interrupt.has_value())
     {
         cpu.bus.push_stack8(cpu.status.val);
-        // qInfo() << "NMI interrupt, should be rendering";
+        qInfo() << "NMI interrupt, should be rendering";
         // printf("%x \n", cpu.bus.get_PC());
         cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
         // printf("the pc %x \n", cpu.bus.get_PC());
@@ -33,8 +33,8 @@ CPU Execute::run()
         // set_interrupt_disabled(1, cpu);
         set_brk(cpu, 1);
         cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
-        cpu.bus.tick();
-        cpu.bus.tick();
+        // cpu.bus.tick();
+        // cpu.bus.tick();
     }
     if (cpu.bus.check_error().has_value())
     {
@@ -46,6 +46,8 @@ CPU Execute::run()
     }
     cpu.bus.tick();
     auto current_instr = cpu.bus.fetch_next();
+    // qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
+    // printf("0x%x \n", current_instr);
     if (InstructionValid(current_instr))
     {
         // cpu.bus.print_ppu();

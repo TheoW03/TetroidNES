@@ -20,14 +20,25 @@ private:
         {
             struct
             {
-                unsigned B : 1; // color emphasis Blue
+                unsigned g : 1; // greyscale
+                unsigned m : 1; // background left column disable
+                unsigned M : 1; // sprite left column disable
+                unsigned b : 1; // background enable
+
+                unsigned s : 1; // sprite enable
                 unsigned R : 1; // color emphasis Red
                 unsigned G : 1; // color emphasis Green
-                unsigned s : 1; // sprite enable
-                unsigned b : 1; // background enable
-                unsigned M : 1; // sprite left column disable
-                unsigned m : 1; // background left column disable
-                unsigned g : 1; // greyscale
+                unsigned B : 1; // color emphasis Blue
+
+                // unsigned B : 1; // color emphasis Blue
+                // unsigned R : 1; // color emphasis Red
+                // unsigned G : 1; // color emphasis Green
+                // unsigned b : 1; // background enable
+                // unsigned s : 1; // sprite enable
+
+                // unsigned M : 1; // sprite left column disable
+                // unsigned m : 1; // background left column disable
+                // unsigned g : 1; // greyscale
             };
             uint8_t val;
         } ppumask;
@@ -44,14 +55,17 @@ private:
         {
             struct
             {
+                unsigned N : 2; // increment mode
+                unsigned I : 1; // increment mode
+                unsigned S : 1; // sprite tile select (ignored in 8x16 sprite mode)
+
+                unsigned B : 1; // background tile select
+
+                unsigned H : 1; // sprite height
 
                 unsigned P : 1; // PPU master/slave
+
                 unsigned V : 1; // NMI enable
-                unsigned H : 1; // sprite height
-                unsigned B : 1; // background tile select
-                unsigned S : 1; // sprite tile select (ignored in 8x16 sprite mode)
-                unsigned I : 1; // increment mode
-                unsigned N : 2; // increment mode
             };
             uint8_t val;
 
@@ -60,11 +74,11 @@ private:
         {
             struct
             {
-                unsigned padding : 4;
+                unsigned padding : 5;
 
                 unsigned O : 1;
                 unsigned S : 1;
-                unsigned : 1;
+                // unsigned : 1;
 
                 unsigned V : 1;
             };
