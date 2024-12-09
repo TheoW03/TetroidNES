@@ -480,15 +480,8 @@ void CLD(AddressMode addressType, CPU &cpu)
 
 void RTI(AddressMode addressType, CPU &cpu)
 {
-	// TODO:return from interrupt
-	printf("%x \n", cpu.bus.get_PC());
-
 	cpu.bus.fill(cpu.bus.pop_stack16());
 	cpu.status.val = cpu.bus.pop_stack8();
-
-	std::cout << "nmi ended" << std::endl;
-
-	printf("%x \n", cpu.bus.get_PC());
 	set_brk(cpu, 0);
 	set_interrupt_disabled(0, cpu);
 

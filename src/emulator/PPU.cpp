@@ -352,34 +352,6 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
 
 bool PPU::tick(uint8_t clock_cycles)
 {
-    // auto reset_scan = this->start + std::chrono::milliseconds(RESET_SCAN);
-    // if (std::chrono::high_resolution_clock::now() > reset_scan)
-    // {
-    //     reg.ppuStatus.V = 0;
-    //     this->start = std::chrono::high_resolution_clock::now();
-    //     return true;
-    //     // if (this->reg.ppuCtrl.V == 1)
-    //     // {
-    //     //     // printf("NMI?");
-    //     //     std::bitset<8> ppu_status(this->reg.ppuCtrl.val);
-    //     //     std::cout << "after NMI ctrl: " << ppu_status << std::endl;
-    //     //     return true;
-    //     // }
-    // }
-
-    // auto vblank = this->start + std::chrono::milliseconds(VBLANK_MS);
-    // if (std::chrono::high_resolution_clock::now() > vblank)
-    // {
-    //     reg.ppuStatus.V = 1;
-    //     if (this->reg.ppuCtrl.V == 1)
-    //     {
-    //         // printf("NMI?");
-    //         std::bitset<8> ppu_status(this->reg.ppuCtrl.val);
-    //         std::cout << "after NMI ctrl: " << ppu_status << std::endl;
-    //         return true;
-    //     }
-    // }
-
     this->cycles += clock_cycles;
     // qInfo() << "ppu cycles: " << this->cycles;
     if (this->cycles >= 341)
@@ -390,15 +362,13 @@ bool PPU::tick(uint8_t clock_cycles)
         if (scanline == 241)
         {
             reg.ppuStatus.V = 1;
-            // std::cout << "Vblank: " << ppu_status << std::endl;
             qInfo() << "vblank";
             if (this->reg.ppuCtrl.V == 1)
             {
                 // printf("NMI?");
+
                 // std::bitset<8> ppu_status(this->reg.ppuCtrl.val);
                 // std::cout << "after NMI ctrl: " << ppu_status << std::endl;
-                std::cout << "NMI should be firing" << std::endl;
-
                 return true;
             }
         }
@@ -408,9 +378,6 @@ bool PPU::tick(uint8_t clock_cycles)
             this->scanline = 0;
             this->reg.ppuStatus.V = 0;
             qInfo() << "reset";
-
-            std::bitset<8> ppu_status(this->reg.ppuStatus.val);
-            std::cout << "after NMI status: " << ppu_status << std::endl;
             return true;
         }
     }
@@ -419,30 +386,14 @@ bool PPU::tick(uint8_t clock_cycles)
 
 bool PPU::NMI_interrupt(uint8_t clock_cycles)
 {
-
-    // auto vblank = this->start + std::chrono::milliseconds(VBLANK_MS);
-    // if (std::chrono::high_resolution_clock::now() > vblank)
-    // {
-    //     reg.ppuStatus.V = 1;
-
-    //     if (this->reg.ppuCtrl.V == 1)
-    //     {
-    //         // printf("NMI?");
-    //         std::bitset<8> ppu_status(this->reg.ppuCtrl.val);
-    //         return true;
-    //     }
-    // }
     if (this->scanline == 241)
     {
         this->reg.ppuStatus.V = 1;
-        std::bitset<8> ppu_status(this->reg.ppuStatus.val);
-        std::cout << "nmi status: " << ppu_status << std::endl;
-
         if (this->reg.ppuCtrl.V == 1)
         {
 
             // printf("%d \n",)
-            std::cout << "NMI should be firing" << std::endl;
+            // std::cout << "NMI should be firing" << std::endl;
 
             return true;
         }
