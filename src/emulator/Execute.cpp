@@ -22,7 +22,7 @@ CPU Execute::run()
     if (cpu.bus.NMI_interrupt() && !cpu.interrupt.has_value())
     {
         cpu.bus.push_stack8(cpu.status.val);
-        qInfo() << "NMI interrupt, should be rendering";
+        qInfo() << "NMI interrupt";
         // printf("%x \n", cpu.bus.get_PC());
         cpu.bus.push_stack16(cpu.bus.get_PC() - 1);
         // printf("the pc %x \n", cpu.bus.get_PC());
