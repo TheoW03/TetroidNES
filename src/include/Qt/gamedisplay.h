@@ -37,7 +37,9 @@ public:
 
 private:
     void on_update();
+    void process_cpu();
     void on_init();
+    QChronoTimer *cpu_timer;
     QChronoTimer *frame_timer;
     QTimer *frames_per_sec_timer;
     unsigned int frames_within_second = 0;

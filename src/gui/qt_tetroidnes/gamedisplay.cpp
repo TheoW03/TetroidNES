@@ -16,10 +16,12 @@ constexpr const unsigned int rgb_data_size = NES_RES_A * 4;
 constexpr const float ntsc_frame_rate = 60.0f;
 constexpr const float pal_frame_rate = 50.0f;
 
-const int emulator_clock_hz = 30000;
+constexpr const int emulator_clock_ns = 17000;
+
 GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
                                                              render_window(new sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)),
                                                              frame_timer(new QChronoTimer(this)),
+                                                             cpu_timer(new QChronoTimer(this)),
                                                              frames_per_sec_timer(new QTimer(this)),
                                                              m_rom_url(rom_url)
 {
@@ -43,10 +45,14 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     set_frame_time(settings.speed());
     frame_timer->setTimerType(Qt::PreciseTimer);
 
+    cpu_timer->setInterval(std::chrono::duration<int, std::nano>(emulator_clock_ns));
+    cpu_timer->setTimerType(Qt::PreciseTimer);
+
     frames_per_sec_timer->setInterval(1000);
     frames_per_sec_timer->setTimerType(Qt::PreciseTimer);
 
     // Events
+    connect(cpu_timer, &QChronoTimer::timeout, this, &GameDisplay::process_cpu);
     connect(frame_timer, &QChronoTimer::timeout, this, &GameDisplay::on_timeout);
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
     connect(&settings, &SettingsManager::speed_changed, this, &GameDisplay::set_frame_time);
@@ -56,6 +62,7 @@ void GameDisplay::on_init()
 {
     initializeInstructionMap();
     auto rom = load_rom(file_tobyte_vector(m_rom_url.toStdString()));
+    cpu_timer->start();
     frame_timer->start();
     frames_per_sec_timer->start();
     if (rom.has_value() == 0)
@@ -98,36 +105,36 @@ void GameDisplay::on_init()
     exe = Execute(cpu);
 }
 
-void GameDisplay::on_update()
+void GameDisplay::process_cpu()
 {
     // Process CPU
     // this->cpu = exe.run();
 
-    for (int i = 0; i < emulator_clock_hz; i++)
+    auto result = exe.run();
+
+    // printf("0x%x\n", result.bus.get_PC());
+
+    // this->cpu = result;
+    if (result.error_code == EXIT_FAILURE)
     {
-        auto result = exe.run();
+        // this->exe.log_Cpu();
+        qInfo() << "potential error with the cpu";
+        auto err_mess = QString::fromStdString(result.bus.check_error().value());
+        QMessageBox::critical(this,
+                                "TetroidNES - " + tr("Error"),
+                                (err_mess) + "-- at PC addr= 0x" + QString::fromStdString(num_to_hexa(result.bus.get_PC())));
+        err_code = EXIT_FAILURE;
+        close();
+        return;
 
-        // printf("0x%x\n", result.bus.get_PC());
-
-        // this->cpu = result;
-        if (result.error_code == EXIT_FAILURE)
-        {
-            // this->exe.log_Cpu();
-            qInfo() << "potential error with the cpu";
-            auto err_mess = QString::fromStdString(result.bus.check_error().value());
-            QMessageBox::critical(this,
-                                  "TetroidNES - " + tr("Error"),
-                                  (err_mess) + "-- at PC addr= 0x" + QString::fromStdString(num_to_hexa(result.bus.get_PC())));
-            err_code = EXIT_FAILURE;
-            close();
-            return;
-
-            // TODO: close error and log the CPU stats
-        }
-
-        //
-        // Generate next frame
+        // TODO: close error and log the CPU stats
     }
+
+}
+
+void GameDisplay::on_update()
+{
+
     auto rgb_data_vector = exe.render();
     uint8_t rgb_data[rgb_data_size];
     std::copy(rgb_data_vector.begin(), rgb_data_vector.end(), rgb_data);
@@ -136,7 +143,10 @@ void GameDisplay::on_update()
     render_window->clear();
     texture.update(rgb_data);
     render_window->draw(sprite);
+
     frames_within_second += 1;
+
+    frame_timer->start();
 }
 
 void GameDisplay::on_timeout()
