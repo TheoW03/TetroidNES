@@ -8,11 +8,6 @@
 #include <Qt/util.h>
 #include <QDebug>
 
-// #include "PPU.h"
-#define VBLANK_MS 17
-#define RESET_SCAN 40
-
-// #include <emulator
 PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
 {
 
@@ -132,6 +127,17 @@ std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte, std::
     }
     return system_palette[byte];
 }
+
+void PPU::get_chr_tile(uint16_t tile_idx, int banks, std::vector<uint8_t> &tile_list)
+{
+
+    // get chr tile
+    for (int i = banks + tile_idx * 16; i <= ((banks + tile_idx * 16) + 15); i++)
+    {
+
+        tile_list.push_back(chr_rom[i]);
+    }
+}
 std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> PPU::bg_pallete(size_t row, size_t column)
 {
     size_t attr_table = row / 4 * 8 + column / 4;
@@ -246,18 +252,46 @@ void PPU::log_ppu()
     std::bitset<8> ppu_mask(this->reg.ppumask.val);
 
     qInfo() << "===== PPU ON EXIT ===========";
+    qInfo() << "";
+
+    qInfo() << "===== OAM  ====";
+    qInfo() << "oam addr: " << num_to_hexa(this->oam_addr);
+    qInfo() << "=====PPU ADDR=====";
     qInfo() << "PPU addr:  " << num_to_hexa(this->reg.ppuAddr.val);
     qInfo() << "lo:  " << num_to_hexa(this->reg.ppuAddr.lo);
     qInfo() << "hi:  " << num_to_hexa(this->reg.ppuAddr.hi);
+    qInfo() << "";
+
     qInfo() << "===== PPU status ====";
     qInfo() << "VBlank: " << this->reg.ppuStatus.V;
+    qInfo() << "0_hit: " << this->reg.ppuStatus.S;
+    qInfo() << "overflow: " << this->reg.ppuStatus.O;
     qInfo() << "status: " << ppu_status.to_string();
-    qInfo() << "===== PPU ctrl ====";
-    qInfo() << "ctrl: " << ppu_ctrl.to_string();
-    qInfo() << "oam addr: " << num_to_hexa(this->oam_addr);
+    qInfo() << "";
 
+    qInfo() << "===== PPU ctrl ====";
+    qInfo() << "NMI enable (0: off, 1: on): " << this->reg.ppuCtrl.V;
+    qInfo() << "PPU master/slave select (0: read backdrop from EXT pins; 1: output color on EXT pins): " << this->reg.ppuCtrl.P;
+    qInfo() << "sprite size (0: 8x8, 1: 8x16): " << this->reg.ppuCtrl.H;
+    qInfo() << "Background patterntable (0: $0000; 1: $1000): " << this->reg.ppuCtrl.B;
+    qInfo() << "Sprite patterntable (0: $0000; 1: $1000): " << this->reg.ppuCtrl.S;
+    qInfo() << "increment (0: add 1 going across, 1: add 32 going down): " << this->reg.ppuCtrl.I;
+    std::bitset<2> name_table_address(this->reg.ppuCtrl.N);
+    qInfo() << "name table addreess: " << name_table_address.to_string();
+    qInfo() << "ctrl: " << ppu_ctrl.to_string();
+    qInfo() << "";
     qInfo() << "===== PPU mask ====";
+    qInfo() << "Emphasize blue: " << this->reg.ppumask.B;
+    qInfo() << "Emphasize green: " << this->reg.ppumask.G;
+    qInfo() << "Emphasize red: " << this->reg.ppumask.R;
+
+    qInfo() << "Enable sprite rendering: " << this->reg.ppumask.s;
+    qInfo() << "Enable background rendering: " << this->reg.ppumask.b;
+    qInfo() << "Show sprites in leftmost 8 pixels of screen: " << this->reg.ppumask.M;
+    qInfo() << "Show background in leftmost 8 pixels of screen " << this->reg.ppumask.m;
+    qInfo() << "grey scale (0: normal color, 1: grey scale): " << this->reg.ppumask.g;
     qInfo() << "ppu mask: " << ppu_mask.to_string();
+    qInfo() << "";
 }
 void PPU::write_PPU_address(uint8_t val)
 {
@@ -354,11 +388,14 @@ bool PPU::tick(uint8_t clock_cycles)
 {
     this->cycles += clock_cycles;
     // qInfo() << "ppu cycles: " << this->cycles;
+
     if (this->cycles >= 341)
     {
         this->scanline += 1;
         this->cycles -= 341;
         // qInfo() << "scanline: " << this->scanline;
+        // frame change
+
         if (scanline == 241)
         {
             reg.ppuStatus.V = 1;
@@ -372,6 +409,8 @@ bool PPU::tick(uint8_t clock_cycles)
                 return true;
             }
         }
+
+        // ppu reser. this is when it finishes clearing the screen with pizles
         if (scanline >= 262)
         {
 
@@ -412,6 +451,8 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
 std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
 {
     // int bank = this->reg.ppuCtrl.B;
+
+    // this creates a Vector of bytes to render to the screen.
     int banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
     std::vector<uint8_t> rgb_ds;
     rgb_ds.resize(std::get<0>(res) * std::get<1>(res) * 4);
@@ -425,11 +466,14 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
         auto bgpallete = this->bg_pallete(idx, idy);
         std::vector<uint8_t>
             tile_list;
-        for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
-        {
+        this->get_chr_tile(tile, banks, tile_list);
+        // std::vector<uint8_t> tile_list = this->get_chr_tile(tile, banks);
 
-            tile_list.push_back(chr_rom[i]);
-        }
+        // for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
+        // {
+
+        //     tile_list.push_back(chr_rom[i]);
+        // }
         for (int y = 0; y < 8; y++)
         {
             uint8_t upper = tile_list[y];
@@ -495,14 +539,17 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
         //  uint16_t tile = this->memory[ppu_idx];
         //  int idx = ppu_idx % 32;
         //  int idy = ppu_idx / 32;
-        std::vector<uint8_t>
-            tile_list;
         banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
-        for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
-        {
+        std::vector<uint8_t> tile_list;
+        this->get_chr_tile(tile, banks, tile_list);
+        // std::vector<uint8_t>
+        //     tile_list;
+        // banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
+        // for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
+        // {
 
-            tile_list.push_back(chr_rom[i]);
-        }
+        //     tile_list.push_back(chr_rom[i]);
+        // }
 
         for (int y = 0; y < 8; y++)
         {
@@ -544,14 +591,15 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
     }
     return rgb_ds;
 }
-
 uint8_t PPU::read_OAM_data()
 {
 
     return oam[oam_addr];
 }
+// oam data. set at 0x2004
 void PPU::write_OAM_data(uint8_t val)
 {
+    // cant access the OAM if the ctrl S bit is not set
     if (this->reg.ppumask.s == 0)
     {
         // printf("is 0 \n");
@@ -568,6 +616,7 @@ void PPU::write_OAM_dma(uint8_t val[256])
     // oam[oam_addr] = val;
     // oam_addr++;
 }
+
 void PPU::write_OAM_address(uint8_t val)
 {
     // std::cout << "write to oam addr" << std::endl;
