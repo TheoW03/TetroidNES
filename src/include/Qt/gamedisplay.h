@@ -11,6 +11,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
+#include <Qt/emulatorthread.h>
+
 #include <Emulator/Execute.h>
 #include <Emulator/Bus.h>
 
@@ -21,39 +23,25 @@ public:
     explicit GameDisplay(QWidget *parent = nullptr, QString rom_url = QString());
     void update_game_scale();
     void center_display();
-    std::chrono::nanoseconds frame_time() const;
-    void set_frame_time(const float speed);
     bool initialized() const;
-    inline static std::chrono::nanoseconds framerate_to_ns(const float frame_rate)
-    {
-        const auto ms = std::chrono::duration<double, std::milli>(1.0 / static_cast<double>(frame_rate) * 1000.);
-        const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(ms);
-
-        //qDebug() << "frame_rate:" << frame_rate << "ms:" << ms.count() << "ns:" << ns.count();
-        return ns;
-    }
-    int speed_percent(const float frame_rate) const;
     ~GameDisplay();
 
 private:
-    void on_update();
-    void process_cpu();
     void on_init();
-    QChronoTimer *cpu_timer;
-    QChronoTimer *frame_timer;
+
+    int frame_count = 0;
     QTimer *frames_per_sec_timer;
-    unsigned int frames_within_second = 0;
     QScopedPointer<sf::RenderWindow> render_window;
     bool m_initialized = false;
-    QString m_rom_url;
     sf::Texture texture;
     sf::Sprite sprite;
-    Execute exe;
+    EmulatorThread *emu_thread;
     int err_code;
 
 private slots:
-    void on_timeout();
     void on_framerate_timer_timeout();
+    void on_push_error(QString msg, int error_code);
+    void on_update(std::vector<uint8_t> rgb_data_vector);
 
 protected:
     void showEvent(QShowEvent *event) override;
