@@ -7,18 +7,24 @@
 
 EmulatorThread::EmulatorThread(QString rom_dest, QWidget *parent) : QThread{parent},
                                                                 cpu_timer(new QChronoTimer(this)),
+                                                                time_between_cycle_timer(new QChronoTimer(this)),
                                                                 frame_timer(new QChronoTimer(this)),
                                                                 rom_url(rom_dest)
 {
     SettingsManager &settings = SettingsManager::instance();
 
+    auto cpu_time_ns = std::chrono::nanoseconds(emulator_clock_ns);
+
     cpu_timer->setTimerType(Qt::PreciseTimer);
-    cpu_timer->setInterval(std::chrono::duration<int, std::nano>(emulator_clock_ns));
-    cpu_timer->moveToThread(this);
+    cpu_timer->setInterval(cpu_time_ns);
+    cpu_timer->setSingleShot(true);
+
+    time_between_cycle_timer->setInterval(std::chrono::nanoseconds(1));
+
+    qDebug() << "CPU clock cycle" << cpu_timer->interval().count() << "Nanoseconds";
 
     frame_timer->setTimerType(Qt::PreciseTimer);
     set_frame_time(settings.speed());
-    frame_timer->moveToThread(this);
 
     // Setup CPU
     initializeInstructionMap();
@@ -50,6 +56,7 @@ EmulatorThread::EmulatorThread(QString rom_dest, QWidget *parent) : QThread{pare
     connect(cpu_timer, &QChronoTimer::timeout, this, &EmulatorThread::process_cpu);
     connect(frame_timer, &QChronoTimer::timeout, this, &EmulatorThread::render_frame);
     connect(&settings, &SettingsManager::speed_changed, this, &EmulatorThread::set_frame_time);
+    connect(time_between_cycle_timer, &QChronoTimer::timeout, this, [this](){nanosecond_between_cycles_count += 1;});
 }
 
 void EmulatorThread::on_start()
@@ -57,7 +64,8 @@ void EmulatorThread::on_start()
     qInfo() << "Started game " << QUrl(rom_url).fileName();
 
     cpu_timer->start();
-    frame_timer->start();
+    time_between_cycle_timer->start();
+    //frame_timer->start();
 }
 
 void EmulatorThread::quit()
@@ -70,6 +78,7 @@ void EmulatorThread::quit()
 
 void EmulatorThread::render_frame()
 {
+    qDebug() << "Emitting draw_frame signal";
     std::vector<uint8_t> render = exe.render();
     emit draw_frame(render);
 }
@@ -78,6 +87,12 @@ void EmulatorThread::process_cpu()
 {
     // Process CPU
     // this->cpu = exe.run();
+
+    if (cpu_cycle_count >= 30000)
+    {
+        render_frame();
+        cpu_cycle_count = 0;
+    }
 
     auto result = exe.run();
 
@@ -98,6 +113,11 @@ void EmulatorThread::process_cpu()
 
         // TODO: close error and log the CPU stats
     }
+
+    cpu_cycle_count += 1;
+    qDebug() << "Nanoseconds from previous cycle:" << nanosecond_between_cycles_count;
+    nanosecond_between_cycles_count = 0;
+    cpu_timer->start();
     
 }
 

@@ -23,9 +23,12 @@ signals:
 
 private:
     QChronoTimer *cpu_timer;
+    QChronoTimer *time_between_cycle_timer;
     QChronoTimer *frame_timer;
     Execute exe;
     QString rom_url;
+    uint32_t cpu_cycle_count = 0;
+    long long nanosecond_between_cycles_count = 0;
 
 private slots:
     void set_frame_time(float speed);

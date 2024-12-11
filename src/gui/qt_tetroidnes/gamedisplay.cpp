@@ -14,6 +14,7 @@ constexpr const unsigned int rgb_data_size = NES_RES_A * 4;
 GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
                                                              render_window(new sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)),
                                                              frames_per_sec_timer(new QTimer(this)),
+                                                             time_between_draw_timer(new QTimer(this)),
                                                              emu_thread(new EmulatorThread(rom_url, this))
 {
     setAttribute(Qt::WA_PaintOnScreen);
@@ -34,10 +35,13 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     frames_per_sec_timer->setInterval(1000);
     frames_per_sec_timer->setTimerType(Qt::PreciseTimer);
 
+    time_between_draw_timer->setInterval(1);
+
     // Events
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
     connect(emu_thread, &EmulatorThread::draw_frame, this, &GameDisplay::on_update);
     connect(emu_thread, &EmulatorThread::push_error, this, &GameDisplay::on_push_error);
+    connect(time_between_draw_timer, &QTimer::timeout, this, [this](){time_between_draw_ms += 1;});
 }
 
 void GameDisplay::on_push_error(QString msg, int error_code)
@@ -55,8 +59,6 @@ void GameDisplay::on_push_error(QString msg, int error_code)
 
 void GameDisplay::on_init()
 {
-    
-    frames_per_sec_timer->start();
 
     if (!texture.create(NES_RES_L, NES_RES_W))
     {
@@ -68,6 +70,9 @@ void GameDisplay::on_init()
     update_game_scale();
 
     emu_thread->start();
+
+    frames_per_sec_timer->start();
+    time_between_draw_timer->start();
 }
 
 void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
@@ -83,6 +88,8 @@ void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
     render_window->display();
 
     frame_count += 1;
+    qDebug() << "Milliseconds from previous draw call:" << time_between_draw_ms;
+    time_between_draw_ms = 0;
 }
 
 void GameDisplay::on_framerate_timer_timeout()

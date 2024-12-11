@@ -31,12 +31,14 @@ private:
 
     int frame_count = 0;
     QTimer *frames_per_sec_timer;
+    QTimer *time_between_draw_timer;
     QScopedPointer<sf::RenderWindow> render_window;
     bool m_initialized = false;
     sf::Texture texture;
     sf::Sprite sprite;
     EmulatorThread *emu_thread;
     int err_code;
+    int time_between_draw_ms = 0;
 
 private slots:
     void on_framerate_timer_timeout();
