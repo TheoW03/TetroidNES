@@ -36,6 +36,7 @@ private:
 
 public:
     size_t clock_cycles;
+    size_t clock_cycles_instr;
     uint8_t stored_instructions[2];
     bool strobe;
     uint8_t joy_pad_byte1;
@@ -67,6 +68,7 @@ public:
     void set_stack_pointer(uint8_t value);
     void print_stack(); // prints true value of stack
     void tick();
+    int reset_clock();
     // void render(sf::Texture &texture, int bank, int tile);
     bool NMI_interrupt();
     void print_ppu();

@@ -6,10 +6,10 @@
 #include <Emulator/LoadRom.h>
 
 EmulatorThread::EmulatorThread(QString rom_dest, QWidget *parent) : QThread{parent},
-                                                                cpu_timer(new QChronoTimer(this)),
-                                                                time_between_cycle_timer(new QChronoTimer(this)),
-                                                                frame_timer(new QChronoTimer(this)),
-                                                                rom_url(rom_dest)
+                                                                    cpu_timer(new QChronoTimer(this)),
+                                                                    time_between_cycle_timer(new QChronoTimer(this)),
+                                                                    frame_timer(new QChronoTimer(this)),
+                                                                    rom_url(rom_dest)
 {
     SettingsManager &settings = SettingsManager::instance();
 
@@ -56,7 +56,8 @@ EmulatorThread::EmulatorThread(QString rom_dest, QWidget *parent) : QThread{pare
     connect(cpu_timer, &QChronoTimer::timeout, this, &EmulatorThread::process_cpu);
     connect(frame_timer, &QChronoTimer::timeout, this, &EmulatorThread::render_frame);
     connect(&settings, &SettingsManager::speed_changed, this, &EmulatorThread::set_frame_time);
-    connect(time_between_cycle_timer, &QChronoTimer::timeout, this, [this](){nanosecond_between_cycles_count += 1;});
+    connect(time_between_cycle_timer, &QChronoTimer::timeout, this, [this]()
+            { nanosecond_between_cycles_count += 1; });
 }
 
 void EmulatorThread::on_start()
@@ -65,7 +66,7 @@ void EmulatorThread::on_start()
 
     cpu_timer->start();
     time_between_cycle_timer->start();
-    //frame_timer->start();
+    // frame_timer->start();
 }
 
 void EmulatorThread::quit()
@@ -88,9 +89,10 @@ void EmulatorThread::process_cpu()
     // Process CPU
     // this->cpu = exe.run();
 
-    if (cpu_cycle_count >= 30000)
+    if (cpu_cycle_count >= 29782)
     {
         render_frame();
+        exe.reset_clock();
         cpu_cycle_count = 0;
     }
 
@@ -104,21 +106,20 @@ void EmulatorThread::process_cpu()
         // this->exe.log_Cpu();
         qInfo() << "potential error with the cpu";
 
-        auto err_mess = QString("%1-- at PC addr= 0x%2").arg(
-            QString::fromStdString(result.bus.check_error().value()),
-            QString::fromStdString(num_to_hexa(result.bus.get_PC()))
-        );
+        auto err_mess = QString("%1-- at PC addr= 0x%2").arg(QString::fromStdString(result.bus.check_error().value()), QString::fromStdString(num_to_hexa(result.bus.get_PC())));
 
         emit push_error(err_mess, EXIT_FAILURE);
 
         // TODO: close error and log the CPU stats
     }
+    int a = exe.reset_clock();
 
     cpu_cycle_count += 1;
-    qDebug() << "Nanoseconds from previous cycle:" << nanosecond_between_cycles_count;
+    printf("clock cycles: %d \n", a);
+    qDebug()
+        << "Nanoseconds from previous cycle:" << nanosecond_between_cycles_count;
     nanosecond_between_cycles_count = 0;
     cpu_timer->start();
-    
 }
 
 void EmulatorThread::set_frame_time(const float speed)

@@ -14,6 +14,7 @@ public:
     Execute();
     CPU run();
     std::vector<uint8_t> render();
+    int reset_clock();
     void log_Cpu();
 };
 #endif

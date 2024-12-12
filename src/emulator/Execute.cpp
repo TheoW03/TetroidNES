@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <Qt/util.h>
 #include <bitset>
+
 Execute::Execute(CPU cpu)
 {
     this->cpu = cpu;
@@ -45,8 +46,6 @@ CPU Execute::run()
         // qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
     }
     auto current_instr = cpu.bus.fetch_next();
-
-    // qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
     // printf("0x%x \n", current_instr);
     if (InstructionValid(current_instr))
     {
@@ -61,7 +60,6 @@ CPU Execute::run()
     qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
 
     qInfo() << "potential error with the cpu";
-    printf("print");
 
     cpu.error_code = EXIT_FAILURE;
     return cpu;
@@ -71,6 +69,10 @@ std::vector<uint8_t> Execute::render()
     return cpu.bus.render_texture({NES_RES_L, NES_RES_W});
 }
 
+int Execute::reset_clock()
+{
+    return cpu.bus.reset_clock();
+}
 void Execute::log_Cpu()
 {
     this->cpu.bus.log_ppu();

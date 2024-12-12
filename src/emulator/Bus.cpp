@@ -9,6 +9,7 @@
 #include <Emulator/Bus.h>
 #include <Emulator/InstructionMap.h>
 #include <Qt/util.h>
+
 #define TOP_STACK 0x1ff
 #define BOTTOM_STACK 0x100
 #define STACK_RESET 0xfd
@@ -39,6 +40,7 @@ Bus::Bus(Rom rom, uint16_t pc_start)
     this->apu = apu; // test
     this->stack_pointer = STACK_RESET;
     this->stack = BOTTOM_STACK + stack_pointer;
+    this->clock_cycles_instr = 0;
 }
 uint16_t Bus::get_PC()
 {
@@ -360,13 +362,19 @@ void Bus::tick()
 {
     this->clock_cycles++;
     this->ppu.tick(3);
+    this->clock_cycles_instr++;
     // std::cout << "clock cycles: " << this->clock_cycles << std::endl;
     // this->ppu.tick(this->clock_cycles * 3);
-    // qInfo() << "cpu clock cyles: " << clock_cycles;
     // qInfo() << "cpu clock cyles * 3: " << clock_cycles * 3;
 }
 
-// void Bus::render(sf::Texture &texture, int bank, int tile)
+int Bus::reset_clock()
+{
+    int ret = this->clock_cycles_instr;
+    this->clock_cycles_instr = 0;
+    printf("%d \n", ret);
+    return ret;
+} // void Bus::render(sf::Texture &texture, int bank, int tile)
 // {
 //     this->ppu.render(texture, bank, tile);
 // }

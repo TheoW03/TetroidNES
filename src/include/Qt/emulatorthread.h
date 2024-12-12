@@ -34,8 +34,8 @@ private slots:
     void set_frame_time(float speed);
     void process_cpu();
     void render_frame();
-    void on_start();
 
+    void on_start();
 };
 
 #endif // EMULATORTHREAD_H
