@@ -4,7 +4,7 @@
 
 #include <Emulator/InstructionMap.h>
 #include <Emulator/LoadRom.h>
-
+const size_t cpu_cycles_frame = 29782;
 EmulatorThread::EmulatorThread(QString rom_dest, QWidget *parent) : QThread{parent},
                                                                     cpu_timer(new QChronoTimer(this)),
                                                                     time_between_cycle_timer(new QChronoTimer(this)),
@@ -89,7 +89,7 @@ void EmulatorThread::process_cpu()
     // Process CPU
     // this->cpu = exe.run();
 
-    if (cpu_cycle_count >= 29782)
+    if (cpu_cycle_count >= cpu_cycles_frame)
     {
         render_frame();
         exe.reset_clock();
@@ -112,10 +112,9 @@ void EmulatorThread::process_cpu()
 
         // TODO: close error and log the CPU stats
     }
-    int a = exe.reset_clock();
+    int clock_cycle = exe.reset_clock();
 
-    cpu_cycle_count += 1;
-    printf("clock cycles: %d \n", a);
+    cpu_cycle_count += clock_cycle;
     qDebug()
         << "Nanoseconds from previous cycle:" << nanosecond_between_cycles_count;
     nanosecond_between_cycles_count = 0;

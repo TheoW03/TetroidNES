@@ -372,7 +372,6 @@ int Bus::reset_clock()
 {
     int ret = this->clock_cycles_instr;
     this->clock_cycles_instr = 0;
-    printf("%d \n", ret);
     return ret;
 } // void Bus::render(sf::Texture &texture, int bank, int tile)
 // {
