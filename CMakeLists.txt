@@ -168,6 +168,7 @@ if(NOT NEW_CONTENT STREQUAL FILE_CONTENT)
     file(WRITE src/gui/qt_tetroidnes/Main.cpp
         "${NEW_CONTENT}"
     )
+
 else()
     message(STATUS "Version line not found or is the same")
 endif()
