@@ -39,34 +39,34 @@ set(QT_TRANSLATION_FILES
 )
 set(EMULATOR_SOURCES 
     src/emulator/APU.cpp
-    src/emulator/AddressMode.cpp
-    src/emulator/BitOperations.cpp
+    src/emulator/Address_Mode.cpp
+    src/emulator/Bit_Operations.cpp
     src/emulator/Bus.cpp
     src/emulator/Computer.cpp
     src/emulator/Instructions.cpp
-    src/emulator/LoadRom.cpp
+    src/emulator/Load_Rom.cpp
     src/emulator/PPU.cpp
-    src/emulator/StatusRegister.cpp
-    src/emulator/NESError.cpp
-    src/emulator/InstructionMap.cpp
+    src/emulator/Status_Register.cpp
+    src/emulator/NES_Error.cpp
+    src/emulator/Instruction_Map.cpp
     src/emulator/Execute.cpp
 )
 
 set(QT_PROJECT_SOURCES
-    src/gui/qt_tetroidnes/main.cpp
-    src/gui/qt_tetroidnes/mainwindow.cpp
-	src/gui/qt_tetroidnes/menubar.cpp
-	src/gui/qt_tetroidnes/romlist.cpp
-	src/gui/qt_tetroidnes/filtercontrolframe.cpp
-	src/gui/qt_tetroidnes/flowlayout.cpp
-	src/gui/qt_tetroidnes/gamedisplay.cpp
-    src/gui/qt_tetroidnes/settingswidget.cpp
-    src/gui/qt_tetroidnes/settingsdisplay.cpp 
-    src/gui/qt_tetroidnes/log.cpp
-    src/gui/qt_tetroidnes/romdata.cpp
-    src/gui/qt_tetroidnes/romlistitem.cpp
-    src/gui/qt_tetroidnes/settingsmanager.cpp
-    src/gui/qt_tetroidnes/emulatorthread.cpp
+    src/gui/qt_tetroidnes/Main.cpp
+    src/gui/qt_tetroidnes/Main_Window.cpp
+	src/gui/qt_tetroidnes/Menu_Bar.cpp
+	src/gui/qt_tetroidnes/Rom_List.cpp
+	src/gui/qt_tetroidnes/Filter_Control_Frame.cpp
+	src/gui/qt_tetroidnes/Flow_Layout.cpp
+	src/gui/qt_tetroidnes/Game_Display.cpp
+    src/gui/qt_tetroidnes/Settings_Widget.cpp
+    src/gui/qt_tetroidnes/Settings_Display.cpp 
+    src/gui/qt_tetroidnes/Log.cpp
+    src/gui/qt_tetroidnes/Rom_Data.cpp
+    src/gui/qt_tetroidnes/Rom_List_Item.cpp
+    src/gui/qt_tetroidnes/Settings_Manager.cpp
+    src/gui/qt_tetroidnes/Emulator_Thread.cpp
 )
 
 set(QT_RCC_FILES
@@ -158,14 +158,14 @@ add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
 endif()
 
 # Update version macro if needed
-file(READ src/gui/qt_tetroidnes/main.cpp FILE_CONTENT)
+file(READ src/gui/qt_tetroidnes/Main.cpp FILE_CONTENT)
 string(REGEX MATCH "#define VERSION \"[^\"]*\"" FIRST_LINE "${FILE_CONTENT}")
 #message(STATUS "First line: ${FIRST_LINE} Replacing to: ${VERSION_DEF}")
 string(REPLACE "${FIRST_LINE}" "${VERSION_DEF}" NEW_CONTENT "${FILE_CONTENT}")
 #message(STATUS "New Content:\n${NEW_CONTENT}")
 
 if(NOT NEW_CONTENT STREQUAL FILE_CONTENT)
-    file(WRITE src/gui/qt_tetroidnes/main.cpp
+    file(WRITE src/gui/qt_tetroidnes/Main.cpp
         "${NEW_CONTENT}"
     )
 else()
