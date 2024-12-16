@@ -21,19 +21,43 @@ EmulatorThread::EmulatorThread(QString rom_dest, QWidget *parent) : QThread{pare
 
     time_between_cycle_timer->setInterval(std::chrono::nanoseconds(1));
 
-    qDebug() << "CPU clock cycle" << cpu_timer->interval().count() << "Nanoseconds";
+    //qDebug() << "CPU clock cycle" << cpu_timer->interval().count() << "Nanoseconds";
+    qDebug() << "Game Path:" << rom_dest;
 
     frame_timer->setTimerType(Qt::PreciseTimer);
     set_frame_time(settings.speed());
+
+    // Events
+    connect(this, &QThread::started, this, &EmulatorThread::on_start);
+    connect(cpu_timer, &QChronoTimer::timeout, this, &EmulatorThread::process_cpu);
+    connect(frame_timer, &QChronoTimer::timeout, this, &EmulatorThread::render_frame);
+    connect(&settings, &SettingsManager::speed_changed, this, &EmulatorThread::set_frame_time);
+    connect(time_between_cycle_timer, &QChronoTimer::timeout, this, [this]()
+            { nanosecond_between_cycles_count += 1; });
+}
+
+void EmulatorThread::init()
+{
+
+    if (m_initialized)
+    {
+        qWarning() << "Initialization function was already called, returning...";
+        return;
+    }
+
+    if (!QUrl(rom_url).isValid())
+    {
+        emit push_error(QString("Could not start game, ROM URL is invalid: %1").arg(rom_url), EXIT_FAILURE);
+        return;
+    }
 
     // Setup CPU
     initializeInstructionMap();
     auto rom = load_rom(file_tobyte_vector(rom_url.toStdString()));
     if (rom.has_value() == 0)
     {
-        qCritical() << "unrecongnized file format needs to be NES v1.0 format";
-
-        emit push_error("Wrong NES file format.", EXIT_FAILURE);
+        emit push_error("Unrecongnized file format, needs to be NES v1.0 format.", EXIT_FAILURE);
+        return;
     }
 
     Bus bus = Bus(rom.value(), NES_START);
@@ -51,13 +75,7 @@ EmulatorThread::EmulatorThread(QString rom_dest, QWidget *parent) : QThread{pare
 
     exe = Execute(cpu);
 
-    // Events
-    connect(this, &QThread::started, this, &EmulatorThread::on_start);
-    connect(cpu_timer, &QChronoTimer::timeout, this, &EmulatorThread::process_cpu);
-    connect(frame_timer, &QChronoTimer::timeout, this, &EmulatorThread::render_frame);
-    connect(&settings, &SettingsManager::speed_changed, this, &EmulatorThread::set_frame_time);
-    connect(time_between_cycle_timer, &QChronoTimer::timeout, this, [this]()
-            { nanosecond_between_cycles_count += 1; });
+    m_initialized = true;
 }
 
 void EmulatorThread::on_start()
@@ -65,8 +83,8 @@ void EmulatorThread::on_start()
     qInfo() << "Started game " << QUrl(rom_url).fileName();
 
     cpu_timer->start();
-    time_between_cycle_timer->start();
-    // frame_timer->start();
+    //time_between_cycle_timer->start();
+    //frame_timer->start();
 }
 
 void EmulatorThread::quit()
@@ -115,9 +133,10 @@ void EmulatorThread::process_cpu()
     int clock_cycle = exe.reset_clock();
 
     cpu_cycle_count += clock_cycle;
-    qDebug()
-        << "Nanoseconds from previous cycle:" << nanosecond_between_cycles_count;
+    //qDebug()
+    //    << "Nanoseconds from previous cycle:" << nanosecond_between_cycles_count;
     nanosecond_between_cycles_count = 0;
+    //cpu_timer->setInterval(std::chrono::nanoseconds(clock_cycle*emulator_clock_ns));
     cpu_timer->start();
 }
 

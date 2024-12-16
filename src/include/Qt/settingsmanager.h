@@ -41,8 +41,13 @@ public:
     Qt::SortOrder ascending_order() const;
     void set_ascending_order(const Qt::SortOrder sort_order);
 
+    QStringList get_recent_roms();
+    void append_recent_roms(QString dir);
+    void set_recent_roms(QStringList dirs);
+
 signals:
     void speed_changed(float speed);
+    void recent_roms_changed(QStringList dirs);
 
 private:
     SettingsManager();

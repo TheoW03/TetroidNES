@@ -5,6 +5,9 @@ constexpr const auto key_min_game_on_start = "minimize_gui_on_game_start";
 constexpr const auto key_speed = "emu_speed";
 constexpr const auto key_sort_mode = "QOL/sort_mode";
 constexpr const auto key_ascend_order = "QOL/ascending_order";
+constexpr const auto key_recent_roms = "QOL/recent_roms";
+
+constexpr const uint max_recent_roms = 10;
 
 SettingsManager::SettingsManager()
 {
@@ -77,4 +80,30 @@ Qt::SortOrder SettingsManager::ascending_order() const
 void SettingsManager::set_ascending_order(const Qt::SortOrder sort_order)
 {
     m_settings.setValue(key_ascend_order, sort_order);
+}
+
+void SettingsManager::set_recent_roms(QStringList dirs)
+{
+    if (dirs.length() > max_recent_roms)
+    {
+        dirs.resize(max_recent_roms);
+    }
+
+    dirs.removeDuplicates();
+
+    m_settings.setValue(key_recent_roms, dirs);
+    emit recent_roms_changed(dirs);
+}
+
+void SettingsManager::append_recent_roms(QString dir)
+{
+    auto recent_roms = get_recent_roms();
+    recent_roms.append(dir);
+
+    set_recent_roms(recent_roms);
+}
+
+QStringList SettingsManager::get_recent_roms()
+{
+    return m_settings.value(key_recent_roms).toStringList();
 }

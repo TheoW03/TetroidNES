@@ -46,6 +46,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
 
 void GameDisplay::on_push_error(QString msg, int error_code)
 {
+    emu_thread->quit(); // Prevents the whole program from possibly crashing, no thread pause implimentation yet
     QMessageBox::critical(
         this,
         "TetroidNES - " + tr("Error"),
@@ -53,6 +54,8 @@ void GameDisplay::on_push_error(QString msg, int error_code)
     );
 
     err_code = error_code;
+
+    qCritical() << msg;
 
     close();
 }
@@ -104,6 +107,7 @@ void GameDisplay::showEvent(QShowEvent *event)
     // Initial initialization of the SFML widget
     if (!m_initialized)
     {
+        emu_thread->init();
         // Create an SFML window for rendering with the id of the window in which the drawing will be done
         render_window->create(sf::WindowHandle(winId()));
         // Initializing drawing objects

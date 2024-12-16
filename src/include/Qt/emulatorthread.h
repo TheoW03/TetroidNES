@@ -5,6 +5,8 @@
 
 #include <QThread>
 #include <QChronoTimer>
+#include <QMutex>
+#include <QWaitCondition>
 
 #include <Emulator/Execute.h>
 
@@ -16,6 +18,7 @@ public:
     explicit EmulatorThread(QString rom, QWidget *parent = nullptr);
 
     void quit();
+    void init();
 
 signals:
     void draw_frame(std::vector<uint8_t> vector);
@@ -29,6 +32,7 @@ private:
     QString rom_url;
     uint32_t cpu_cycle_count = 0;
     long long nanosecond_between_cycles_count = 0;
+    bool m_initialized = false;
 
 private slots:
     void set_frame_time(float speed);

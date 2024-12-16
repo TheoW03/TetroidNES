@@ -2,6 +2,7 @@
 
 #include <Qt/util.h>
 #include <Qt/romlistitem.h>
+#include <Qt/settingsmanager.h>
 
 RomListItem::RomListItem(std::optional<shptr_romdata> data, QWidget *parent) : QWidget{parent}
 {
@@ -100,5 +101,6 @@ void RomListItem::play_button_clicked()
 
     qInfo() << "Starting" << title->text();
     qDebug() << "Path:" << path;
+    SettingsManager::instance().append_recent_roms(path.toString());
     start_game(path.toString());
 }
