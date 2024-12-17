@@ -5,7 +5,9 @@
 
 #include <QWidget>
 #include <QTimer>
+#include <QMutex>
 #include <QChronoTimer>
+#include <QSharedPointer>
 #include <QCloseEvent>
 
 #include <SFML/Graphics.hpp>
@@ -36,12 +38,15 @@ private:
     bool m_initialized = false;
     sf::Texture texture;
     sf::Sprite sprite;
-    EmulatorThread *emu_thread;
+    QScopedPointer<EmulatorThread> emu_thread;
+    QSharedPointer<EmulatorWorker> emu_worker;
     int err_code;
     int time_between_draw_ms = 0;
+    QSharedPointer<QMutex> mutex;
 
 private slots:
     void on_framerate_timer_timeout();
+    void on_pause_toggle_key_triggered();
     void on_push_error(QString msg, int error_code);
     void on_update(std::vector<uint8_t> rgb_data_vector);
 

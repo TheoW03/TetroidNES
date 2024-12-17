@@ -67,6 +67,7 @@ set(QT_PROJECT_SOURCES
     src/gui/qt_tetroidnes/Rom_List_Item.cpp
     src/gui/qt_tetroidnes/Settings_Manager.cpp
     src/gui/qt_tetroidnes/Emulator_Thread.cpp
+    src/gui/qt_tetroidnes/Emulator_Worker.cpp
 )
 
 set(QT_RCC_FILES
@@ -88,6 +89,7 @@ set(QT_HEADERS
     src/include/Qt/romlistitem.h
     src/include/Qt/settingsmanager.h
     src/include/Qt/emulatorthread.h
+    src/include/Qt/Emulator_Worker.h
 )
 
 set(QT_UI_FILES

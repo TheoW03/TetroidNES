@@ -3,6 +3,7 @@
 #ifndef UTILEMULATOR_H
 #define UTILEMULATOR_H
 
+// TODO: Program is hard-coded to work only for NTSC, make a way to use both
 constexpr const float ntsc_frame_rate = 60.0f;
 constexpr const float pal_frame_rate = 50.0f;
 
