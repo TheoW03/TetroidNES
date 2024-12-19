@@ -1,3 +1,4 @@
+#define VERSION "1.0.0"
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
