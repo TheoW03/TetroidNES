@@ -16,5 +16,7 @@ public:
     std::vector<uint8_t> render();
     int reset_clock();
     void log_Cpu();
+    void joypad1(Controller button, int isPressed);
+    void joypad2(Controller button, int isPressed);
 };
 #endif

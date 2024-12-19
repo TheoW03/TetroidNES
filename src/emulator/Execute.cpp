@@ -99,3 +99,13 @@ void Execute::log_Cpu()
     qInfo() << "clock cycles: " << this->cpu.bus.clock_cycles;
     qInfo() << "";
 }
+
+void Execute::joypad2(Controller button, int isPressed)
+{
+
+    cpu.bus.write_controller1(button, isPressed);
+}
+void Execute::joypad1(Controller button, int isPressed)
+{
+    cpu.bus.write_controller1(button, isPressed);
+}

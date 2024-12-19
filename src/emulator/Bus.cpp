@@ -141,11 +141,11 @@ uint8_t Bus::read_8bit(uint16_t address)
     }
     else if (address == 0x4016)
     {
-        return read_joypad();
+        return read_joypad1();
     }
     else if (address == 0x4017)
     {
-        return joy_pad_byte2;
+        return read_joypad2();
     }
     else if (address >= 0x8000 && address <= 0xFFFF)
     {
@@ -225,7 +225,8 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     else if (address == 0x4016)
     {
         strobe = (bool)value;
-        button_idx = 0;
+        joypad1_idx = 0;
+        joypad2_idx = 0;
         // std::cout <<
         // joy_pad_byte1 = 0;
         // joy_pad_byte1 = value & 0b00000001;
@@ -383,16 +384,30 @@ bool Bus::NMI_interrupt()
     return this->ppu.NMI_interrupt(this->clock_cycles * 3);
 }
 
-uint8_t Bus::read_joypad()
+uint8_t Bus::read_joypad1()
 {
-    if (button_idx > 7)
+    if (joypad1_idx > 7)
     {
         return 1;
     }
-    uint8_t button = (joy_pad_byte1 << button_idx);
+    uint8_t button = (joy_pad_byte1 << joypad1_idx);
     if (strobe)
     {
-        button_idx++;
+        joypad1_idx++;
+    }
+    return button;
+}
+
+uint8_t Bus::read_joypad2()
+{
+    if (joypad2_idx > 7)
+    {
+        return 1;
+    }
+    uint8_t button = (joy_pad_byte2 << joypad2_idx);
+    if (strobe)
+    {
+        joypad2_idx++;
     }
     return button;
 }
@@ -411,6 +426,13 @@ void Bus::write_controller1(Controller value, int isPressed)
         joy_pad_byte1 &= ~((uint8_t)(value));
 }
 
+void Bus::write_controller2(Controller value, int isPressed)
+{
+    if (isPressed == 1)
+        joy_pad_byte2 |= (uint8_t)value;
+    else if (isPressed == 0)
+        joy_pad_byte2 &= ~((uint8_t)(value));
+}
 std::vector<uint8_t> Bus::render_texture(std::tuple<size_t, size_t> res)
 {
     return this->ppu.render_texture(res);

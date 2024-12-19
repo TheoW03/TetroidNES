@@ -31,7 +31,9 @@ private:
     uint16_t program_counter;
     uint8_t stack_pointer;
     uint16_t stack;
-    uint8_t button_idx;
+    uint8_t joypad1_idx;
+    uint8_t joypad2_idx;
+
     std::optional<std::string> err_string;
 
 public:
@@ -72,8 +74,11 @@ public:
     // void render(sf::Texture &texture, int bank, int tile);
     bool NMI_interrupt();
     void print_ppu();
-    uint8_t read_joypad();
+    uint8_t read_joypad1();
+    uint8_t read_joypad2();
     void write_controller1(Controller value, int isPressed);
+    void write_controller2(Controller value, int isPressed);
+
     std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
     std::optional<std::string> check_error();
     void log_ppu();
