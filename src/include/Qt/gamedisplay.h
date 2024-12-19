@@ -9,14 +9,15 @@
 #include <QChronoTimer>
 #include <QSharedPointer>
 #include <QCloseEvent>
+#include <QThread>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
-#include <Qt/emulatorthread.h>
-
 #include <Emulator/Execute.h>
 #include <Emulator/Bus.h>
+
+#include <Qt/Emulator_Worker.h>
 
 class GameDisplay : public QWidget
 {
@@ -25,6 +26,8 @@ public:
     explicit GameDisplay(QWidget *parent = nullptr, QString rom_url = QString());
     void update_game_scale();
     void center_display();
+    bool is_paused() const;
+    void pause_game();
     bool initialized() const;
     ~GameDisplay();
 
@@ -38,11 +41,12 @@ private:
     bool m_initialized = false;
     sf::Texture texture;
     sf::Sprite sprite;
-    QScopedPointer<EmulatorThread> emu_thread;
-    QSharedPointer<EmulatorWorker> emu_worker;
+    QThread emu_thread;
+    EmulatorWorker *emu_worker;
     int err_code;
     int time_between_draw_ms = 0;
-    QSharedPointer<QMutex> mutex;
+    bool m_paused;
+    QMutex mutex;
 
 private slots:
     void on_framerate_timer_timeout();
