@@ -30,9 +30,13 @@ public:
     void pause_game();
     bool initialized() const;
     ~GameDisplay();
+public slots:
+    void on_push_error(QString msg, int error_code);
+    void on_update(std::vector<uint8_t> rgb_data_vector);
 
 private:
     void on_init();
+    void close_game();
 
     int frame_count = 0;
     QTimer *frames_per_sec_timer;
@@ -51,8 +55,6 @@ private:
 private slots:
     void on_framerate_timer_timeout();
     void on_pause_toggle_key_triggered();
-    void on_push_error(QString msg, int error_code);
-    void on_update(std::vector<uint8_t> rgb_data_vector);
 
 protected:
     void showEvent(QShowEvent *event) override;

@@ -5,6 +5,7 @@
 
 #include <Emulator/InstructionMap.h>
 #include <Emulator/LoadRom.h>
+#include "Emulator_Worker.h"
 
 const size_t cpu_cycles_frame = 29782;
 EmulatorWorker::EmulatorWorker(QString rom_dest, QMutex &mutex, bool &paused, QWidget *parent) : QObject{parent},
@@ -12,9 +13,15 @@ EmulatorWorker::EmulatorWorker(QString rom_dest, QMutex &mutex, bool &paused, QW
                                                                                                 m_initialized(false),
                                                                                                 cpu_cycle_count(0),
                                                                                                 nanosecond_between_cycles_count(0),
+                                                                                                m_is_running(false),
                                                                                                 mutex_ptr(&mutex),
                                                                                                 paused_ptr(&paused)
 {
+}
+
+void EmulatorWorker::shutdown_game()
+{
+    m_is_running = false;
 }
 
 void EmulatorWorker::init()
@@ -100,15 +107,16 @@ void EmulatorWorker::on_start_threaded()
     //time_between_cycle_timer->start();
     //frame_timer->start();
 
-    forever{
+    m_is_running = true;
+    while(m_is_running){
         mutex_ptr->lock();
         if(paused_ptr)
         {
             *paused_ptr = false;
         }
         mutex_ptr->unlock();
-        process_cpu();
-        current_thread->sleep(std::chrono::nanoseconds(emulator_clock_ns));
+        const int clock_cycles = process_cpu();
+        current_thread->sleep(std::chrono::nanoseconds(emulator_clock_ns * clock_cycles));
     }
 }
 
@@ -119,7 +127,12 @@ void EmulatorWorker::render_frame()
     emit draw_frame(render);
 }
 
-void EmulatorWorker::process_cpu()
+bool EmulatorWorker::is_running() const
+{
+    return m_is_running;
+}
+
+int EmulatorWorker::process_cpu()
 {
     // Process CPU
     // this->cpu = exe.run();
@@ -155,6 +168,8 @@ void EmulatorWorker::process_cpu()
     nanosecond_between_cycles_count = 0;
     //cpu_timer->setInterval(std::chrono::nanoseconds(clock_cycle*emulator_clock_ns));
     //cpu_timer->start();
+
+    return clock_cycle;
 }
 
 void EmulatorWorker::set_frame_time(const float speed)

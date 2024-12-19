@@ -155,13 +155,21 @@ void GameDisplay::showEvent(QShowEvent *event)
     }
 }
 
+void GameDisplay::close_game()
+{
+    emu_worker->shutdown_game();
+    render_window->close();
+    emu_thread.quit();
+    emu_thread.wait();
+}
+
 void GameDisplay::closeEvent(QCloseEvent *event)
 {
 
     if (!m_initialized)
     {
-        render_window->close();
-        emu_thread.quit();
+        
+        close_game();
 
         event->accept();
         return;
@@ -188,9 +196,8 @@ void GameDisplay::closeEvent(QCloseEvent *event)
         {
             qInfo() << "CPU exited unsuccessfully";
         }
-        render_window->close();
+        close_game();
         event->accept();
-        emu_thread.quit();
     }
 }
 
