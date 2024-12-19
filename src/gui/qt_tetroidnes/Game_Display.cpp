@@ -22,6 +22,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_NoSystemBackground);
+    this->err_code = 0;
     setAttribute(Qt::WA_DeleteOnClose);
 
     setWindowFlags(Qt::Window);
@@ -51,7 +52,8 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     connect(emu_worker, &EmulatorWorker::push_error, this, &GameDisplay::on_push_error);
     connect(&emu_thread, &QThread::started, emu_worker, &EmulatorWorker::on_start_threaded);
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
-    connect(time_between_draw_timer, &QTimer::timeout, this, [this](){time_between_draw_ms += 1;});
+    connect(time_between_draw_timer, &QTimer::timeout, this, [this]()
+            { time_between_draw_ms += 1; });
     qDebug() << "Finished connecting events!";
 }
 
@@ -85,14 +87,13 @@ void GameDisplay::on_push_error(QString msg, int error_code)
     QMessageBox::critical(
         this,
         "TetroidNES - " + tr("Error"),
-        msg
-    );
+        msg);
     mutex.unlock();
 
-    err_code = error_code;
+    this->err_code = error_code;
 
     qCritical() << msg;
-    
+
     close();
 }
 
@@ -168,7 +169,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
 
     if (!m_initialized)
     {
-        
+
         close_game();
 
         event->accept();
@@ -187,6 +188,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
     }
     else
     {
+        close_game();
 
         if (err_code == EXIT_SUCCESS)
         {
@@ -196,7 +198,6 @@ void GameDisplay::closeEvent(QCloseEvent *event)
         {
             qInfo() << "CPU exited unsuccessfully";
         }
-        close_game();
         event->accept();
     }
 }
