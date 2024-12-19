@@ -105,5 +105,5 @@ void SettingsManager::append_recent_roms(QString dir)
 
 QStringList SettingsManager::get_recent_roms()
 {
-    return m_settings.value(key_recent_roms).toStringList();
+    return m_settings.value(key_recent_roms, QStringList()).toStringList();
 }

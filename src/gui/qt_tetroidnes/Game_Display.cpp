@@ -1,21 +1,23 @@
-#include <gamedisplay.h>
+#include <Qt/gamedisplay.h>
 
 #include <QCoreApplication>
 #include <QtLogging>
 #include <QUrl>
 #include <QMessageBox>
+#include <QMutexLocker>
 
+#include <Qt/Emulator_Worker.h>
 #include <Qt/util.h>
 #include <Qt/utilemulator.h>
 
 constexpr const unsigned int rgb_data_size = NES_RES_A * 4;
-// TODO: Class is hard-coded to work only for NTSC, make a way to use both
 
 GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
                                                              render_window(new sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)),
                                                              frames_per_sec_timer(new QTimer(this)),
                                                              time_between_draw_timer(new QTimer(this)),
-                                                             emu_thread(new EmulatorThread(rom_url, this))
+                                                             m_paused(false),
+                                                             emu_worker(new EmulatorWorker(rom_url, mutex, m_paused))
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -37,42 +39,79 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
 
     time_between_draw_timer->setInterval(1);
 
+    QAction *pause_toggle_key = new QAction(this);
+    pause_toggle_key->setShortcut(QKeySequence(Qt::Key_G));
+
+    emu_worker->moveToThread(&emu_thread);
+
+    qDebug() << "Connecting events...";
     // Events
+    connect(pause_toggle_key, &QAction::triggered, this, &GameDisplay::on_pause_toggle_key_triggered);
+    connect(emu_worker, &EmulatorWorker::draw_frame, this, &GameDisplay::on_update);
+    connect(emu_worker, &EmulatorWorker::push_error, this, &GameDisplay::on_push_error);
+    connect(&emu_thread, &QThread::started, emu_worker, &EmulatorWorker::on_start_threaded);
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
-    connect(emu_thread, &EmulatorThread::draw_frame, this, &GameDisplay::on_update);
-    connect(emu_thread, &EmulatorThread::push_error, this, &GameDisplay::on_push_error);
     connect(time_between_draw_timer, &QTimer::timeout, this, [this](){time_between_draw_ms += 1;});
+    qDebug() << "Finished connecting events!";
+}
+
+void GameDisplay::on_pause_toggle_key_triggered()
+{
+    if (is_paused())
+    {
+        mutex.lock();
+        pause_game();
+    }
+    else
+    {
+        mutex.unlock();
+    }
+}
+
+bool GameDisplay::is_paused() const
+{
+    return m_paused;
+}
+
+void GameDisplay::pause_game()
+{
+    m_paused = true;
 }
 
 void GameDisplay::on_push_error(QString msg, int error_code)
 {
-    emu_thread->quit(); // Prevents the whole program from possibly crashing, no thread pause implimentation yet
+    mutex.lock();
+    pause_game();
     QMessageBox::critical(
         this,
         "TetroidNES - " + tr("Error"),
         msg
     );
+    mutex.unlock();
 
     err_code = error_code;
 
     qCritical() << msg;
-
+    
     close();
 }
 
 void GameDisplay::on_init()
 {
+    qInfo() << "Initializing game window...";
 
     if (!texture.create(NES_RES_L, NES_RES_W))
     {
-        qCritical() << "Texture failed to be created!";
+        on_push_error("Texture failed to be created!", EXIT_FAILURE);
+        return;
     }
 
     sprite.setOrigin(sprite.getTextureRect().width / 2, sprite.getTextureRect().height / 2);
     sprite.setTexture(texture);
     update_game_scale();
 
-    emu_thread->start();
+    qInfo() << "About to start thread...";
+    emu_thread.start();
 
     frames_per_sec_timer->start();
     time_between_draw_timer->start();
@@ -107,7 +146,6 @@ void GameDisplay::showEvent(QShowEvent *event)
     // Initial initialization of the SFML widget
     if (!m_initialized)
     {
-        emu_thread->init();
         // Create an SFML window for rendering with the id of the window in which the drawing will be done
         render_window->create(sf::WindowHandle(winId()));
         // Initializing drawing objects
@@ -123,7 +161,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
     if (!m_initialized)
     {
         render_window->close();
-        emu_thread->quit();
+        emu_thread.quit();
 
         event->accept();
         return;
@@ -152,7 +190,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
         }
         render_window->close();
         event->accept();
-        emu_thread->quit();
+        emu_thread.quit();
     }
 }
 
