@@ -1,4 +1,5 @@
 #include <Qt/Emulator_Worker.h>
+
 #include <Qt/settingsmanager.h>
 #include <Qt/utilemulator.h>
 
@@ -6,36 +7,14 @@
 #include <Emulator/LoadRom.h>
 
 const size_t cpu_cycles_frame = 29782;
-EmulatorWorker::EmulatorWorker(QString rom_dest, QWidget *parent) : QObject{parent},
-                                                                    cpu_timer(new QChronoTimer(this)),
-                                                                    time_between_cycle_timer(new QChronoTimer(this)),
-                                                                    frame_timer(new QChronoTimer(this)),
-                                                                    rom_url(rom_dest)
+EmulatorWorker::EmulatorWorker(QString rom_dest, QMutex &mutex, bool &paused, QWidget *parent) : QObject{parent},
+                                                                                                rom_url(rom_dest),
+                                                                                                m_initialized(false),
+                                                                                                cpu_cycle_count(0),
+                                                                                                nanosecond_between_cycles_count(0),
+                                                                                                mutex_ptr(&mutex),
+                                                                                                paused_ptr(&paused)
 {
-    SettingsManager &settings = SettingsManager::instance();
-
-    auto cpu_time_ns = std::chrono::nanoseconds(emulator_clock_ns);
-
-    cpu_timer->setTimerType(Qt::PreciseTimer);
-    cpu_timer->setInterval(cpu_time_ns);
-    cpu_timer->setSingleShot(true);
-
-    time_between_cycle_timer->setInterval(std::chrono::nanoseconds(1));
-
-    //qDebug() << "CPU clock cycle" << cpu_timer->interval().count() << "Nanoseconds";
-    qDebug() << "Game Path:" << rom_dest;
-
-    frame_timer->setTimerType(Qt::PreciseTimer);
-    set_frame_time(settings.speed());
-
-    qDebug() << "Connecting events!";
-    // Events
-    connect(cpu_timer, &QChronoTimer::timeout, this, &EmulatorWorker::process_cpu);
-    connect(frame_timer, &QChronoTimer::timeout, this, &EmulatorWorker::render_frame);
-    connect(&settings, &SettingsManager::speed_changed, this, &EmulatorWorker::set_frame_time);
-    connect(time_between_cycle_timer, &QChronoTimer::timeout, this,
-            [this](){ nanosecond_between_cycles_count += 1; });
-    qDebug() << "Finished connecting events!";
 }
 
 void EmulatorWorker::init()
@@ -53,6 +32,37 @@ void EmulatorWorker::init()
         return;
     }
 
+    // Constructor Code
+    cpu_timer = new QChronoTimer(this);
+    time_between_cycle_timer = new QChronoTimer(this);
+    frame_timer = new QChronoTimer(this);
+
+    SettingsManager &settings = SettingsManager::instance();
+
+    auto cpu_time_ns = std::chrono::nanoseconds(emulator_clock_ns);
+
+    cpu_timer->setTimerType(Qt::PreciseTimer);
+    cpu_timer->setInterval(cpu_time_ns);
+    cpu_timer->setSingleShot(true);
+
+    time_between_cycle_timer->setInterval(std::chrono::nanoseconds(1));
+
+    //qDebug() << "CPU clock cycle" << cpu_timer->interval().count() << "Nanoseconds";
+    qDebug() << "Game Path:" << rom_url;
+
+    frame_timer->setTimerType(Qt::PreciseTimer);
+    set_frame_time(settings.speed());
+
+    qDebug() << "Connecting events!";
+    // Events
+    connect(cpu_timer, &QChronoTimer::timeout, this, &EmulatorWorker::process_cpu);
+    connect(frame_timer, &QChronoTimer::timeout, this, &EmulatorWorker::render_frame);
+    connect(&settings, &SettingsManager::speed_changed, this, &EmulatorWorker::set_frame_time);
+    connect(time_between_cycle_timer, &QChronoTimer::timeout, this,
+            [this](){ nanosecond_between_cycles_count += 1; });
+    connect(QThread::currentThread(), &QThread::finished, this, &EmulatorWorker::deleteLater);
+    qDebug() << "Finished connecting events!";
+
     // Setup CPU
     initializeInstructionMap();
     auto rom = load_rom(file_tobyte_vector(rom_url.toStdString()));
@@ -65,7 +75,7 @@ void EmulatorWorker::init()
     Bus bus = Bus(rom.value(), NES_START);
     CPU cpu = CPU();
     bus.fill(bus.read_16bit(0xfffc));
-    printf("0x%x\n", bus.get_PC());
+    //printf("0x%x\n", bus.get_PC());
 
     cpu.bus = bus;
     cpu.A_Reg = 0;
@@ -80,14 +90,26 @@ void EmulatorWorker::init()
     m_initialized = true;
 }
 
-void EmulatorWorker::on_start()
+void EmulatorWorker::on_start_threaded()
 {
-    qInfo() << "Started game " << QUrl(rom_url).fileName();
+    QThread *current_thread = QThread::currentThread();
+    qInfo() << "Started game on a new thread:" << QUrl(rom_url).fileName();
     init();
 
     //cpu_timer->start();
     //time_between_cycle_timer->start();
     //frame_timer->start();
+
+    forever{
+        mutex_ptr->lock();
+        if(paused_ptr)
+        {
+            *paused_ptr = false;
+        }
+        mutex_ptr->unlock();
+        process_cpu();
+        current_thread->sleep(std::chrono::nanoseconds(emulator_clock_ns));
+    }
 }
 
 void EmulatorWorker::render_frame()

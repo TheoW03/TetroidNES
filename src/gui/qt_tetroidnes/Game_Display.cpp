@@ -4,6 +4,7 @@
 #include <QtLogging>
 #include <QUrl>
 #include <QMessageBox>
+#include <QMutexLocker>
 
 #include <Qt/Emulator_Worker.h>
 #include <Qt/util.h>
@@ -15,8 +16,8 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
                                                              render_window(new sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)),
                                                              frames_per_sec_timer(new QTimer(this)),
                                                              time_between_draw_timer(new QTimer(this)),
-                                                             emu_worker(new EmulatorWorker(rom_url)),
-                                                             emu_thread(new EmulatorThread(mutex, emu_worker, this))
+                                                             m_paused(false),
+                                                             emu_worker(new EmulatorWorker(rom_url, mutex, m_paused))
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -38,17 +39,17 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
 
     time_between_draw_timer->setInterval(1);
 
-    auto *worker = emu_worker.get();
-    auto *thread = emu_thread.get();
-
     QAction *pause_toggle_key = new QAction(this);
     pause_toggle_key->setShortcut(QKeySequence(Qt::Key_G));
+
+    emu_worker->moveToThread(&emu_thread);
 
     qDebug() << "Connecting events...";
     // Events
     connect(pause_toggle_key, &QAction::triggered, this, &GameDisplay::on_pause_toggle_key_triggered);
-    connect(worker, &EmulatorWorker::draw_frame, this, &GameDisplay::on_update);
-    connect(worker, &EmulatorWorker::push_error, this, &GameDisplay::on_push_error);
+    connect(emu_worker, &EmulatorWorker::draw_frame, this, &GameDisplay::on_update);
+    connect(emu_worker, &EmulatorWorker::push_error, this, &GameDisplay::on_push_error);
+    connect(&emu_thread, &QThread::started, emu_worker, &EmulatorWorker::on_start_threaded);
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
     connect(time_between_draw_timer, &QTimer::timeout, this, [this](){time_between_draw_ms += 1;});
     qDebug() << "Finished connecting events!";
@@ -56,28 +57,37 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
 
 void GameDisplay::on_pause_toggle_key_triggered()
 {
-    mutex->lock();
-    if (emu_thread->get_paused())
+    if (is_paused())
     {
-        emu_thread->pause();
+        mutex.lock();
+        pause_game();
     }
     else
     {
-        emu_thread->resume();
+        mutex.unlock();
     }
-    mutex->unlock();
+}
+
+bool GameDisplay::is_paused() const
+{
+    return m_paused;
+}
+
+void GameDisplay::pause_game()
+{
+    m_paused = true;
 }
 
 void GameDisplay::on_push_error(QString msg, int error_code)
 {
-    mutex->lock();
-    emu_thread->pause(); // Prevents the whole program from possibly crashing, no thread pause implimentation yet
+    mutex.lock();
+    pause_game();
     QMessageBox::critical(
         this,
         "TetroidNES - " + tr("Error"),
         msg
     );
-    mutex->unlock();
+    mutex.unlock();
 
     err_code = error_code;
 
@@ -101,9 +111,7 @@ void GameDisplay::on_init()
     update_game_scale();
 
     qInfo() << "About to start thread...";
-    qDebug() << "Moving worker to thread...";
-    emu_worker.get()->moveToThread(emu_thread.get());
-    emu_thread->start(QThread::HighPriority);
+    emu_thread.start();
 
     frames_per_sec_timer->start();
     time_between_draw_timer->start();
@@ -153,7 +161,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
     if (!m_initialized)
     {
         render_window->close();
-        emu_thread->quit();
+        emu_thread.quit();
 
         event->accept();
         return;
@@ -182,7 +190,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
         }
         render_window->close();
         event->accept();
-        emu_thread->quit();
+        emu_thread.quit();
     }
 }
 
