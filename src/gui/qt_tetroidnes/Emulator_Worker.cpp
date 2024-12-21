@@ -153,7 +153,7 @@ void EmulatorWorker::on_start_threaded()
 
 void EmulatorWorker::render_frame()
 {
-    qDebug() << "Emitting draw_frame signal";
+    //qDebug() << "Emitting draw_frame signal";
     std::vector<uint8_t> render = exe.render();
     emit draw_frame(render);
 }
@@ -204,5 +204,10 @@ int EmulatorWorker::clock_interval() const
 
 void EmulatorWorker::set_clock_interval_speed(const float speed)
 {
-    m_clock_interval = static_cast<int>(static_cast<float>(emulator_clock_ns) * speed);
+    const float new_interval = static_cast<int>(static_cast<float>(emulator_clock_ns) * speed);
+    qInfo() << 
+    "Setting new clock interval\nOld interval:" << m_clock_interval << 
+    "New interval:" << new_interval << 
+    "Speed multiplier:" << speed;
+    m_clock_interval = new_interval;
 }

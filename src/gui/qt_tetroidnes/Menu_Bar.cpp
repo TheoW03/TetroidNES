@@ -7,6 +7,7 @@
 #include <QKeySequence>
 
 #include <Qt/settingsmanager.h>
+#include <Qt/Log_Display.h>
 
 MenuBar::MenuBar(QWidget *parent) : QMenuBar{parent},
                                     file(addMenu(tr("File"))),
@@ -15,6 +16,7 @@ MenuBar::MenuBar(QWidget *parent) : QMenuBar{parent},
                                     edit(addMenu(tr("Edit"))),
                                     settings_open(edit->addAction(tr("Settings"))),
                                     tools(addMenu(tr("Tools"))),
+                                    log_display_open(tools->addAction(tr("Open Log Display"))),
                                     help(addMenu(tr("Help")))
 {
     auto &settings = SettingsManager::instance();
@@ -30,9 +32,13 @@ MenuBar::MenuBar(QWidget *parent) : QMenuBar{parent},
     // edit
     settings_open->setShortcut(QKeySequence("Ctrl+B"));
 
+    // tools
+    log_display_open->setShortcut(QKeySequence(Qt::Key_F8));
+
     // events
     connect(file_open, &QAction::triggered, this, &MenuBar::open_rom);
     connect(settings_open, &QAction::triggered, this, &MenuBar::open_settings);
+    connect(log_display_open, &QAction::triggered, this, &MenuBar::open_log_display);
     connect(&settings, &SettingsManager::recent_roms_changed, this, &MenuBar::refresh_recent_roms);
 }
 
@@ -40,6 +46,12 @@ void MenuBar::open_settings()
 {
     SettingsWidget *settings = new SettingsWidget(qobject_cast<MainWindow *>(parent()));
     settings->show();
+}
+
+void MenuBar::open_log_display()
+{
+    LogDisplay *log_display = new LogDisplay(qobject_cast<MainWindow *>(parent()));
+    log_display->show();
 }
 
 void MenuBar::refresh_recent_roms(QStringList dirs)

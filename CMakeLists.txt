@@ -34,65 +34,13 @@ endif()
 
 set(QT_REQUIRED_COMPONENTS Widgets Core Gui LinguistTools)
 
-set(QT_TRANSLATION_FILES
-    src/gui/qt_tetroidnes/translations/tetroidnes_en_US.ts
-)
-set(EMULATOR_SOURCES 
-    src/emulator/APU.cpp
-    src/emulator/Address_Mode.cpp
-    src/emulator/Bit_Operations.cpp
-    src/emulator/Bus.cpp
-    src/emulator/Computer.cpp
-    src/emulator/Instructions.cpp
-    src/emulator/Load_Rom.cpp
-    src/emulator/PPU.cpp
-    src/emulator/Status_Register.cpp
-    src/emulator/NES_Error.cpp
-    src/emulator/Instruction_Map.cpp
-    src/emulator/Execute.cpp
-)
-
-set(QT_PROJECT_SOURCES
-    src/gui/qt_tetroidnes/Main.cpp
-    src/gui/qt_tetroidnes/Main_Window.cpp
-	src/gui/qt_tetroidnes/Menu_Bar.cpp
-	src/gui/qt_tetroidnes/Rom_List.cpp
-	src/gui/qt_tetroidnes/Filter_Control_Frame.cpp
-	src/gui/qt_tetroidnes/Flow_Layout.cpp
-	src/gui/qt_tetroidnes/Game_Display.cpp
-    src/gui/qt_tetroidnes/Settings_Widget.cpp
-    src/gui/qt_tetroidnes/Settings_Display.cpp 
-    src/gui/qt_tetroidnes/Log.cpp
-    src/gui/qt_tetroidnes/Rom_Data.cpp
-    src/gui/qt_tetroidnes/Rom_List_Item.cpp
-    src/gui/qt_tetroidnes/Settings_Manager.cpp
-    src/gui/qt_tetroidnes/Emulator_Worker.cpp
-)
-
-set(QT_RCC_FILES
-    src/gui/qt_tetroidnes/resources.qrc
-)
-
-set(QT_HEADERS
-    src/include/Qt/filtercontrolframe.h
-    src/include/Qt/flowlayout.h
-    src/include/Qt/gamedisplay.h
-    src/include/Qt/mainwindow.h
-    src/include/Qt/menubar.h
-    src/include/Qt/romlist.h
-    src/include/Qt/util.h
-    src/include/Qt/utilemulator.h
-    src/include/Qt/settingswidget.h
-    src/include/Qt/settingsdisplay.h
-    src/include/Qt/romdata.h
-    src/include/Qt/romlistitem.h
-    src/include/Qt/settingsmanager.h
-    src/include/Qt/Emulator_Worker.h
-)
-
-set(QT_UI_FILES
-    src/gui/qt_tetroidnes/mainwindow.ui
-)
+file(GLOB QT_TRANSLATION_FILES "src/gui/qt_tetroidnes/translations/tetroidnes_*.ts")
+file(GLOB EMULATOR_HEADERS "src/include/Emulator/*.h")
+file(GLOB EMULATOR_SOURCES "*src/emulator/*.cpp")
+file(GLOB QT_PROJECT_SOURCES "src/gui/qt_tetroidnes/*.cpp")
+file(GLOB QT_RCC_FILES "src/gui/qt_tetroidnes/*.qrc")
+file(GLOB QT_HEADERS "src/include/Qt/*.h")
+file(GLOB QT_UI_FILES "src/gui/qt_tetroidnes/*.ui")
 
 find_package(OpenGL REQUIRED COMPONENTS OpenGL)
 

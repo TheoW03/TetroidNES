@@ -18,6 +18,9 @@
 #include <stdint.h>
 #include <filesystem>
 #include <QDir>
+
+#include <Qt/Log_Display.h>
+
 QtMessageHandler originalHandler = nullptr;
 
 void check_log_dir()
@@ -29,7 +32,7 @@ void check_log_dir()
     if (log_dir_size > max_size)
     {
         auto logs_to_be_deleted = log_dir.sliced(0, log_dir_size - max_size);
-        qDebug() << "Over" << max_size << "logs reached, deleting older logs:" << logs_to_be_deleted;
+        qDebug() << "Over" << max_size << "logs reached, deleting older logs:" << logs_to_be_deleted.join(", ");
         for (auto &file_name : logs_to_be_deleted)
         {
             if (!QFile::remove("logs/" + file_name))
@@ -42,6 +45,7 @@ void check_log_dir()
 void logToFile(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QString message = qFormatLogMessage(type, context, msg);
+    LogNotifier &log_notifier = LogNotifier::instance();
     std::filesystem::create_directories("logs");
     std::time_t t = std::time(0); // t is an integer type
     // char *intStr = itoa(t);
@@ -55,6 +59,8 @@ void logToFile(QtMsgType type, const QMessageLogContext &context, const QString 
     {
         originalHandler(type, context, msg);
     }
+
+    emit log_notifier.log_pushed(message);
 }
 
 void InitLogs()

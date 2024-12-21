@@ -158,7 +158,7 @@ void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
     render_window->display();
 
     frame_count += 1;
-    qDebug() << "Milliseconds from previous draw call:" << time_between_draw_ms;
+    //qDebug() << "Milliseconds from previous draw call:" << time_between_draw_ms;
     time_between_draw_ms = 0;
 }
 
