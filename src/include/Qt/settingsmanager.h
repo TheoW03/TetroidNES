@@ -35,6 +35,9 @@ public:
     float speed() const;
     void set_speed(const float speed);
 
+    bool run_emulator_on_seperate_thread() const;
+    void set_run_emulator_on_seperate_thread(bool b);
+
     RomList::SortMode sort_mode() const;
     void set_sort_mode(const RomList::SortMode sort_mode);
 

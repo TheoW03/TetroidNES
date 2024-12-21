@@ -50,6 +50,7 @@ private:
     int err_code;
     int time_between_draw_ms = 0;
     bool m_paused;
+    bool m_is_emu_on_dif_thread;
     QMutex mutex;
 
 private slots:

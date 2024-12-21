@@ -106,11 +106,16 @@ EmulatorSettingsDisplay::EmulatorSettingsDisplay(QWidget *parent) : QWidget{pare
 {
     SettingsManager &settings = SettingsManager::instance();
     const auto settings_speed = settings.speed();
+    const auto settings_run_on_dif_thread = settings.run_emulator_on_seperate_thread();
     const auto default_combobox_key = QString("100%");
     int speed_combobox_current_idx;
 
     QVBoxLayout *layout = new QVBoxLayout();
     QVBoxLayout *emulator_groupbox_layout = new QVBoxLayout();
+
+    threaded_checkbox = new QCheckBox(tr("Enable Threading"), this);
+    threaded_checkbox->setObjectName("run_emu_in_different_thread");
+    threaded_checkbox->setChecked(settings_run_on_dif_thread);
 
     emulator_groupbox = new QGroupBox(tr("Emulator"), this);
 
@@ -146,6 +151,7 @@ EmulatorSettingsDisplay::EmulatorSettingsDisplay(QWidget *parent) : QWidget{pare
     emulator_groupbox_layout->addWidget(speed_combobox);
     emulator_groupbox->setLayout(emulator_groupbox_layout);
 
+    layout->addWidget(threaded_checkbox);
     layout->addWidget(emulator_groupbox);
     setLayout(layout);
 }

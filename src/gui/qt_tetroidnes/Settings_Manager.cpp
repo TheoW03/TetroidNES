@@ -3,6 +3,7 @@
 constexpr const auto key_romdir = "romdir";
 constexpr const auto key_min_game_on_start = "minimize_gui_on_game_start";
 constexpr const auto key_speed = "emu_speed";
+constexpr const auto key_run_emulator_on_seperate_thread = "run_emulator_on_seperate_thread";
 constexpr const auto key_sort_mode = "QOL/sort_mode";
 constexpr const auto key_ascend_order = "QOL/ascending_order";
 constexpr const auto key_recent_roms = "QOL/recent_roms";
@@ -106,4 +107,14 @@ void SettingsManager::append_recent_roms(QString dir)
 QStringList SettingsManager::get_recent_roms()
 {
     return m_settings.value(key_recent_roms, QStringList()).toStringList();
+}
+
+void SettingsManager::set_run_emulator_on_seperate_thread(bool b)
+{
+    m_settings.setValue(key_run_emulator_on_seperate_thread, b);
+}
+
+bool SettingsManager::run_emulator_on_seperate_thread() const
+{
+    return m_settings.value(key_run_emulator_on_seperate_thread, true).toBool();
 }

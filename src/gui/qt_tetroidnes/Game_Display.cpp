@@ -9,6 +9,7 @@
 #include <Qt/Emulator_Worker.h>
 #include <Qt/util.h>
 #include <Qt/utilemulator.h>
+#include <Qt/settingsmanager.h>
 
 constexpr const unsigned int rgb_data_size = NES_RES_A * 4;
 
@@ -17,12 +18,12 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
                                                              frames_per_sec_timer(new QTimer(this)),
                                                              time_between_draw_timer(new QTimer(this)),
                                                              m_paused(false),
-                                                             emu_worker(new EmulatorWorker(rom_url, mutex, m_paused))
+                                                             emu_worker(new EmulatorWorker(rom_url, mutex, m_paused)),
+                                                             err_code(0)
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_NoSystemBackground);
-    this->err_code = 0;
     setAttribute(Qt::WA_DeleteOnClose);
 
     setWindowFlags(Qt::Window);
@@ -35,6 +36,9 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
 
     setFocusPolicy(Qt::StrongFocus);
 
+    SettingsManager &settings = SettingsManager::instance();
+    m_is_emu_on_dif_thread = settings.run_emulator_on_seperate_thread();
+
     frames_per_sec_timer->setInterval(1000);
     frames_per_sec_timer->setTimerType(Qt::PreciseTimer);
 
@@ -43,7 +47,14 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     QAction *pause_toggle_key = new QAction(this);
     pause_toggle_key->setShortcut(QKeySequence(Qt::Key_G));
 
-    emu_worker->moveToThread(&emu_thread);
+    if(m_is_emu_on_dif_thread)
+    {
+        emu_worker->moveToThread(&emu_thread);
+    }
+    else
+    {
+        emu_worker->setParent(this); // Auto-sets a QObject's thread to the parent's
+    }
 
     qDebug() << "Connecting events...";
     // Events
@@ -67,6 +78,11 @@ void GameDisplay::on_pause_toggle_key_triggered()
     else
     {
         mutex.unlock();
+        if (m_is_emu_on_dif_thread)
+        {
+            emu_worker->start_cpu_timer();
+        }
+
     }
 }
 
@@ -78,6 +94,10 @@ bool GameDisplay::is_paused() const
 void GameDisplay::pause_game()
 {
     m_paused = true;
+    if(!m_is_emu_on_dif_thread)
+    {
+        emu_worker->stop_cpu_timer();
+    }
 }
 
 void GameDisplay::on_push_error(QString msg, int error_code)
@@ -112,7 +132,14 @@ void GameDisplay::on_init()
     update_game_scale();
 
     qInfo() << "About to start thread...";
-    emu_thread.start();
+    if (m_is_emu_on_dif_thread)
+    {
+        emu_thread.start();
+    }
+    else
+    {
+        emu_worker->on_start_main_thread();
+    }
 
     frames_per_sec_timer->start();
     time_between_draw_timer->start();
@@ -160,8 +187,12 @@ void GameDisplay::close_game()
 {
     emu_worker->shutdown_game();
     render_window->close();
-    emu_thread.quit();
-    emu_thread.wait();
+    if (m_is_emu_on_dif_thread)
+    {
+        emu_thread.quit();
+        emu_thread.wait();
+    }
+
 }
 
 void GameDisplay::closeEvent(QCloseEvent *event)

@@ -75,6 +75,7 @@ void SettingsWidget::on_apply_changes_clicked()
     auto rom_dir = setting_display->findChild<QPlainTextEdit *>("rom_directory");
     auto min_gui_on_game_start = setting_display->findChild<QCheckBox *>("min_gui_on_game_start");
     auto speed = setting_display->findChild<QComboBox *>("speed");
+    auto threaded = setting_display->findChild<QCheckBox *>("run_emu_in_different_thread");
 
     // ROM Directories
     QStringList string_list;
@@ -105,6 +106,10 @@ void SettingsWidget::on_apply_changes_clicked()
     {
         settings.set_speed(speed_multipler);
     }
+
+    // Emulator threading mode
+    const bool is_threaded = threaded->isChecked();
+    settings.set_run_emulator_on_seperate_thread(is_threaded);
 
     // Finished saving settings
     qInfo() << "saving settings in " << SAVE_DIR;
