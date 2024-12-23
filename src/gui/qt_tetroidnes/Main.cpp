@@ -7,7 +7,7 @@
 #include <Qt/mainwindow.h>
 #include <Qt/log.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
     // originalHandler = qInstallMessageHandler(logToFile);
     InitLogs();

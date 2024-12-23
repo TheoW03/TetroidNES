@@ -257,7 +257,9 @@ void MainWindow::closeEvent(QCloseEvent *event)
     else
     {
         if (event == nullptr)
-            std::cout << "nul" << std::endl;
+        {
+            qDebug() << "nul";
+        }
         qDebug() << "closing window";
 
         event->accept();
@@ -266,5 +268,11 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    qDebug() << "main window Destructor";
+
+    if (ui != nullptr)
+    {
+        delete ui;
+        qDebug() << "deleting UI";
+    }
 }
