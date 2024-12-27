@@ -113,7 +113,7 @@ void EmulatorWorker::start_frame_timer()
 
 void EmulatorWorker::stop_frame_timer()
 {
-    if(frame_timer->isActive())
+    if (frame_timer->isActive())
     {
         frame_timer->stop();
     }
@@ -121,7 +121,7 @@ void EmulatorWorker::stop_frame_timer()
 
 void EmulatorWorker::render_frame()
 {
-    //qDebug() << "Emitting draw_frame signal";
+    // qDebug() << "Emitting draw_frame signal";
     std::vector<uint8_t> render = exe.render();
     emit draw_frame(render);
 }
@@ -137,7 +137,7 @@ void EmulatorWorker::process_cpu()
     CPU result;
     int clock_cycles = 0;
 
-    while(clock_cycles > cpu_cycles_frame)
+    while (clock_cycles < cpu_cycles_frame)
     {
         result = exe.run();
 
@@ -151,12 +151,10 @@ void EmulatorWorker::process_cpu()
             auto err_mess = QString("%1-- at PC addr= 0x%2").arg(QString::fromStdString(result.bus.check_error().value()), QString::fromStdString(num_to_hexa(result.bus.get_PC())));
 
             emit push_error(err_mess, EXIT_FAILURE);
-
         }
         clock_cycles += exe.reset_clock();
     }
     is_frame_generated = true;
-
 }
 
 int EmulatorWorker::clock_interval() const
@@ -167,9 +165,6 @@ int EmulatorWorker::clock_interval() const
 void EmulatorWorker::set_clock_interval_speed(const float speed)
 {
     const float new_interval = static_cast<int>(frame_interval_ns * speed);
-    qInfo() << 
-    "Setting new clock interval\nOld interval:" << m_clock_interval << 
-    "New interval:" << new_interval << 
-    "Speed multiplier:" << speed;
+    qInfo() << "Setting new clock interval\nOld interval:" << m_clock_interval << "New interval:" << new_interval << "Speed multiplier:" << speed;
     m_clock_interval = new_interval;
 }
