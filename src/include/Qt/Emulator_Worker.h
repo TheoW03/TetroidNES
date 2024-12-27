@@ -17,23 +17,21 @@ public:
     explicit EmulatorWorker(QString rom, QMutex &mutex, bool &paused, QWidget *parent = nullptr);
     void shutdown_game();
     void on_start_main_thread();
-    void start_cpu_timer();
-    void stop_cpu_timer();
+    void start_frame_timer();
+    void stop_frame_timer();
     int clock_interval() const;
     bool is_running() const;
 public slots:
-    void on_start_threaded();
     void set_clock_interval_speed(float speed);
+    void on_frame_timer_timeout();
 signals:
     void draw_frame(std::vector<uint8_t> vector);
     void push_error(QString msg, int error_code);
 private:
-    QChronoTimer *cpu_timer;
-    QChronoTimer *time_between_cycle_timer;
+    bool is_frame_generated;
+    QChronoTimer *frame_timer;
     Execute exe;
     QString rom_url;
-    uint32_t cpu_cycle_count;
-    long long nanosecond_between_cycles_count;
     bool m_initialized;
     bool m_is_running;
     QMutex *mutex_ptr;
@@ -42,8 +40,7 @@ private:
     void init();
 
 private slots:
-    void on_cpu_timer_timeout();
-    int process_cpu();
+    void process_cpu();
     void render_frame();
 
 };

@@ -7,7 +7,7 @@
 constexpr const float ntsc_frame_rate = 60.0f;
 constexpr const float pal_frame_rate = 50.0f;
 
-constexpr const int emulator_clock_ns = 500;
+constexpr const float frame_interval_ns = 16666666.67f;
 
 inline std::chrono::nanoseconds framerate_to_ns(const float frame_rate)
 {

@@ -11,12 +11,11 @@ const size_t cpu_cycles_frame = 29782;
 EmulatorWorker::EmulatorWorker(QString rom_dest, QMutex &mutex, bool &paused, QWidget *parent) : QObject{parent},
                                                                                                  rom_url(rom_dest),
                                                                                                  m_initialized(false),
-                                                                                                 cpu_cycle_count(0),
-                                                                                                 nanosecond_between_cycles_count(0),
                                                                                                  m_is_running(false),
                                                                                                  mutex_ptr(&mutex),
                                                                                                  paused_ptr(&paused),
-                                                                                                 m_clock_interval(0)
+                                                                                                 m_clock_interval(frame_interval_ns),
+                                                                                                 is_frame_generated(false)
 {
 }
 
@@ -43,31 +42,22 @@ void EmulatorWorker::init()
     }
 
     // Constructor Code
-    cpu_timer = new QChronoTimer(this);
-    time_between_cycle_timer = new QChronoTimer(this);
+    frame_timer = new QChronoTimer(this);
 
     SettingsManager &settings = SettingsManager::instance();
 
     set_clock_interval_speed(settings.speed());
 
-    auto cpu_time_ns = std::chrono::nanoseconds(m_clock_interval);
+    frame_timer->setTimerType(Qt::PreciseTimer);
+    frame_timer->setInterval(std::chrono::nanoseconds(m_clock_interval));
 
-    cpu_timer->setTimerType(Qt::PreciseTimer);
-    cpu_timer->setInterval(cpu_time_ns);
-    cpu_timer->setSingleShot(true);
-
-    time_between_cycle_timer->setInterval(std::chrono::nanoseconds(1));
-
-    // qDebug() << "CPU clock cycle" << cpu_timer->interval().count() << "Nanoseconds";
+    qDebug() << "frame timer cycle" << frame_timer->interval().count() << "Nanoseconds";
     qDebug() << "Game Path:" << rom_url;
 
     // Events
     connect(&settings, &SettingsManager::speed_changed, this, &EmulatorWorker::set_clock_interval_speed); // TODO: this doesn't work
-    connect(time_between_cycle_timer, &QChronoTimer::timeout, this,
-            [this]()
-            { nanosecond_between_cycles_count += 1; });
     connect(QThread::currentThread(), &QThread::finished, this, &EmulatorWorker::deleteLater);
-    connect(cpu_timer, &QChronoTimer::timeout, this, &EmulatorWorker::on_cpu_timer_timeout);
+    connect(frame_timer, &QChronoTimer::timeout, this, &EmulatorWorker::on_frame_timer_timeout);
 
     // Setup CPU
     initializeInstructionMap();
@@ -96,58 +86,36 @@ void EmulatorWorker::init()
     m_initialized = true;
 }
 
+void EmulatorWorker::on_frame_timer_timeout()
+{
+    qDebug() << "Frame timeout, is frame generated?" << is_frame_generated;
+    if (is_frame_generated)
+    {
+        render_frame();
+        is_frame_generated = false;
+        process_cpu();
+    }
+}
+
 void EmulatorWorker::on_start_main_thread()
 {
     init();
     m_is_running = true;
 
-    cpu_timer->start();
+    frame_timer->start();
+    process_cpu(); // Kickstarting the CPU so is_frame_generated can become true
 }
 
-void EmulatorWorker::start_cpu_timer()
+void EmulatorWorker::start_frame_timer()
 {
-    cpu_timer->start();
+    frame_timer->start();
 }
 
-void EmulatorWorker::stop_cpu_timer()
+void EmulatorWorker::stop_frame_timer()
 {
-    if(cpu_timer->isActive())
+    if(frame_timer->isActive())
     {
-        cpu_timer->stop();
-    }
-}
-
-void EmulatorWorker::on_cpu_timer_timeout()
-{
-    if(!m_is_running)
-    {
-        return; // cpu_timer should be oneshot, ends the loop
-    }
-
-    const int clock_cycles = process_cpu();
-    cpu_timer->setInterval(std::chrono::nanoseconds(m_clock_interval * clock_cycles));
-    cpu_timer->start();
-}
-
-void EmulatorWorker::on_start_threaded()
-{
-    QThread *current_thread = QThread::currentThread();
-    qInfo() << "Started game on a new thread:" << QUrl(rom_url).fileName();
-    init();
-
-    // time_between_cycle_timer->start();
-
-    m_is_running = true;
-    while (m_is_running)
-    {
-        mutex_ptr->lock();
-        if (paused_ptr)
-        {
-            *paused_ptr = false;
-        }
-        mutex_ptr->unlock();
-        const int clock_cycles = process_cpu();
-        current_thread->sleep(std::chrono::nanoseconds(m_clock_interval * clock_cycles));
+        frame_timer->stop();
     }
 }
 
@@ -163,38 +131,32 @@ bool EmulatorWorker::is_running() const
     return m_is_running;
 }
 
-int EmulatorWorker::process_cpu()
+void EmulatorWorker::process_cpu()
 {
     // Process CPU
+    CPU result;
+    int clock_cycles = 0;
 
-    if (cpu_cycle_count >= cpu_cycles_frame)
+    while(clock_cycles > cpu_cycles_frame)
     {
-        render_frame();
-        exe.reset_clock();
-        cpu_cycle_count = 0;
+        result = exe.run();
+
+        // printf("0x%x\n", result.bus.get_PC());
+
+        // this->cpu = result;
+        if (result.error_code == EXIT_FAILURE)
+        {
+            qInfo() << "potential error with the cpu";
+
+            auto err_mess = QString("%1-- at PC addr= 0x%2").arg(QString::fromStdString(result.bus.check_error().value()), QString::fromStdString(num_to_hexa(result.bus.get_PC())));
+
+            emit push_error(err_mess, EXIT_FAILURE);
+
+        }
+        clock_cycles += exe.reset_clock();
     }
+    is_frame_generated = true;
 
-    auto result = exe.run();
-
-    // printf("0x%x\n", result.bus.get_PC());
-
-    // this->cpu = result;
-    if (result.error_code == EXIT_FAILURE)
-    {
-        qInfo() << "potential error with the cpu";
-
-        auto err_mess = QString("%1-- at PC addr= 0x%2").arg(QString::fromStdString(result.bus.check_error().value()), QString::fromStdString(num_to_hexa(result.bus.get_PC())));
-
-        emit push_error(err_mess, EXIT_FAILURE);
-
-    }
-    int clock_cycle = exe.reset_clock();
-
-    cpu_cycle_count += clock_cycle;
-
-    nanosecond_between_cycles_count = 0;
-
-    return clock_cycle;
 }
 
 int EmulatorWorker::clock_interval() const
@@ -204,7 +166,7 @@ int EmulatorWorker::clock_interval() const
 
 void EmulatorWorker::set_clock_interval_speed(const float speed)
 {
-    const float new_interval = static_cast<int>(static_cast<float>(emulator_clock_ns) * speed);
+    const float new_interval = static_cast<int>(frame_interval_ns * speed);
     qInfo() << 
     "Setting new clock interval\nOld interval:" << m_clock_interval << 
     "New interval:" << new_interval << 

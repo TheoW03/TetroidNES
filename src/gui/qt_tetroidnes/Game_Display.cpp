@@ -61,7 +61,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     connect(pause_toggle_key, &QAction::triggered, this, &GameDisplay::on_pause_toggle_key_triggered);
     connect(emu_worker, &EmulatorWorker::draw_frame, this, &GameDisplay::on_update);
     connect(emu_worker, &EmulatorWorker::push_error, this, &GameDisplay::on_push_error);
-    connect(&emu_thread, &QThread::started, emu_worker, &EmulatorWorker::on_start_threaded);
+    connect(&emu_thread, &QThread::started, emu_worker, &EmulatorWorker::on_start_main_thread);
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
     connect(time_between_draw_timer, &QTimer::timeout, this, [this]()
             { time_between_draw_ms += 1; });
@@ -80,7 +80,7 @@ void GameDisplay::on_pause_toggle_key_triggered()
         mutex.unlock();
         if (m_is_emu_on_dif_thread)
         {
-            emu_worker->start_cpu_timer();
+            emu_worker->start_frame_timer();
         }
 
     }
@@ -96,7 +96,7 @@ void GameDisplay::pause_game()
     m_paused = true;
     if(!m_is_emu_on_dif_thread)
     {
-        emu_worker->stop_cpu_timer();
+        emu_worker->stop_frame_timer();
     }
 }
 
