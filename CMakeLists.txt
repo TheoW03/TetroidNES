@@ -51,7 +51,10 @@ find_package(Qt6 REQUIRED COMPONENTS
 include(FetchContent)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG 2.6.x)
+    GIT_TAG 3.0.0
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
 include_directories(${EXECUTABLE_NAME} PRIVATE src/include/Qt)
@@ -76,7 +79,7 @@ endif()
 include_directories(${EXECUTABLE_NAME} PRIVATE src/include/)
 
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE Qt6::Widgets Qt6::Gui Qt6::Core)
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE sfml-system sfml-graphics sfml-window)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE SFML::Graphics SFML::Window SFML::Audio)
 
 #target_link_libraries(${EXECUTABLE_NAME} PRIVATE OpenGL::GLES2)
 
@@ -97,13 +100,13 @@ install(TARGETS ${EXECUTABLE_NAME}
 install(CODE
     file(GET_RUNTIME_DEPENDENCIES DIRECTORY ${QT_REQUIRED_COMPONENTS})
 )
-if(WIN32)
+#if(WIN32)
 # Copy DLL Depencencies
-add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${DLL_DEPENDENCIES} $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
-)
-endif()
+#add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#        ${DLL_DEPENDENCIES} $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
+#)
+#endif()
 
 # Update version macro if needed
 file(READ src/gui/qt_tetroidnes/Main.cpp FILE_CONTENT)

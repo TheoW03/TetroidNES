@@ -15,13 +15,15 @@
 constexpr const unsigned int rgb_data_size = NES_RES_A * 4;
 
 GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
-                                                             render_window(new sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)),
+                                                             render_window(new sf::RenderWindow(sf::VideoMode({800, 600}), "OpenGL", sf::Style::Default)),
                                                              frames_per_sec_timer(new QTimer(this)),
                                                              time_between_draw_timer(new QTimer(this)),
                                                              m_paused(false),
                                                              emu_worker(new EmulatorWorker(rom_url, mutex, m_paused)),
                                                              crt_shader(new sf::Shader()),
-                                                             err_code(0)
+                                                             err_code(0),
+                                                             texture({NES_RES_L, NES_RES_W}),
+                                                             sprite(texture)
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -135,13 +137,9 @@ void GameDisplay::on_init()
 {
     qInfo() << "Initializing game window...";
 
-    if (!texture.create(NES_RES_L, NES_RES_W))
-    {
-        on_push_error("Texture failed to be created!", EXIT_FAILURE);
-        return;
-    }
+    sf::Vector2i texture_rect_size = sprite.getTextureRect().size;
 
-    sprite.setOrigin(sprite.getTextureRect().width / 2, sprite.getTextureRect().height / 2);
+    sprite.setOrigin({(float)(texture_rect_size.x) / 2, (float)(texture_rect_size.y) / 2});
     sprite.setTexture(texture);
     update_game_scale();
 
@@ -203,7 +201,7 @@ void GameDisplay::showEvent(QShowEvent *event)
         QTextStream in(&shader_qfile);
         std::string shader_text = in.readAll().toStdString();
 
-        if (!crt_shader->loadFromMemory(shader_text, sf::Shader::Fragment))
+        if (!crt_shader->loadFromMemory(shader_text, sf::Shader::Type::Fragment))
         {
             on_push_error(QString("Failed loading shader from memory"), EXIT_FAILURE);
             return;
@@ -271,10 +269,10 @@ void GameDisplay::closeEvent(QCloseEvent *event)
 void GameDisplay::update_game_scale()
 {
     QSize widget_size = size();
-    sf::Vector2u texture_size = texture.getSize();
+    sf::Vector2u texture_size = sprite.getTexture().getSize();
     sprite.setScale(
-        static_cast<float>(widget_size.width()) / texture_size.x,
-        static_cast<float>(widget_size.height()) / texture_size.y);
+        {static_cast<float>(widget_size.width()) / texture_size.x,
+        static_cast<float>(widget_size.height()) / texture_size.y});
 }
 
 void GameDisplay::center_display()

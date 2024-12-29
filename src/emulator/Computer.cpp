@@ -23,7 +23,7 @@ namespace fs = std::filesystem;
 uint8_t current_instruction = 0;
 
 CPU run(CPU cpu, std::string file_name);
-
+/*
 CPU init(std::string file_name)
 {
 	// initializeInstructionMap();
@@ -44,6 +44,7 @@ CPU init(std::string file_name)
 	// return run(cpu, window_name);
 	return cpu;
 }
+*/
 void printCPU_stats(CPU cpu)
 {
 
@@ -77,27 +78,26 @@ void HandleNMIInterrupts(CPU &cpu)
 
 /**
  * Executes actual code
- */
+
 CPU run(CPU cpu, std::string window_name)
 {
 
-	sf::RenderWindow window(sf::VideoMode(800, 600), window_name);
+	sf::RenderWindow window(sf::VideoMode({800, 600}), window_name);
 
 	window.setFramerateLimit(144);
-	sf::Texture texture;
-	texture.create(256, 240);
+	sf::Texture texture({256, 240});
 	float scaleX = window.getSize().x / (float)(texture.getSize().x);
 	float scaleY = window.getSize().y / (float)(texture.getSize().y);
 	sf::Sprite sprite(texture);
-	sprite.setScale(scaleX, scaleY);
+	sprite.setScale({scaleX, scaleY});
 	// uint8_t arr[257];
 	// uint8_t data[]
 
 	while (cpu.bus.get_PC() < PC_END && window.isOpen())
 	{
-		for (auto event = sf::Event{}; window.pollEvent(event);) // checks if window is closed or event going
+		for (std::optional<sf::Event> event = std::nullopt; window.pollEvent();) // checks if window is closed or event going
 		{
-			if (event.type == sf::Event::Closed)
+			if (event.value() == sf::Event::Closed)
 			{
 				window.close();
 				program_success(cpu);
@@ -105,7 +105,7 @@ CPU run(CPU cpu, std::string window_name)
 				return cpu;
 			}
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 		{
 			cpu.bus.write_controller1(Controller::UP, 1);
 		}
@@ -114,7 +114,7 @@ CPU run(CPU cpu, std::string window_name)
 			cpu.bus.write_controller1(Controller::UP, 0);
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
 		{
 			cpu.bus.write_controller1(Controller::DOWN, 1);
 		}
@@ -122,7 +122,7 @@ CPU run(CPU cpu, std::string window_name)
 		{
 			cpu.bus.write_controller1(Controller::DOWN, 0);
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 		{
 			cpu.bus.write_controller1(Controller::LEFT, 1);
 		}
@@ -131,7 +131,7 @@ CPU run(CPU cpu, std::string window_name)
 			cpu.bus.write_controller1(Controller::LEFT, 0);
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 		{
 			cpu.bus.write_controller1(Controller::RIGHT, 1);
 		}
@@ -140,7 +140,7 @@ CPU run(CPU cpu, std::string window_name)
 			cpu.bus.write_controller1(Controller::RIGHT, 0);
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
 		{
 			cpu.bus.write_controller1(Controller::A, 1);
 		}
@@ -148,7 +148,7 @@ CPU run(CPU cpu, std::string window_name)
 		{
 			cpu.bus.write_controller1(Controller::A, 0);
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift))
 		{
 			cpu.bus.write_controller1(Controller::B, 1);
 		}
@@ -156,7 +156,7 @@ CPU run(CPU cpu, std::string window_name)
 		{
 			cpu.bus.write_controller1(Controller::B, 0);
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
 		{
 			cpu.bus.write_controller1(Controller::START, 1);
 		}
@@ -164,7 +164,7 @@ CPU run(CPU cpu, std::string window_name)
 		{
 			cpu.bus.write_controller1(Controller::START, 0);
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LControl))
 		{
 			cpu.bus.write_controller1(Controller::SELECT, 1);
 		}
@@ -218,3 +218,4 @@ CPU run(CPU cpu, std::string window_name)
 	}
 	return cpu;
 }
+*/
