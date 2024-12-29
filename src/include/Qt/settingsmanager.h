@@ -44,11 +44,15 @@ public:
     Qt::SortOrder ascending_order() const;
     void set_ascending_order(const Qt::SortOrder sort_order);
 
+    bool crt_shader() const;
+    void set_crt_shader(bool b);
+
     QStringList get_recent_roms();
     void append_recent_roms(QString dir);
     void set_recent_roms(QStringList dirs);
 
 signals:
+    void crt_shader_changed(bool on);
     void speed_changed(float speed);
     void recent_roms_changed(QStringList dirs);
 

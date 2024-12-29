@@ -106,6 +106,7 @@ EmulatorSettingsDisplay::EmulatorSettingsDisplay(QWidget *parent) : QWidget{pare
 {
     SettingsManager &settings = SettingsManager::instance();
     const auto settings_speed = settings.speed();
+    const auto settings_crt_shader = settings.crt_shader();
     const auto settings_run_on_dif_thread = settings.run_emulator_on_seperate_thread();
     const auto default_combobox_key = QString("100%");
     int speed_combobox_current_idx;
@@ -148,11 +149,16 @@ EmulatorSettingsDisplay::EmulatorSettingsDisplay(QWidget *parent) : QWidget{pare
     }
     speed_combobox->setCurrentIndex(speed_combobox_current_idx);
 
+    crt_shader_checkbox = new QCheckBox("CRT Filter", this);
+    crt_shader_checkbox->setObjectName("crt_shader");
+    crt_shader_checkbox->setChecked(settings_crt_shader);
+
     emulator_groupbox_layout->addWidget(speed_combobox);
     emulator_groupbox->setLayout(emulator_groupbox_layout);
 
     layout->addWidget(threaded_checkbox);
     layout->addWidget(emulator_groupbox);
+    layout->addWidget(crt_shader_checkbox);
     setLayout(layout);
 }
 

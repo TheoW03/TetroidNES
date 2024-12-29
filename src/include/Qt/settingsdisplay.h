@@ -43,6 +43,7 @@ private:
     QGroupBox *emulator_groupbox;
     QComboBox *speed_combobox;
     QCheckBox *threaded_checkbox;
+    QCheckBox *crt_shader_checkbox;
 
 };
 

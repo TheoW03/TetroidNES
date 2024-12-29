@@ -38,7 +38,7 @@ file(GLOB QT_TRANSLATION_FILES "src/gui/qt_tetroidnes/translations/tetroidnes_*.
 file(GLOB EMULATOR_HEADERS "src/include/Emulator/*.h")
 file(GLOB EMULATOR_SOURCES "*src/emulator/*.cpp")
 file(GLOB QT_PROJECT_SOURCES "src/gui/qt_tetroidnes/*.cpp")
-file(GLOB QT_RCC_FILES "src/gui/qt_tetroidnes/*.qrc")
+file(GLOB QT_RCC_FILES "src/gui/qt_tetroidnes/resources/*.qrc")
 file(GLOB QT_HEADERS "src/include/Qt/*.h")
 file(GLOB QT_UI_FILES "src/gui/qt_tetroidnes/*.ui")
 

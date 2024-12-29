@@ -76,6 +76,7 @@ void SettingsWidget::on_apply_changes_clicked()
     auto min_gui_on_game_start = setting_display->findChild<QCheckBox *>("min_gui_on_game_start");
     auto speed = setting_display->findChild<QComboBox *>("speed");
     auto threaded = setting_display->findChild<QCheckBox *>("run_emu_in_different_thread");
+    auto crt_shader = setting_display->findChild<QCheckBox *>("crt_shader");
 
     // ROM Directories
     QStringList string_list;
@@ -110,6 +111,10 @@ void SettingsWidget::on_apply_changes_clicked()
     // Emulator threading mode
     const bool is_threaded = threaded->isChecked();
     settings.set_run_emulator_on_seperate_thread(is_threaded);
+
+    // Emulator crt shader
+    const bool is_crt_shader_on = crt_shader->isChecked();
+    settings.set_crt_shader(is_crt_shader_on);
 
     // Finished saving settings
     qInfo() << "saving settings in " << SAVE_DIR;

@@ -2,6 +2,7 @@
 #define GAMEDISPLAY_H
 
 #include <chrono>
+#include <functional>
 
 #include <QWidget>
 #include <QTimer>
@@ -42,10 +43,12 @@ private:
     QTimer *frames_per_sec_timer;
     QTimer *time_between_draw_timer;
     QScopedPointer<sf::RenderWindow> render_window;
+    QScopedPointer<sf::Shader> crt_shader;
     bool m_initialized = false;
     sf::Texture texture;
     sf::Sprite sprite;
     QThread emu_thread;
+    std::function<void (sf::Drawable &drawable)> draw_func;
     EmulatorWorker *emu_worker;
     int err_code;
     int time_between_draw_ms = 0;
@@ -54,6 +57,7 @@ private:
     QMutex mutex;
 
 private slots:
+    void on_crt_shader_changed(const bool b);
     void on_framerate_timer_timeout();
     void on_pause_toggle_key_triggered();
 

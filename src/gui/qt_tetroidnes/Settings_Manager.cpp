@@ -1,9 +1,11 @@
 #include <Qt/settingsmanager.h>
+#include "settingsmanager.h"
 
 constexpr const auto key_romdir = "romdir";
 constexpr const auto key_min_game_on_start = "minimize_gui_on_game_start";
 constexpr const auto key_speed = "emu_speed";
 constexpr const auto key_run_emulator_on_seperate_thread = "run_emulator_on_seperate_thread";
+constexpr const auto key_crt_shader = "crt_shader";
 constexpr const auto key_sort_mode = "QOL/sort_mode";
 constexpr const auto key_ascend_order = "QOL/ascending_order";
 constexpr const auto key_recent_roms = "QOL/recent_roms";
@@ -81,6 +83,17 @@ Qt::SortOrder SettingsManager::ascending_order() const
 void SettingsManager::set_ascending_order(const Qt::SortOrder sort_order)
 {
     m_settings.setValue(key_ascend_order, sort_order);
+}
+
+bool SettingsManager::crt_shader() const
+{
+    return m_settings.value(key_crt_shader, false).toBool();
+}
+
+void SettingsManager::set_crt_shader(bool b)
+{
+    m_settings.setValue(key_crt_shader, b);
+    emit crt_shader_changed(b);
 }
 
 void SettingsManager::set_recent_roms(QStringList dirs)

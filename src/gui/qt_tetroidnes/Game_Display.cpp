@@ -5,6 +5,7 @@
 #include <QUrl>
 #include <QMessageBox>
 #include <QMutexLocker>
+#include <QFile>
 
 #include <Qt/Emulator_Worker.h>
 #include <Qt/util.h>
@@ -19,6 +20,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
                                                              time_between_draw_timer(new QTimer(this)),
                                                              m_paused(false),
                                                              emu_worker(new EmulatorWorker(rom_url, mutex, m_paused)),
+                                                             crt_shader(new sf::Shader()),
                                                              err_code(0)
 {
     setAttribute(Qt::WA_PaintOnScreen);
@@ -56,16 +58,28 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
         emu_worker->setParent(this); // Auto-sets a QObject's thread to the parent's
     }
 
-    qDebug() << "Connecting events...";
     // Events
     connect(pause_toggle_key, &QAction::triggered, this, &GameDisplay::on_pause_toggle_key_triggered);
+    connect(&settings, &SettingsManager::crt_shader_changed, this, &GameDisplay::on_crt_shader_changed);
     connect(emu_worker, &EmulatorWorker::draw_frame, this, &GameDisplay::on_update);
     connect(emu_worker, &EmulatorWorker::push_error, this, &GameDisplay::on_push_error);
     connect(&emu_thread, &QThread::started, emu_worker, &EmulatorWorker::on_start_main_thread);
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
     connect(time_between_draw_timer, &QTimer::timeout, this, [this]()
             { time_between_draw_ms += 1; });
-    qDebug() << "Finished connecting events!";
+
+}
+
+void GameDisplay::on_crt_shader_changed(const bool b)
+{
+    if (b)
+    {
+        draw_func = [this](sf::Drawable &drawable){render_window->draw(drawable, crt_shader.get());};
+    }
+    else
+    {
+        draw_func = [this](sf::Drawable &drawable){render_window->draw(drawable);};
+    }
 }
 
 void GameDisplay::on_pause_toggle_key_triggered()
@@ -153,7 +167,7 @@ void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
     // Display next frame
     render_window->clear();
     texture.update(rgb_data);
-    render_window->draw(sprite);
+    draw_func(sprite);
 
     render_window->display();
 
@@ -174,8 +188,29 @@ void GameDisplay::showEvent(QShowEvent *event)
     // Initial initialization of the SFML widget
     if (!m_initialized)
     {
+
         // Create an SFML window for rendering with the id of the window in which the drawing will be done
         render_window->create(sf::WindowHandle(winId()));
+
+        // Setup shader component
+        auto shader_qfile = QFile(":/shaders/crt_shader.frag");
+        if (!shader_qfile.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            on_push_error(QString("Failed loading shader file from QFile"), EXIT_FAILURE);
+            return;
+        }
+
+        QTextStream in(&shader_qfile);
+        std::string shader_text = in.readAll().toStdString();
+
+        if (!crt_shader->loadFromMemory(shader_text, sf::Shader::Fragment))
+        {
+            on_push_error(QString("Failed loading shader from memory"), EXIT_FAILURE);
+            return;
+        }
+
+        on_crt_shader_changed(SettingsManager::instance().crt_shader());
+
         // Initializing drawing objects
         on_init();
 
