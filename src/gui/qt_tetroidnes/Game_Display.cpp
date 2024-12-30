@@ -51,7 +51,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     QAction *pause_toggle_key = new QAction(this);
     pause_toggle_key->setShortcut(QKeySequence(Qt::Key_G));
 
-    if(m_is_emu_on_dif_thread)
+    if (m_is_emu_on_dif_thread)
     {
         emu_worker->moveToThread(&emu_thread);
     }
@@ -69,18 +69,19 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
     connect(time_between_draw_timer, &QTimer::timeout, this, [this]()
             { time_between_draw_ms += 1; });
-
 }
 
 void GameDisplay::on_crt_shader_changed(const bool b)
 {
     if (b)
     {
-        draw_func = [this](sf::Drawable &drawable){render_window->draw(drawable, crt_shader.get());};
+        draw_func = [this](sf::Drawable &drawable)
+        { render_window->draw(drawable, crt_shader.get()); };
     }
     else
     {
-        draw_func = [this](sf::Drawable &drawable){render_window->draw(drawable);};
+        draw_func = [this](sf::Drawable &drawable)
+        { render_window->draw(drawable); };
     }
 }
 
@@ -98,7 +99,6 @@ void GameDisplay::on_pause_toggle_key_triggered()
         {
             emu_worker->start_frame_timer();
         }
-
     }
 }
 
@@ -110,7 +110,7 @@ bool GameDisplay::is_paused() const
 void GameDisplay::pause_game()
 {
     m_paused = true;
-    if(!m_is_emu_on_dif_thread)
+    if (!m_is_emu_on_dif_thread)
     {
         emu_worker->stop_frame_timer();
     }
@@ -166,11 +166,10 @@ void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
     render_window->clear();
     texture.update(rgb_data);
     draw_func(sprite);
-
     render_window->display();
 
     frame_count += 1;
-    //qDebug() << "Milliseconds from previous draw call:" << time_between_draw_ms;
+    // qDebug() << "Milliseconds from previous draw call:" << time_between_draw_ms;
     time_between_draw_ms = 0;
 }
 
@@ -225,7 +224,6 @@ void GameDisplay::close_game()
         emu_thread.quit();
         emu_thread.wait();
     }
-
 }
 
 void GameDisplay::closeEvent(QCloseEvent *event)
