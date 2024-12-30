@@ -43,7 +43,7 @@ file(GLOB QT_HEADERS "src/include/Qt/*.h")
 file(GLOB QT_UI_FILES "src/gui/qt_tetroidnes/*.ui")
 
 find_package(OpenGL REQUIRED COMPONENTS OpenGL)
-
+find_package(SFML 3 REQUIRED COMPONENTS Graphics Audio)
 find_package(Qt6 REQUIRED COMPONENTS
     ${QT_REQUIRED_COMPONENTS}
 )
