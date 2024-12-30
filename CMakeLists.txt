@@ -10,22 +10,6 @@ set(EXECUTABLE_NAME TetroidNES)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(WIN32)
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-set(DLL_DEPENDENCIES
-    ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-graphics-d-2.dll
-    ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-system-d-2.dll
-    ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-window-d-2.dll
-)
-else()
-set(DLL_DEPENDENCIES
-    ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-graphics-2.dll
-    ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-system-2.dll
-    ${CMAKE_CURRENT_BINARY_DIR}/_deps/sfml-build/lib/sfml-window-2.dll
-)
-endif()
-endif()
-
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 set(VERSION_DEF "#define VERSION \"${PROJECT_VERSION}-Debug\"")
 else()
@@ -100,13 +84,6 @@ install(TARGETS ${EXECUTABLE_NAME}
 install(CODE
     file(GET_RUNTIME_DEPENDENCIES DIRECTORY ${QT_REQUIRED_COMPONENTS})
 )
-#if(WIN32)
-# Copy DLL Depencencies
-#add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
-#    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#        ${DLL_DEPENDENCIES} $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
-#)
-#endif()
 
 # Update version macro if needed
 file(READ src/gui/qt_tetroidnes/Main.cpp FILE_CONTENT)
