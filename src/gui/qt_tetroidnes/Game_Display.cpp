@@ -139,9 +139,9 @@ void GameDisplay::on_init()
 
     sf::Vector2i texture_rect_size = sprite.getTextureRect().size;
 
-    sprite.setOrigin({(float)(texture_rect_size.x) / 2, (float)(texture_rect_size.y) / 2});
+    // sprite.setOrigin({(float)(texture_rect_size.x) / 2, (float)(texture_rect_size.y) / 2});
     sprite.setTexture(texture);
-    update_game_scale();
+    // update_game_scale();
 
     qInfo() << "About to start thread...";
     if (m_is_emu_on_dif_thread)
@@ -270,7 +270,7 @@ void GameDisplay::update_game_scale()
     sf::Vector2u texture_size = sprite.getTexture().getSize();
     sprite.setScale(
         {static_cast<float>(widget_size.width()) / texture_size.x,
-        static_cast<float>(widget_size.height()) / texture_size.y});
+         static_cast<float>(widget_size.height()) / texture_size.y});
 }
 
 void GameDisplay::center_display()
