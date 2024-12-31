@@ -54,16 +54,29 @@ void main(){
     dc *= dc;
     
     // warp the fragment coordinates
-    uv = curve(uv, warp);
+   //  uv = curve(uv, warp);
     
-    vec4 tc = texture(tex0, uv.xy ); //texture
     
     // sample inside boundaries, otherwise set to black
-    if (uv.y > 1.0 || uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0)
-        FragColor = black_color;
-    else
-    {
+    
+   //  else
+      const float curvature = 7.5;
 
+      vec2 curve = uv * 2. - 1.;
+      float offset = length(curve) / curvature;
+      curve += curve * offset * offset;
+      curve = curve * 0.5 + 0.5;
+      
+      vec4 tc = texture(tex0, uv.xy ); //texture
+     
+      float vigantteWidth = 50.;
+      vec2 vignetteThreshold = vigantteWidth / Res.xy;
+      vec2 vignette = smoothstep(vec2(0), vignetteThreshold, 1. - abs(curve * 2. - 1.));
+      tc = tc * vignette.x * vignette.y;
+      vec4 ntsc_color = vec4(1.2, 1.2, 1.4, 1.0);
+      float brightness = .9;
+      float warp_brightness = .1;
+      tc = pow(tc, ntsc_color) * brightness + warp_brightness;
 
       float count = Res.y * density;
       vec2 sl = vec2(sin(uv.y * count), cos(uv.y * count));
@@ -72,6 +85,7 @@ void main(){
       tc += tc * vec4(random(uv*time)) * opacityNoise;
 
       FragColor = vec4(mix(tc.rgb, black_color.xyz, opacityScanline), 1.0);
+      
       // FragColor = tc;
-   }
+   // }
 } 
