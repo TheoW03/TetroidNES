@@ -16,7 +16,26 @@ float random (vec2 st) {
                          vec2(noiseX,noiseY)))*
         noiseScale);
 }
-
+// vec2 curve(vec2 uv)
+// {
+// 	uv = (uv - 0.5) * 2.0;
+// 	uv *= 1.1;	
+// 	uv.x *= 1.0 + pow((abs(uv.y) / 5.0), 2.0);
+// 	uv.y *= 1.0 + pow((abs(uv.x) / 4.0), 2.0);
+// 	uv  = (uv / 2.0) + 0.5;
+// 	uv =  uv *0.92 + 0.04;
+// 	return uv;
+// }
+vec2 curve(vec2 uv, float warp){
+   vec2 dc = abs(0.5-uv);
+    dc *= dc;
+    
+    uv.x -= 0.5; uv.x *= 1.0+(dc.y*(0.3*warp)); 
+    uv.x += 0.5;
+    uv.y -= 0.5; uv.y *= 1.0+(dc.x*(0.4*warp)); 
+    uv.y += 0.5;
+    return uv;
+}
 void main(){
    //TODO: Uniform these
    float density = 1.9;
@@ -35,10 +54,10 @@ void main(){
     dc *= dc;
     
     // warp the fragment coordinates
-    uv.x -= 0.5; uv.x *= 1.0+(dc.y*(0.3*warp)); uv.x += 0.5;
-    uv.y -= 0.5; uv.y *= 1.0+(dc.x*(0.4*warp)); uv.y += 0.5;
+    uv = curve(uv, warp);
+    
     vec4 tc = texture(tex0, uv.xy ); //texture
-
+    
     // sample inside boundaries, otherwise set to black
     if (uv.y > 1.0 || uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0)
         FragColor = black_color;
