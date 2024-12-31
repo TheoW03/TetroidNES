@@ -165,11 +165,12 @@ void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
     // Display next frame
     render_window->clear();
     texture.update(rgb_data);
+    crt_shader->setUniform("time", (float)(time_between_draw_ms * 0.001f));
     draw_func(sprite);
     render_window->display();
 
     frame_count += 1;
-    // qDebug() << "Milliseconds from previous draw call:" << time_between_draw_ms;
+    qDebug() << "Milliseconds from previous draw call:" << time_between_draw_ms;
     time_between_draw_ms = 0;
 }
 
