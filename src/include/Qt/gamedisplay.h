@@ -6,14 +6,12 @@
 
 #include <QWidget>
 #include <QTimer>
-#include <QMutex>
 #include <QChronoTimer>
 #include <QSharedPointer>
 #include <QCloseEvent>
 #include <QThread>
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
 
 #include <Emulator/Execute.h>
 #include <Emulator/Bus.h>
@@ -39,11 +37,11 @@ private:
     void on_init();
     void close_game();
 
-    int frame_count = 0;
+    int frame_count;
     QTimer *frames_per_sec_timer;
     QTimer *time_between_draw_timer;
     QScopedPointer<sf::RenderWindow> render_window;
-    QScopedPointer<sf::Shader> crt_shader;
+    sf::Shader crt_shader;
     bool m_initialized = false;
     sf::Texture texture;
     sf::Sprite sprite;
@@ -51,10 +49,9 @@ private:
     std::function<void (sf::Drawable &drawable)> draw_func;
     EmulatorWorker *emu_worker;
     int err_code;
-    int time_between_draw_ms = 0;
+    int time_between_draw_ms;
     bool m_paused;
     bool m_is_emu_on_dif_thread;
-    QMutex mutex;
 
 private slots:
     void on_crt_shader_changed(const bool b);

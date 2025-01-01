@@ -8,14 +8,13 @@
 #include "Emulator_Worker.h"
 
 const size_t cpu_cycles_frame = 29782;
-EmulatorWorker::EmulatorWorker(QString rom_dest, QMutex &mutex, bool &paused, QWidget *parent) : QObject{parent},
-                                                                                                 rom_url(rom_dest),
-                                                                                                 m_initialized(false),
-                                                                                                 m_is_running(false),
-                                                                                                 mutex_ptr(&mutex),
-                                                                                                 paused_ptr(&paused),
-                                                                                                 m_clock_interval(frame_interval_ns),
-                                                                                                 is_frame_generated(false)
+EmulatorWorker::EmulatorWorker(QString rom_dest, bool &paused, QWidget *parent) : QObject{parent},
+                                                                                rom_url(rom_dest),
+                                                                                m_initialized(false),
+                                                                                m_is_running(false),
+                                                                                paused_ptr(&paused),
+                                                                                m_clock_interval(frame_interval_ns),
+                                                                                is_frame_generated(false)
 {
 }
 

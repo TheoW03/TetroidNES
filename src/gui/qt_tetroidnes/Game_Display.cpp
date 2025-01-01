@@ -4,7 +4,6 @@
 #include <QtLogging>
 #include <QUrl>
 #include <QMessageBox>
-#include <QMutexLocker>
 #include <QFile>
 
 #include <Qt/Emulator_Worker.h>
@@ -19,11 +18,12 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
                                                              frames_per_sec_timer(new QTimer(this)),
                                                              time_between_draw_timer(new QTimer(this)),
                                                              m_paused(false),
-                                                             emu_worker(new EmulatorWorker(rom_url, mutex, m_paused)),
-                                                             crt_shader(new sf::Shader()),
+                                                             emu_worker(new EmulatorWorker(rom_url, m_paused)),
                                                              err_code(0),
                                                              texture({NES_RES_L, NES_RES_W}),
-                                                             sprite(texture)
+                                                             sprite(texture),
+                                                             frame_count(0),
+                                                             time_between_draw_ms(0)
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -76,7 +76,7 @@ void GameDisplay::on_crt_shader_changed(const bool b)
     if (b)
     {
         draw_func = [this](sf::Drawable &drawable)
-        { render_window->draw(drawable, crt_shader.get()); };
+        { render_window->draw(drawable, &crt_shader); };
     }
     else
     {
@@ -89,12 +89,10 @@ void GameDisplay::on_pause_toggle_key_triggered()
 {
     if (is_paused())
     {
-        mutex.lock();
         pause_game();
     }
     else
     {
-        mutex.unlock();
         if (m_is_emu_on_dif_thread)
         {
             emu_worker->start_frame_timer();
@@ -118,13 +116,11 @@ void GameDisplay::pause_game()
 
 void GameDisplay::on_push_error(QString msg, int error_code)
 {
-    mutex.lock();
     pause_game();
     QMessageBox::critical(
         this,
         "TetroidNES - " + tr("Error"),
         msg);
-    mutex.unlock();
 
     this->err_code = error_code;
 
@@ -140,7 +136,6 @@ void GameDisplay::on_init()
     sf::Vector2i texture_rect_size = sprite.getTextureRect().size;
 
     // sprite.setOrigin({(float)(texture_rect_size.x) / 2, (float)(texture_rect_size.y) / 2});
-    sprite.setTexture(texture);
     // update_game_scale();
 
     qInfo() << "About to start thread...";
@@ -165,7 +160,7 @@ void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
     // Display next frame
     render_window->clear();
     texture.update(rgb_data);
-    crt_shader->setUniform("time", (float)(time_between_draw_ms * 0.001f));
+    crt_shader.setUniform("time", (float)(time_between_draw_ms * 0.001f));
     draw_func(sprite);
     render_window->display();
 
@@ -188,22 +183,24 @@ void GameDisplay::showEvent(QShowEvent *event)
     {
 
         // Create an SFML window for rendering with the id of the window in which the drawing will be done
-        render_window->create(sf::WindowHandle(winId()));
+        render_window->create(sf::WindowHandle(winId())); // QWidget::winId() returns a native handle
 
         // Setup shader component
         auto shader_qfile = QFile(":/shaders/crt_shader.frag");
         if (!shader_qfile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             on_push_error(QString("Failed loading shader file from QFile"), EXIT_FAILURE);
+            QWidget::showEvent(event);
             return;
         }
 
         QTextStream in(&shader_qfile);
         std::string shader_text = in.readAll().toStdString();
 
-        if (!crt_shader->loadFromMemory(shader_text, sf::Shader::Type::Fragment))
+        if (!crt_shader.loadFromMemory(shader_text, sf::Shader::Type::Fragment))
         {
             on_push_error(QString("Failed loading shader from memory"), EXIT_FAILURE);
+            QWidget::showEvent(event);
             return;
         }
 
