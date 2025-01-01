@@ -74,7 +74,10 @@ void GameDisplay::on_crt_shader_changed(const bool b)
     if (b)
     {
         draw_func = [this](sf::Drawable &drawable)
-        { render_window->draw(drawable, crt_shader.get()); };
+        {
+            crt_shader->setUniform("time", (float)(time_between_draw_ms * 0.001f));
+            render_window->draw(drawable, crt_shader.get());
+        };
     }
     else
     {
@@ -167,6 +170,7 @@ void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
     // Display next frame
     render_window->clear();
     texture.update(rgb_data);
+
     draw_func(sprite);
     render_window->display();
 
