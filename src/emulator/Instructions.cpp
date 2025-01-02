@@ -2,7 +2,7 @@
 
 #include <Emulator/BitOperations.h>
 // #include "Memory.h"
-#include <Emulator/Computer.h>
+#include <Emulator/EmulatorUtil.h>
 #include <Emulator/AddressMode.h>
 #include <Emulator/StatusRegister.h>
 #include <Emulator/Bus.h>

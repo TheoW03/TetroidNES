@@ -1,4 +1,4 @@
-#include <Emulator/Computer.h>
+#include <Emulator/EmulatorUtil.h>
 
 #define NES_START 0x8000
 

@@ -1,4 +1,4 @@
-#include "Computer.h"
+#include <Emulator/EmulatorUtil.h>
 #include <iostream>
 
 void set_zero(uint8_t value, CPU &cpu);

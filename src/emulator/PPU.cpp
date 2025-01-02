@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <stdint.h>
 #include <Emulator/PPU.h>
-#include <Emulator/Computer.h>
+#include <Emulator/EmulatorUtil.h>
 #include <Qt/util.h>
 #include <bitset>
 #include <Qt/util.h>
