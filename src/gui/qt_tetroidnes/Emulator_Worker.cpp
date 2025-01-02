@@ -146,10 +146,9 @@ void EmulatorWorker::process_cpu()
         // this->cpu = result;
         if (result.error_code == EXIT_FAILURE)
         {
-            qInfo() << "potential error with the cpu";
+            qInfo() << "potential error with the cpu at " << num_to_hexa(result.bus.get_PC());
 
             auto err_mess = QString("%1-- at PC addr= 0x%2").arg(QString::fromStdString(result.bus.check_error().value()), QString::fromStdString(num_to_hexa(result.bus.get_PC())));
-
             emit push_error(err_mess, EXIT_FAILURE);
         }
         clock_cycles += exe.reset_clock();

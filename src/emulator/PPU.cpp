@@ -42,7 +42,10 @@ std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte, std::
 {
 #pragma region SYS_PAL
     std::tuple<uint8_t, uint8_t, uint8_t> system_palette[64] = {
-        {0x80, 0x80, 0x80}, {0x00, 0x3D, 0xA6}, {0x00, 0x12, 0xB0}, {0x44, 0x00, 0x96}, //
+        {0x80, 0x80, 0x80},
+        {0x00, 0x3D, 0xA6},
+        {0x00, 0x12, 0xB0},
+        {0x44, 0x00, 0x96}, //
         {0xA1, 0x00, 0x5E},
         {0xC7, 0x00, 0x28},
         {0xBA, 0x06, 0x00},
@@ -105,6 +108,7 @@ std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte, std::
         {0x11, 0x11, 0x11} //
     };
 #pragma endregion
+    printf("b: %x \n", byte);
     if (byte == 0)
     {
         return system_palette[this->pallete[0]];
@@ -121,10 +125,7 @@ std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte, std::
     {
         return system_palette[std::get<3>(pallete)];
     }
-    else
-    {
-        return system_palette[0];
-    }
+    std::cout << "non" << std::endl;
     return system_palette[byte];
 }
 
@@ -162,9 +163,12 @@ std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> PPU::bg_pallete(size_t row, size_
         idx = (attr_byte >> 6) & 0b11;
     }
     size_t pallete_offset = 1 + idx * 4;
-    // printf(" ofset 1 %d \n", pallete_offset);
-
-    // printf(" bg palete 1: %x 2: %x 3: %x 4: %x\n", this->pallete[pallete_offset], this->pallete[pallete_offset + 1], this->pallete[pallete_offset + 2]);
+    // printf(" offset 1: %d \n", pallete_offset);
+    // for (int i = 0; i < 32; i++)
+    // {
+    //     printf("%x \n", this->pallete[i]);
+    // }
+    printf(" bg palete 1: %x 2: %x 3: %x 4: %x\n", this->pallete[pallete_offset], this->pallete[pallete_offset + 1], this->pallete[pallete_offset + 2]);
 
     return {
         0,
@@ -306,9 +310,14 @@ void PPU::write_PPU_address(uint8_t val)
     }
     // TODO: fix later
     //  std::cout << "ppu addr" << std::endl;
-    printf("val:%x   \n", this->reg.ppuAddr.val);
-    printf("hi: %x \n", this->reg.ppuAddr.hi);
-    printf("lo: %x \n", this->reg.ppuAddr.lo);
+    qInfo() << "addr";
+    qInfo() << "val: " << num_to_hexa(this->reg.ppuAddr.val);
+    qInfo() << "hi: " << num_to_hexa(this->reg.ppuAddr.hi);
+    qInfo() << "lo: " << num_to_hexa(this->reg.ppuAddr.lo);
+
+    // printf("val:%x   \n", this->reg.ppuAddr.val);
+    // printf("hi: %x \n", this->reg.ppuAddr.hi);
+    // printf("lo: %x \n", this->reg.ppuAddr.lo);
 
     this->reg.high_ptr = !this->reg.high_ptr;
 }
@@ -335,18 +344,21 @@ void PPU::write_PPU_mask(uint8_t val)
 }
 std::optional<int> PPU::write_PPU_data(uint8_t val)
 {
-    if (this->reg.ppumask.s == 0)
-    {
-        printf("is 0 \n");
-        return 1;
-    }
+
     uint16_t addr = this->reg.ppuAddr.val;
+    if (addr == 0)
+        return 1;
     // printf("%x \n", addr);
 
     // std::cout << addr << std::endl;
     if (addr >= 0x2000 && addr <= 0x2fff)
     {
         // uint8_t res = internalDataBuffer;
+        // if (this->reg.ppumask.b == 0)
+        // {
+        //     // printf("is 0 \n");
+        //     return 1;
+        // }
         this->memory[mirror(addr)] = val;
         // std::cout << "saving to vram" << std::endl;
         // internalDataBuffer = memory[mirror(addr)];
@@ -354,13 +366,20 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
     else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c)
     {
         addr = addr - 0x10;
-        // this->pallete[addr - 0x3f00] = val;
+        addr &= 0x1F;
+
+        qInfo() << "pallete" << num_to_hexa(addr) << " val: " << val;
+
+        this->pallete[addr] = val;
+        qInfo() << "pallete written to: " << this->pallete[addr];
     }
     else if (addr >= 0x3f00 && addr <= 0x3fff)
     {
-        // printf("%x \n", addr - 0x3f00);
-        // this->pallete[addr - 0x3f00] = val;
-        // printf("pallete \n");
+        addr &= 0x1F;
+        this->pallete[addr] = val;
+        qInfo() << "pallete" << num_to_hexa(addr) << " val: " << val;
+
+        qInfo() << "pallete" << num_to_hexa(addr) << " val: " << val;
     }
     else if (addr == 0x4014)
     {
@@ -372,13 +391,18 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
         // std::cout << "\033[91mAttempt to write into PPU READ_ONLY_MEM\033[0m" << std::endl;
         // printf("0x%x\n", addr);
         // exit(EXIT_FAILURE);
-        this->err_string = std::optional<std::string>{"Address 0x" + num_to_hexa(addr) + " is a PPU read only address"};
-
-        return {};
+        if (this->reg.ppumask.s != 0)
+        {
+            this->err_string = std::optional<std::string>{"Address 0x" + num_to_hexa(reg.ppuAddr.val) + " is a PPU read only address"};
+            return {};
+        }
+        return 1;
     }
     this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
     if (reg.ppuAddr.val > 0x3fff)
     {
+        qInfo() << "addr" << num_to_hexa(this->reg.ppuAddr.val) << " val: " << val;
+
         this->reg.ppuAddr.val &= 0b11111111111111;
     }
     return 1;
@@ -483,7 +507,8 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
                 uint16_t value = (1 & upper) << 1 | (1 & lower);
                 upper >>= 1;
                 lower >>= 1;
-                auto rgb = getColorFromByte(value, bgpallete);
+
+                auto rgb = getColorFromByte((this->reg.ppumask.b != 0 ? value : 0), bgpallete);
                 // if (value == 0)
                 //     continue;
                 // sf::Color rgb = getColorFromByte(value);
@@ -539,8 +564,27 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
         //  uint16_t tile = this->memory[ppu_idx];
         //  int idx = ppu_idx % 32;
         //  int idy = ppu_idx / 32;
+
         banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
         std::vector<uint8_t> tile_list;
+        auto pallete_idx = attribbyte.pallete;
+        // printf("%x \n", attribbyte.pallete);
+        size_t pallete_offset = 16 + (pallete_idx * 4);
+        // printf("offset: %d \n", pallete_offset);
+        // printf(" sprite palete 1: 0x%x 2: 0x%x 3: 0x%x \n", this->pallete[pallete_offset], this->pallete[pallete_offset + 1], this->pallete[pallete_offset + 2]);
+        // for (int i = 0; i < 32; i++)
+        //     printf("offset: 0x%x \n", this->pallete[i]);
+        std::bitset<2> u(attribbyte.pallete);
+        std::cout << u << std::endl;
+        printf("tile: %x \n", tile);
+        std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> sprite_palletes = {
+            0,
+            this->pallete[pallete_offset],
+            this->pallete[pallete_offset + 1],
+            this->pallete[pallete_offset + 2],
+
+        };
+
         this->get_chr_tile(tile, banks, tile_list);
         // std::vector<uint8_t>
         //     tile_list;
@@ -560,7 +604,9 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
                 uint16_t value = (1 & upper) << 1 | (1 & lower);
                 upper >>= 1;
                 lower >>= 1;
-                auto rgb = getColorFromByte(value, {0, 1, 2, 3});
+
+                auto rgb = getColorFromByte(this->reg.ppumask.s != 0 ? value : 0, sprite_palletes);
+                // std::cout << rgb << std::endl;
                 if (value == 0)
                     continue;
                 int tile_x = 0;
@@ -600,11 +646,7 @@ uint8_t PPU::read_OAM_data()
 void PPU::write_OAM_data(uint8_t val)
 {
     // cant access the OAM if the ctrl S bit is not set
-    if (this->reg.ppumask.s == 0)
-    {
-        // printf("is 0 \n");
-        return;
-    }
+
     oam[oam_addr] = val;
     oam_addr++;
     // oam_addr += (oam_addr + 1) % 256;
