@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <vector>
 // #include <SFML/Graphics.hpp>
@@ -7,8 +9,6 @@
 #include <tuple>
 #include <chrono>
 
-#ifndef PPU_H
-#define PPU_H
 #include <cstdint>
 class PPU
 {
@@ -127,5 +127,3 @@ public:
     std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
     void log_ppu();
 };
-
-#endif

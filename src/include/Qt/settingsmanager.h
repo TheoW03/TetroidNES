@@ -1,5 +1,4 @@
-#ifndef SETTINGSMANAGER_H
-#define SETTINGSMANAGER_H
+#pragma once
 
 #include <QObject>
 #include <QSettings>
@@ -61,5 +60,3 @@ private:
     SettingsManager();
     QSettings m_settings = QSettings(SAVE_DIR, QSettings::IniFormat, this);
 };
-
-#endif // SETTINGSMANAGER_H

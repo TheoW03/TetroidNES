@@ -1,5 +1,4 @@
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#pragma once
 
 #include <QListWidget>
 #include <QStackedWidget>
@@ -38,5 +37,3 @@ protected:
     void closeEvent(QCloseEvent *event) override;
     
 };
-
-#endif // SETTINGS_H

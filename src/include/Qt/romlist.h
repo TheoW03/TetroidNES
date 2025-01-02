@@ -1,5 +1,4 @@
-#ifndef ROMLIST_H
-#define ROMLIST_H
+#pragma once
 
 #include <QWidget>
 #include <QObject>
@@ -54,5 +53,3 @@ private:
 private slots:
     void on_rom_dirs_changed(QStringList dirs);
 };
-
-#endif // ROMLIST_H

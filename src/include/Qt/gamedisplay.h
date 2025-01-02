@@ -1,5 +1,4 @@
-#ifndef GAMEDISPLAY_H
-#define GAMEDISPLAY_H
+#pragma once
 
 #include <chrono>
 #include <functional>
@@ -68,5 +67,3 @@ protected:
     QPaintEngine *paintEngine() const override;
     void resizeEvent(QResizeEvent *event) override;
 };
-
-#endif // GAMEDISPLAY_H

@@ -1,5 +1,4 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <Qt/filtercontrolframe.h>
 #include <Qt/romlist.h>
@@ -48,4 +47,3 @@ private:
     Ui::MainWindow *ui;
 
 };
-#endif // MAINWINDOW_H

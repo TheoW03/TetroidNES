@@ -1,3 +1,5 @@
+#pragma once
+
 #include <QApplication>
 #include <QtLogging>
 
@@ -5,8 +7,6 @@
 #include <Qt/mainwindow.h>
 
 #define SAVE_DIR "./save/config.cfg"
-#ifndef UTIL_H
-#define UTIL_H
 
 inline std::string num_to_hexa(uint16_t num)
 {
@@ -53,5 +53,3 @@ inline void start_game(QString path)
         }
     }
 }
-
-#endif // UTIL_H

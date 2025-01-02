@@ -1,5 +1,4 @@
-#ifndef LOGDISPLAY_H
-#define LOGDISPLAY_H
+#pragma once
 
 #include <QObject>
 #include <QWidget>
@@ -39,5 +38,3 @@ private:
     QPlainTextEdit *text_display;
 
 };
-
-#endif // LOGDISPLAY_H

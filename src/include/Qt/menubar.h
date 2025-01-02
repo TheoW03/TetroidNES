@@ -1,5 +1,4 @@
-#ifndef MENUBAR_H
-#define MENUBAR_H
+#pragma once
 
 #include <QMenuBar>
 #include <QAction>
@@ -35,5 +34,3 @@ private:
     QMenu *help;
 
 };
-
-#endif // MENUBAR_H

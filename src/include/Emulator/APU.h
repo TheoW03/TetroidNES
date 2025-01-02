@@ -1,8 +1,8 @@
-#include <iostream>
+#pragma once
 
-#ifndef APU_H
-#define APU_H
+#include <iostream>
 #include <cstdint>
+
 class APU
 {
 private:
@@ -11,5 +11,3 @@ private:
 public:
     APU();
 };
-
-#endif

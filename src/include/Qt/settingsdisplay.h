@@ -1,5 +1,4 @@
-#ifndef SETTINGSDISPLAY_H
-#define SETTINGSDISPLAY_H
+#pragma once
 
 #include <QStackedWidget>
 #include <QPlainTextEdit>
@@ -82,5 +81,3 @@ private slots:
     void on_speed_index_changed(const int idx);
 
 };
-
-#endif //SETTINGSDISPLAY_h

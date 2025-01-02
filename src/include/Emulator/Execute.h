@@ -1,9 +1,9 @@
+#pragma once
+
 #include <Emulator/EmulatorUtil.h>
 
 #define NES_START 0x8000
 
-#ifndef EXECUTE_H
-#define EXECUTE_H
 class Execute
 {
 private:
@@ -19,4 +19,3 @@ public:
     void joypad1(Controller button, int isPressed);
     void joypad2(Controller button, int isPressed);
 };
-#endif

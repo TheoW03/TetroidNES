@@ -1,5 +1,4 @@
-#ifndef ROMLISTITEM_H
-#define ROMLISTITEM_H
+#pragma once
 
 #include <QWidget>
 #include <QFrame>
@@ -32,5 +31,3 @@ private:
 
 signals:
 };
-
-#endif // ROMLISTITEM_H

@@ -1,5 +1,4 @@
-#ifndef FILTERCONTROLFRAME_H
-#define FILTERCONTROLFRAME_H
+#pragma once
 
 #include <QFrame>
 #include <QPushButton>
@@ -31,5 +30,3 @@ private:
 private slots:
     void update_completer_model(QStringList dirs);
 };
-
-#endif // FILTERCONTROLFRAME_H

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <Emulator/Bus.h>
 #include <filesystem>
@@ -7,8 +9,6 @@
 #define NES_RES_W 240
 #define NES_RES_L 256
 
-#ifndef CPU_H
-#define CPU_H
 struct CPU
 {
     uint8_t A_Reg;
@@ -36,9 +36,7 @@ struct CPU
     Bus bus;
     std::optional<int> interrupt;
 };
-#endif
-#ifndef ADDRESS_MODE
-#define ADDRESS_MODE
+
 enum class AddressMode
 {
     ACCUMULATOR,
@@ -55,4 +53,3 @@ enum class AddressMode
     RELATIVE,
     IMPLIED
 };
-#endif

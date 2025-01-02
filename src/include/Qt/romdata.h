@@ -1,5 +1,4 @@
-#ifndef ROMDATA_H
-#define ROMDATA_H
+#pragma once
 
 #include <QObject>
 #include <QUrl>
@@ -35,5 +34,3 @@ private:
     bool m_favorited;
     QUrl m_path;
 };
-
-#endif // ROMDATA_H

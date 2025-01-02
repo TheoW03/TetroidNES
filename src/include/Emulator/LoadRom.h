@@ -1,9 +1,10 @@
+#pragma once
+
 #include <iostream>
 #include <vector>
 #include <optional>
 #include <cstdint>
-#ifndef MIRROR_TYPE_H
-#define MIRROR_TYPE_H
+
 enum MirrorType
 {
     VERTICAL,
@@ -16,9 +17,6 @@ enum ColorEncoding
     Pal,
     Ntsc
 };
-#endif
-#ifndef ROM_H
-#define ROM_H
 
 struct Rom
 {
@@ -31,5 +29,3 @@ struct Rom
 
 std::vector<uint8_t> file_tobyte_vector(std::string file_name);
 std::optional<Rom> load_rom(std::vector<uint8_t> instructions);
-
-#endif

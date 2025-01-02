@@ -1,10 +1,12 @@
+#pragma once
+
 #include <iostream>
 #include <Emulator/PPU.h>
 #include <Emulator/LoadRom.h>
 #include <Emulator/APU.h>
 #include <optional>
-#ifndef CONTROILER_H
-#define CONTROILER_H
+#include <cstdint>
+
 enum class Controller
 {
     A = 0b00000001,
@@ -16,10 +18,7 @@ enum class Controller
     LEFT = 0b01000000,
     RIGHT = 0b10000000
 };
-#endif
-#ifndef BUS_H
-#define BUS_H
-#include <cstdint>
+
 class Bus
 {
 private:
@@ -83,4 +82,3 @@ public:
     std::optional<std::string> check_error();
     void log_ppu();
 };
-#endif

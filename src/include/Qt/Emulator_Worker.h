@@ -1,5 +1,4 @@
-#ifndef EMULATORWORKER_H
-#define EMULATORWORKER_H
+#pragma once
 
 #include <chrono>
 
@@ -44,6 +43,3 @@ private slots:
     void render_frame();
 
 };
-
-
-#endif // EMULATORWORKER_H
