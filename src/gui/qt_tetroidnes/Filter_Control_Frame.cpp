@@ -1,4 +1,4 @@
-#include <QStringlistModel>
+#include <QStringListModel>
 #include <QDebug>
 #include <QDir>
 #include <QRegularExpression>
@@ -16,16 +16,16 @@ FilterControlFrame::FilterControlFrame(QWidget *parent) : QFrame{parent}
 
     QHBoxLayout *sort_control_frame_layout = new QHBoxLayout();
     QVBoxLayout *sort_buttons_frame_layout = new QVBoxLayout();
-    QHBoxLayout *groupbox_layout =           new QHBoxLayout();
+    QHBoxLayout *groupbox_layout = new QHBoxLayout();
 
-    search_bar =             new QLineEdit(this);
-    search_bar_completer =   new QCompleter(search_bar);
-    sort_buttons_frame =     new QFrame(this);
-    sort_ascending_button =  new QPushButton(tr("Ascending"), sort_buttons_frame);
-    sort_mode_groupbox =     new QGroupBox(sort_buttons_frame);
-    sort_mode_az =           new QPushButton(tr("A-Z"), sort_mode_groupbox);
-    sort_mode_year =         new QPushButton(tr("Year"), sort_mode_groupbox);
-    sort_mode_favorites =    new QPushButton(tr("Favorites"), sort_mode_groupbox);
+    search_bar = new QLineEdit(this);
+    search_bar_completer = new QCompleter(search_bar);
+    sort_buttons_frame = new QFrame(this);
+    sort_ascending_button = new QPushButton(tr("Ascending"), sort_buttons_frame);
+    sort_mode_groupbox = new QGroupBox(sort_buttons_frame);
+    sort_mode_az = new QPushButton(tr("A-Z"), sort_mode_groupbox);
+    sort_mode_year = new QPushButton(tr("Year"), sort_mode_groupbox);
+    sort_mode_favorites = new QPushButton(tr("Favorites"), sort_mode_groupbox);
     sort_mode_button_group = new QButtonGroup(sort_mode_groupbox);
 
     // search bar completer
@@ -68,19 +68,19 @@ FilterControlFrame::FilterControlFrame(QWidget *parent) : QFrame{parent}
 
     switch (sort_mode)
     {
-        case RomList::Year:
-            sort_mode_year->setChecked(true);
-            break;
-        case RomList::Favorites:
-            sort_mode_favorites->setChecked(true);
-            break;
-        case RomList::AZ:
-            sort_mode_az->setChecked(true);
-            break;
-        default:
-            qWarning() << "Sort mode enum given was invalid! Int given:" << sort_mode;
-            sort_mode_az->setChecked(true);
-            break;
+    case RomList::Year:
+        sort_mode_year->setChecked(true);
+        break;
+    case RomList::Favorites:
+        sort_mode_favorites->setChecked(true);
+        break;
+    case RomList::AZ:
+        sort_mode_az->setChecked(true);
+        break;
+    default:
+        qWarning() << "Sort mode enum given was invalid! Int given:" << sort_mode;
+        sort_mode_az->setChecked(true);
+        break;
     }
 
     // setup search bar
@@ -107,5 +107,4 @@ void FilterControlFrame::update_completer_model(QStringList dirs)
     updated_dirs.replaceInStrings(qregex, "");
 
     completer_model->setStringList(updated_dirs);
-
 }
