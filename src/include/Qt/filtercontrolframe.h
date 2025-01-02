@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QGroupBox>
 #include <QButtonGroup>
+#include <QCompleter>
 
 class FilterControlFrame : public QFrame
 {
@@ -18,6 +19,7 @@ public:
     friend class MainWindow; // Handles FilterControlFrame
 private:
     QLineEdit *search_bar;
+    QCompleter *search_bar_completer;
     QFrame *sort_buttons_frame;
     QPushButton *sort_ascending_button;
     QGroupBox *sort_mode_groupbox;
@@ -26,7 +28,8 @@ private:
     QPushButton *sort_mode_favorites;
     QButtonGroup *sort_mode_button_group;
 
-signals:
+private slots:
+    void update_completer_model(QStringList dirs);
 };
 
 #endif // FILTERCONTROLFRAME_H

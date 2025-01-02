@@ -1,6 +1,7 @@
 #include <Qt/gamedisplay.h>
 
 #include <QCoreApplication>
+#include <QRegularExpression>
 #include <QtLogging>
 #include <QUrl>
 #include <QMessageBox>
@@ -31,9 +32,13 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     setWindowFlags(Qt::Window);
     resize(800, 600); // TODO: MAKE THIS MORE FLEXIBLE IN SETTINGS
 
+    // Captures the substring between the last / or \ and .nes
+    const QRegularExpression qregex(R"((?<=([\\/]))[^\\/]+(?=\.nes))");
+    QString title = qregex.match(rom_url).captured(0);
+
     setWindowTitle(QString("%1 - %2").arg(
         qApp->applicationName(),
-        QUrl(rom_url).fileName().split(".").front() // Should probably clean this up
+        title
         ));
 
     setFocusPolicy(Qt::StrongFocus);
