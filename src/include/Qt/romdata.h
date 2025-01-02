@@ -4,40 +4,36 @@
 #include <QObject>
 #include <QUrl>
 
-using u_short = unsigned short;
-
 class RomData : public QObject
 {
     Q_OBJECT
 public:
     explicit RomData(QObject *parent = nullptr, 
-        u_short year = 0,
+        uint16_t year = 0,
         QByteArray img = QByteArray(),
         QString title = QString(),
         bool favorited = false,
         QUrl path = QUrl("")
     );
     ~RomData();
-    u_short year();
-    void set_year(const u_short year);
-    QString title();
+    uint16_t year() const;
+    void set_year(const uint16_t year);
+    QString title() const;
     void set_title(QString title);
-    QByteArray img();
+    QByteArray img() const;
     void set_img(QByteArray img);
-    bool favorited();
+    bool favorited() const;
     void set_favorited(const bool b);
-    QUrl path();
+    QUrl path() const;
     void set_path(QUrl path);
     bool is_empty() const;
 
 private:
-    u_short m_year;
+    uint16_t m_year;
     QByteArray m_img;
     QString m_title;
     bool m_favorited;
     QUrl m_path;
 };
-
-using shptr_romdata = QSharedPointer<RomData>;
 
 #endif // ROMDATA_H

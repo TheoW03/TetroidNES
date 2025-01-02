@@ -55,6 +55,7 @@ signals:
     void crt_shader_changed(bool on);
     void speed_changed(float speed);
     void recent_roms_changed(QStringList dirs);
+    void rom_dirs_changed(QStringList dirs);
 
 private:
     SettingsManager();

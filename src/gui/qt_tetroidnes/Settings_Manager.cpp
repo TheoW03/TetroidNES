@@ -24,6 +24,8 @@ QStringList SettingsManager::get_rom_dirs()
 void SettingsManager::set_rom_dir(QStringList dir)
 {
     m_settings.setValue(key_romdir, dir);
+
+    emit rom_dirs_changed(dir);
 }
 
 void SettingsManager::set_rom_dir(QString dir)
@@ -32,6 +34,8 @@ void SettingsManager::set_rom_dir(QString dir)
     rom_dirs.append(dir);
 
     m_settings.setValue(key_romdir, rom_dirs);
+
+    emit rom_dirs_changed(rom_dirs);
 }
 
 void SettingsManager::set_save_dir(QString dir)

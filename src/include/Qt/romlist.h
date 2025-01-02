@@ -27,30 +27,32 @@ public:
     SortMode current_mode() const;
     void set_current_order(const Qt::SortOrder order);
     Qt::SortOrder current_order() const;
-    void set_items_per_page(unsigned int i);
-    void set_current_page(unsigned int i);
-    unsigned int current_page() const;
-    unsigned int total_pages() const;
+    void set_items_per_page(uint32_t i);
+    void set_current_page(uint32_t i);
+    uint32_t current_page() const;
+    uint32_t total_pages() const;
     void update_total_pages();
-    unsigned int items_per_page() const;
-    shptr_romdata get_romdata(const int page, int index);
+    uint32_t items_per_page() const;
+    RomData* get_romdata(const int page, const int index);
     void search(QString &expr);
     void update_display();
 private:
-    inline static const bool compare_year(const shptr_romdata &a, const shptr_romdata &b);
-    inline static const bool compare_favorite(const shptr_romdata &a, const shptr_romdata &b);
-    inline static const bool compare_alphabet(const shptr_romdata &a, const shptr_romdata &b);
-    inline static const bool compare_regex(const shptr_romdata &a, const shptr_romdata &b, const QRegularExpression &expr, const SortMode &mode);
+    inline static const bool compare_year(const RomData *a, const RomData *b);
+    inline static const bool compare_favorite(const RomData *a, const RomData *b);
+    inline static const bool compare_alphabet(const RomData *a, const RomData *b);
+    inline static const bool compare_regex(const RomData *a, const RomData *b, const QRegularExpression &expr, const SortMode &mode);
     void setup_display();
+    void cleanup_romdata();
     FlowLayout *main_layout;
-    QList<shptr_romdata> data;
+    QScopedPointer<QList<RomData*>> data;
     RomList::SortMode m_current_mode;
-    Qt::SortOrder m_current_order = Qt::AscendingOrder;
+    Qt::SortOrder m_current_order;
 
-    unsigned int m_current_page = 1;
-    unsigned int m_total_pages = 1;
-    unsigned int m_items_per_page = 0;
-signals:
+    uint32_t m_current_page;
+    uint32_t m_total_pages;
+    uint32_t m_items_per_page;
+private slots:
+    void on_rom_dirs_changed(QStringList dirs);
 };
 
 #endif // ROMLIST_H

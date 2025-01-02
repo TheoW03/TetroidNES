@@ -12,7 +12,7 @@
 #include <Qt/utilemulator.h>
 #include <Qt/settingsmanager.h>
 
-constexpr const unsigned int rgb_data_size = NES_RES_A * 4;
+constexpr const uint32_t rgb_data_size = NES_RES_A * 4;
 
 GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
                                                              render_window(new sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)),
