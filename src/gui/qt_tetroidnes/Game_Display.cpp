@@ -32,13 +32,16 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     setWindowFlags(Qt::Window);
     resize(800, 600); // TODO: MAKE THIS MORE FLEXIBLE IN SETTINGS
 
-    // Captures the substring between the last / or \ and .nes
-    const QRegularExpression qregex(R"((?<=([\\/]))[^\\/]+(?=\.nes))");
-    QString title = qregex.match(rom_url).captured(0);
+    game_title = QString::fromStdString(
+        std::filesystem::path(rom_url.toStdString())
+        .filename()
+        .replace_extension()
+        .string()
+    );
 
     setWindowTitle(QString("%1 - %2").arg(
         qApp->applicationName(),
-        title
+        game_title
         ));
 
     setFocusPolicy(Qt::StrongFocus);
@@ -187,7 +190,12 @@ void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
 void GameDisplay::on_framerate_timer_timeout()
 {
     setWindowTitle(
-        QString("Speed: %%1 | FPS: %2").arg(QString::number(speed_percent(frame_count, ntsc_frame_rate)), QString::number(frame_count)));
+        QString("%1 Speed: %%2 | FPS: %3").arg(
+            game_title,
+            QString::number(speed_percent(frame_count, ntsc_frame_rate)),
+            QString::number(frame_count)
+        )
+    );
     frame_count = 0;
 }
 

@@ -9,7 +9,9 @@
 #include <Qt/settingsmanager.h>
 
 #define ABOUT_TEXT "dummy text" // Placeholder until we figure out how to store long strings of text
-
+//
+// QSTACKEDWIDGET CONTROLLER
+//
 SettingsDisplay::SettingsDisplay(QWidget *parent) : QStackedWidget{parent}
 {
     general = new GeneralSettingsDisplay(this);
@@ -52,7 +54,9 @@ void SettingsDisplay::on_add_directory_clicked()
 void SettingsDisplay::on_min_gui_on_start_checkbox_toggled(const bool toggled)
 {
 }
-
+//
+// GENERAL SETTINGS
+//
 GeneralSettingsDisplay::GeneralSettingsDisplay(QWidget *parent) : QWidget{parent}
 {
     SettingsManager &settings = SettingsManager::instance();
@@ -101,7 +105,9 @@ GeneralSettingsDisplay::GeneralSettingsDisplay(QWidget *parent) : QWidget{parent
 GeneralSettingsDisplay::~GeneralSettingsDisplay()
 {
 }
-
+//
+// EMULATOR SETTINGS
+//
 EmulatorSettingsDisplay::EmulatorSettingsDisplay(QWidget *parent) : QWidget{parent}
 {
     SettingsManager &settings = SettingsManager::instance();
@@ -111,16 +117,28 @@ EmulatorSettingsDisplay::EmulatorSettingsDisplay(QWidget *parent) : QWidget{pare
     const auto default_combobox_key = QString("100%");
     int speed_combobox_current_idx;
 
-    QVBoxLayout *layout = new QVBoxLayout();
-    QVBoxLayout *emulator_groupbox_layout = new QVBoxLayout();
+    auto *layout = new QVBoxLayout();
+    auto *emulator_groupbox_layout = new QVBoxLayout();
+    auto *emu_speed_groupbox_layout = new QVBoxLayout();
 
+    // Emulator GroupBox
+    emulator_groupbox = new QGroupBox(tr("Emulator"), this);
+
+    // Threaded CheckBox
     threaded_checkbox = new QCheckBox(tr("Enable Threading"), this);
     threaded_checkbox->setObjectName("run_emu_in_different_thread");
     threaded_checkbox->setChecked(settings_run_on_dif_thread);
 
-    emulator_groupbox = new QGroupBox(tr("Emulator"), this);
+    // Crt shader CheckBox
+    crt_shader_checkbox = new QCheckBox("CRT Filter", this);
+    crt_shader_checkbox->setObjectName("crt_shader");
+    crt_shader_checkbox->setChecked(settings_crt_shader);
 
-    speed_combobox = new QComboBox(emulator_groupbox);
+    // Emu Speed GroupBox
+    emu_speed_groupbox = new QGroupBox(tr("Emulation Speed"), this);
+
+    // Emu speed ComboBox
+    speed_combobox = new QComboBox(emu_speed_groupbox);
     speed_combobox->setObjectName("speed");
     speed_combobox->addItem("25%", QVariant(0.25f));
     speed_combobox->addItem("50%", QVariant(0.5f));
@@ -130,6 +148,7 @@ EmulatorSettingsDisplay::EmulatorSettingsDisplay(QWidget *parent) : QWidget{pare
     speed_combobox->addItem("400%", QVariant(4.f));
     speed_combobox->addItem("Unlimited", QVariant(0.f));
 
+    // Check for invalid speed value in settings file
     speed_combobox_current_idx = speed_combobox->findData(QVariant(settings_speed));
     if (speed_combobox_current_idx == -1)
     {
@@ -149,23 +168,26 @@ EmulatorSettingsDisplay::EmulatorSettingsDisplay(QWidget *parent) : QWidget{pare
     }
     speed_combobox->setCurrentIndex(speed_combobox_current_idx);
 
-    crt_shader_checkbox = new QCheckBox("CRT Filter", this);
-    crt_shader_checkbox->setObjectName("crt_shader");
-    crt_shader_checkbox->setChecked(settings_crt_shader);
-
-    emulator_groupbox_layout->addWidget(speed_combobox);
+    // Emulator GroupBox Layout
+    emulator_groupbox_layout->addWidget(threaded_checkbox);
+    emulator_groupbox_layout->addWidget(crt_shader_checkbox);
     emulator_groupbox->setLayout(emulator_groupbox_layout);
 
-    layout->addWidget(threaded_checkbox);
+    // Emulator Speed GroupBox Layout
+    emu_speed_groupbox_layout->addWidget(speed_combobox);
+    emu_speed_groupbox->setLayout(emu_speed_groupbox_layout);
+
     layout->addWidget(emulator_groupbox);
-    layout->addWidget(crt_shader_checkbox);
+    layout->addWidget(emu_speed_groupbox);
     setLayout(layout);
 }
 
 EmulatorSettingsDisplay::~EmulatorSettingsDisplay()
 {
 }
-
+//
+// ABOUT
+//
 About::About(QWidget *parent) : QWidget{parent}
 {
     QVBoxLayout *layout = new QVBoxLayout();

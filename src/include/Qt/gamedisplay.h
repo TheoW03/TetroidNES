@@ -39,6 +39,7 @@ private:
     void on_init();
     void close_game();
 
+    QString game_title;
     int frame_count = 0;
     QTimer *frames_per_sec_timer;
     QTimer *time_between_draw_timer;
