@@ -34,15 +34,13 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
 
     game_title = QString::fromStdString(
         std::filesystem::path(rom_url.toStdString())
-        .filename()
-        .replace_extension()
-        .string()
-    );
+            .filename()
+            .replace_extension()
+            .string());
 
     setWindowTitle(QString("%1 - %2").arg(
         qApp->applicationName(),
-        game_title
-        ));
+        game_title));
 
     setFocusPolicy(Qt::StrongFocus);
 
@@ -183,19 +181,14 @@ void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
     render_window->display();
 
     frame_count += 1;
-    // qDebug() << "Milliseconds from previous draw call:" << time_between_draw_ms;
+    qDebug() << "Milliseconds from previous draw call:" << time_between_draw_ms;
     time_between_draw_ms = 0;
 }
 
 void GameDisplay::on_framerate_timer_timeout()
 {
     setWindowTitle(
-        QString("%1 Speed: %%2 | FPS: %3").arg(
-            game_title,
-            QString::number(speed_percent(frame_count, ntsc_frame_rate)),
-            QString::number(frame_count)
-        )
-    );
+        QString("%1 Speed: %%2 | FPS: %3").arg(game_title, QString::number(speed_percent(frame_count, ntsc_frame_rate)), QString::number(frame_count)));
     frame_count = 0;
 }
 

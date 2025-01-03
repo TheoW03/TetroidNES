@@ -108,7 +108,6 @@ std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte, std::
         {0x11, 0x11, 0x11} //
     };
 #pragma endregion
-    printf("b: %x \n", byte);
     if (byte == 0)
     {
         return system_palette[this->pallete[0]];
@@ -168,7 +167,6 @@ std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> PPU::bg_pallete(size_t row, size_
     // {
     //     printf("%x \n", this->pallete[i]);
     // }
-    printf(" bg palete 1: %x 2: %x 3: %x 4: %x\n", this->pallete[pallete_offset], this->pallete[pallete_offset + 1], this->pallete[pallete_offset + 2]);
 
     return {
         0,
@@ -378,11 +376,13 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
         addr &= 0x1F;
         this->pallete[addr] = val;
         qInfo() << "pallete" << num_to_hexa(addr) << " val: " << val;
-
-        qInfo() << "pallete" << num_to_hexa(addr) << " val: " << val;
     }
     else if (addr == 0x4014)
     {
+        this->write_OAM_data(val);
+
+        qInfo() << "oam dma";
+
         // printf("%x\n", addr);
     }
     else
@@ -475,13 +475,13 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
 std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
 {
     // int bank = this->reg.ppuCtrl.B;
-
+    printf("rendering \n");
     // this creates a Vector of bytes to render to the screen.
     int banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
     std::vector<uint8_t> rgb_ds;
     rgb_ds.resize(std::get<0>(res) * std::get<1>(res) * 4);
 
-    for (int ppu_idx = 0; ppu_idx < 0x3c0; ppu_idx++)
+    for (int ppu_idx = 0; ppu_idx <= 0x3c0; ppu_idx++)
     {
 
         uint16_t tile = this->memory[ppu_idx];
@@ -508,7 +508,7 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
                 upper >>= 1;
                 lower >>= 1;
 
-                auto rgb = getColorFromByte((this->reg.ppumask.b != 0 ? value : 0), bgpallete);
+                auto rgb = getColorFromByte((this->reg.ppumask.b == 1 ? value : 0), bgpallete);
                 // if (value == 0)
                 //     continue;
                 // sf::Color rgb = getColorFromByte(value);
@@ -531,7 +531,7 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
         // printf("\n ");
     }
 
-    for (int ppu_idx = 255; ppu_idx > 0; ppu_idx -= 4)
+    for (int ppu_idx = 255; ppu_idx >= 0; ppu_idx -= 4)
     {
         union Attribute_byte
         {
@@ -571,12 +571,17 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
         // printf("%x \n", attribbyte.pallete);
         size_t pallete_offset = 16 + (pallete_idx * 4);
         // printf("offset: %d \n", pallete_offset);
-        // printf(" sprite palete 1: 0x%x 2: 0x%x 3: 0x%x \n", this->pallete[pallete_offset], this->pallete[pallete_offset + 1], this->pallete[pallete_offset + 2]);
+        qInfo() << "sprite pallete 1: " << num_to_hexa(this->pallete[pallete_offset]) << "2: " << num_to_hexa(this->pallete[pallete_offset + 1]) << "3: " << num_to_hexa(this->pallete[pallete_offset + 3]);
         // for (int i = 0; i < 32; i++)
-        //     printf("offset: 0x%x \n", this->pallete[i]);
-        std::bitset<2> u(attribbyte.pallete);
+        //     printf("pallete: 0x%x \n", this->pallete[i]);
+
+        // for (int i = 0; i < 255; i++)
+        //     printf("oam: %x \n", this->oam[i]);
+        std::bitset<2>
+            u(attribbyte.pallete);
         std::cout << u << std::endl;
-        printf("tile: %x \n", tile);
+        // printf("tile: %x \n", tile);
+        qInfo() << "tile: " << num_to_hexa(tile);
         std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> sprite_palletes = {
             0,
             this->pallete[pallete_offset],
@@ -586,15 +591,6 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
         };
 
         this->get_chr_tile(tile, banks, tile_list);
-        // std::vector<uint8_t>
-        //     tile_list;
-        // banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
-        // for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
-        // {
-
-        //     tile_list.push_back(chr_rom[i]);
-        // }
-
         for (int y = 0; y < 8; y++)
         {
             uint8_t upper = tile_list[y];
@@ -605,10 +601,8 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
                 upper >>= 1;
                 lower >>= 1;
 
-                auto rgb = getColorFromByte(this->reg.ppumask.s != 0 ? value : 0, sprite_palletes);
+                auto rgb = getColorFromByte(value, sprite_palletes);
                 // std::cout << rgb << std::endl;
-                if (value == 0)
-                    continue;
                 int tile_x = 0;
                 if (attribbyte.flip_x)
                     tile_x = idx + 7 - x;
@@ -647,8 +641,11 @@ void PPU::write_OAM_data(uint8_t val)
 {
     // cant access the OAM if the ctrl S bit is not set
 
-    oam[oam_addr] = val;
-    oam_addr++;
+    this->oam[this->oam_addr] = val;
+
+    this->oam_addr++;
+    if (oam_addr > 255)
+        oam_addr = 0;
     // oam_addr += (oam_addr + 1) % 256;
     // printf("%x \n", oam_addr);
     // std::cout << oam_addr << std::endl;

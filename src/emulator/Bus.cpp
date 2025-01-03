@@ -186,6 +186,7 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         }
         else if (address == 0x2005)
         {
+            // this->ppu.write_OAM_data(value);
         }
         else if (address == 0x2006)
         {
@@ -217,10 +218,7 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address == 0x4014)
     {
-        uint8_t startaddr = value << 8;
-
-        for (int i = 0; i < 256; i++)
-            this->ppu.write_OAM_data(this->read_8bit(startaddr | i));
+        this->ppu.write_OAM_data(value);
     }
     else if (address == 0x4016)
     {
