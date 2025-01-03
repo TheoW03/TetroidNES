@@ -211,11 +211,8 @@ uint8_t PPU::read_PPU_data()
     }
     else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c)
     {
-        printf("addr before %x \n", addr);
 
         addr = addr - 0x10;
-        printf("addr after: %x \n", addr);
-
         return pallete[addr - 0x3f00];
     }
     return 0;
@@ -366,7 +363,7 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
         addr = addr - 0x10;
         addr &= 0x1F;
 
-        qInfo() << "pallete" << num_to_hexa(addr) << " val: " << val;
+        qInfo() << "pallete" << num_to_hexa(addr) << " val: " << num_to_hexa(val);
 
         this->pallete[addr] = val;
         qInfo() << "pallete written to: " << this->pallete[addr];
@@ -375,13 +372,11 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
     {
         addr &= 0x1F;
         this->pallete[addr] = val;
-        qInfo() << "pallete" << num_to_hexa(addr) << " val: " << val;
+        qInfo() << "pallete" << num_to_hexa(addr) << " val: " << num_to_hexa(val);
     }
     else if (addr == 0x4014)
     {
         this->write_OAM_data(val);
-
-        qInfo() << "oam dma";
 
         // printf("%x\n", addr);
     }
@@ -481,16 +476,18 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
     std::vector<uint8_t> rgb_ds;
     rgb_ds.resize(std::get<0>(res) * std::get<1>(res) * 4);
 
-    for (int ppu_idx = 0; ppu_idx <= 0x3c0; ppu_idx++)
+    for (int ppu_idx = 0; ppu_idx < 0x3c0; ppu_idx++)
     {
 
-        uint16_t tile = this->memory[ppu_idx];
+        uint16_t tile = this->memory[(ppu_idx)]; /// name tables
+
         int idx = ppu_idx % 32;
         int idy = ppu_idx / 32;
         auto bgpallete = this->bg_pallete(idx, idy);
         std::vector<uint8_t>
             tile_list;
         this->get_chr_tile(tile, banks, tile_list);
+        qInfo() << tile;
         // std::vector<uint8_t> tile_list = this->get_chr_tile(tile, banks);
 
         // for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
@@ -516,7 +513,7 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
                 int tile_y = idy * 8 + y;
                 // printf("tile_x %d  tile_y: %d \n", tile_x, tile_y);
 
-                int b = (tile_y) * 4 * std::get<1>(res) + (tile_x) * 4;
+                int b = (tile_y) * 4 * std::get<0>(res) + (tile_x) * 4;
 
                 rgb_ds[b] = std::get<0>(rgb);
                 rgb_ds[b + 1] = std::get<1>(rgb);
@@ -644,13 +641,14 @@ void PPU::write_OAM_data(uint8_t val)
     this->oam[this->oam_addr] = val;
 
     this->oam_addr++;
-    if (oam_addr > 255)
-        oam_addr = 0;
+    if (oam_addr >= 255)
+        this->oam_addr = 0;
+    qInfo() << "oam: " << num_to_hexa(this->oam_addr);
     // oam_addr += (oam_addr + 1) % 256;
     // printf("%x \n", oam_addr);
     // std::cout << oam_addr << std::endl;
 }
-void PPU::write_OAM_dma(uint8_t val[256])
+void PPU::write_OAM_dma(std::vector<uint8_t> buffer)
 {
     // oam[oam_addr] = val;
     // oam_addr++;

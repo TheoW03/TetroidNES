@@ -218,7 +218,9 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address == 0x4014)
     {
+
         this->ppu.write_OAM_data(value);
+        qInfo() << "writting to OAM";
     }
     else if (address == 0x4016)
     {
