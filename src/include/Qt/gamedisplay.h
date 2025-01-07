@@ -47,7 +47,7 @@ private:
     bool m_initialized = false;
     sf::Texture texture;
     sf::Sprite sprite;
-    QScopedPointer<QThread> emu_thread;
+    QThread *emu_thread;
     std::function<void (sf::Drawable &drawable)> draw_func;
     EmulatorWorker *emu_worker;
     int err_code;

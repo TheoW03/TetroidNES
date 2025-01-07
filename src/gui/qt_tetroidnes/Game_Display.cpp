@@ -58,11 +58,9 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     QAction *pause_toggle_key = new QAction(this);
     pause_toggle_key->setShortcut(QKeySequence(Qt::Key_G));
 
-    QThread *emu_thread_ptr = emu_thread.get();
-
     if (m_is_emu_on_dif_thread)
     {
-        emu_worker->moveToThread(emu_thread_ptr);
+        emu_worker->moveToThread(emu_thread);
     }
     else
     {
@@ -74,7 +72,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     connect(&settings, &SettingsManager::crt_shader_changed, this, &GameDisplay::on_crt_shader_changed);
     connect(emu_worker, &EmulatorWorker::draw_frame, this, &GameDisplay::on_update);
     connect(emu_worker, &EmulatorWorker::push_error, this, &GameDisplay::on_push_error);
-    connect(emu_thread_ptr, &QThread::started, emu_worker, &EmulatorWorker::on_start_main_thread);
+    connect(emu_thread, &QThread::started, emu_worker, &EmulatorWorker::on_start_main_thread);
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
     connect(time_between_draw_timer, &QTimer::timeout, this, [this]()
             { time_between_draw_ms += 1; });
@@ -250,6 +248,7 @@ void GameDisplay::close_game()
     {
         emu_thread->quit();
         emu_thread->wait();
+        emu_thread->deleteLater();
     }
 }
 
