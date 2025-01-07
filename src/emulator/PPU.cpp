@@ -487,7 +487,7 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
         std::vector<uint8_t>
             tile_list;
         this->get_chr_tile(tile, banks, tile_list);
-        qInfo() << tile;
+        qDebug() << tile;
         // std::vector<uint8_t> tile_list = this->get_chr_tile(tile, banks);
 
         // for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
@@ -568,7 +568,7 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
         // printf("%x \n", attribbyte.pallete);
         size_t pallete_offset = 16 + (pallete_idx * 4);
         // printf("offset: %d \n", pallete_offset);
-        qInfo() << "sprite pallete 1: " << num_to_hexa(this->pallete[pallete_offset]) << "2: " << num_to_hexa(this->pallete[pallete_offset + 1]) << "3: " << num_to_hexa(this->pallete[pallete_offset + 3]);
+        qDebug() << "sprite pallete 1: " << num_to_hexa(this->pallete[pallete_offset]) << "2: " << num_to_hexa(this->pallete[pallete_offset + 1]) << "3: " << num_to_hexa(this->pallete[pallete_offset + 3]);
         // for (int i = 0; i < 32; i++)
         //     printf("pallete: 0x%x \n", this->pallete[i]);
 
@@ -578,7 +578,7 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
             u(attribbyte.pallete);
         std::cout << u << std::endl;
         // printf("tile: %x \n", tile);
-        qInfo() << "tile: " << num_to_hexa(tile);
+        qDebug() << "tile: " << num_to_hexa(tile);
         std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> sprite_palletes = {
             0,
             this->pallete[pallete_offset],
@@ -643,7 +643,7 @@ void PPU::write_OAM_data(uint8_t val)
     this->oam_addr++;
     if (oam_addr >= 255)
         this->oam_addr = 0;
-    qInfo() << "oam: " << num_to_hexa(this->oam_addr);
+    qDebug() << "oam: " << num_to_hexa(this->oam_addr);
     // oam_addr += (oam_addr + 1) % 256;
     // printf("%x \n", oam_addr);
     // std::cout << oam_addr << std::endl;

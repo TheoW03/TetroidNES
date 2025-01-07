@@ -33,6 +33,11 @@ check out the ./log/ directory to see logs
 
 a special thanks to all who helped me make this
 
+
+<a href="https://github.com/TheoW03/TetroidNES/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=TheoW03/TetroidNES" alt="including wolfymyth. helped alot"/>
+</a>
+
 [documentation]: <https://github.com/TheoW03/TetroidNES/wiki>
 [build]: <https://github.com/TheoW03/TetroidNES/actions/workflows/ci.yml/badge.svg>
 [license]: <https://img.shields.io/badge/License-MIT-yellow.svg>
