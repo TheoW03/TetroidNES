@@ -39,7 +39,7 @@ private:
     void close_game();
 
     QString game_title;
-    int frame_count = 0;
+    int frame_count;
     QTimer *frames_per_sec_timer;
     QTimer *time_between_draw_timer;
     QScopedPointer<sf::RenderWindow> render_window;
@@ -47,11 +47,11 @@ private:
     bool m_initialized = false;
     sf::Texture texture;
     sf::Sprite sprite;
-    QThread emu_thread;
+    QScopedPointer<QThread> emu_thread;
     std::function<void (sf::Drawable &drawable)> draw_func;
     EmulatorWorker *emu_worker;
     int err_code;
-    int time_between_draw_ms = 0;
+    int time_between_draw_ms;
     bool m_paused;
     bool m_is_emu_on_dif_thread;
     QMutex mutex;

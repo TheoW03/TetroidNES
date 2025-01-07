@@ -20,9 +20,12 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
                                                              frames_per_sec_timer(new QTimer(this)),
                                                              time_between_draw_timer(new QTimer(this)),
                                                              m_paused(false),
+                                                             emu_thread(new QThread()),
                                                              emu_worker(new EmulatorWorker(rom_url, mutex, m_paused)),
                                                              crt_shader(new sf::Shader()),
-                                                             err_code(0)
+                                                             err_code(0),
+                                                             frame_count(0),
+                                                             time_between_draw_ms(0)
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -55,9 +58,11 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     QAction *pause_toggle_key = new QAction(this);
     pause_toggle_key->setShortcut(QKeySequence(Qt::Key_G));
 
+    QThread *emu_thread_ptr = emu_thread.get();
+
     if (m_is_emu_on_dif_thread)
     {
-        emu_worker->moveToThread(&emu_thread);
+        emu_worker->moveToThread(emu_thread_ptr);
     }
     else
     {
@@ -69,7 +74,7 @@ GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
     connect(&settings, &SettingsManager::crt_shader_changed, this, &GameDisplay::on_crt_shader_changed);
     connect(emu_worker, &EmulatorWorker::draw_frame, this, &GameDisplay::on_update);
     connect(emu_worker, &EmulatorWorker::push_error, this, &GameDisplay::on_push_error);
-    connect(&emu_thread, &QThread::started, emu_worker, &EmulatorWorker::on_start_main_thread);
+    connect(emu_thread_ptr, &QThread::started, emu_worker, &EmulatorWorker::on_start_main_thread);
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
     connect(time_between_draw_timer, &QTimer::timeout, this, [this]()
             { time_between_draw_ms += 1; });
@@ -167,7 +172,7 @@ void GameDisplay::on_init()
     qInfo() << "About to start thread...";
     if (m_is_emu_on_dif_thread)
     {
-        emu_thread.start();
+        emu_thread->start();
     }
     else
     {
@@ -243,8 +248,8 @@ void GameDisplay::close_game()
     render_window->close();
     if (m_is_emu_on_dif_thread)
     {
-        emu_thread.quit();
-        emu_thread.wait();
+        emu_thread->quit();
+        emu_thread->wait();
     }
 }
 
