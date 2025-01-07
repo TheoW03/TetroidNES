@@ -13,7 +13,7 @@ class EmulatorWorker : public QObject
     Q_OBJECT
 
 public:
-    explicit EmulatorWorker(QString rom, QMutex &mutex, bool &paused, QWidget *parent = nullptr);
+    explicit EmulatorWorker(Rom rom, QString rom_url, QMutex &mutex, bool &paused, QWidget *parent = nullptr);
     void shutdown_game();
     void on_start_main_thread();
     void start_frame_timer();
@@ -26,11 +26,13 @@ public slots:
 signals:
     void draw_frame(std::vector<uint8_t> vector);
     void push_error(QString msg, int error_code);
+
 private:
     bool is_frame_generated;
     QChronoTimer *frame_timer;
     Execute exe;
     QString rom_url;
+    Rom rom;
     bool m_initialized;
     bool m_is_running;
     QMutex *mutex_ptr;
@@ -41,5 +43,4 @@ private:
 private slots:
     void process_cpu();
     void render_frame();
-
 };

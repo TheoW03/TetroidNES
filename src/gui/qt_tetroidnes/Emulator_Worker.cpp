@@ -8,15 +8,16 @@
 #include "Emulator_Worker.h"
 
 const size_t cpu_cycles_frame = 29782;
-EmulatorWorker::EmulatorWorker(QString rom_dest, QMutex &mutex, bool &paused, QWidget *parent) : QObject{parent},
-                                                                                                 rom_url(rom_dest),
-                                                                                                 m_initialized(false),
-                                                                                                 m_is_running(false),
-                                                                                                 mutex_ptr(&mutex),
-                                                                                                 paused_ptr(&paused),
-                                                                                                 m_clock_interval(frame_interval_ns),
-                                                                                                 is_frame_generated(false)
+EmulatorWorker::EmulatorWorker(Rom rom, QString rom_dest, QMutex &mutex, bool &paused, QWidget *parent) : QObject{parent},
+                                                                                                          rom_url(rom_dest),
+                                                                                                          m_initialized(false),
+                                                                                                          m_is_running(false),
+                                                                                                          mutex_ptr(&mutex),
+                                                                                                          paused_ptr(&paused),
+                                                                                                          m_clock_interval(frame_interval_ns),
+                                                                                                          is_frame_generated(false)
 {
+    this->rom = rom;
 }
 
 void EmulatorWorker::shutdown_game()
@@ -61,14 +62,14 @@ void EmulatorWorker::init()
 
     // Setup CPU
     initializeInstructionMap();
-    auto rom = load_rom(file_tobyte_vector(rom_url.toStdString()));
-    if (rom.has_value() == 0)
-    {
-        emit push_error("Unrecongnized file format, needs to be NES v1.0 format.", EXIT_FAILURE);
-        return;
-    }
+    // auto rom = load_rom(file_tobyte_vector(rom_url.toStdString()));
+    // if (rom.has_value() == 0)
+    // {
+    //     emit push_error("Unrecongnized file format, needs to be NES v1.0 format.", EXIT_FAILURE);
+    //     return;
+    // }
 
-    Bus bus = Bus(rom.value(), NES_START);
+    Bus bus = Bus(this->rom, NES_START);
     CPU cpu = CPU();
     bus.fill(bus.read_16bit(0xfffc));
     // printf("0x%x\n", bus.get_PC());

@@ -23,7 +23,7 @@ class GameDisplay : public QWidget
 {
     Q_OBJECT
 public:
-    explicit GameDisplay(QWidget *parent = nullptr, QString rom_url = QString());
+    explicit GameDisplay(Rom rom, QWidget *parent = nullptr, QString rom_url = QString());
     void update_game_scale();
     void center_display();
     bool is_paused() const;
@@ -48,7 +48,7 @@ private:
     sf::Texture texture;
     sf::Sprite sprite;
     QThread *emu_thread;
-    std::function<void (sf::Drawable &drawable)> draw_func;
+    std::function<void(sf::Drawable &drawable)> draw_func;
     EmulatorWorker *emu_worker;
     int err_code;
     int time_between_draw_ms;

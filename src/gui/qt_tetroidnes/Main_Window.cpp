@@ -4,7 +4,7 @@
 #include "ui_mainwindow.h"
 #include <Qt/settingsmanager.h>
 #include <Qt/util.h>
-
+#include <Emulator/LoadRom.h>
 #include <QVBoxLayout>
 #include <QIcon>
 #include <QtLogging>
@@ -62,7 +62,17 @@ void MainWindow::create_display(QString rom_link)
 {
 
     // std::shared_ptr<GameDisplay> display = std::make_shared<GameDisplay>(this, rom_link);
-    auto *display = new GameDisplay(nullptr, rom_link);
+    std::optional<Rom> rom = load_rom(file_tobyte_vector(rom_link.toStdString()));
+    if (!rom.has_value())
+    {
+        qInfo() << "not a NES ROM";
+        QMessageBox::critical(
+            this,
+            "TetroidNES - " + tr("Error"),
+            "not a NES ROM");
+        return;
+    }
+    auto *display = new GameDisplay(rom.value(), nullptr, rom_link);
     connect(display, &QWidget::destroyed, this, &MainWindow::on_gamedisplay_destroyed);
 
     display->show();

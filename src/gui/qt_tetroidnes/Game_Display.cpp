@@ -6,6 +6,7 @@
 #include <QUrl>
 #include <QMessageBox>
 #include <QMutexLocker>
+#include <Emulator/LoadRom.h>
 #include <QFile>
 
 #include <Qt/Emulator_Worker.h>
@@ -15,17 +16,17 @@
 
 constexpr const uint32_t rgb_data_size = NES_RES_A * 4;
 
-GameDisplay::GameDisplay(QWidget *parent, QString rom_url) : QWidget{parent},
-                                                             render_window(new sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)),
-                                                             frames_per_sec_timer(new QTimer(this)),
-                                                             time_between_draw_timer(new QTimer(this)),
-                                                             m_paused(false),
-                                                             emu_thread(new QThread()),
-                                                             emu_worker(new EmulatorWorker(rom_url, mutex, m_paused)),
-                                                             crt_shader(new sf::Shader()),
-                                                             err_code(0),
-                                                             frame_count(0),
-                                                             time_between_draw_ms(0)
+GameDisplay::GameDisplay(Rom rom, QWidget *parent, QString rom_url) : QWidget{parent},
+                                                                      render_window(new sf::RenderWindow(sf::VideoMode(800, 600), "OpenGL", sf::Style::Default)),
+                                                                      frames_per_sec_timer(new QTimer(this)),
+                                                                      time_between_draw_timer(new QTimer(this)),
+                                                                      m_paused(false),
+                                                                      emu_thread(new QThread()),
+                                                                      emu_worker(new EmulatorWorker(rom, rom_url, mutex, m_paused)),
+                                                                      crt_shader(new sf::Shader()),
+                                                                      err_code(0),
+                                                                      frame_count(0),
+                                                                      time_between_draw_ms(0)
 {
     setAttribute(Qt::WA_PaintOnScreen);
     setAttribute(Qt::WA_OpaquePaintEvent);
