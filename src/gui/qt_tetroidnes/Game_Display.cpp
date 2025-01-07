@@ -82,6 +82,16 @@ void GameDisplay::on_crt_shader_changed(const bool b)
         draw_func = [this](sf::Drawable &drawable)
         {
             crt_shader->setUniform("time", (float)(time_between_draw_ms * 0.001f));
+            crt_shader->setUniform("density", (float)1.9);
+            crt_shader->setUniform("opacityScanline", 0.2f);
+            crt_shader->setUniform("opacityNoise", 0.2f);
+            crt_shader->setUniform("curvature", 7.5f);
+            crt_shader->setUniform("vigantteWidth", 50.0f);
+            crt_shader->setUniform("Res", sf::Glsl::Vec2({800.0f, 600.0f}));
+            crt_shader->setUniform("brightness", 0.9f);
+            crt_shader->setUniform("warp_brightness", 0.1f);
+
+            // crt_shaer-
             render_window->draw(drawable, crt_shader.get());
         };
     }
