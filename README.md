@@ -33,9 +33,11 @@ check out the ./log/ directory to see logs
 
 a special thanks to all who helped me make this
 
+## contributors
 
 <a href="https://github.com/TheoW03/TetroidNES/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=TheoW03/TetroidNES" alt="including wolfymyth. helped alot"/>
+  <p>and wolfymyth who helped alot with the UI </p>
 </a>
 
 [documentation]: <https://github.com/TheoW03/TetroidNES/wiki>
