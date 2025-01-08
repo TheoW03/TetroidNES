@@ -142,6 +142,7 @@ void GameDisplay::on_push_error(QString msg, int error_code)
     qInfo() << "error";
     mutex.lock();
     pause_game();
+    emu_worker->stop_frame_timer();
     QMessageBox::critical(
         this,
         "TetroidNES - " + tr("Error"),
@@ -245,7 +246,9 @@ void GameDisplay::showEvent(QShowEvent *event)
 void GameDisplay::close_game()
 {
     emu_worker->shutdown_game();
+
     render_window->close();
+
     if (m_is_emu_on_dif_thread)
     {
         emu_thread->quit();
@@ -264,31 +267,26 @@ void GameDisplay::closeEvent(QCloseEvent *event)
         qInfo() << "CPU exited unsuccessfully";
 
         event->accept();
-        return;
-    }
-    int message_box_result = QMessageBox::question(
-        this,
-        "TetroidNES - " + tr("Confirmation"),
-        tr("Are you sure you want to quit?") + "\n" + tr("(Remember to save before quitting!)"),
-        QMessageBox::Yes | QMessageBox::No);
-
-    if (message_box_result == QMessageBox::No)
-    {
-        event->ignore();
     }
     else
     {
-        close_game();
-
-        if (err_code == EXIT_SUCCESS)
+        int message_box_result = QMessageBox::question(
+            this,
+            "TetroidNES - " + tr("Confirmation"),
+            tr("Are you sure you want to quit?") + "\n" + tr("(Remember to save before quitting!)"),
+            QMessageBox::Yes | QMessageBox::No);
+        if (message_box_result == QMessageBox::No)
         {
-            qInfo() << "CPU exited successfully";
+            event->ignore();
         }
         else
         {
-            qInfo() << "CPU exited unsuccessfully";
+            close_game();
+            emu_worker->log_cpu();
+
+            qInfo() << "CPU exited successfully";
+            event->accept();
         }
-        event->accept();
     }
 }
 

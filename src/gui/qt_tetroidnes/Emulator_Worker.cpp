@@ -20,12 +20,15 @@ EmulatorWorker::EmulatorWorker(Rom rom, QString rom_dest, QMutex &mutex, bool &p
     this->rom = rom;
     qWarning() << "resetting";
 }
-
+void EmulatorWorker::log_cpu()
+{
+    exe.log_Cpu();
+}
 void EmulatorWorker::shutdown_game()
 {
 
-    m_is_running = false;
-    exe.log_Cpu();
+    this->m_is_running = false;
+    // exe.log_Cpu();
 }
 
 void EmulatorWorker::init()
@@ -91,8 +94,7 @@ void EmulatorWorker::init()
 
 void EmulatorWorker::on_frame_timer_timeout()
 {
-    if (!pause)
-        qDebug() << "Frame timeout, is frame generated?" << is_frame_generated;
+    qDebug() << "Frame timeout, is frame generated?" << is_frame_generated;
     if (is_frame_generated)
     {
         render_frame();

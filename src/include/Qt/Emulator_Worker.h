@@ -15,6 +15,7 @@ class EmulatorWorker : public QObject
 public:
     explicit EmulatorWorker(Rom rom, QString rom_url, QMutex &mutex, bool &paused, QWidget *parent = nullptr);
     void shutdown_game();
+    void log_cpu();
     void on_start_main_thread();
     void start_frame_timer();
     void stop_frame_timer();
