@@ -471,10 +471,15 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
 {
     // int bank = this->reg.ppuCtrl.B;
     printf("rendering \n");
+
     // this creates a Vector of bytes to render to the screen.
     int banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
+
     std::vector<uint8_t> rgb_ds;
     rgb_ds.resize(std::get<0>(res) * std::get<1>(res) * 4);
+
+    if (this->chr_rom.size() == 0)
+        return rgb_ds;
 
     for (int ppu_idx = 0; ppu_idx < 0x3c0; ppu_idx++)
     {

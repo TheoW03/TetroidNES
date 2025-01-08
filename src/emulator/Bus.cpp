@@ -82,6 +82,12 @@ uint8_t Bus::fetch_next()
 
 void Bus::fill(uint16_t pc)
 {
+    if (pc < rom.PRG.size())
+    {
+        err_string = "ROM size is to small";
+        return;
+    }
+
     stored_instructions[0] = rom.PRG[(pc + 1) - reset_vector];
     stored_instructions[1] = rom.PRG[(pc - reset_vector)];
     // clock_cycles += 2;
@@ -191,6 +197,9 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         else if (address == 0x2006)
         {
             std::cout << "write to addr" << std::endl;
+            qInfo() << num_to_hexa(this->get_PC() - reset_vector);
+            std::cout << rom.PRG.size() << std::endl;
+            std::cout << rom.CHR.size() << std::endl;
 
             this->ppu.write_PPU_address(value);
         }
@@ -239,7 +248,7 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     else if (address >= 0x8000 && address <= 0xFFFF)
     {
         // this->stored_instructions[1] = 0x82;
-        this->err_string = "Address 0x" + num_to_hexa(address) + " is READ_ONLY on this emulator";
+        this->err_string = "Address 0x" + num_to_hexa(address) + " is `_ONLY on this emulator";
         // std::cout << "\033[91mAttempt to write into READ_ONLY_MEM\033[0m" << std::endl;
         // printf("address 0x%x \n", address);
         // std::cout << "" << std::endl;

@@ -139,6 +139,7 @@ void GameDisplay::pause_game()
 
 void GameDisplay::on_push_error(QString msg, int error_code)
 {
+    qInfo() << "error";
     mutex.lock();
     pause_game();
     QMessageBox::critical(
@@ -256,15 +257,15 @@ void GameDisplay::close_game()
 void GameDisplay::closeEvent(QCloseEvent *event)
 {
 
-    if (!m_initialized)
+    if (!m_initialized || err_code == EXIT_FAILURE)
     {
 
         close_game();
+        qInfo() << "CPU exited unsuccessfully";
 
         event->accept();
         return;
     }
-
     int message_box_result = QMessageBox::question(
         this,
         "TetroidNES - " + tr("Confirmation"),

@@ -65,11 +65,11 @@ void MainWindow::create_display(QString rom_link)
     std::optional<Rom> rom = load_rom(file_tobyte_vector(rom_link.toStdString()));
     if (!rom.has_value())
     {
-        qInfo() << "not a NES ROM";
+        qInfo() << "Not a INES v1.0 ROM. \n (you should see NES at the top of the file if it is a INES v1.0 ROM and be greater then in size)";
         QMessageBox::critical(
             this,
             "TetroidNES - " + tr("Error"),
-            "not a NES ROM");
+            "Not a INES v1.0 ROM. \n (you should see NES at the top of the file if it is a INES v1.0 ROM and be greater then in size)");
         return;
     }
     auto *display = new GameDisplay(rom.value(), nullptr, rom_link);

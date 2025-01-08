@@ -83,6 +83,7 @@ std::vector<uint8_t> file_tobyte_vector(std::string file_name)
         uint8_t a = (uint8_t)infile.get();
         instructions.push_back(a);
     }
+
     return instructions;
 }
 
@@ -92,7 +93,10 @@ std::optional<Rom> load_rom(std::vector<uint8_t> instructions)
     {
         return {};
     }
-
+    const int NES_ROM_SIZE = 16401;
+    std::cout << instructions.size() << std::endl;
+    if (instructions.size() < NES_ROM_SIZE)
+        return {};
     Rom rom;
     NESHeader nes_header;
     memcpy(&nes_header, instructions.data(), sizeof(NESHeader));
