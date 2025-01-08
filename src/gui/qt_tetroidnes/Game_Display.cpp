@@ -21,7 +21,7 @@ GameDisplay::GameDisplay(Rom rom, QWidget *parent, QString rom_url) : QWidget{pa
                                                                       frames_per_sec_timer(new QTimer(this)),
                                                                       time_between_draw_timer(new QTimer(this)),
                                                                       m_paused(false),
-                                                                      emu_thread(new QThread()),
+                                                                      emu_thread(new QThread(this)),
                                                                       emu_worker(new EmulatorWorker(rom, rom_url, mutex, m_paused)),
                                                                       crt_shader(new sf::Shader()),
                                                                       err_code(0),
@@ -249,12 +249,8 @@ void GameDisplay::close_game()
 
     render_window->close();
 
-    if (m_is_emu_on_dif_thread)
-    {
-        emu_thread->quit();
-        emu_thread->wait();
-        emu_thread->deleteLater();
-    }
+    emu_thread->quit();
+    emu_thread->wait();
 }
 
 void GameDisplay::closeEvent(QCloseEvent *event)
