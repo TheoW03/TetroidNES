@@ -46,7 +46,7 @@ private:
     QScopedPointer<sf::Shader> crt_shader;
     bool m_initialized = false;
     sf::Texture texture;
-    sf::Sprite sprite;
+    QScopedPointer<sf::Sprite> sprite;
     QThread *emu_thread;
     std::function<void(sf::Drawable &drawable)> draw_func;
     EmulatorWorker *emu_worker;

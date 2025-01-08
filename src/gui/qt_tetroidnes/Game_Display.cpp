@@ -21,6 +21,7 @@ GameDisplay::GameDisplay(Rom rom, QWidget *parent, QString rom_url) : QWidget{pa
                                                                       frames_per_sec_timer(new QTimer(this)),
                                                                       time_between_draw_timer(new QTimer(this)),
                                                                       m_paused(false),
+                                                                      sprite(new sf::Sprite()),
                                                                       emu_thread(new QThread(this)),
                                                                       emu_worker(new EmulatorWorker(rom, rom_url, mutex, m_paused)),
                                                                       crt_shader(new sf::Shader()),
@@ -85,17 +86,6 @@ void GameDisplay::on_crt_shader_changed(const bool b)
     {
         draw_func = [this](sf::Drawable &drawable)
         {
-            crt_shader->setUniform("time", (float)(time_between_draw_ms * 0.001f));
-            crt_shader->setUniform("density", 1.9f);
-            crt_shader->setUniform("opacityScanline", 0.2f);
-            crt_shader->setUniform("opacityNoise", 0.2f);
-            crt_shader->setUniform("curvature", 7.5f);
-            crt_shader->setUniform("vigantteWidth", 50.0f);
-            crt_shader->setUniform("Res", sf::Glsl::Vec2({800.0f, 600.0f}));
-            crt_shader->setUniform("brightness", 0.9f);
-            crt_shader->setUniform("warp_brightness", 0.1f);
-
-            // crt_shaer-
             render_window->draw(drawable, crt_shader.get());
         };
     }
@@ -166,8 +156,8 @@ void GameDisplay::on_init()
         return;
     }
 
-    sprite.setOrigin(sprite.getTextureRect().width / 2, sprite.getTextureRect().height / 2);
-    sprite.setTexture(texture);
+    sprite->setOrigin(sprite->getTextureRect().width / 2, sprite->getTextureRect().height / 2);
+    sprite->setTexture(texture);
     update_game_scale();
 
     qInfo() << "About to start thread...";
@@ -193,7 +183,7 @@ void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
     render_window->clear();
     texture.update(rgb_data);
 
-    draw_func(sprite);
+    draw_func(*sprite.get());
     render_window->display();
 
     frame_count += 1;
@@ -233,6 +223,17 @@ void GameDisplay::showEvent(QShowEvent *event)
             on_push_error(QString("Failed loading shader from memory"), EXIT_FAILURE);
             return;
         }
+
+        // Setting shader's variables
+        crt_shader->setUniform("time", (float)(time_between_draw_ms * 0.001f));
+        crt_shader->setUniform("density", 1.9f);
+        crt_shader->setUniform("opacityScanline", 0.2f);
+        crt_shader->setUniform("opacityNoise", 0.2f);
+        crt_shader->setUniform("curvature", 7.5f);
+        crt_shader->setUniform("vigantteWidth", 50.0f);
+        crt_shader->setUniform("Res", sf::Glsl::Vec2({800.0f, 600.0f}));
+        crt_shader->setUniform("brightness", 0.9f);
+        crt_shader->setUniform("warp_brightness", 0.1f);
 
         on_crt_shader_changed(SettingsManager::instance().crt_shader());
 
@@ -290,7 +291,7 @@ void GameDisplay::update_game_scale()
 {
     QSize widget_size = size();
     sf::Vector2u texture_size = texture.getSize();
-    sprite.setScale(
+    sprite->setScale(
         static_cast<float>(widget_size.width()) / texture_size.x,
         static_cast<float>(widget_size.height()) / texture_size.y);
 }
