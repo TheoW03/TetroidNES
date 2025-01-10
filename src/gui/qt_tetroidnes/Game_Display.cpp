@@ -86,6 +86,8 @@ void GameDisplay::on_crt_shader_changed(const bool b)
     {
         draw_func = [this](sf::Drawable &drawable)
         {
+            crt_shader->setUniform("time", (float)(time_between_draw_ms * 0.001f));
+
             render_window->draw(drawable, crt_shader.get());
         };
     }
@@ -225,7 +227,6 @@ void GameDisplay::showEvent(QShowEvent *event)
         }
 
         // Setting shader's variables
-        crt_shader->setUniform("time", (float)(time_between_draw_ms * 0.001f));
         crt_shader->setUniform("density", 1.9f);
         crt_shader->setUniform("opacityScanline", 0.2f);
         crt_shader->setUniform("opacityNoise", 0.2f);
