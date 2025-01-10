@@ -76,8 +76,7 @@ GameDisplay::GameDisplay(Rom rom, QWidget *parent, QString rom_url) : QWidget{pa
     connect(emu_worker, &EmulatorWorker::push_error, this, &GameDisplay::on_push_error);
     connect(emu_thread, &QThread::started, emu_worker, &EmulatorWorker::on_start_main_thread);
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
-    connect(time_between_draw_timer, &QTimer::timeout, this, [this]()
-            { time_between_draw_ms += 1; });
+    connect(time_between_draw_timer, &QTimer::timeout, this, [this](){ time_between_draw_ms ++; });
 }
 
 void GameDisplay::on_crt_shader_changed(const bool b)
