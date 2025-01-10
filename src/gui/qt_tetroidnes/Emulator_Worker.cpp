@@ -151,7 +151,7 @@ void EmulatorWorker::process_cpu()
         {
             qCritical() << "potential error with the cpu at pc=0x" << num_to_hexa(result.bus.get_PC());
             auto error_cpu = result.bus.check_error().value_or("error with emulator, please check the ROM for faulty instructions");
-            auto err_mess = QString("%1-- at PC addr= 0x%2").arg(QString::fromStdString(error_cpu), QString::fromStdString(num_to_hexa(result.bus.get_PC())));
+            auto err_mess = QString("%1-- at PC= 0x%2").arg(QString::fromStdString(error_cpu), QString::fromStdString(num_to_hexa(result.bus.get_PC())));
             emit push_error(err_mess, EXIT_FAILURE);
             is_frame_generated = false;
             return;
