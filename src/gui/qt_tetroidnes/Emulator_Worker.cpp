@@ -8,14 +8,12 @@
 #include "Emulator_Worker.h"
 
 const size_t cpu_cycles_frame = 29782;
-EmulatorWorker::EmulatorWorker(Rom rom, QString rom_dest, QMutex &mutex, bool &paused, QWidget *parent) : QObject{parent},
-                                                                                                          rom_url(rom_dest),
-                                                                                                          m_initialized(false),
-                                                                                                          m_is_running(false),
-                                                                                                          mutex_ptr(&mutex),
-                                                                                                          paused_ptr(&paused),
-                                                                                                          m_clock_interval(frame_interval_ns),
-                                                                                                          is_frame_generated(false)
+EmulatorWorker::EmulatorWorker(Rom rom, QString rom_dest, QWidget *parent) : QObject{parent},
+                                                                             rom_url(rom_dest),
+                                                                             m_initialized(false),
+                                                                             m_is_running(false),
+                                                                             m_clock_interval(frame_interval_ns),
+                                                                             is_frame_generated(false)
 {
     this->rom = rom;
     qWarning() << "resetting";
@@ -60,8 +58,6 @@ void EmulatorWorker::init()
     qDebug() << "Game Path:" << rom_url;
 
     // Events
-    connect(&settings, &SettingsManager::speed_changed, this, &EmulatorWorker::set_clock_interval_speed); // TODO: this doesn't work
-    connect(QThread::currentThread(), &QThread::finished, this, &EmulatorWorker::deleteLater);
     connect(frame_timer, &QChronoTimer::timeout, this, &EmulatorWorker::on_frame_timer_timeout);
 
     // Setup CPU
@@ -103,6 +99,19 @@ void EmulatorWorker::on_frame_timer_timeout()
     }
 }
 
+void EmulatorWorker::on_pause_toggle(bool paused)
+{
+
+    if (paused)
+    {
+        frame_timer->stop();
+    }
+    else
+    {
+        frame_timer->start();
+    }
+}
+
 void EmulatorWorker::on_start_main_thread()
 {
     init();
@@ -110,19 +119,6 @@ void EmulatorWorker::on_start_main_thread()
 
     frame_timer->start();
     process_cpu(); // Kickstarting the CPU so is_frame_generated can become true
-}
-
-void EmulatorWorker::start_frame_timer()
-{
-    frame_timer->start();
-}
-
-void EmulatorWorker::stop_frame_timer()
-{
-    if (frame_timer->isActive())
-    {
-        frame_timer->stop();
-    }
 }
 
 void EmulatorWorker::render_frame()

@@ -5,7 +5,6 @@
 
 #include <QWidget>
 #include <QTimer>
-#include <QMutex>
 #include <QChronoTimer>
 #include <QSharedPointer>
 #include <QCloseEvent>
@@ -27,9 +26,13 @@ public:
     void update_game_scale();
     void center_display();
     bool is_paused() const;
-    void pause_game();
+    void set_paused(const bool b);
     bool initialized() const;
     ~GameDisplay();
+
+signals:
+    void pause_toggle(bool paused);
+
 public slots:
     void on_push_error(QString msg, int error_code);
     void on_update(std::vector<uint8_t> rgb_data_vector);
@@ -54,14 +57,13 @@ private:
     int time_between_draw_ms;
     bool m_paused;
     bool m_is_emu_on_dif_thread;
-    QMutex mutex;
 
 private slots:
     void on_crt_shader_changed(const bool b);
     void on_framerate_timer_timeout();
-    void on_pause_toggle_key_triggered();
 
 protected:
+    void keyPressEvent(QKeyEvent *event) override;
     void showEvent(QShowEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
     QPaintEngine *paintEngine() const override;

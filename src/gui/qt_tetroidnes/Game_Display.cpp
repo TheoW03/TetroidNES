@@ -23,7 +23,7 @@ GameDisplay::GameDisplay(Rom rom, QWidget *parent, QString rom_url) : QWidget{pa
                                                                       m_paused(false),
                                                                       sprite(new sf::Sprite()),
                                                                       emu_thread(new QThread(this)),
-                                                                      emu_worker(new EmulatorWorker(rom, rom_url, mutex, m_paused)),
+                                                                      emu_worker(new EmulatorWorker(rom, rom_url)),
                                                                       crt_shader(new sf::Shader()),
                                                                       err_code(0),
                                                                       frame_count(0),
@@ -57,9 +57,6 @@ GameDisplay::GameDisplay(Rom rom, QWidget *parent, QString rom_url) : QWidget{pa
 
     time_between_draw_timer->setInterval(1);
 
-    QAction *pause_toggle_key = new QAction(this);
-    pause_toggle_key->setShortcut(QKeySequence(Qt::Key_G));
-
     if (m_is_emu_on_dif_thread)
     {
         emu_worker->moveToThread(emu_thread);
@@ -70,13 +67,15 @@ GameDisplay::GameDisplay(Rom rom, QWidget *parent, QString rom_url) : QWidget{pa
     }
 
     // Events
-    connect(pause_toggle_key, &QAction::triggered, this, &GameDisplay::on_pause_toggle_key_triggered);
     connect(&settings, &SettingsManager::crt_shader_changed, this, &GameDisplay::on_crt_shader_changed);
     connect(emu_worker, &EmulatorWorker::draw_frame, this, &GameDisplay::on_update);
     connect(emu_worker, &EmulatorWorker::push_error, this, &GameDisplay::on_push_error);
+    connect(&settings, &SettingsManager::speed_changed, emu_worker, &EmulatorWorker::set_clock_interval_speed);
+    connect(this, &GameDisplay::pause_toggle, emu_worker, &EmulatorWorker::on_pause_toggle);
     connect(emu_thread, &QThread::started, emu_worker, &EmulatorWorker::on_start_main_thread);
+    connect(emu_thread, &QThread::finished, emu_worker, &EmulatorWorker::deleteLater);
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
-    connect(time_between_draw_timer, &QTimer::timeout, this, [this](){ time_between_draw_ms ++; });
+    connect(time_between_draw_timer, &QTimer::timeout, this, [this](){ time_between_draw_ms++; });
 }
 
 void GameDisplay::on_crt_shader_changed(const bool b)
@@ -85,7 +84,7 @@ void GameDisplay::on_crt_shader_changed(const bool b)
     {
         draw_func = [this](sf::Drawable &drawable)
         {
-            crt_shader->setUniform("time", (float)(time_between_draw_ms * 0.001f));
+            crt_shader->setUniform("time", (float)(time_between_draw_ms) * 0.001f);
 
             render_window->draw(drawable, crt_shader.get());
         };
@@ -97,48 +96,29 @@ void GameDisplay::on_crt_shader_changed(const bool b)
     }
 }
 
-void GameDisplay::on_pause_toggle_key_triggered()
-{
-    if (is_paused())
-    {
-        mutex.lock();
-        pause_game();
-    }
-    else
-    {
-        mutex.unlock();
-        if (m_is_emu_on_dif_thread)
-        {
-            emu_worker->start_frame_timer();
-        }
-    }
-}
-
 bool GameDisplay::is_paused() const
 {
     return m_paused;
 }
 
-void GameDisplay::pause_game()
+void GameDisplay::set_paused(const bool b)
 {
-    m_paused = true;
-    if (!m_is_emu_on_dif_thread)
-    {
-        emu_worker->stop_frame_timer();
-    }
+    if (b == m_paused) {return;}
+
+    m_paused = b;
+
+    qInfo() << "Pause toggle triggered! Is paused?" << m_paused;
+    emit pause_toggle(m_paused);
 }
 
 void GameDisplay::on_push_error(QString msg, int error_code)
 {
     qInfo() << "error";
-    mutex.lock();
-    pause_game();
-    emu_worker->stop_frame_timer();
+    set_paused(true);
     QMessageBox::critical(
         this,
         "TetroidNES - " + tr("Error"),
         msg);
-    mutex.unlock();
 
     this->err_code = error_code;
 
@@ -187,7 +167,7 @@ void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
     draw_func(*sprite.get());
     render_window->display();
 
-    frame_count += 1;
+    frame_count ++;
     qDebug() << "Milliseconds from previous draw call:" << time_between_draw_ms;
     time_between_draw_ms = 0;
 }
@@ -310,6 +290,14 @@ QPaintEngine *GameDisplay::paintEngine() const
 void GameDisplay::resizeEvent(QResizeEvent *event)
 {
     update_game_scale();
+}
+
+void GameDisplay::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_G)
+    {
+        set_paused(!m_paused);
+    }
 }
 
 GameDisplay::~GameDisplay()
