@@ -5,7 +5,6 @@
 #include <QtLogging>
 #include <QUrl>
 #include <QMessageBox>
-#include <QMutexLocker>
 #include <Emulator/LoadRom.h>
 #include <QFile>
 
