@@ -466,20 +466,8 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
  * @param res
  * @return std::vector<uint8_t>
  */
-
-std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
+void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_t, size_t> res)
 {
-    // int bank = this->reg.ppuCtrl.B;
-    printf("rendering \n");
-
-    // this creates a Vector of bytes to render to the screen.
-    int banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
-
-    std::vector<uint8_t> rgb_ds;
-    rgb_ds.resize(std::get<0>(res) * std::get<1>(res) * 4);
-
-    if (this->chr_rom.size() == 0)
-        return rgb_ds;
 
     for (int ppu_idx = 0; ppu_idx < 0x3c0; ppu_idx++)
     {
@@ -524,14 +512,14 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
                 rgb_ds[b + 1] = std::get<1>(rgb);
                 rgb_ds[b + 2] = std::get<2>(rgb);
                 rgb_ds[b + 3] = 0xff;
-                // printf("combined b %d  \n", b);
-
-                // printf("%d \n", rgb_ds.size());
             }
             // printf("=========\n");
         }
         // printf("\n ");
     }
+}
+void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_t, size_t> res)
+{
 
     for (int ppu_idx = 255; ppu_idx >= 0; ppu_idx -= 4)
     {
@@ -631,6 +619,17 @@ std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
         }
         // printf("reset loop\n");s
     }
+}
+std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
+{
+    int banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
+    std::vector<uint8_t> rgb_ds;
+    rgb_ds.resize(std::get<0>(res) * std::get<1>(res) * 4);
+
+    if (this->chr_rom.size() == 0)
+        return rgb_ds;
+    draw_background(rgb_ds, banks, res);
+    draw_sprites(rgb_ds, banks, res);
     return rgb_ds;
 }
 uint8_t PPU::read_OAM_data()

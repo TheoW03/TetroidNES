@@ -103,6 +103,9 @@ private:
     size_t cycles;
     uint16_t scanline;
 
+    void draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_t, size_t> res);
+    void draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_t, size_t> res);
+
 public:
     PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType);
     PPU();
