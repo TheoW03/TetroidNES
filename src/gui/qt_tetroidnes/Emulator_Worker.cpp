@@ -71,17 +71,19 @@ void EmulatorWorker::init()
 
     Bus bus = Bus(this->rom, NES_START);
     CPU cpu = CPU();
-    bus.fill(bus.read_16bit(0xfffc));
-    // printf("0x%x\n", bus.get_PC());
-
     cpu.bus = bus;
-    cpu.A_Reg = 0;
-    cpu.status.val = 0;
-    cpu.X_Reg = 0;
-    cpu.Y_Reg = 0;
-    cpu.bus.clock_cycles = 0;
-    cpu.interrupt = {};
     this->exe = Execute(cpu);
+    this->exe.reset();
+    // bus.fill(bus.read_16bit(0xfffc));
+    // // printf("0x%x\n", bus.get_PC());
+
+    // cpu.bus = bus;
+    // cpu.A_Reg = 0;
+    // cpu.status.val = 0;
+    // cpu.X_Reg = 0;
+    // cpu.Y_Reg = 0;
+    // cpu.bus.clock_cycles = 0;
+    // cpu.interrupt = {};
     is_frame_generated = false;
     qInfo() << "pc: " << num_to_hexa(cpu.bus.get_PC());
 

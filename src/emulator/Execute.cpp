@@ -97,6 +97,20 @@ void Execute::log_Cpu()
     qInfo() << "";
 }
 
+void Execute::reset()
+{
+    // Bus bus = Bus(this->rom, NES_START);
+    cpu.bus.fill(cpu.bus.read_16bit(0xfffc));
+    // printf("0x%x\n", bus.get_PC());
+
+    // cpu.bus = bus;
+    cpu.A_Reg = 0;
+    cpu.status.val = 0;
+    cpu.X_Reg = 0;
+    cpu.Y_Reg = 0;
+    cpu.bus.clock_cycles = 0;
+    cpu.interrupt = {};
+}
 void Execute::joypad2(Controller button, int isPressed)
 {
 
