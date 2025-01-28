@@ -32,16 +32,6 @@ private:
                 unsigned R : 1; // color emphasis Red
                 unsigned G : 1; // color emphasis Green
                 unsigned B : 1; // color emphasis Blue
-
-                // unsigned B : 1; // color emphasis Blue
-                // unsigned R : 1; // color emphasis Red
-                // unsigned G : 1; // color emphasis Green
-                // unsigned b : 1; // background enable
-                // unsigned s : 1; // sprite enable
-
-                // unsigned M : 1; // sprite left column disable
-                // unsigned m : 1; // background left column disable
-                // unsigned g : 1; // greyscale
             };
             uint8_t val;
         } ppumask;
