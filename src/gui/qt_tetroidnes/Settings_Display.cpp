@@ -99,7 +99,6 @@ GeneralSettingsDisplay::GeneralSettingsDisplay(QWidget *parent) : QWidget{parent
     layout->addWidget(general_groupbox);
     layout->addWidget(directory_groupbox);
     setLayout(layout);
-
 }
 
 GeneralSettingsDisplay::~GeneralSettingsDisplay()
@@ -155,10 +154,10 @@ EmulatorSettingsDisplay::EmulatorSettingsDisplay(QWidget *parent) : QWidget{pare
         float default_combobox_value;
 
         qWarning()
-        << "Emulation speed multiplier"
-        << settings.speed()
-        << "was not found in speed_combobox, setting to"
-        << default_combobox_key;
+            << "Emulation speed multiplier"
+            << settings.speed()
+            << "was not found in speed_combobox, setting to"
+            << default_combobox_key;
 
         speed_combobox_current_idx = speed_combobox->findText(default_combobox_key);
 

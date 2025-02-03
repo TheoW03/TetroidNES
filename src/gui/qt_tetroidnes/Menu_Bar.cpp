@@ -64,7 +64,8 @@ void MenuBar::refresh_recent_roms(QStringList dirs)
         auto *action = new QAction(url.fileName(), file_open_recent);
         action->setData(QVariant(s));
 
-        connect(action, &QAction::triggered, this, [this, action](){start_rom(action->data().toString());});
+        connect(action, &QAction::triggered, this, [this, action]()
+                { start_rom(action->data().toString()); });
 
         file_open_recent->addAction(action);
     }
@@ -81,7 +82,7 @@ void MenuBar::open_rom()
 
     if (file_dialog.exec() == QFileDialog::Accepted && !file_dialog.selectedUrls().isEmpty())
     {
-        
+
         for (auto &url : file_dialog.selectedUrls())
         {
             SettingsManager::instance().append_recent_roms(url.toLocalFile());

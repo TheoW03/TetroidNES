@@ -74,7 +74,8 @@ GameDisplay::GameDisplay(Rom rom, QWidget *parent, QString rom_url) : QWidget{pa
     connect(emu_thread, &QThread::started, emu_worker, &EmulatorWorker::on_start_main_thread);
     connect(emu_thread, &QThread::finished, emu_worker, &EmulatorWorker::deleteLater);
     connect(frames_per_sec_timer, &QTimer::timeout, this, &GameDisplay::on_framerate_timer_timeout);
-    connect(time_between_draw_timer, &QTimer::timeout, this, [this](){ time_between_draw_ms++; });
+    connect(time_between_draw_timer, &QTimer::timeout, this, [this]()
+            { time_between_draw_ms++; });
 }
 
 void GameDisplay::on_crt_shader_changed(const bool b)
@@ -102,7 +103,10 @@ bool GameDisplay::is_paused() const
 
 void GameDisplay::set_paused(const bool b)
 {
-    if (b == m_paused) {return;}
+    if (b == m_paused)
+    {
+        return;
+    }
 
     m_paused = b;
 
@@ -160,13 +164,14 @@ void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
     std::copy(rgb_data_vector.begin(), rgb_data_vector.end(), rgb_data);
 
     // Display next frame
+
     render_window->clear();
     texture.update(rgb_data);
 
     draw_func(*sprite.get());
     render_window->display();
 
-    frame_count ++;
+    frame_count++;
     qDebug() << "Milliseconds from previous draw call:" << time_between_draw_ms;
     time_between_draw_ms = 0;
 }

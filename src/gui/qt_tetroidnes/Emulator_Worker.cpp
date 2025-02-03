@@ -154,8 +154,27 @@ void EmulatorWorker::process_cpu()
             is_frame_generated = false;
             return;
         }
+
         clock_cycles += exe.reset_clock();
     }
+    // std::vector<sf::Keyboard::Key> keys{
+    //     sf::Keyboard::Key::A,
+    //     sf::Keyboard::Key::W,
+    //     sf::Keyboard::Key::S,
+    //     sf::Keyboard::Key::D,
+    //     sf::Keyboard::Key::Enter,
+    //     sf::Keyboard::Key::Space,
+    //     sf::Keyboard::Key::Slash,
+    //     sf::Keyboard::Key::M,
+
+    // };
+    // for (int i = 0; i < keys.size(); i++)
+    // {
+    //     if (sf::Keyboard::isKeyPressed(keys[i]))
+    //     {
+    //         /*write to keys*/
+    //     }
+    // }
     is_frame_generated = true;
 }
 

@@ -33,6 +33,7 @@ CPU Execute::run()
         cpu.bus.fetch_next();
         // set_interrupt_disabled(1, cpu);
         set_brk(cpu, 1);
+
         cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
         // cpu.bus.tick();
         // cpu.bus.tick();
@@ -73,6 +74,10 @@ int Execute::reset_clock()
 void Execute::log_Cpu()
 {
     this->cpu.bus.log_ppu();
+    std::bitset<8>
+        controller(this->cpu.bus.read_joypad1());
+    qInfo() << "========CONTROLLER ON EXIT=====";
+    qInfo() << "controller byte: " << controller.to_string();
     qInfo() << "=====CPU on quit======";
     qInfo() << "A register on exit: " << this->cpu.A_Reg;
     qInfo() << "X register on exit: " << this->cpu.X_Reg;
