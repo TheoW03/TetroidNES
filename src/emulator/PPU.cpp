@@ -460,12 +460,6 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
     return false;
 }
 
-/**
- * @brief gets u a vector of bytes that represent the Texture map warning. assumes you are RGBA so its res * 4
- *
- * @param res
- * @return std::vector<uint8_t>
- */
 void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_t, size_t> res)
 {
 
@@ -620,6 +614,12 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
         // printf("reset loop\n");s
     }
 }
+/**
+ * @brief gets u a vector of bytes that represent the Texture map warning. assumes you are RGBA so its res * 4
+ *
+ * @param res
+ * @return std::vector<uint8_t>
+ */
 std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
 {
     int banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
