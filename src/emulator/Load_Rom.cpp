@@ -101,6 +101,11 @@ std::optional<Rom> load_rom(std::vector<uint8_t> instructions)
     NESHeader nes_header;
     memcpy(&nes_header, instructions.data(), sizeof(NESHeader));
 
+    nes_header.flag6.val = instructions[6];
+    nes_header.flag7.val = instructions[7];
+    nes_header.flag8 = instructions[8];
+    nes_header.flag9.val = instructions[9];
+
     // uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);
     if (                                 //
         (nes_header.ident[0] != 'N'      //
@@ -111,6 +116,7 @@ std::optional<Rom> load_rom(std::vector<uint8_t> instructions)
     {
         return {};
     }
+
     // uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);
     rom.mapper = nes_header.flag7.mapper_upper | nes_header.flag6.mapper_lower;
     size_t prg_rom = nes_header.prg_size * PRG_ROM_SIZE;
@@ -125,7 +131,7 @@ std::optional<Rom> load_rom(std::vector<uint8_t> instructions)
                  : (!four_screen && vertical_mirroring) ? MirrorType::VERTICAL
                                                         : MirrorType::HORIZONTAL;
     uint16_t prg_start = 16 + (512 * nes_header.flag6.trainer);
-    // printf("%d \n", prg_start + prg_rom)
+
     for (size_t i = prg_start; i < prg_rom + prg_start; i++)
     {
         rom.PRG.push_back(instructions[i]);
