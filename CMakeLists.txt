@@ -40,7 +40,6 @@ file(GLOB EMULATOR_SOURCES "*src/emulator/*.cpp")
 file(GLOB QT_PROJECT_SOURCES "src/gui/qt_tetroidnes/*.cpp")
 file(GLOB QT_RCC_FILES "src/gui/qt_tetroidnes/resources/*.qrc")
 file(GLOB QT_HEADERS "src/include/Qt/*.h")
-file(GLOB QT_UI_FILES "src/gui/qt_tetroidnes/*.ui")
 
 find_package(OpenGL REQUIRED COMPONENTS OpenGL)
 
@@ -62,8 +61,6 @@ qt_add_executable(${EXECUTABLE_NAME}
     ${QT_PROJECT_SOURCES}
     ${EMULATOR_SOURCES}
     ${QT_HEADERS}
-
-    ${QT_UI_FILES}
 )
 
 qt_add_translations(${EXECUTABLE_NAME} TS_FILES ${QT_TRANSLATION_FILES})

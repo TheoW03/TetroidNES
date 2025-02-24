@@ -6,6 +6,7 @@ constexpr const auto key_min_game_on_start = "minimize_gui_on_game_start";
 constexpr const auto key_speed = "emu_speed";
 constexpr const auto key_run_emulator_on_seperate_thread = "run_emulator_on_seperate_thread";
 constexpr const auto key_crt_shader = "crt_shader";
+constexpr const auto key_active_input_profile = "active_input_profile";
 constexpr const auto key_sort_mode = "QOL/sort_mode";
 constexpr const auto key_ascend_order = "QOL/ascending_order";
 constexpr const auto key_recent_roms = "QOL/recent_roms";
@@ -134,4 +135,14 @@ void SettingsManager::set_run_emulator_on_seperate_thread(bool b)
 bool SettingsManager::run_emulator_on_seperate_thread() const
 {
     return m_settings.value(key_run_emulator_on_seperate_thread, true).toBool();
+}
+
+QString SettingsManager::active_input_profile() const
+{
+    return m_settings.value(key_active_input_profile, "default").toString();
+}
+
+void SettingsManager::set_active_input_profile(QString name)
+{
+    m_settings.setValue(key_active_input_profile, name);
 }

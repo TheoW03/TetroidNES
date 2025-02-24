@@ -14,6 +14,7 @@ public:
 public slots:
     void open_rom();
     void open_settings();
+    void open_input_settings();
     void open_log_display();
     void refresh_recent_roms(QStringList dirs);
 
@@ -27,6 +28,7 @@ private:
 
     QMenu *edit;
     QAction *settings_open;
+    QAction *input_settings_open;
 
     QMenu *tools;
     QAction *log_display_open;

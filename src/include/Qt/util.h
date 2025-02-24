@@ -7,6 +7,7 @@
 #include <Qt/mainwindow.h>
 
 #define SAVE_DIR "./save/config.cfg"
+#define CONTROLS_SAVE_DIR "./save/controls.json"
 
 inline std::string num_to_hexa(uint16_t num)
 {

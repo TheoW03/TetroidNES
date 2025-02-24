@@ -18,6 +18,17 @@ enum class Controller
     LEFT = 0b01000000,
     RIGHT = 0b10000000
 };
+static const Controller AllController[]
+{
+    Controller::A,
+    Controller::B,
+    Controller::SELECT,
+    Controller::START,
+    Controller::UP,
+    Controller::DOWN,
+    Controller::LEFT,
+    Controller::RIGHT
+};
 
 class Bus
 {

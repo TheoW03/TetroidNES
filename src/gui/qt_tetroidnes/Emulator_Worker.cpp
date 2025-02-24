@@ -1,11 +1,11 @@
 #include <Qt/Emulator_Worker.h>
 
 #include <Qt/settingsmanager.h>
+#include <Qt/controllermanager.h>
 #include <Qt/utilemulator.h>
 
 #include <Emulator/InstructionMap.h>
 #include <Emulator/LoadRom.h>
-#include "Emulator_Worker.h"
 
 const size_t cpu_cycles_frame = 29782;
 EmulatorWorker::EmulatorWorker(Rom rom, QString rom_dest, QWidget *parent) : QObject{parent},
@@ -157,24 +157,23 @@ void EmulatorWorker::process_cpu()
 
         clock_cycles += exe.reset_clock();
     }
-    // std::vector<sf::Keyboard::Key> keys{
-    //     sf::Keyboard::Key::A,
-    //     sf::Keyboard::Key::W,
-    //     sf::Keyboard::Key::S,
-    //     sf::Keyboard::Key::D,
-    //     sf::Keyboard::Key::Enter,
-    //     sf::Keyboard::Key::Space,
-    //     sf::Keyboard::Key::Slash,
-    //     sf::Keyboard::Key::M,
 
-    // };
-    // for (int i = 0; i < keys.size(); i++)
-    // {
-    //     if (sf::Keyboard::isKeyPressed(keys[i]))
-    //     {
-    //         /*write to keys*/
-    //     }
-    // }
+    // Input Handling
+    ControllerManager &controller_manager = ControllerManager::instance();
+    SettingsManager &settings_manager = SettingsManager::instance();
+
+    auto input_map_name = settings_manager.active_input_profile();
+    auto input_map = controller_manager.from_json(input_map_name);
+    for (const auto button : InputMap::AllButtons)
+    {
+        const auto key = ControllerManager::get_button_keyboard(input_map, button);
+
+        if (sf::Keyboard::isKeyPressed(key))
+        {
+            exe.joypad1(AllController[button], 1);
+            qInfo() << "Button" << QString::number(button) << "pressed";
+        }
+    }
     is_frame_generated = true;
 }
 

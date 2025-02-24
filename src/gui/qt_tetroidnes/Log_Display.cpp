@@ -11,6 +11,7 @@ LogDisplay::LogDisplay(QWidget *parent) : QWidget{parent},
 
     setWindowFlag(Qt::WindowType::Window);
     setWindowTitle("TetroidNES - " + tr("Log System"));
+    resize(600, 400);
 
     QLayout *layout = new QVBoxLayout();
 

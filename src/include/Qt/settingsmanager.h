@@ -50,6 +50,9 @@ public:
     void append_recent_roms(QString dir);
     void set_recent_roms(QStringList dirs);
 
+    QString active_input_profile() const;
+    void set_active_input_profile(QString name);
+
 signals:
     void crt_shader_changed(bool on);
     void speed_changed(float speed);

@@ -1,10 +1,5 @@
 #include <Qt/mainwindow.h>
-#include <Qt/filtercontrolframe.h>
-#include <Qt/gamedisplay.h>
-#include "ui_mainwindow.h"
-#include <Qt/settingsmanager.h>
-#include <Qt/util.h>
-#include <Emulator/LoadRom.h>
+
 #include <QVBoxLayout>
 #include <QIcon>
 #include <QtLogging>
@@ -12,23 +7,31 @@
 #include <QMimeData>
 #include <QMessageBox>
 #include <QEvent>
+#include <QStatusBar>
+
+#include <Qt/filtercontrolframe.h>
+#include <Qt/gamedisplay.h>
+#include <Qt/settingsmanager.h>
+#include <Qt/util.h>
+
+#include <Emulator/LoadRom.h>
 
 constexpr const float slide_pos_multiplier = 0.1f;
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+                                          centralwidget(new QWidget(this)),
+                                          main_menubar(new MenuBar(this)),
+                                          sort_control_frame(new FilterControlFrame(centralwidget)),
+                                          rom_list_scroll(new QScrollArea(centralwidget)),
+                                          rom_list(new RomList(centralwidget)),
+                                          page_info(new QLabel("Page 1 of 1", this))
 {
-    ui->setupUi(this);
-
     setAttribute(Qt::WA_AcceptDrops, true);
     setAttribute(Qt::WA_QuitOnClose, true);
     setAttribute(Qt::WA_DeleteOnClose, true);
+    resize(800, 600);
 
     auto *widget_layout = new QVBoxLayout();
-    main_menubar = new MenuBar(this);
-    sort_control_frame = new FilterControlFrame(ui->centralwidget);
-    rom_list_scroll = new QScrollArea(ui->centralwidget);
-    rom_list = new RomList(ui->centralwidget);
-    page_info = new QLabel("Page 1 of 1", this);
 
     // widget layout
     widget_layout->addWidget(sort_control_frame);
@@ -42,11 +45,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     rom_list_scroll->setWidget(rom_list);
 
     // central widget
-    ui->centralwidget->setLayout(widget_layout);
+    centralwidget->setLayout(widget_layout);
 
     // setup
     setWindowTitle(QString("%1 - %2").arg(qApp->applicationName(), qApp->applicationVersion()));
     setMenuBar(main_menubar);
+    setCentralWidget(centralwidget);
     page_info->setObjectName("PageInfo");
     statusBar()->addPermanentWidget(page_info);
     update_page_info();
@@ -278,11 +282,4 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 MainWindow::~MainWindow()
 {
-    qDebug() << "main window Destructor";
-
-    if (ui != nullptr)
-    {
-        delete ui;
-        qDebug() << "deleting UI";
-    }
 }

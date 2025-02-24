@@ -9,12 +9,6 @@
 #include <QScrollArea>
 #include <QLabel>
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
-}
-QT_END_NAMESPACE
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -31,6 +25,7 @@ public slots:
     void rom_list_scroll_value_changed(const int value);
     void on_gamedisplay_destroyed();
 private:
+    QWidget *centralwidget;
     RomList *rom_list;
     FilterControlFrame *sort_control_frame;
     QScrollArea *rom_list_scroll;
@@ -42,8 +37,5 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event) override;
     void dropEvent(QDropEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
-
-private:
-    Ui::MainWindow *ui;
 
 };
