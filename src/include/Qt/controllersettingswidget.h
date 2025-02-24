@@ -3,7 +3,7 @@
 #include <QWidget>
 #include <QComboBox>
 
-#include <Qt/inputsettingsdisplay.h>
+#include <Qt/controllersettingsdisplay.h>
 
 class InputSettings : public QWidget
 {

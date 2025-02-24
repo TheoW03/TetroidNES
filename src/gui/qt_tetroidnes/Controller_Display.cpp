@@ -1,4 +1,4 @@
-#include <Qt/inputsettingsdisplay.h>
+#include <Qt/controllersettingsdisplay.h>
 
 #include <QList>
 #include <QFormLayout>

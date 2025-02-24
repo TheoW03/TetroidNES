@@ -13,12 +13,30 @@ constexpr const char* BUTTONS = "buttons";
 ControllerManager::ControllerManager()
 {
     qInfo() << "Constructing ControllerManager singleton";
+
     load_json();
-    if (json.object().isEmpty())
+
+    const bool is_null = json.isNull();
+    const bool is_object = json.isObject();
+    const bool is_object_empty = json.object().isEmpty();
+
+    if (is_null || !is_object || is_object_empty)
     {
-        qInfo() << "Controller settings are empty! Resetting to default";
+        qInfo() 
+        << "Controller settings are empty! Resetting to default"
+        << "Is null:" << QString::number(is_null)
+        << "Is JSON Object:" << QString::number(is_object)
+        << "Is JSON Object Empty:" << QString::number(is_object_empty);
+        
+        //qDebug() << "Generating default input map";
         auto default_input_map = ControllerManager::generate_default_input_map();
-        update_map_json(default_input_map.name, to_json(default_input_map));
+        //qDebug() << "Converting default input map into a QJsonObject";
+        auto default_input_map_json = to_json(default_input_map);
+
+        //qDebug() 
+        //<< "Is default input map empty:" << QString::number(default_input_map_json.isEmpty());
+
+        update_map_json(default_input_map_json);
         save_json();
     }
 }
@@ -39,13 +57,14 @@ void ControllerManager::set_button(InputMap &old_input_map, InputMap &new_input_
 {
     old_input_map = new_input_map;
 
-    update_map_json(old_input_map.name, to_json(new_input_map));
+    update_map_json(to_json(new_input_map));
     emit input_map_changed(new_input_map);
 }
 
 InputMap ControllerManager::from_json(QString name)
 {
-    QJsonObject json_input_map = json.object()[name].toObject();
+    QJsonObject object = json.object();
+    QJsonObject json_input_map = object[name].toObject();
 
     QJsonArray json_input_buttons = json_input_map[BUTTONS].toArray();
     QString input_name = json_input_map[NAME].toString();
@@ -73,9 +92,11 @@ InputButton ControllerManager::from_json(QJsonArray &json_array, Buttons button_
 
 QJsonObject ControllerManager::to_json(InputButton &button)
 {
+    qDebug() << "Converting button to QJsonObject...";
     QJsonObject json_object;
     json_object[NAME] = button.display_name;
     json_object[KEY] = button.key;
+    qDebug() << "Done";
 
     return json_object;
 }
@@ -87,12 +108,13 @@ QJsonObject ControllerManager::to_json(InputMap &input_map)
     json_object[TYPE] = input_map.controller_type;
     json_object[NAME] = input_map.name;
 
+    qDebug() << "Assigning buttons";
     for(int i = 0; i < BUTTON_COUNT; i++)
     {
         QJsonObject json_button = to_json(input_map.buttons[i]);
-        json_buttons[i] = json_button;
+        json_buttons.append(json_button);
     }
-
+    qDebug() << "Done assigning buttons";
     json_object[BUTTONS] = json_buttons;
 
     return json_object;
@@ -111,7 +133,14 @@ sf::Keyboard::Key ControllerManager::get_button_keyboard(InputMap &input_map, Bu
 void ControllerManager::load_json()
 {
     QFile file(CONTROLS_SAVE_DIR);
-    if (!file.open(QIODevice::ReadWrite | QIODevice::Text))
+    if (!file.exists())
+    {
+        qInfo() << file.fileName() << "doesn't exist! Creating...";
+        file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+        file.write(QByteArray("{}"));
+        file.close();
+    }
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         qCritical() << "Failed to open" << file.fileName() << file.errorString();
         return;
@@ -131,6 +160,7 @@ void ControllerManager::save_json()
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
         qCritical() << "Failed to open" << file.fileName() << file.errorString();
+        file.close();
         return;
     }
 
@@ -156,10 +186,11 @@ void ControllerManager::update_button_json(QString name, QJsonObject button, But
     json.setObject(object);
 }
 
-void ControllerManager::update_map_json(QString name, QJsonObject input_map)
+void ControllerManager::update_map_json(QJsonObject input_map)
 {
     auto object = json.object();
-    object[name] = input_map;
+    auto profile_name = input_map[NAME].toString();
+    object[profile_name] = input_map;
     json.setObject(object);
 }
 
@@ -183,7 +214,7 @@ void ControllerManager::json_error(QJsonParseError error)
 {
     if (error.error != QJsonParseError::NoError)
     {
-        qCritical() << error.errorString();
+        qCritical() << "An error occured parsing" << CONTROLS_SAVE_DIR << error.errorString();
     }
 }
 
@@ -216,4 +247,9 @@ void ControllerManager::change_type(QString name, InputMap::Type type)
     object[name] = profile;
 
     json.setObject(object);
+}
+
+bool ControllerManager::profile_exists(QString key) const
+{
+    return json.object().contains(key);
 }

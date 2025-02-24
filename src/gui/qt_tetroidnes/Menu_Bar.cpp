@@ -8,7 +8,7 @@
 
 #include <Qt/settingsmanager.h>
 #include <Qt/Log_Display.h>
-#include <Qt/inputsettingswidget.h>
+#include <Qt/controllersettingswidget.h>
 
 MenuBar::MenuBar(QWidget *parent) : QMenuBar{parent},
                                     file(addMenu(tr("File"))),

@@ -1,4 +1,4 @@
-#include <Qt/inputsettingswidget.h>
+#include <Qt/controllersettingswidget.h>
 
 #include <Qt/controllermanager.h>
 #include <Qt/settingsmanager.h>
@@ -21,7 +21,6 @@ InputSettings::InputSettings(QWidget *parent) : QWidget{parent},
     auto profile_names = controller_manager.get_profile_names();
     auto active_profile_name = SettingsManager::instance().active_input_profile();
     InputMap active_inputmap = controller_manager.from_json(active_profile_name);
-
 
     auto *layout = new QVBoxLayout();
     auto *header_layout = new QHBoxLayout();

@@ -43,6 +43,8 @@ public:
     ControllerManager& operator=(const ControllerManager&) = delete;
 
     QStringList get_profile_names() const;
+    bool profile_exists(QString key) const;
+    void check_and_handle_missing_active_input_map();
 
     void set_button(InputMap &input_map, Buttons button_id, InputButton new_button);
     void set_button(InputMap &old_input_map, InputMap &new_input_map);
@@ -58,7 +60,7 @@ public:
     void save_json();
     void clear_memory_json();
     void update_button_json(QString name, QJsonObject button, Buttons button_id);
-    void update_map_json(QString name, QJsonObject input_map);
+    void update_map_json(QJsonObject input_map);
 
     static InputMap generate_default_input_map();
     static int get_button_gamepad(InputMap &input_map, Buttons button);
