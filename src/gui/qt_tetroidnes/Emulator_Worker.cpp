@@ -159,8 +159,8 @@ void EmulatorWorker::process_cpu()
     }
 
     // Input Handling
-    ControllerManager &controller_manager = ControllerManager::instance();
-    SettingsManager &settings_manager = SettingsManager::instance();
+    auto &controller_manager = ControllerManager::instance();
+    auto &settings_manager = SettingsManager::instance();
 
     auto input_map_name = settings_manager.active_input_profile();
     auto input_map = controller_manager.from_json(input_map_name);

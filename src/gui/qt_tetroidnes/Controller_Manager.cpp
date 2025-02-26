@@ -34,7 +34,8 @@ ControllerManager::ControllerManager()
         auto default_input_map_json = to_json(default_input_map);
 
         //qDebug() 
-        //<< "Is default input map empty:" << QString::number(default_input_map_json.isEmpty());
+        //<< "Is default input map empty:"
+        //<< QString::number(default_input_map_json.isEmpty());
 
         update_map_json(default_input_map_json);
         save_json();
@@ -76,7 +77,11 @@ InputMap ControllerManager::from_json(QString name)
         buttons[i] = from_json(json_input_buttons, Buttons(i));
     }
 
-    qDebug() << "Serializing InputMap, Name:" << input_name << "Type:" << QString::number(type);
+    qDebug()
+    << "ControllerManager::from_json"
+    << "Serializing InputMap, Name:" << input_name
+    << "Type:" << QString::number(type);
+    
     return InputMap(input_name, type, buttons);
 }
 
@@ -171,6 +176,8 @@ void ControllerManager::save_json()
 void ControllerManager::clear_memory_json()
 {
     json.setObject(QJsonObject());
+
+    emit profile_order_changed();
 }
 
 void ControllerManager::update_button_json(QString name, QJsonObject button, Buttons button_id)
@@ -214,7 +221,10 @@ void ControllerManager::json_error(QJsonParseError error)
 {
     if (error.error != QJsonParseError::NoError)
     {
-        qCritical() << "An error occured parsing" << CONTROLS_SAVE_DIR << error.errorString();
+        qCritical() 
+        << "An error occured parsing"
+        << CONTROLS_SAVE_DIR
+        << error.errorString();
     }
 }
 
@@ -252,4 +262,40 @@ void ControllerManager::change_type(QString name, InputMap::Type type)
 bool ControllerManager::profile_exists(QString key) const
 {
     return json.object().contains(key);
+}
+
+void ControllerManager::remove_profile(QString key)
+{
+    auto object = json.object();
+    object.remove(key);
+
+    json.setObject(object);
+
+    emit profile_order_changed();
+}
+
+void ControllerManager::add_profile(QString key)
+{
+    auto object = json.object();
+    auto new_profile = ControllerManager::generate_default_input_map();
+    auto new_profile_json = to_json(new_profile);
+
+    new_profile_json[NAME] = key;
+    object[key] = new_profile_json;
+
+    json.setObject(object);
+
+    emit profile_order_changed();
+}
+
+void ControllerManager::add_profile(InputMap &input_map)
+{
+    auto object = json.object();
+    auto new_profile_json = to_json(input_map);
+
+    object[input_map.name] = new_profile_json;
+
+    json.setObject(object);
+
+    emit profile_order_changed();
 }

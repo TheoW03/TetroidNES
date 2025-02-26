@@ -15,14 +15,14 @@ Use InputMap::Buttons enum when accessing,
 these values will be written in the user's controller file
 */
 static const char* CONTROLLER_MAP[BUTTON_COUNT]{
-"A",
-"B",
-"Select",
-"Start",
-"Up",
-"Down",
-"Left",
-"Right"
+    "A",
+    "B",
+    "Select",
+    "Start",
+    "Up",
+    "Down",
+    "Left",
+    "Right"
 };
 
 class ControllerManager : public QObject
@@ -44,7 +44,10 @@ public:
 
     QStringList get_profile_names() const;
     bool profile_exists(QString key) const;
-    void check_and_handle_missing_active_input_map();
+
+    void remove_profile(QString key);
+    void add_profile(QString key);
+    void add_profile(InputMap &input_map);
 
     void set_button(InputMap &input_map, Buttons button_id, InputButton new_button);
     void set_button(InputMap &old_input_map, InputMap &new_input_map);
@@ -67,7 +70,8 @@ public:
     static sf::Keyboard::Key get_button_keyboard(InputMap &input_map, Buttons button);
 
 signals:
-    void input_map_changed(InputMap new_input_map);
+    void profile_order_changed();
+    void input_map_changed(InputMap input_map);
 
 private:
     ControllerManager();
