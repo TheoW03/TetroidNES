@@ -7,6 +7,8 @@
 #include <Qt/settingsmanager.h>
 
 constexpr const char* BUTTON_ID = "button_id";
+constexpr const char* AWAITING_INPUT = "...";
+constexpr const uint BATCH_ASSIGN_START = 0;
 
 const std::unordered_map<Qt::Key, sf::Keyboard::Key> QT_TO_SF_MAP = {
     // Number Keys
@@ -95,7 +97,10 @@ InputSettingsDisplay::InputSettingsDisplay(QWidget *parent) : QWidget{parent},
                                                               button5(new QPushButton(this)),
                                                               button6(new QPushButton(this)),
                                                               button7(new QPushButton(this)),
-                                                              button_to_be_bound(nullptr)
+                                                              button_to_be_bound(nullptr),
+                                                              batch_assign(new QPushButton("Batch Assign", this)),
+                                                              is_batch_assigning(false),
+                                                              batch_idx(BATCH_ASSIGN_START)
 {
 
     auto *layout = new QFormLayout();
@@ -105,6 +110,7 @@ InputSettingsDisplay::InputSettingsDisplay(QWidget *parent) : QWidget{parent},
         buttons[i]->setProperty(BUTTON_ID, QVariant(i));
         layout->addRow(CONTROLLER_MAP[i], buttons[i]);
     }
+    layout->addRow(batch_assign);
 
     setLayout(layout);
 
@@ -115,6 +121,8 @@ InputSettingsDisplay::InputSettingsDisplay(QWidget *parent) : QWidget{parent},
         connect(button, &QPushButton::pressed, [this, button](){on_button_press(button);});
     }
 
+    connect(batch_assign, &QPushButton::pressed, this, &InputSettingsDisplay::on_batch_assign_pressed);
+
 }
 
 InputSettingsDisplay::~InputSettingsDisplay()
@@ -123,10 +131,19 @@ InputSettingsDisplay::~InputSettingsDisplay()
 
 void InputSettingsDisplay::on_button_press(QPushButton *button)
 {
-    button->setText("...");
+    button->setText(AWAITING_INPUT);
     toggle_buttons(false);
     button_to_be_bound = button;
     grabKeyboard();
+}
+
+void InputSettingsDisplay::on_batch_assign_pressed()
+{
+    toggle_buttons(false);
+    is_batch_assigning = true;
+    grabKeyboard();
+    button_to_be_bound = button0;
+    button_to_be_bound->setText(AWAITING_INPUT);
 }
 
 void InputSettingsDisplay::on_button_to_be_bound_pressed(QPushButton *button, QKeyEvent *event)
@@ -152,23 +169,50 @@ void InputSettingsDisplay::on_button_to_be_bound_pressed(QPushButton *button, QK
     {
         button->setText(active_input_map.buttons[button_enum].display_name);
     }
-    
-    button_to_be_bound = nullptr;
-    releaseKeyboard();
-    toggle_buttons(true);
-
-    qDebug() << "Released keyboard";
 }
 
 void InputSettingsDisplay::keyPressEvent(QKeyEvent *event)
 {
-    if (button_to_be_bound != nullptr)
+    if (button_to_be_bound == nullptr)
+    {
+        QWidget::keyPressEvent(event);
+        return;
+    }
+    
+    if (!is_batch_assigning)
     {
         on_button_to_be_bound_pressed(button_to_be_bound, event);
+
+        button_to_be_bound = nullptr;
+        releaseKeyboard();
+        toggle_buttons(true);
+
+        event->accept();
+
+        qDebug() << "Released keyboard";
+        return;
     }
     else
     {
-        QWidget::keyPressEvent(event);
+        on_button_to_be_bound_pressed(button_to_be_bound, event);
+        batch_idx++;
+
+        event->accept();
+    }
+
+    if (batch_idx < BUTTON_COUNT)
+    {
+        button_to_be_bound = buttons[batch_idx];
+        button_to_be_bound->setText(AWAITING_INPUT);
+    }
+    else
+    {
+        batch_idx = BATCH_ASSIGN_START;
+        is_batch_assigning = false;
+        releaseKeyboard();
+        toggle_buttons(true);
+
+        qDebug() << "Released keyboard (Batch assign)";
     }
 }
 
@@ -178,6 +222,8 @@ void InputSettingsDisplay::toggle_buttons(const bool enabled)
     {
         button->setEnabled(enabled);
     }
+
+    batch_assign->setEnabled(enabled);
 }
 
 void InputSettingsDisplay::setup()

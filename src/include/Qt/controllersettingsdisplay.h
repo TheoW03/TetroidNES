@@ -17,6 +17,7 @@ public:
     void setup();
 public slots:
     void on_button_press(QPushButton *button);
+    void on_batch_assign_pressed();
 private:
     QPushButton *button0;
     QPushButton *button1;
@@ -27,12 +28,16 @@ private:
     QPushButton *button6;
     QPushButton *button7;
 
+    QPushButton *batch_assign;
+
     const QList<QPushButton *> buttons = {
         button0, button1, button2, button3,
         button4, button5, button6, button7
     };
 
     QPushButton *button_to_be_bound;
+    bool is_batch_assigning;
+    uint batch_idx;
 
     void toggle_buttons(const bool enabled);
 protected:
