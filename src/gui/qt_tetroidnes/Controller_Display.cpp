@@ -167,7 +167,7 @@ void InputSettingsDisplay::on_button_to_be_bound_pressed(QPushButton *button, QK
     }
     else
     {
-        button->setText(active_input_map.buttons[button_enum].display_name);
+        button->setText(active_input_map.buttons[button_enum].display_name.toUpper());
     }
 }
 
@@ -192,13 +192,13 @@ void InputSettingsDisplay::keyPressEvent(QKeyEvent *event)
         qDebug() << "Released keyboard";
         return;
     }
-    
+
     on_button_to_be_bound_pressed(button_to_be_bound, event);
     batch_idx++;
 
     event->accept();
 
-    if (batch_idx < BUTTON_COUNT)
+    if (batch_idx < BUTTON_COUNT && event->key() != Qt::Key_Delete)
     {
         button_to_be_bound = buttons[batch_idx];
         button_to_be_bound->setText(AWAITING_INPUT);
@@ -209,6 +209,7 @@ void InputSettingsDisplay::keyPressEvent(QKeyEvent *event)
         is_batch_assigning = false;
         releaseKeyboard();
         toggle_buttons(true);
+        button_to_be_bound = nullptr;
 
         qDebug() << "Released keyboard (Batch assign)";
     }
