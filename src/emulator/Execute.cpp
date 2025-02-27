@@ -118,10 +118,11 @@ void Execute::reset()
 }
 void Execute::joypad2(Controller button, int isPressed)
 {
-
+    qDebug() << "joypad1";
     cpu.bus.write_controller1(button, isPressed);
 }
 void Execute::joypad1(Controller button, int isPressed)
 {
+
     cpu.bus.write_controller1(button, isPressed);
 }

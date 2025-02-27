@@ -165,11 +165,11 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     // this->clock_cycles++;
     // this->ppu.tick(3);
     this->tick();
-    // this->tick();
     if (address <= 0x1FFF)
     {
         uint16_t mirror_address = address & 0x7ff;
         v_memory[mirror_address] = value;
+        // qInfo() << "oam dma: " << num_to_hexa(value);
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
@@ -227,8 +227,10 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address == 0x4014)
     {
-
-        this->ppu.write_OAM_data(value);
+        for (int i = 0; i < 256; i++)
+        {
+            this->ppu.write_OAM_data(v_memory[i + 0x0200]);
+        }
         qInfo() << "writting to OAM";
     }
     else if (address == 0x4016)

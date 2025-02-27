@@ -643,11 +643,19 @@ void PPU::write_OAM_data(uint8_t val)
     // cant access the OAM if the ctrl S bit is not set
 
     this->oam[this->oam_addr] = val;
-
     this->oam_addr++;
-    if (oam_addr >= 255)
+
+    // for (int i = 0; i < 255; i++)
+    // {
+    //     qDebug() << "oam " << this->oam[i];
+    // }
+    if (oam_addr > 255)
+    {
+        qDebug() << "oam is 0";
+        qDebug() << "oam: " << num_to_hexa(this->oam_addr);
+
         this->oam_addr = 0;
-    qDebug() << "oam: " << num_to_hexa(this->oam_addr);
+    }
     // oam_addr += (oam_addr + 1) % 256;
     // printf("%x \n", oam_addr);
     // std::cout << oam_addr << std::endl;
