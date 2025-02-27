@@ -192,13 +192,11 @@ void InputSettingsDisplay::keyPressEvent(QKeyEvent *event)
         qDebug() << "Released keyboard";
         return;
     }
-    else
-    {
-        on_button_to_be_bound_pressed(button_to_be_bound, event);
-        batch_idx++;
+    
+    on_button_to_be_bound_pressed(button_to_be_bound, event);
+    batch_idx++;
 
-        event->accept();
-    }
+    event->accept();
 
     if (batch_idx < BUTTON_COUNT)
     {
