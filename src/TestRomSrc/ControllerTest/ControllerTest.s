@@ -1,4 +1,9 @@
 ; sekelton if you want to add on to the tests
+.define INPUT_REG1 $20
+.define INPUT_REG2 $21
+
+.define BUTTON_UP #$08 
+.define BUTTON_DOWN #$04
 
 
 .segment "HEADER"
@@ -91,14 +96,70 @@ reset:
     loop:
         JMP loop
 nmi:
+    jsr init_input
+    jsr read_controller
+    lda #$00
+    lda BUTTON_UP 
+    and INPUT_REG1
+    bne set_color
+    beq color
+    jmp end 
+    ; broken
+    color:
+         lda %00000000
+        sta $0203
+        jmp end
+    set_color:
+        lda %00000011
+        sta $0203
+    end:
     lda #$02
     sta $4014
     rti   
 palletes:
 	.byte $00, $0F, $00, $10, 	$00, $0A, $15, $01, 	$00, $29, $28, $27, 	$00, $34, $24, $14 	;background palettes
-	.byte $31, $0F, $15, $30, 	$00, $0F, $11, $30, 	$00, $0F, $30, $27, 	$00, $3C, $2C, $1C 	;sprite palettes
+	.byte $31, $0F, $15, $30, 	$00, $0F, $11, $30, 	$00, $0F, $30, $27, 	$00, $28, $2C, $1C 	;sprite palettes
 
+; https://www.youtube.com/watch?v=nAStgQzPrAQ&t=1s&ab_channel=NesHacker
+init_input:
+    ; inits
+    lda #1
+    sta INPUT_REG1
 
+    ; resets this is for input 1
+    sta $4016
+    lda #0
+    sta $4016
+
+    
+    ; this resets the 2nd controller register
+    lda #1
+    sta INPUT_REG2
+
+    ; resets this is for input 2
+    sta $4017
+    lda #0
+    sta $4017
+    rts
+read_controller:
+
+; stores the contents of the input register to $20 to be used. this is for 
+; the left paddle
+    read_loop1:
+        lda $4016
+        lsr a
+        rol INPUT_REG1
+        bcc read_loop1
+    lda #0 
+
+; stores the contents of the input register to $21 to be used. this is for 
+; the right paddle
+    read_loop2: 
+        lda $4017
+        lsr a
+        rol INPUT_REG2
+        bcc read_loop2
+    rts
 sprite_data:
 ;Y, SPRITE NUM, attributes, X
 ;76543210
