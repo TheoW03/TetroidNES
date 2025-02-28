@@ -283,9 +283,9 @@ void ROR(AddressMode addressType, CPU &cpu)
 {
 	// TODO: rotate right
 
-	set_carry((cpu.A_Reg & 1) != 0, cpu);
 	if (addressType == AddressMode::ACCUMULATOR)
 	{
+		set_carry((cpu.A_Reg & 1) != 0, cpu);
 		cpu.A_Reg = right_rotate(cpu.A_Reg, 1);
 		set_negative(cpu.A_Reg, cpu);
 		set_zero(cpu.A_Reg, cpu);
@@ -295,6 +295,7 @@ void ROR(AddressMode addressType, CPU &cpu)
 
 		uint16_t address = address_mode(addressType, cpu);
 		uint8_t value = cpu.bus.read_8bit(address);
+		set_carry((value & 1) != 0, cpu);
 		value = right_rotate(value, 1);
 		cpu.bus.write_8bit(address, value);
 		set_negative(value, cpu);
@@ -304,10 +305,16 @@ void ROR(AddressMode addressType, CPU &cpu)
 
 void ROL(AddressMode addressType, CPU &cpu)
 {
-	set_carry(((cpu.A_Reg >> 7) != 0), cpu);
+	// cpu.A_Reg = 129;
+
+	// printf("%d \n", ((cpu.A_Reg >> 7) != 0));
+	// std::bitset<8> test(cpu.A_Reg);
+	// std::cout << test << std::endl;
+	// exit(EXIT_FAILURE);
 	if (addressType == AddressMode::ACCUMULATOR)
 	{
 		// accumulator
+		set_carry(((cpu.A_Reg >> 7) != 0), cpu);
 		cpu.A_Reg = left_rotate(cpu.A_Reg, 1);
 		set_negative(cpu.A_Reg, cpu);
 		set_zero(cpu.A_Reg, cpu);
@@ -317,6 +324,7 @@ void ROL(AddressMode addressType, CPU &cpu)
 
 		uint16_t address = address_mode(addressType, cpu);
 		uint8_t value = cpu.bus.read_8bit(address);
+		set_carry(((value >> 7) != 0), cpu);
 		value = left_rotate(value, 1);
 		cpu.bus.write_8bit(address, value);
 		set_negative(value, cpu);
@@ -329,11 +337,12 @@ void ROL(AddressMode addressType, CPU &cpu)
 void ASL(AddressMode addressType, CPU &cpu)
 {
 	// TODO a >> m
-	set_carry(((cpu.A_Reg >> 7) != 0), cpu);
 
 	if (addressType == AddressMode::ACCUMULATOR)
 	{
+		set_carry(((cpu.A_Reg >> 7) != 0), cpu);
 		cpu.A_Reg = cpu.A_Reg << 1;
+
 		set_negative(cpu.A_Reg, cpu);
 		set_zero(cpu.A_Reg, cpu);
 	}
@@ -342,8 +351,7 @@ void ASL(AddressMode addressType, CPU &cpu)
 
 		uint16_t address = address_mode(addressType, cpu);
 		uint8_t value = cpu.bus.read_8bit(address);
-
-		// cpu.A_Reg = cpu.A_Reg << value;
+		set_carry(((value >> 7) != 0), cpu);
 		value <<= 1;
 		cpu.bus.write_8bit(address, value);
 		set_negative(value, cpu);
@@ -353,10 +361,11 @@ void ASL(AddressMode addressType, CPU &cpu)
 
 void LSR(AddressMode addressType, CPU &cpu)
 {
-	set_carry((cpu.A_Reg & 1) != 0, cpu);
 
 	if (addressType == AddressMode::ACCUMULATOR)
 	{
+		set_carry((cpu.A_Reg & 1) != 0, cpu);
+
 		cpu.A_Reg = cpu.A_Reg >> 1;
 		set_negative(cpu.A_Reg, cpu);
 		set_zero(cpu.A_Reg, cpu);
@@ -366,6 +375,7 @@ void LSR(AddressMode addressType, CPU &cpu)
 
 		uint16_t address = address_mode(addressType, cpu);
 		uint8_t value = cpu.bus.read_8bit(address);
+		set_carry((value & 1) != 0, cpu);
 		value >>= 1;
 		cpu.bus.write_8bit(address, value);
 		set_negative(value, cpu);
@@ -529,7 +539,7 @@ void BCC(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (check_carry(cpu))
+	if (check_carry(cpu) == 1)
 	{
 		return;
 	}
@@ -542,7 +552,7 @@ void BCS(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (!check_carry(cpu))
+	if (check_carry(cpu) == 0)
 	{
 		return;
 	}

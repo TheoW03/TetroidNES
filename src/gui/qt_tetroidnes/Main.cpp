@@ -9,7 +9,6 @@
 #include <Qt/mainwindow.h>
 #include <Qt/log.h>
 
-
 /*
 Checks for a missing active input map in the controller manager
 If it is missing, change the active input map to the first item in the json
@@ -26,8 +25,8 @@ void check_and_handle_missing_active_input_map()
         QString new_active_input_key = controller_manager.get_profile_names().first();
 
         qWarning()
-        << "Could not find active input profile! Setting new active input to"
-        << new_active_input_key;
+            << "Could not find active input profile! Setting new active input to"
+            << new_active_input_key;
 
         settings_manager.set_active_input_profile(new_active_input_key);
     }

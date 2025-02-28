@@ -20,6 +20,8 @@
 .segment "STARTUP"
 
 reset:
+    ; jsr init_input
+    ; jsr read_controller
     sei
     cld
 
@@ -85,8 +87,10 @@ reset:
             lda sprite_data, X
             sta $0200, X
             inx
-            cpx #$10
+            cpx #$04
             bne load_sprites
+            ; lda %00000011
+            ; sta $0202
         cli
         lda #%10000000 ; vblank status
         sta $2000
@@ -94,24 +98,25 @@ reset:
         sta $2001
 
     loop:
+        
         JMP loop
 nmi:
+
     jsr init_input
     jsr read_controller
     lda #$00
-    lda BUTTON_UP 
-    and INPUT_REG1
-    bne set_color
-    beq color
-    jmp end 
+    lda INPUT_REG1 
+    and BUTTON_UP
+    bne color
+    beq set_color
     ; broken
     color:
-         lda %00000000
-        sta $0203
+        lda %00000000
+        sta $0202
         jmp end
     set_color:
         lda %00000011
-        sta $0203
+        sta $0202
     end:
     lda #$02
     sta $4014
@@ -149,6 +154,7 @@ read_controller:
         lda $4016
         lsr a
         rol INPUT_REG1
+
         bcc read_loop1
     lda #0 
 
@@ -160,6 +166,7 @@ read_controller:
         rol INPUT_REG2
         bcc read_loop2
     rts
+
 sprite_data:
 ;Y, SPRITE NUM, attributes, X
 ;76543210
@@ -169,6 +176,6 @@ sprite_data:
 ;||+------ Priority (0: in front of background; 1: behind background)
 ;|+------- Flip sprite horizontally
 ;+-------- Flip sprite vertically
-	.byte $50, $00, %00000000, $70 
+	.byte $50, $00, %00000011, $70 
 .segment "CHARS" ; for graphics
 .incbin "TestController.chr"
