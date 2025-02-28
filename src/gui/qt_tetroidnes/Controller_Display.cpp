@@ -2,6 +2,7 @@
 
 #include <QList>
 #include <QFormLayout>
+#include <QMessageBox>
 
 #include <Qt/controllermanager.h>
 #include <Qt/settingsmanager.h>
@@ -178,7 +179,22 @@ void InputSettingsDisplay::keyPressEvent(QKeyEvent *event)
         QWidget::keyPressEvent(event);
         return;
     }
-    
+    const QString event_text = event->text().toUpper();
+    //qDebug() << "Conflicting binds check";
+    const bool is_conflicting_binds = conflicting_binds_check(button_to_be_bound, event_text);
+    //qDebug() << "Done, result (bool):" << QString::number(is_conflicting_binds);
+    if (!is_conflicting_binds)
+    {
+        QMessageBox::information(
+            this,
+            "TetroidNES",
+            tr("Could not assign key, more than one of the same key cannot be assigned: ") + event_text
+        );
+
+        event->accept();
+        return;
+    }
+
     if (!is_batch_assigning)
     {
         on_button_to_be_bound_pressed(button_to_be_bound, event);
@@ -236,4 +252,24 @@ void InputSettingsDisplay::setup()
     {
         buttons[i]->setText(active_input_map.buttons[i].display_name.toUpper());
     }
+}
+
+bool InputSettingsDisplay::conflicting_binds_check(QPushButton *newly_bound_button, QString text_to_compare) const
+{
+    //qDebug() << "Newly binded button text:" << text_to_compare;
+    
+    QList buttons_copy(buttons);
+    buttons_copy.removeAt(buttons_copy.indexOf(newly_bound_button));
+
+    for (auto &button : buttons_copy)
+    {
+        const QString text = button->text();
+        //qDebug() << "Button text:" << text;
+        if (text_to_compare == text)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

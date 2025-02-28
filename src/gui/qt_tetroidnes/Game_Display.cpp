@@ -193,7 +193,7 @@ void GameDisplay::showEvent(QShowEvent *event)
         render_window->create(sf::WindowHandle(winId()));
 
         // Setup shader component
-        auto shader_qfile = QFile(":/shaders/crt_shader.frag");
+        QFile shader_qfile(":/shaders/crt_shader.frag");
         if (!shader_qfile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             on_push_error(QString("Failed loading shader file from QFile"), EXIT_FAILURE);

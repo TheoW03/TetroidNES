@@ -8,7 +8,7 @@
 #include <Qt/util.h>
 #include <Qt/settingsmanager.h>
 
-#define ABOUT_TEXT "dummy text" // Placeholder until we figure out how to store long strings of text
+#define ABOUT_TEXT "dummy text" // TODO: Placeholder until we figure out how to store long strings of text, maybe using resources?
 //
 // QSTACKEDWIDGET CONTROLLER
 //
@@ -25,6 +25,7 @@ SettingsDisplay::SettingsDisplay(QWidget *parent) : QStackedWidget{parent}
     setCurrentIndex(0);
 
     // Events
+
     connect(general->add_directory, &QPushButton::clicked, this, &SettingsDisplay::on_add_directory_clicked);
     connect(general->min_on_game_start_checkbox, &QCheckBox::toggled, this, &SettingsDisplay::on_min_gui_on_start_checkbox_toggled);
 

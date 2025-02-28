@@ -1,0 +1,3 @@
+QPushButton[conflicting_files="true"] {
+    border-color : red;
+}

@@ -33,6 +33,15 @@ void check_and_handle_missing_active_input_map()
     }
 }
 
+void apply_stylesheet(QApplication &a)
+{
+    QFile stylesheet_h(":/stylesheets/style.qss");
+    stylesheet_h.open(QFile::ReadOnly);
+    QString stylesheet = QLatin1String(stylesheet_h.readAll());
+
+    a.setStyleSheet(stylesheet);
+}
+
 int main(int argc, char **argv)
 {
     // originalHandler = qInstallMessageHandler(logToFile);
@@ -55,6 +64,8 @@ int main(int argc, char **argv)
             break;
         }
     }
+
+    apply_stylesheet(a);
 
     check_and_handle_missing_active_input_map();
 

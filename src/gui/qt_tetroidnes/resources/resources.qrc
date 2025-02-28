@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>images/icon.jpg</file>
         <file>shaders/crt_shader.frag</file>
+        <file>stylesheets/style.qss</file>
     </qresource>
 </RCC>
