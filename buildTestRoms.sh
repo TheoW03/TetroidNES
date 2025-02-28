@@ -7,8 +7,8 @@ build() {
     RomList=(
         "nya~"
         "./src/TestRomSrc/WhiteBG.s -o ./games/WhiteBG.nes"
-        "./src/TestRomSrc/ControllerTest/ControllerTest.s -o ./games/ControllerTest.nes"
-
+        "./src/TestRomSrc/OAMDMATest/OAMDma.s -o ./games/TestOAMDMA.nes"
+        "./src/TestRomSrc/ControllerTest/Controllers.s -o ./games/TestControls.nes"
     )
     
 

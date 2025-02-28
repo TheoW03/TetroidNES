@@ -178,4 +178,4 @@ sprite_data:
 ;+-------- Flip sprite vertically
 	.byte $50, $00, %00000011, $70 
 .segment "CHARS" ; for graphics
-.incbin "TestController.chr"
+.incbin "OAMDma.chr"
