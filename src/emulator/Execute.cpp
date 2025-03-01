@@ -17,9 +17,6 @@ Execute::Execute()
 }
 CPU Execute::run()
 {
-    // std::bitset<7> status(this->cpu.status.val);
-    // std::cout << status << std::endl;
-
     if (cpu.bus.NMI_interrupt() && !cpu.interrupt.has_value())
     {
         cpu.bus.push_stack8(cpu.status.val);
@@ -50,6 +47,7 @@ CPU Execute::run()
     // printf("0x%x \n", current_instr);
     if (InstructionValid(current_instr))
     {
+
         Instruction a = GetInstruction(current_instr);
         a.i(a.addressmode, cpu);
         cpu.error_code = EXIT_SUCCESS;
@@ -75,9 +73,12 @@ void Execute::log_Cpu()
 {
     this->cpu.bus.log_ppu();
     std::bitset<8>
-        controller(this->cpu.bus.read_joypad1());
+        controller1(this->cpu.bus.joy_pad_byte1);
+    std::bitset<8>
+        controller2(this->cpu.bus.joy_pad_byte2);
     qInfo() << "========CONTROLLER ON EXIT=====";
-    qInfo() << "controller byte: " << controller.to_string();
+    qInfo() << "controller byte1: " << controller1.to_string();
+    qInfo() << "controller byte2: " << controller2.to_string();
     qInfo() << "=====CPU on quit======";
     qInfo() << "A register on exit: " << this->cpu.A_Reg;
     qInfo() << "X register on exit: " << this->cpu.X_Reg;
@@ -118,11 +119,12 @@ void Execute::reset()
 }
 void Execute::joypad2(Controller button, int isPressed)
 {
-    qDebug() << "joypad1";
-    cpu.bus.write_controller1(button, isPressed);
+    // qDebug() << "joypad2";
+    cpu.bus.write_controller2(button, isPressed);
 }
 void Execute::joypad1(Controller button, int isPressed)
 {
+    // qDebug() << "joypad1";
 
     cpu.bus.write_controller1(button, isPressed);
 }

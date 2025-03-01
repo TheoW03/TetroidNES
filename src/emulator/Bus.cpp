@@ -236,17 +236,15 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     else if (address == 0x4016)
     {
         strobe = (bool)value;
-        joypad1_idx = 0;
-        joypad2_idx = 0;
-        // std::cout <<
-        // joy_pad_byte1 = 0;
-        // joy_pad_byte1 = value & 0b00000001;
-        // return
+        if (strobe)
+        {
+            joypad1_idx = 0;
+            joypad2_idx = 0;
+        }
+
+        qInfo() << "strobe is set";
+        qInfo() << num_to_hexa(value);
     }
-    // else if (address == 0x4017)
-    // {
-    //     joy_pad_byte2 = value;
-    // }
     else if (address >= 0x8000 && address <= 0xFFFF)
     {
         // this->stored_instructions[1] = 0x82;
@@ -279,6 +277,10 @@ uint16_t Bus::read_16bit(uint16_t address)
     {
         return read_8bit(address + 1) << 8 | read_8bit(address);
     }
+    else if (address == 0x4014 || address == 0x4016 || address == 0x4017)
+    {
+        return read_8bit(address + 1) << 8 | read_8bit(address);
+    }
     else if (address >= 0x8000 && address <= 0xFFFF)
     {
 
@@ -296,11 +298,6 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
 
     if (address < 0x1FFF)
     {
-        // uint16_t mirror_address = address & 0x7ff;
-        // uint8_t msb = (uint8_t)(value >> 8);
-        // uint8_t lsb = (uint8_t)(value & 0xFF);
-        // v_memory[mirror_address] = lsb;
-        // v_memory[mirror_address + 1] = msb;
         write_8bit(address + 1, value >> 8);
         write_8bit(address, value);
     }
@@ -310,7 +307,11 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
         write_8bit(address + 1, value >> 8);
         write_8bit(address, value);
     }
-
+    else if (address == 0x4014 || address == 0x4016)
+    {
+        write_8bit(address + 1, value >> 8);
+        write_8bit(address, value);
+    }
     else if (address >= 0x8000 && address <= 0xFFFF)
     {
         // this->stored_instructions[1] = 0x82;
@@ -401,8 +402,11 @@ uint8_t Bus::read_joypad1()
     {
         return 1;
     }
-    uint8_t button = (joy_pad_byte1 << joypad1_idx);
-    if (strobe)
+    // uint8_t button = (joy_pad_byte1 << joypad1_idx);
+    uint8_t button = (joy_pad_byte1 & (1 << joypad1_idx)) >> joypad1_idx;
+    qInfo() << "strobe: " << joypad1_idx << " value: " << num_to_hexa(button);
+
+    if (!strobe && joypad1_idx <= 7)
     {
         joypad1_idx++;
     }
@@ -415,8 +419,10 @@ uint8_t Bus::read_joypad2()
     {
         return 1;
     }
-    uint8_t button = (joy_pad_byte2 << joypad2_idx);
-    if (strobe)
+    // uint8_t button = (joy_pad_byte2 << joypad2_idx);
+    uint8_t button = (joy_pad_byte2 & (1 << joypad2_idx)) >> joypad2_idx;
+
+    if (!strobe && joypad2_idx <= 7)
     {
         joypad2_idx++;
     }
