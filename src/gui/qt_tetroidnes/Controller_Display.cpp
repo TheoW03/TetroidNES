@@ -99,7 +99,7 @@ InputSettingsDisplay::InputSettingsDisplay(QWidget *parent) : QWidget{parent},
                                                               button6(new QPushButton(this)),
                                                               button7(new QPushButton(this)),
                                                               button_to_be_bound(nullptr),
-                                                              batch_assign(new QPushButton("Batch Assign", this)),
+                                                              batch_assign(new QPushButton(tr("Batch Assign"), this)),
                                                               is_batch_assigning(false),
                                                               batch_idx(BATCH_ASSIGN_START)
 {
@@ -133,18 +133,14 @@ InputSettingsDisplay::~InputSettingsDisplay()
 void InputSettingsDisplay::on_button_press(QPushButton *button)
 {
     button->setText(AWAITING_INPUT);
-    toggle_buttons(false);
-    button_to_be_bound = button;
-    grabKeyboard();
+    enable_assign_mode(button);
 }
 
 void InputSettingsDisplay::on_batch_assign_pressed()
 {
-    toggle_buttons(false);
     is_batch_assigning = true;
-    grabKeyboard();
-    button_to_be_bound = button0;
     button_to_be_bound->setText(AWAITING_INPUT);
+    enable_assign_mode(button0);
 }
 
 void InputSettingsDisplay::on_button_to_be_bound_pressed(QPushButton *button, QKeyEvent *event)
@@ -199,9 +195,7 @@ void InputSettingsDisplay::keyPressEvent(QKeyEvent *event)
     {
         on_button_to_be_bound_pressed(button_to_be_bound, event);
 
-        button_to_be_bound = nullptr;
-        releaseKeyboard();
-        toggle_buttons(true);
+        disable_assign_mode();
 
         event->accept();
 
@@ -212,8 +206,6 @@ void InputSettingsDisplay::keyPressEvent(QKeyEvent *event)
     on_button_to_be_bound_pressed(button_to_be_bound, event);
     batch_idx++;
 
-    event->accept();
-
     if (batch_idx < BUTTON_COUNT && event->key() != Qt::Key_Delete)
     {
         button_to_be_bound = buttons[batch_idx];
@@ -223,12 +215,12 @@ void InputSettingsDisplay::keyPressEvent(QKeyEvent *event)
     {
         batch_idx = BATCH_ASSIGN_START;
         is_batch_assigning = false;
-        releaseKeyboard();
-        toggle_buttons(true);
-        button_to_be_bound = nullptr;
+        disable_assign_mode();
 
         qDebug() << "Released keyboard (Batch assign)";
     }
+
+    event->accept();
 }
 
 void InputSettingsDisplay::toggle_buttons(const bool enabled)
@@ -272,4 +264,18 @@ bool InputSettingsDisplay::conflicting_binds_check(QPushButton *newly_bound_butt
     }
 
     return true;
+}
+
+void InputSettingsDisplay::enable_assign_mode(QPushButton *button)
+{
+    toggle_buttons(false);
+    grabKeyboard();
+    button_to_be_bound = button;
+}
+
+void InputSettingsDisplay::disable_assign_mode()
+{
+    toggle_buttons(true);
+    releaseKeyboard();
+    button_to_be_bound = nullptr;
 }

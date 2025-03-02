@@ -219,7 +219,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *event)
         return;
     }
 
-    if (url.isValid() && url.isLocalFile() && url.toLocalFile().endsWith(".nes"))
+    if (url.isValid() && url.isLocalFile() && url.toLocalFile().endsWith(QStringLiteral(".nes")))
     {
         qDebug() << "Drag enter event data is a valid QUrl:" << url.toLocalFile();
         event->setDropAction(Qt::DropAction::MoveAction);

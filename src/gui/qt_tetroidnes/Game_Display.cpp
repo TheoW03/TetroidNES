@@ -136,7 +136,7 @@ void GameDisplay::on_init()
 
     if (!texture.create(NES_RES_L, NES_RES_W))
     {
-        on_push_error("Texture failed to be created!", EXIT_FAILURE);
+        on_push_error(tr("Texture failed to be created!"), EXIT_FAILURE);
         return;
     }
 
@@ -193,10 +193,10 @@ void GameDisplay::showEvent(QShowEvent *event)
         render_window->create(sf::WindowHandle(winId()));
 
         // Setup shader component
-        QFile shader_qfile(":/shaders/crt_shader.frag");
+        QFile shader_qfile(QStringLiteral(":/shaders/crt_shader.frag"));
         if (!shader_qfile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            on_push_error(QString("Failed loading shader file from QFile"), EXIT_FAILURE);
+            on_push_error(tr("Failed loading shader file from QFile"), EXIT_FAILURE);
             return;
         }
 
@@ -205,7 +205,7 @@ void GameDisplay::showEvent(QShowEvent *event)
 
         if (!crt_shader->loadFromMemory(shader_text, sf::Shader::Fragment))
         {
-            on_push_error(QString("Failed loading shader from memory"), EXIT_FAILURE);
+            on_push_error(tr("Failed loading shader from memory"), EXIT_FAILURE);
             return;
         }
 

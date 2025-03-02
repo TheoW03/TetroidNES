@@ -114,7 +114,7 @@ EmulatorSettingsDisplay::EmulatorSettingsDisplay(QWidget *parent) : QWidget{pare
     const auto settings_speed = settings.speed();
     const auto settings_crt_shader = settings.crt_shader();
     const auto settings_run_on_dif_thread = settings.run_emulator_on_seperate_thread();
-    const auto default_combobox_key = QString("100%");
+    const auto default_combobox_key = QStringLiteral("100%");
     int speed_combobox_current_idx;
 
     auto *layout = new QVBoxLayout();
@@ -140,13 +140,13 @@ EmulatorSettingsDisplay::EmulatorSettingsDisplay(QWidget *parent) : QWidget{pare
     // Emu speed ComboBox
     speed_combobox = new QComboBox(emu_speed_groupbox);
     speed_combobox->setObjectName("speed");
-    speed_combobox->addItem("25%", QVariant(0.25f));
-    speed_combobox->addItem("50%", QVariant(0.5f));
-    speed_combobox->addItem("75%", QVariant(0.75f));
+    speed_combobox->addItem(QStringLiteral("25%"), QVariant(0.25f));
+    speed_combobox->addItem(QStringLiteral("50%"), QVariant(0.5f));
+    speed_combobox->addItem(QStringLiteral("75%"), QVariant(0.75f));
     speed_combobox->addItem(default_combobox_key, QVariant(1.f));
-    speed_combobox->addItem("200%", QVariant(2.f));
-    speed_combobox->addItem("400%", QVariant(4.f));
-    speed_combobox->addItem("Unlimited", QVariant(0.f));
+    speed_combobox->addItem(QStringLiteral("200%"), QVariant(2.f));
+    speed_combobox->addItem(QStringLiteral("400%"), QVariant(4.f));
+    speed_combobox->addItem(QStringLiteral("Unlimited"), QVariant(0.f));
 
     // Check for invalid speed value in settings file
     speed_combobox_current_idx = speed_combobox->findData(QVariant(settings_speed));
@@ -188,11 +188,11 @@ EmulatorSettingsDisplay::~EmulatorSettingsDisplay()
 //
 // ABOUT
 //
-About::About(QWidget *parent) : QWidget{parent}
+About::About(QWidget *parent) : QWidget{parent},
+                                text(new QLabel(ABOUT_TEXT, this))
 {
     QVBoxLayout *layout = new QVBoxLayout();
 
-    text = new QLabel(ABOUT_TEXT, this);
     text->setTextFormat(Qt::PlainText); // PlainText is placeholder until we decide what text format we want
 
     layout->addWidget(text);

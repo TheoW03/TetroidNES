@@ -26,7 +26,7 @@ QtMessageHandler originalHandler = nullptr;
 void check_log_dir()
 {
     const short int max_size = 32;
-    QStringList log_dir = QDir("logs", "*.txt", QDir::Name, QDir::Files).entryList();
+    QStringList log_dir = QDir(QStringLiteral("logs"), QStringLiteral("*.txt"), QDir::Name, QDir::Files).entryList();
     auto log_dir_size = log_dir.length();
 
     if (log_dir_size > max_size)
@@ -35,7 +35,7 @@ void check_log_dir()
         qDebug() << "Over" << max_size << "logs reached, deleting older logs:" << logs_to_be_deleted.join(", ");
         for (auto &file_name : logs_to_be_deleted)
         {
-            if (!QFile::remove("logs/" + file_name))
+            if (!QFile::remove(QStringLiteral("logs/") + file_name))
             {
                 qWarning() << "Could not remove log file:" << file_name;
             }
@@ -67,5 +67,5 @@ void InitLogs()
 {
     originalHandler = qInstallMessageHandler(logToFile);
     check_log_dir();
-    qSetMessagePattern("%{type} | %{function}:%{line} | %{time dd/MM/yyyy h:mm:ss} | %{message}");
+    qSetMessagePattern(QStringLiteral("%{type} | %{function}:%{line} | %{time dd/MM/yyyy h:mm:ss} | %{message}"));
 }

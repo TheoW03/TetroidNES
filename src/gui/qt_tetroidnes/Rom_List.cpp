@@ -55,7 +55,7 @@ void RomList::on_rom_dirs_changed(QStringList dirs)
 void RomList::setup_display()
 {
     const QStringList rom_dirs = SettingsManager::instance().get_rom_dirs();
-    const QRegularExpression qregex(R"(\.nes$)");
+    const QRegularExpression qregex(QStringLiteral(R"(\.nes$)"));
 
     if (rom_dirs.isEmpty())
     {

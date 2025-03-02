@@ -139,7 +139,7 @@ bool SettingsManager::run_emulator_on_seperate_thread() const
 
 QString SettingsManager::active_input_profile() const
 {
-    return m_settings.value(key_active_input_profile, "default").toString();
+    return m_settings.value(key_active_input_profile, QStringLiteral("default")).toString();
 }
 
 void SettingsManager::set_active_input_profile(QString name)

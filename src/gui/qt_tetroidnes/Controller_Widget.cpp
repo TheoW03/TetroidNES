@@ -17,7 +17,7 @@ InputSettings::InputSettings(QWidget *parent) : QWidget{parent},
                                                 display_widget(new InputSettingsDisplay(this)),
                                                 header_widget(new QWidget(this)),
                                                 header_input_profiles(new QComboBox(header_widget)),
-                                                header_input_type(new QComboBox(header_widget)),
+                                                header_input_type(new QComboBox(this)),
                                                 header_edit_profile_name(new QPushButton(tr("Edit"), header_widget)),
                                                 header_add_profile(new QPushButton(ICON_ADD_PROFILE, "", header_widget)),
                                                 header_remove_profile(new QPushButton(ICON_REMOVE_PROFILE, "", header_widget))
@@ -39,9 +39,6 @@ InputSettings::InputSettings(QWidget *parent) : QWidget{parent},
     auto *layout = new QVBoxLayout();
     auto *header_layout = new QHBoxLayout();
 
-    header_input_type->addItems(HEADER_INPUT_TYPE_ITEMS);
-    header_layout->addWidget(header_input_type);
-
     refresh_profiles_selection();
     update_add_remove_buttons();
 
@@ -51,6 +48,8 @@ InputSettings::InputSettings(QWidget *parent) : QWidget{parent},
     header_layout->addWidget(header_remove_profile);
 
     layout->addWidget(header_widget);
+    header_input_type->addItems(HEADER_INPUT_TYPE_ITEMS);
+    layout->addWidget(header_input_type);
     layout->addWidget(display_widget);
 
     header_widget->setLayout(header_layout);

@@ -40,6 +40,8 @@ private:
     uint batch_idx;
 
     void toggle_buttons(const bool enabled);
+    void enable_assign_mode(QPushButton *button);
+    void disable_assign_mode();
     bool conflicting_binds_check(QPushButton *newly_bound_button, QString text_to_compare) const;
 protected:
     void keyPressEvent(QKeyEvent *event);

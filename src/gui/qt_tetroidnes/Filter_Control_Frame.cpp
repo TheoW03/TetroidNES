@@ -91,7 +91,7 @@ FilterControlFrame::FilterControlFrame(QWidget *parent) : QFrame{parent}
 
 void FilterControlFrame::update_completer_model(QStringList dirs)
 {
-    const QRegularExpression qregex(R"(\.nes$)");
+    const QRegularExpression qregex(QStringLiteral(R"(\.nes$)"));
     auto *completer_model = qobject_cast<QStringListModel *>(search_bar_completer->model());
     QStringList updated_dirs;
 
@@ -104,7 +104,7 @@ void FilterControlFrame::update_completer_model(QStringList dirs)
     }
 
     // Remove extension
-    updated_dirs.replaceInStrings(qregex, "");
+    updated_dirs.replaceInStrings(qregex, QStringLiteral(""));
 
     completer_model->setStringList(updated_dirs);
 }
