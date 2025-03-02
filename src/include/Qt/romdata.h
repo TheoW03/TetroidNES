@@ -12,7 +12,7 @@ public:
         QByteArray img = QByteArray(),
         QString title = QString(),
         bool favorited = false,
-        QUrl path = QUrl("")
+        QUrl path = QUrl(QStringLiteral(""))
     );
     ~RomData();
     uint16_t year() const;

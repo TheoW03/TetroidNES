@@ -117,9 +117,8 @@ RomData* RomList::get_romdata(const int page, const int index)
     qDebug()
         << "page:" << page
         << "index:" << index
-        << "Rom data size:" << data->size()
-        // This expression wouldn't work unless I type casted it :shrug:
-        << "Is nullptr (Out of bounds):" << (bool)(romdata == nullptr);
+        << "Rom data size:" << QString::number(data->size())
+        << "Is nullptr (Out of bounds)(bool):" << QString::number(romdata == nullptr);
 
     return romdata;
 }
@@ -232,19 +231,18 @@ const bool RomList::compare_regex(const RomData *a, const RomData *b, const QReg
     {
         return match_a;
     }
-    else
+
+    switch (mode)
     {
-        switch (mode)
-        {
-        case Year:
-            return compare_year(a, b);
-        case Favorites:
-            return compare_favorite(a, b);
-        case AZ:
-            return compare_alphabet(a, b);
-        }
-        return false;
+    case Year:
+        return compare_year(a, b);
+    case Favorites:
+        return compare_favorite(a, b);
+    case AZ:
+        return compare_alphabet(a, b);
     }
+
+    return false;
 }
 
 const bool RomList::compare_year(const RomData *a, const RomData *b)
@@ -273,19 +271,7 @@ const bool RomList::compare_favorite(const RomData *a, const RomData *b)
 
 const bool RomList::compare_alphabet(const RomData *a, const RomData *b)
 {
-    // Decide the lowest length to prevent out of bounds error
-    const int lowestLength = (a->title().length() > b->title().length()) ? b->title().length() : a->title().length();
-    for (int i = 0; i < lowestLength; i++)
-    {
-        if (a->title().at(i).toLower() == b->title().at(i).toLower())
-        {
-            continue;
-        }
-
-        return a->title().at(i).toLower() < b->title().at(i).toLower();
-    }
-
-    return false;
+    return a->title().compare(b->title(), Qt::CaseInsensitive) > 0;
 }
 
 void RomList::search(QString &expr)
