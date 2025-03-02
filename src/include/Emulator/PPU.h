@@ -109,7 +109,6 @@ public:
     void write_PPU_mask(uint8_t val);
     std::optional<int> write_PPU_data(uint8_t val);
     void write_OAM_data(uint8_t val);
-    void write_OAM_dma(std::vector<uint8_t> buffer);
     void write_OAM_address(uint8_t val);
     bool NMI_interrupt(uint8_t clock_cycles);
     bool tick(uint8_t clock_cycles);

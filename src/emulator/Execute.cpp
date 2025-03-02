@@ -35,6 +35,10 @@ CPU Execute::run()
         // cpu.bus.tick();
         // cpu.bus.tick();
     }
+    if (cpu.interrupt.has_value())
+    {
+        // qInfo() << "interrupt: " << num_to_hexa(cpu.bus.get_PC());
+    }
     if (cpu.bus.check_error().has_value())
     {
         qCritical() << "ERROR WITH THE CPU" << cpu.bus.check_error().value();
@@ -51,6 +55,8 @@ CPU Execute::run()
         Instruction a = GetInstruction(current_instr);
         a.i(a.addressmode, cpu);
         cpu.error_code = EXIT_SUCCESS;
+        // joypad1(Controller::LEFT, 0);
+
         return cpu;
     }
     qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
@@ -58,6 +64,7 @@ CPU Execute::run()
     qInfo() << "potential error with the cpu";
 
     cpu.error_code = EXIT_FAILURE;
+
     return cpu;
 }
 std::vector<uint8_t> Execute::render()

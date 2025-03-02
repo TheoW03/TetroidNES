@@ -105,7 +105,7 @@ uint8_t Bus::read_8bit(uint16_t address)
     // this->clock_cycles++;
     // this->ppu.tick(3);
     this->tick();
-    if (address < 0x1FFF)
+    if (address <= 0x1FFF)
     {
         uint16_t mirror_address = address & 0x7ff;
         return v_memory[mirror_address];

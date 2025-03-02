@@ -159,6 +159,14 @@ palettes:
   .byte $0F, $10, $00, $0F
 
 sprites:
+;Y, SPRITE NUM, attributes, X
+;76543210
+;||||||||
+;||||||++- Palette (4 to 7) of sprite
+;|||+++--- Unimplemented
+;||+------ Priority (0: in front of background; 1: behind background)
+;|+------- Flip sprite horizontally
+;+-------- Flip sprite vertically
   .byte 0, 0, %00000000, 0
 
   ; A [25-28]

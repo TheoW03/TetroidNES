@@ -108,21 +108,29 @@ std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte, std::
         {0x11, 0x11, 0x11} //
     };
 #pragma endregion
+
     if (byte == 0)
     {
+        // qInfo() << "0b00" << num_to_hexa(this->pallete[0]);
         return system_palette[this->pallete[0]];
     }
     else if (byte == 1)
     {
-        return system_palette[std::get<1>(pallete)];
+        // qInfo() << "0b01";
+        return system_palette[std::get<0>(pallete)];
     }
     else if (byte == 2)
     {
-        return system_palette[std::get<2>(pallete)];
+        // qInfo() << "error";
+        // qInfo() << "system pallete: " << num_to_hexa(std::get<2>(pallete));
+
+        return system_palette[std::get<1>(pallete)];
     }
     else if (byte == 3)
     {
-        return system_palette[std::get<3>(pallete)];
+        // qInfo() << "error";
+
+        return system_palette[std::get<2>(pallete)];
     }
     std::cout << "non" << std::endl;
     return system_palette[byte];
@@ -169,7 +177,7 @@ std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> PPU::bg_pallete(size_t row, size_
     // }
 
     return {
-        0,
+        this->pallete[0],
         this->pallete[pallete_offset],
         this->pallete[pallete_offset + 1],
         this->pallete[pallete_offset + 2],
@@ -522,21 +530,21 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
             struct
             {
                 unsigned pallete : 2;
-                unsigned padding : 3;
-                unsigned priority : 1;
+                unsigned padding : 4;
+                // unsigned priority : 1;
+
                 unsigned flip_x : 1;
                 unsigned flip_y : 1;
             };
             uint8_t val;
         };
-
-        uint16_t tile = this->oam[ppu_idx - 2];
-
-        int idx = this->oam[ppu_idx];
-        int idy = this->oam[ppu_idx - 3];
-        // std::cout << "a" << std::endl;
         Attribute_byte attribbyte;
+        int idy = this->oam[ppu_idx - 3];
+        // attribbyte.val = this->oam[ppu_idx - 1];
         attribbyte.val = this->oam[ppu_idx - 1];
+        uint16_t tile = this->oam[ppu_idx - 2];
+        int idx = this->oam[ppu_idx];
+        // std::cout << "a" << std::endl;
         // Attribute_byte b = this->oam[ppu_idx - 1];
 
         // if (idy != 0)
@@ -553,19 +561,7 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
         std::vector<uint8_t> tile_list;
         auto pallete_idx = attribbyte.pallete;
         // printf("%x \n", attribbyte.pallete);
-        size_t pallete_offset = 16 + (pallete_idx * 4);
-        // printf("offset: %d \n", pallete_offset);
-        qDebug() << "sprite pallete 1: " << num_to_hexa(this->pallete[pallete_offset]) << "2: " << num_to_hexa(this->pallete[pallete_offset + 1]) << "3: " << num_to_hexa(this->pallete[pallete_offset + 3]);
-        // for (int i = 0; i < 32; i++)
-        //     printf("pallete: 0x%x \n", this->pallete[i]);
-
-        // for (int i = 0; i < 255; i++)
-        //     printf("oam: %x \n", this->oam[i]);
-        std::bitset<2>
-            u(attribbyte.pallete);
-        std::cout << u << std::endl;
-        // printf("tile: %x \n", tile);
-        qDebug() << "tile: " << num_to_hexa(tile);
+        size_t pallete_offset = 0x11 + (pallete_idx * 4);
         std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> sprite_palletes = {
             0,
             this->pallete[pallete_offset],
@@ -573,6 +569,28 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
             this->pallete[pallete_offset + 2],
 
         };
+        // printf("offset: %d \n", pallete_offset);
+        qDebug() << "sprite pallete 1: " << num_to_hexa(std::get<1>(sprite_palletes)) << "2: " << num_to_hexa(std::get<2>(sprite_palletes)) << "3: " << num_to_hexa(std::get<3>(sprite_palletes));
+        // for (int i = 0; i < 32; i++)
+        //     printf("pallete: 0x%x \n", this->pallete[i]);
+
+        // for (int i = 0; i < 255; i++)
+        //     printf("oam: %x \n", this->oam[i]);
+
+        std::bitset<2>
+            u(attribbyte.pallete);
+        std::bitset<8>
+            attri(attribbyte.val);
+        // qInfo() << "pallete: " << u.to_string();
+        // qInfo() << "y: " << idy;
+        // qInfo() << "attributes: " << attri.to_string() << attribbyte.val << num_to_hexa(attribbyte.val);
+        // qDebug() << "tile: " << num_to_hexa(tile);
+        // qInfo() << "x: " << idx;
+        // qInfo()
+        // printf("tile: %x \n", tile);
+
+        qDebug()
+            << "index: " << ppu_idx;
 
         this->get_chr_tile(tile, banks, tile_list);
         for (int y = 0; y < 8; y++)
@@ -584,7 +602,8 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
                 uint16_t value = (1 & upper) << 1 | (1 & lower);
                 upper >>= 1;
                 lower >>= 1;
-
+                if (value == 0)
+                    continue;
                 auto rgb = getColorFromByte(value, sprite_palletes);
                 // std::cout << rgb << std::endl;
                 int tile_x = 0;
@@ -659,11 +678,6 @@ void PPU::write_OAM_data(uint8_t val)
     // oam_addr += (oam_addr + 1) % 256;
     // printf("%x \n", oam_addr);
     // std::cout << oam_addr << std::endl;
-}
-void PPU::write_OAM_dma(std::vector<uint8_t> buffer)
-{
-    // oam[oam_addr] = val;
-    // oam_addr++;
 }
 
 void PPU::write_OAM_address(uint8_t val)
