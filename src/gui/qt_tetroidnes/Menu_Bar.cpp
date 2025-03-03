@@ -22,6 +22,9 @@ MenuBar::MenuBar(QWidget *parent) : QMenuBar{parent},
                                     help(addMenu(tr("Help")))
 {
     auto &settings = SettingsManager::instance();
+    const QKeyCombination file_open_combo(Qt::ControlModifier, Qt::Key_O);
+    const QKeyCombination settings_open_combo(Qt::ControlModifier, Qt::Key_C);
+    const QKeyCombination input_settings_open_combo(Qt::ControlModifier, Qt::Key_B);
 
     // setup
     setNativeMenuBar(true);
@@ -29,11 +32,11 @@ MenuBar::MenuBar(QWidget *parent) : QMenuBar{parent},
 
     // setup menus
     // file
-    file_open->setShortcut(QKeySequence("Ctrl+O"));
+    file_open->setShortcut(QKeySequence(file_open_combo));
 
     // edit
-    settings_open->setShortcut(QKeySequence("Ctrl+B"));
-    input_settings_open->setShortcut(QKeySequence("Ctrl+C"));
+    settings_open->setShortcut(QKeySequence(settings_open_combo));
+    input_settings_open->setShortcut(QKeySequence(input_settings_open_combo));
 
     // tools
     log_display_open->setShortcut(QKeySequence(Qt::Key_F8));
@@ -86,14 +89,16 @@ void MenuBar::open_rom()
     auto file_dialog = QFileDialog(
         nullptr,
         tr("Choose ROM to open..."),
-        QString(),
-        QString("NES ROM (*.nes)"));
+        QStringLiteral(""),
+        QStringLiteral("NES ROM (*.nes)"));
     file_dialog.setFileMode(QFileDialog::ExistingFile);
 
-    if (file_dialog.exec() == QFileDialog::Accepted && !file_dialog.selectedUrls().isEmpty())
+    const auto selected_urls = file_dialog.selectedUrls();
+
+    if (file_dialog.exec() == QFileDialog::Accepted && !selected_urls.isEmpty())
     {
 
-        for (auto &url : file_dialog.selectedUrls())
+        for (auto &url : selected_urls)
         {
             SettingsManager::instance().append_recent_roms(url.toLocalFile());
             start_rom(url);
