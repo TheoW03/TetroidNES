@@ -1,18 +1,17 @@
 #include <Qt/settingsmanager.h>
 #include "settingsmanager.h"
 
-// Makes visible only the literal operators declared in StringLiterals
 using namespace Qt::Literals::StringLiterals;
 
-const auto key_romdir = u"romdir"_s;
-const auto key_min_game_on_start = u"minimize_gui_on_game_start"_s;
-const auto key_speed = u"emu_speed"_s;
-const auto key_run_emulator_on_seperate_thread = u"run_emulator_on_seperate_thread"_s;
-const auto key_crt_shader = u"crt_shader"_s;
-const auto key_active_input_profile = u"active_input_profile"_s;
-const auto key_sort_mode = u"QOL/sort_mode"_s;
-const auto key_ascend_order = u"QOL/ascending_order"_s;
-const auto key_recent_roms = u"QOL/recent_roms"_s;
+const QString key_romdir = u"romdir"_s;
+const QString key_min_game_on_start = u"minimize_gui_on_game_start"_s;
+const QString key_speed = u"emu_speed"_s;
+const QString key_run_emulator_on_seperate_thread = u"run_emulator_on_seperate_thread"_s;
+const QString key_crt_shader = u"crt_shader"_s;
+const QString key_active_input_profile = u"active_input_profile"_s;
+const QString key_sort_mode = u"QOL/sort_mode"_s;
+const QString key_ascend_order = u"QOL/ascending_order"_s;
+const QString key_recent_roms = u"QOL/recent_roms"_s;
 
 constexpr const uint max_recent_roms = 10;
 

@@ -4,11 +4,12 @@
 #include <QJsonParseError>
 
 using Buttons = InputMap::Buttons;
+using namespace Qt::Literals::StringLiterals;
 
-constexpr const char* TYPE = "type";
-constexpr const char* NAME = "name";
-constexpr const char* KEY = "key";
-constexpr const char* BUTTONS = "buttons";
+const QString TYPE = u"type"_s;
+const QString NAME = u"name"_s;
+const QString KEY = u"key"_s;
+const QString BUTTONS = u"buttons"_s;
 
 ControllerManager::ControllerManager()
 {
@@ -204,14 +205,14 @@ void ControllerManager::update_map_json(QJsonObject input_map)
 InputMap ControllerManager::generate_default_input_map()
 {
     InputButton buttons[BUTTON_COUNT] = {
-        InputButton("Z", sf::Keyboard::Z),
-        InputButton("C", sf::Keyboard::C),
-        InputButton(",", sf::Keyboard::Comma),
-        InputButton(".", sf::Keyboard::Period),
-        InputButton("Up", sf::Keyboard::Up),
-        InputButton("Down", sf::Keyboard::Down),
-        InputButton("Left", sf::Keyboard::Left),
-        InputButton("Right", sf::Keyboard::Right)
+        InputButton(u"Z"_s, sf::Keyboard::Z),
+        InputButton(u"C"_s, sf::Keyboard::C),
+        InputButton(u","_s, sf::Keyboard::Comma),
+        InputButton(u"."_s, sf::Keyboard::Period),
+        InputButton(u"Up"_s, sf::Keyboard::Up),
+        InputButton(u"Down"_s, sf::Keyboard::Down),
+        InputButton(u"Left"_s, sf::Keyboard::Left),
+        InputButton(u"Right"_s, sf::Keyboard::Right)
     };
 
     return InputMap("Default", InputMap::Keyboard, buttons);

@@ -3,13 +3,14 @@
 #include <QString>
 
 constexpr const int BUTTON_COUNT = 8;
+const QString N_A = QStringLiteral("N/A");
 
 struct InputButton
 {
     InputButton()
     {
         key = -1;
-        display_name = "N/A";
+        display_name = N_A;
     }
     InputButton(QString name, int code)
     {
@@ -30,6 +31,7 @@ struct InputMap
     InputMap()
     {
         controller_type = Type::Keyboard;
+        name = N_A;
 
         for(int i = 0; i < BUTTON_COUNT; i++)
         {
