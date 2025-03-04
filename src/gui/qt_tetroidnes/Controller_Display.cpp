@@ -184,7 +184,10 @@ void InputSettingsDisplay::keyPressEvent(QKeyEvent *event)
         QMessageBox::information(
             this,
             "TetroidNES",
-            tr("Could not assign key, more than one of the same key cannot be assigned: ") + event_text
+            QString("%1: %2").arg(
+                tr("Could not assign key, more than one of the same key cannot be assigned"),
+                event_text
+            )
         );
 
         event->accept();

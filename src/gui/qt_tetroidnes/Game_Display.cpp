@@ -13,6 +13,8 @@
 #include <Qt/utilemulator.h>
 #include <Qt/settingsmanager.h>
 
+using namespace std::literals::string_literals;
+
 constexpr const uint32_t rgb_data_size = NES_RES_A * 4;
 
 GameDisplay::GameDisplay(Rom rom, QWidget *parent, QString rom_url) : QWidget{parent},
@@ -120,7 +122,7 @@ void GameDisplay::on_push_error(QString msg, int error_code)
     set_paused(true);
     QMessageBox::critical(
         this,
-        "TetroidNES - " + tr("Error"),
+        QString("TetroidNES - %1").arg(tr("Error")),
         msg);
 
     this->err_code = error_code;
@@ -136,7 +138,7 @@ void GameDisplay::on_init()
 
     if (!texture.create(NES_RES_L, NES_RES_W))
     {
-        on_push_error(tr("Texture failed to be created!"), EXIT_FAILURE);
+        on_push_error(QStringLiteral("Texture failed to be created!"), EXIT_FAILURE);
         return;
     }
 
@@ -196,7 +198,7 @@ void GameDisplay::showEvent(QShowEvent *event)
         QFile shader_qfile(QStringLiteral(":/shaders/crt_shader.frag"));
         if (!shader_qfile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            on_push_error(tr("Failed loading shader file from QFile"), EXIT_FAILURE);
+            on_push_error(QStringLiteral("Failed loading shader file from QFile"), EXIT_FAILURE);
             return;
         }
 
@@ -205,19 +207,19 @@ void GameDisplay::showEvent(QShowEvent *event)
 
         if (!crt_shader->loadFromMemory(shader_text, sf::Shader::Fragment))
         {
-            on_push_error(tr("Failed loading shader from memory"), EXIT_FAILURE);
+            on_push_error(QStringLiteral("Failed loading shader from memory"), EXIT_FAILURE);
             return;
         }
 
         // Setting shader's variables
-        crt_shader->setUniform("density", 1.9f);
-        crt_shader->setUniform("opacityScanline", 0.2f);
-        crt_shader->setUniform("opacityNoise", 0.2f);
-        crt_shader->setUniform("curvature", 7.5f);
-        crt_shader->setUniform("vigantteWidth", 50.0f);
-        crt_shader->setUniform("Res", sf::Glsl::Vec2({800.0f, 600.0f}));
-        crt_shader->setUniform("brightness", 0.9f);
-        crt_shader->setUniform("warp_brightness", 0.1f);
+        crt_shader->setUniform("density"s, 1.9f);
+        crt_shader->setUniform("opacityScanline"s, 0.2f);
+        crt_shader->setUniform("opacityNoise"s, 0.2f);
+        crt_shader->setUniform("curvature"s, 7.5f);
+        crt_shader->setUniform("vigantteWidth"s, 50.0f);
+        crt_shader->setUniform("Res"s, sf::Glsl::Vec2({800.0f, 600.0f}));
+        crt_shader->setUniform("brightness"s, 0.9f);
+        crt_shader->setUniform("warp_brightness"s, 0.1f);
 
         on_crt_shader_changed(SettingsManager::instance().crt_shader());
 
@@ -253,8 +255,11 @@ void GameDisplay::closeEvent(QCloseEvent *event)
     {
         int message_box_result = QMessageBox::question(
             this,
-            "TetroidNES - " + tr("Confirmation"),
-            tr("Are you sure you want to quit?") + "\n" + tr("(Remember to save before quitting!)"),
+            QString("TetroidNES - %1").arg(tr("Confirmation")),
+            QString("%1\n%2").arg(
+                tr("Are you sure you want to quit?"),
+                tr("(Remember to save before quitting!)")
+            ),
             QMessageBox::Yes | QMessageBox::No);
         if (message_box_result == QMessageBox::No)
         {

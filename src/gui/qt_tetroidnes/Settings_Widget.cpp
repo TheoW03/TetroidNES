@@ -10,13 +10,13 @@
 
 SettingsWidget::SettingsWidget(QWidget *parent) : QWidget{parent}
 {
-    const int stretch_setting_display = 100;
+    constexpr const int stretch_setting_display = 100;
 
     setAttribute(Qt::WA_DeleteOnClose, true);
     setAttribute(Qt::WA_AcceptDrops, false);
 
     setWindowFlag(Qt::WindowType::Window);
-    setWindowTitle("TetroidNES - " + tr("Settings"));
+    setWindowTitle(QString("TetroidNES - %1").arg(tr("Settings")));
 
     auto *layout = new QVBoxLayout();
     auto *layout_controls = new QHBoxLayout();
@@ -29,8 +29,11 @@ SettingsWidget::SettingsWidget(QWidget *parent) : QWidget{parent}
     cancel_changes = new QPushButton(tr("Cancel"), button_statusbar);
 
     // setting_category setup
-    QStringList items;
-    items << "General" << "Emulator" << "About";
+    QStringList items({
+        QStringLiteral("General"),
+        QStringLiteral("Emulator"),
+        QStringLiteral("About")
+    });
     setting_category->setSelectionMode(QListWidget::SingleSelection);
     setting_category->addItems(items);
     setting_category->item(0)->setSelected(true);
@@ -81,7 +84,7 @@ void SettingsWidget::on_apply_changes_clicked()
     // ROM Directories
     QStringList string_list;
 
-    for (auto &string : rom_dir->toPlainText().split("\n"))
+    for (auto &string : rom_dir->toPlainText().split(QStringLiteral("\n")))
     {
         if (QFileInfo(string).isDir() && QFileInfo(string).isAbsolute())
         {
@@ -118,8 +121,11 @@ void SettingsWidget::on_apply_changes_clicked()
 
     // Finished saving settings
     qInfo() << "saving settings in " << SAVE_DIR;
-    QMessageBox::information(this, tr("Settings saved"),
-                             tr("Your settings have been saved"));
+    QMessageBox::information(
+        this, 
+        tr("Settings saved"),
+        tr("Your settings have been saved")
+    );
 }
 
 void SettingsWidget::on_cancel_changes_clicked()
@@ -137,8 +143,11 @@ void SettingsWidget::closeEvent(QCloseEvent *event)
 
     int message_box_result = QMessageBox::question(
         this,
-        "TetroidNES - " + tr("Confirmation"),
-        tr("Settings are unsaved!\nAre you sure you want to close the settings?"),
+        QString("TetroidNES - %1").arg(tr("Confirmation")),
+        QString("%1\n%2").arg(
+            tr("Settings are unsaved!"),
+            tr("Are you sure you want to close the settings?")
+        ),
         QMessageBox::Yes | QMessageBox::Cancel);
 
     if (message_box_result == QMessageBox::Yes)

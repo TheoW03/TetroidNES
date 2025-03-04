@@ -13,20 +13,22 @@ const auto HEADER_INPUT_TYPE_ITEMS = QStringList({"Keyboard", "Gamepad"});
 const auto ICON_ADD_PROFILE = QIcon::fromTheme(QIcon::ThemeIcon::ListAdd);
 const auto ICON_REMOVE_PROFILE = QIcon::fromTheme(QIcon::ThemeIcon::ListRemove);
 
+const QString EMPTY = QStringLiteral("");
+
 InputSettings::InputSettings(QWidget *parent) : QWidget{parent},
                                                 display_widget(new InputSettingsDisplay(this)),
                                                 header_widget(new QWidget(this)),
                                                 header_input_profiles(new QComboBox(header_widget)),
                                                 header_input_type(new QComboBox(this)),
                                                 header_edit_profile_name(new QPushButton(tr("Edit"), header_widget)),
-                                                header_add_profile(new QPushButton(ICON_ADD_PROFILE, "", header_widget)),
-                                                header_remove_profile(new QPushButton(ICON_REMOVE_PROFILE, "", header_widget))
+                                                header_add_profile(new QPushButton(ICON_ADD_PROFILE, EMPTY, header_widget)),
+                                                header_remove_profile(new QPushButton(ICON_REMOVE_PROFILE, EMPTY, header_widget))
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
     setAttribute(Qt::WA_AcceptDrops, false);
 
     setWindowFlag(Qt::WindowType::Window);
-    setWindowTitle("TetroidNES - " + tr("Controller Settings"));
+    setWindowTitle(QString("TetroidNES - %1").arg(tr("Controller Settings")));
 
     resize(400, 400);
 
@@ -73,8 +75,11 @@ void InputSettings::on_remove_profile_clicked()
 
     QMessageBox::StandardButton result = QMessageBox::question(
         this,
-        "TetroidNES - " + tr("Input profile deletion confirmation"),
-        tr("Are you sure you want to delete this profile?") + "\n" + tr("This cannot be undone!"),
+        QString("TetroidNES - %1").arg(tr("Input profile deletion confirmation")),
+        QString("%1\n%2").arg(
+            tr("Are you sure you want to delete this profile?"),
+            tr("This cannot be undone!")
+        ),
         QMessageBox::Yes | QMessageBox::No
     );
 
@@ -125,7 +130,7 @@ void InputSettings::on_add_profile_clicked()
 
     new_profile_name = QInputDialog::getText(
         this,
-        "TetroidNES - " + tr("Add new profile"),
+        QString("TetroidNES - %1").arg(tr("Add new profile")),
         tr("Enter a new profile name:"),
         QLineEdit::Normal,
         "",
@@ -243,7 +248,7 @@ void InputSettings::on_edit_profile_clicked()
     auto new_text = QInputDialog::getText(
         this,
         "TetroidNES",
-        tr("Enter a new name for ") + old_name + ":",
+        QString("%1 %2:").arg(tr("Enter a new name for"), old_name),
         QLineEdit::Normal,
         old_name,
         &ok

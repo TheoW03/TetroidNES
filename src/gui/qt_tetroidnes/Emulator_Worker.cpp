@@ -40,7 +40,7 @@ void EmulatorWorker::init()
 
     if (!QUrl(rom_url).isValid())
     {
-        emit push_error(tr("Could not start game, ROM URL is invalid") + QStringLiteral(": ") + rom_url, EXIT_FAILURE);
+        emit push_error(QString("Could not start game, ROM URL is invalid: %1").arg(rom_url), EXIT_FAILURE);
         return;
     }
 

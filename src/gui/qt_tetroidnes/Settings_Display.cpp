@@ -88,7 +88,7 @@ GeneralSettingsDisplay::GeneralSettingsDisplay(QWidget *parent) : QWidget{parent
     add_directory->setToolTip(tr("Add directory for TetroidNES to search for ROMs in"));
 
     directories->setObjectName("rom_directory");
-    directories->setPlainText(settings_rom_dirs.join("\n"));
+    directories->setPlainText(settings_rom_dirs.join(QStringLiteral("\n")));
     directories->setToolTip(tr("Add/Remove/Edit directories for TetroidNES to search for ROMs in"));
 
     directory_groupbox_layout->addWidget(directories);

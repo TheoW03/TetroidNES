@@ -69,11 +69,13 @@ void MainWindow::create_display(QString rom_link)
     std::optional<Rom> rom = load_rom(file_tobyte_vector(rom_link.toStdString()));
     if (!rom.has_value())
     {
-        qInfo() << "Not a INES v1.0 ROM. \n (you should see NES at the top of the file if it is a INES v1.0 ROM and be greater then in size)";
+        constexpr const char* err = "Not a INES v1.0 ROM.\n(You should see NES at the top of the file if it is a INES v1.0 ROM and be greater then in size)";
+        qInfo() << err;
         QMessageBox::critical(
             this,
-            "TetroidNES - " + tr("Error"),
-            "Not a INES v1.0 ROM. \n (you should see NES at the top of the file if it is a INES v1.0 ROM and be greater then in size)");
+            QString("TetroidNES - %1").arg(tr("Error")),
+            err
+        );
         return;
     }
     auto *display = new GameDisplay(rom.value(), nullptr, rom_link);
@@ -97,7 +99,16 @@ void MainWindow::on_gamedisplay_destroyed()
 
 void MainWindow::update_page_info()
 {
-    page_info->setText(tr("%1 %2 %3 %4 | %5 %6").arg("Page", QString::number(rom_list->current_page()), "of", QString::number(rom_list->total_pages()), "Items displayed:", QString::number(rom_list->items_per_page())));
+    page_info->setText(
+        QString("%1 %2 %3 %4 | %5 %6").arg(
+            tr("Page"),
+            QString::number(rom_list->current_page()),
+            tr("of", "Something out of something"),
+            QString::number(rom_list->total_pages()),
+            tr("Items displayed:"),
+            QString::number(rom_list->items_per_page())
+        )
+    );
 }
 
 void MainWindow::wheelEvent(QWheelEvent *event)
@@ -255,8 +266,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     {
         int message_box_result = QMessageBox::question(
             this,
-            "TetroidNES - " + tr("Confirmation"),
-            tr("Are you sure you want to quit?\n(Games are still running)"),
+            QString("TetroidNES - %1").arg(tr("Confirmation")),
+            tr("Are you sure you want to quit? (Games are still running)"),
             QMessageBox::Yes | QMessageBox::No);
 
         if (message_box_result == QMessageBox::No)
