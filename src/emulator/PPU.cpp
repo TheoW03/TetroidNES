@@ -570,7 +570,7 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
 
         };
         // printf("offset: %d \n", pallete_offset);
-        qDebug() << "sprite pallete 1: " << num_to_hexa(std::get<1>(sprite_palletes)) << "2: " << num_to_hexa(std::get<2>(sprite_palletes)) << "3: " << num_to_hexa(std::get<3>(sprite_palletes));
+        qDebug() << "sprite pallete 1: " << num_to_hexa(std::get<0>(sprite_palletes)) << "2: " << num_to_hexa(std::get<1>(sprite_palletes)) << "3: " << num_to_hexa(std::get<2>(sprite_palletes));
         // for (int i = 0; i < 32; i++)
         //     printf("pallete: 0x%x \n", this->pallete[i]);
 
@@ -602,6 +602,7 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
                 uint16_t value = (1 & upper) << 1 | (1 & lower);
                 upper >>= 1;
                 lower >>= 1;
+
                 if (value == 0)
                     continue;
                 auto rgb = getColorFromByte(value, sprite_palletes);

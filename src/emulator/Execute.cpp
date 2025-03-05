@@ -17,6 +17,7 @@ Execute::Execute()
 }
 CPU Execute::run()
 {
+
     if (cpu.bus.NMI_interrupt() && !cpu.interrupt.has_value())
     {
         cpu.bus.push_stack8(cpu.status.val);
@@ -48,7 +49,7 @@ CPU Execute::run()
         // qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
     }
     auto current_instr = cpu.bus.fetch_next();
-    // printf("0x%x \n", current_instr);
+    // exit(EXIT_FAILURE);q
     if (InstructionValid(current_instr))
     {
 

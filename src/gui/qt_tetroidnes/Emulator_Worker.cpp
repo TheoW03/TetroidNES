@@ -68,7 +68,11 @@ void EmulatorWorker::init()
     //     emit push_error("Unrecongnized file format, needs to be NES v1.0 format.", EXIT_FAILURE);
     //     return;
     // }
-
+    // printf("%x \n", this->rom.prg[])
+    // uint16_t pc_start = rom.PRG[0xfffd - NES_START] << 8 | rom.PRG[0xfffc - NES_START];
+    // printf("%x \n", pc_start);
+    // exit(EXIT_SUCCESS);
+    // uint16_t reset_vector = this->rom.prg[];
     Bus bus = Bus(this->rom, NES_START);
     CPU cpu = CPU();
     cpu.bus = bus;
