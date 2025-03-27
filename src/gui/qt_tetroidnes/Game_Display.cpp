@@ -19,6 +19,7 @@ constexpr const uint32_t rgb_data_size = NES_RES_A * 4;
 
 GameDisplay::GameDisplay(Rom rom, QWidget *parent, QString rom_url) : QWidget{parent},
                                                                       render_window(new sf::RenderWindow(sf::VideoMode({800, 600}), "OpenGL", sf::State::Windowed)),
+                                                                      texture({NES_RES_L, NES_RES_W}),
                                                                       frames_per_sec_timer(new QTimer(this)),
                                                                       time_between_draw_timer(new QTimer(this)),
                                                                       m_paused(false),
@@ -136,14 +137,6 @@ void GameDisplay::on_init()
 {
     qInfo() << "Initializing game window...";
 
-    if (!texture.resize({NES_RES_L, NES_RES_W}))
-    {
-        on_push_error(QStringLiteral("Texture failed to be created!"), EXIT_FAILURE);
-        return;
-    }
-
-    const sf::IntRect text_rect = sprite->getTextureRect();
-    sprite->setOrigin({text_rect.size.x / 2, text_rect.size.y / 2});
     update_game_scale();
 
     qInfo() << "About to start thread...";
@@ -279,7 +272,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
 void GameDisplay::update_game_scale()
 {
     QSize widget_size = size();
-    sf::Vector2u texture_size = texture.getSize();
+    sf::Vector2u texture_size = sprite->getTexture().getSize();
     sprite->setScale({
         static_cast<float>(widget_size.width()) / texture_size.x,
         static_cast<float>(widget_size.height()) / texture_size.y});
