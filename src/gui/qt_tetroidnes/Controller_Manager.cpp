@@ -205,14 +205,14 @@ void ControllerManager::update_map_json(QJsonObject input_map)
 InputMap ControllerManager::generate_default_input_map()
 {
     InputButton buttons[BUTTON_COUNT] = {
-        InputButton(u"Z"_s, sf::Keyboard::Z),
-        InputButton(u"C"_s, sf::Keyboard::C),
-        InputButton(u","_s, sf::Keyboard::Comma),
-        InputButton(u"."_s, sf::Keyboard::Period),
-        InputButton(u"Up"_s, sf::Keyboard::Up),
-        InputButton(u"Down"_s, sf::Keyboard::Down),
-        InputButton(u"Left"_s, sf::Keyboard::Left),
-        InputButton(u"Right"_s, sf::Keyboard::Right)
+        InputButton(u"Z"_s, sf::Keyboard::Key::Z),
+        InputButton(u"C"_s, sf::Keyboard::Key::C),
+        InputButton(u","_s, sf::Keyboard::Key::Comma),
+        InputButton(u"."_s, sf::Keyboard::Key::Period),
+        InputButton(u"Up"_s, sf::Keyboard::Key::Up),
+        InputButton(u"Down"_s, sf::Keyboard::Key::Down),
+        InputButton(u"Left"_s, sf::Keyboard::Key::Left),
+        InputButton(u"Right"_s, sf::Keyboard::Key::Right)
     };
 
     return InputMap("Default", InputMap::Keyboard, buttons);

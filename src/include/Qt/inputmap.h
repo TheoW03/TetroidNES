@@ -17,6 +17,11 @@ struct InputButton
         display_name = name;
         key = code;
     }
+    InputButton(QString name, sf::Keyboard::Key code)
+    {
+        display_name = name;
+        key = static_cast<int>(code);
+    }
 
     QString display_name;
     int key;
