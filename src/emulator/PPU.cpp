@@ -22,7 +22,6 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
 
     for (int i = 0; i < 2048; i++)
         this->memory[i] = 0;
-    this->reg.high_ptr = true;
     this->reg.scrollLatch = false;
     this->reg.ppumask.val = 0;
     this->scanline = 0;
@@ -233,7 +232,9 @@ uint8_t PPU::read_status()
 {
     uint8_t ret = this->reg.ppuStatus.val;
     this->reg.ppuStatus.V = 0;
-    reg.high_ptr = true;
+    this->ppuaddr.reset_latch();
+    // TODO: fix
+    //  reg.high_ptr = true;
     reg.scrollLatch = false;
     return ret;
 }

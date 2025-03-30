@@ -22,5 +22,6 @@ public:
     uint16_t read_16bit() override;
     void reset() override;
     void log() override;
+    void reset_latch() override;
 };
 #endif

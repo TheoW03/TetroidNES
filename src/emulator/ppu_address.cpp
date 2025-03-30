@@ -41,3 +41,8 @@ void PPUAddress::log()
     qInfo() << "lo:  " << num_to_hexa(this->ppuAddr.lo);
     qInfo() << "hi:  " << num_to_hexa(this->ppuAddr.hi);
 }
+
+void PPUAddress::reset_latch()
+{
+    this->high_ptr = true;
+}

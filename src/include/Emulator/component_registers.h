@@ -19,8 +19,10 @@ public:
     virtual void write_16bit(uint16_t value);
     virtual uint16_t read_16bit();
     virtual void reset() = 0;
+    virtual void reset_latch();
     virtual void log() = 0;
-    virtual int get_bit(int inudex);
+    virtual int get_bit(int index);
+
     virtual void set_bit(int index);
 };
 #endif

@@ -22,6 +22,9 @@ uint16_t ComponentRegister::read_16bit()
     return 0;
 }
 
+void ComponentRegister::reset_latch()
+{
+}
 int ComponentRegister::get_bit(int inudex)
 {
     return 0;

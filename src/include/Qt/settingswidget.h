@@ -11,7 +11,7 @@
 
 #include <Qt/settingsdisplay.h>
 
-//class SettingsDisplay; // TODO: Foward declaration, prevents "'SettingsDisplay' does not name a type" error
+// class SettingsDisplay; // TODO: Foward declaration, prevents "'SettingsDisplay' does not name a type" error
 class SettingsWidget : public QWidget
 {
     Q_OBJECT
@@ -35,5 +35,4 @@ private slots:
 
 protected:
     void closeEvent(QCloseEvent *event) override;
-    
 };
