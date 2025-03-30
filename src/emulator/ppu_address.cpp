@@ -1,7 +1,10 @@
-#include <Emulator/component_registers.h>
+#include <Emulator/ppu_components.h>
+#include <Qt/util.h>
+#include <QDebug>
 
 PPUAddress::PPUAddress()
 {
+    this->reset();
 }
 
 void PPUAddress::write_8bit(uint8_t value)
@@ -34,4 +37,7 @@ void PPUAddress::reset()
 
 void PPUAddress::log()
 {
+    qInfo() << "PPU addr:  " << num_to_hexa(this->ppuAddr.val);
+    qInfo() << "lo:  " << num_to_hexa(this->ppuAddr.lo);
+    qInfo() << "hi:  " << num_to_hexa(this->ppuAddr.hi);
 }

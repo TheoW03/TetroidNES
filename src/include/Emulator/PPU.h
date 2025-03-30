@@ -8,7 +8,7 @@
 #include <optional>
 #include <tuple>
 #include <chrono>
-
+#include <Emulator/ppu_components.h>
 #include <cstdint>
 class PPU
 {
@@ -16,6 +16,7 @@ private:
     std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> bg_pallete(size_t row, size_t column);
     std::tuple<uint8_t, uint8_t, uint8_t> getColorFromByte(uint16_t byte, std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> pallete);
     void get_chr_tile(uint16_t tile_idx, int banks, std::vector<uint8_t> &tile_list);
+    PPUAddress ppuaddr;
     // sf::Color getColorFromByte(uint16_t byte);
     struct Registers
     {
@@ -35,15 +36,15 @@ private:
             };
             uint8_t val;
         } ppumask;
-        union
-        {
-            struct
-            {
-                unsigned lo : 8;
-                unsigned hi : 8;
-            };
-            uint16_t val;
-        } ppuAddr;
+        // union
+        // {
+        //     struct
+        //     {
+        //         unsigned lo : 8;
+        //         unsigned hi : 8;
+        //     };
+        //     uint16_t val;
+        // } ppuAddr;
         union
         {
             struct
@@ -84,6 +85,7 @@ private:
     uint8_t memory[0x800];
     Registers reg;
     std::vector<uint8_t> chr_rom;
+
     uint8_t oam[256];
     uint8_t oam_addr;
     uint8_t pallete[0x20];

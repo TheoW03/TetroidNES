@@ -4,6 +4,7 @@
 #include <Emulator/PPU.h>
 #include <Emulator/EmulatorUtil.h>
 #include <Qt/util.h>
+#include <optional>
 #include <bitset>
 #include <Qt/util.h>
 #include <QDebug>
@@ -14,7 +15,8 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     this->chr_rom = chrrom;
     this->mirrorType = mirrorType;
     this->internalDataBuffer = 0;
-    this->reg.ppuAddr.val = 0;
+    // this->reg.ppuAddr.val = 0;
+    this->ppuaddr.reset();
     this->reg.ppuCtrl.val = 0;
     this->reg.ppuStatus.val = 0;
 
@@ -201,10 +203,12 @@ uint16_t PPU::mirror(uint16_t address)
 
 uint8_t PPU::read_PPU_data()
 {
-    uint16_t addr = this->reg.ppuAddr.val;
-    printf("pallete \n");
+    uint16_t addr = this->ppuaddr.read_16bit();
 
-    this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
+    uint16_t c = this->ppuaddr.read_16bit() + ((reg.ppuCtrl.I) ? 32 : 1);
+    this->ppuaddr.write_16bit(c);
+    // printf("pallete \n");
+    // this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
     if (addr <= 0x1fff)
     {
         uint8_t res = internalDataBuffer;
@@ -240,14 +244,14 @@ void PPU::print_ppu_stats()
     printf("===== PPU ON EXIT =========== \n");
     printf("\n");
 
-    printf("ppu_addr:  decimal: %d hexa: 0x%x   \n", this->reg.ppuAddr.val, this->reg.ppuAddr.val);
-    printf("ppu_addr hi: decimal: %d hexa: 0x%x\n", this->reg.ppuAddr.hi, this->reg.ppuAddr.hi);
-    printf("ppu_addr lo: decimal:  %d hexa: 0x%x \n", this->reg.ppuAddr.lo, this->reg.ppuAddr.lo);
+    // printf("ppu_addr:  decimal: %d hexa: 0x%x   \n", this->reg.ppuAddr.val, this->reg.ppuAddr.val);
+    // printf("ppu_addr hi: decimal: %d hexa: 0x%x\n", this->reg.ppuAddr.hi, this->reg.ppuAddr.hi);
+    // printf("ppu_addr lo: decimal:  %d hexa: 0x%x \n", this->reg.ppuAddr.lo, this->reg.ppuAddr.lo);
     std::bitset<7> ppu_status(this->reg.ppuStatus.val);
     std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
     std::cout << "ppu status: 0b" << ppu_status << std::endl;
     std::cout << "ppu ctrl: 0b" << ppu_ctrl << std::endl;
-    printf("ppu cycles %d \n", this->cycles);
+    printf("ppu cycles %ld \n", this->cycles);
     printf("OAM Addr hexa: 0x%x decimal: %d \n", this->oam_addr, this->oam_addr);
     printf("\n============================= \n"); //
     printf("\n");
@@ -264,9 +268,10 @@ void PPU::log_ppu()
     qInfo() << "===== OAM  ====";
     qInfo() << "oam addr: " << num_to_hexa(this->oam_addr);
     qInfo() << "=====PPU ADDR=====";
-    qInfo() << "PPU addr:  " << num_to_hexa(this->reg.ppuAddr.val);
-    qInfo() << "lo:  " << num_to_hexa(this->reg.ppuAddr.lo);
-    qInfo() << "hi:  " << num_to_hexa(this->reg.ppuAddr.hi);
+    this->ppuaddr.log();
+    // qInfo() << "PPU addr:  " << num_to_hexa(this->reg.ppuAddr.val);
+    // qInfo() << "lo:  " << num_to_hexa(this->reg.ppuAddr.lo);
+    // qInfo() << "hi:  " << num_to_hexa(this->reg.ppuAddr.hi);
     qInfo() << "";
 
     qInfo() << "===== PPU status ====";
@@ -302,27 +307,27 @@ void PPU::log_ppu()
 }
 void PPU::write_PPU_address(uint8_t val)
 {
+    this->ppuaddr.write_8bit(val);
+    // if (this->reg.high_ptr)
+    // {
+    //     this->reg.ppuAddr.hi = val;
+    // }
+    // else
+    // {
+    //     this->reg.ppuAddr.lo = val;
+    // }
+    // // TODO: fix later
+    // //  std::cout << "ppu addr" << std::endl;
+    // qInfo() << "addr";
+    // qInfo() << "val: " << num_to_hexa(this->reg.ppuAddr.val);
+    // qInfo() << "hi: " << num_to_hexa(this->reg.ppuAddr.hi);
+    // qInfo() << "lo: " << num_to_hexa(this->reg.ppuAddr.lo);
 
-    if (this->reg.high_ptr)
-    {
-        this->reg.ppuAddr.hi = val;
-    }
-    else
-    {
-        this->reg.ppuAddr.lo = val;
-    }
-    // TODO: fix later
-    //  std::cout << "ppu addr" << std::endl;
-    qInfo() << "addr";
-    qInfo() << "val: " << num_to_hexa(this->reg.ppuAddr.val);
-    qInfo() << "hi: " << num_to_hexa(this->reg.ppuAddr.hi);
-    qInfo() << "lo: " << num_to_hexa(this->reg.ppuAddr.lo);
+    // // printf("val:%x   \n", this->reg.ppuAddr.val);
+    // // printf("hi: %x \n", this->reg.ppuAddr.hi);
+    // // printf("lo: %x \n", this->reg.ppuAddr.lo);
 
-    // printf("val:%x   \n", this->reg.ppuAddr.val);
-    // printf("hi: %x \n", this->reg.ppuAddr.hi);
-    // printf("lo: %x \n", this->reg.ppuAddr.lo);
-
-    this->reg.high_ptr = !this->reg.high_ptr;
+    // this->reg.high_ptr = !this->reg.high_ptr;
 }
 void PPU::write_PPU_ctrl(uint8_t val)
 {
@@ -348,7 +353,7 @@ void PPU::write_PPU_mask(uint8_t val)
 std::optional<int> PPU::write_PPU_data(uint8_t val)
 {
 
-    uint16_t addr = this->reg.ppuAddr.val;
+    uint16_t addr = this->ppuaddr.read_16bit();
     if (addr == 0)
         return 1;
     // printf("%x \n", addr);
@@ -396,17 +401,20 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
         // exit(EXIT_FAILURE);
         if (this->reg.ppumask.s != 0)
         {
-            this->err_string = std::optional<std::string>{"Address 0x" + num_to_hexa(reg.ppuAddr.val) + " is a PPU read only address"};
+            this->err_string = std::optional<std::string>{"Address 0x" + num_to_hexa(this->ppuaddr.read_16bit()) + " is a PPU read only address"};
             return {};
         }
         return 1;
     }
-    this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
-    if (reg.ppuAddr.val > 0x3fff)
+    uint16_t c = this->ppuaddr.read_16bit() + ((reg.ppuCtrl.I) ? 32 : 1);
+    this->ppuaddr.write_16bit(c);
+    // this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
+    if (this->ppuaddr.read_16bit() > 0x3fff)
     {
-        qInfo() << "addr" << num_to_hexa(this->reg.ppuAddr.val) << " val: " << val;
-
-        this->reg.ppuAddr.val &= 0b11111111111111;
+        // qInfo() << "addr" << num_to_hexa(this->reg.ppuAddr.val) << " val: " << val;
+        uint16_t addr_value = this->ppuaddr.read_16bit() & 0b11111111111111;
+        this->ppuaddr.write_16bit(addr_value);
+        // this->reg.ppuAddr.val &= 0b11111111111111;
     }
     return 1;
 }
