@@ -1,5 +1,13 @@
 #include <stdint.h>
 
+/*
+
+for the NES's many memory mapped devices. this will be the class
+
+that we will have each one
+extend such as PPU addr, PPU ctrl, PPU status...
+
+*/
 #ifndef COMPONENT_H
 #define COMPONENT_H
 class ComponentRegister

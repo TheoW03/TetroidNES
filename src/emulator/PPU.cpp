@@ -269,9 +269,6 @@ void PPU::log_ppu()
     qInfo() << "oam addr: " << num_to_hexa(this->oam_addr);
     qInfo() << "=====PPU ADDR=====";
     this->ppuaddr.log();
-    // qInfo() << "PPU addr:  " << num_to_hexa(this->reg.ppuAddr.val);
-    // qInfo() << "lo:  " << num_to_hexa(this->reg.ppuAddr.lo);
-    // qInfo() << "hi:  " << num_to_hexa(this->reg.ppuAddr.hi);
     qInfo() << "";
 
     qInfo() << "===== PPU status ====";
@@ -308,26 +305,6 @@ void PPU::log_ppu()
 void PPU::write_PPU_address(uint8_t val)
 {
     this->ppuaddr.write_8bit(val);
-    // if (this->reg.high_ptr)
-    // {
-    //     this->reg.ppuAddr.hi = val;
-    // }
-    // else
-    // {
-    //     this->reg.ppuAddr.lo = val;
-    // }
-    // // TODO: fix later
-    // //  std::cout << "ppu addr" << std::endl;
-    // qInfo() << "addr";
-    // qInfo() << "val: " << num_to_hexa(this->reg.ppuAddr.val);
-    // qInfo() << "hi: " << num_to_hexa(this->reg.ppuAddr.hi);
-    // qInfo() << "lo: " << num_to_hexa(this->reg.ppuAddr.lo);
-
-    // // printf("val:%x   \n", this->reg.ppuAddr.val);
-    // // printf("hi: %x \n", this->reg.ppuAddr.hi);
-    // // printf("lo: %x \n", this->reg.ppuAddr.lo);
-
-    // this->reg.high_ptr = !this->reg.high_ptr;
 }
 void PPU::write_PPU_ctrl(uint8_t val)
 {
