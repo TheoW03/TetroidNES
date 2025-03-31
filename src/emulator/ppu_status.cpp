@@ -37,7 +37,6 @@ uint8_t PPUStatus::read_8bit()
 void PPUStatus::set_bit(int index, int toggle)
 {
 
-    // TODO: check math
     if (toggle == 1)
     {
         uint8_t mask = 1 << index;
@@ -46,7 +45,7 @@ void PPUStatus::set_bit(int index, int toggle)
     else
     {
         uint8_t mask = (1 << index);
-        this->ppuStatus.val &= ~mask;
+        this->ppuStatus.val &= (~mask);
     }
 }
 
