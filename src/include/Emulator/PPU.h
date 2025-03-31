@@ -17,6 +17,7 @@ private:
     std::tuple<uint8_t, uint8_t, uint8_t> getColorFromByte(uint16_t byte, std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> pallete);
     void get_chr_tile(uint16_t tile_idx, int banks, std::vector<uint8_t> &tile_list);
     PPUAddress ppuaddr;
+    PPUStatus ppustatus;
     // sf::Color getColorFromByte(uint16_t byte);
     struct Registers
     {
@@ -64,21 +65,21 @@ private:
             uint8_t val;
 
         } ppuCtrl;
-        union
-        {
-            struct
-            {
-                unsigned padding : 5;
+        // union
+        // {
+        //     struct
+        //     {
+        //         unsigned padding : 5;
 
-                unsigned O : 1;
-                unsigned S : 1;
-                // unsigned : 1;
+        //         unsigned O : 1;
+        //         unsigned S : 1;
+        //         // unsigned : 1;
 
-                unsigned V : 1;
-            };
-            uint8_t val;
+        //         unsigned V : 1;
+        //     };
+        //     uint8_t val;
 
-        } ppuStatus;
+        // } ppuStatus;
         bool scrollLatch;
         // bool high_ptr;
     };

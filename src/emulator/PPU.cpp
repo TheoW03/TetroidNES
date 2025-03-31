@@ -18,8 +18,8 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     // this->reg.ppuAddr.val = 0;
     this->ppuaddr.reset();
     this->reg.ppuCtrl.val = 0;
-    this->reg.ppuStatus.val = 0;
-
+    // this->reg..val = 0;
+    this->ppustatus.reset();
     for (int i = 0; i < 2048; i++)
         this->memory[i] = 0;
     this->reg.scrollLatch = false;
@@ -230,8 +230,9 @@ uint8_t PPU::read_PPU_data()
 }
 uint8_t PPU::read_status()
 {
-    uint8_t ret = this->reg.ppuStatus.val;
-    this->reg.ppuStatus.V = 0;
+    uint8_t ret = this->ppustatus.read_8bit();
+    // this->reg.ppuStatus.V = 0;
+    this->ppustatus.set_bit(7, 0);
     this->ppuaddr.reset_latch();
     // TODO: fix
     //  reg.high_ptr = true;
@@ -248,9 +249,9 @@ void PPU::print_ppu_stats()
     // printf("ppu_addr:  decimal: %d hexa: 0x%x   \n", this->reg.ppuAddr.val, this->reg.ppuAddr.val);
     // printf("ppu_addr hi: decimal: %d hexa: 0x%x\n", this->reg.ppuAddr.hi, this->reg.ppuAddr.hi);
     // printf("ppu_addr lo: decimal:  %d hexa: 0x%x \n", this->reg.ppuAddr.lo, this->reg.ppuAddr.lo);
-    std::bitset<7> ppu_status(this->reg.ppuStatus.val);
+    // std::bitset<7> ppu_status(this->reg.ppuStatus.val);
     std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
-    std::cout << "ppu status: 0b" << ppu_status << std::endl;
+    // std::cout << "ppu status: 0b" << ppu_status << std::endl;
     std::cout << "ppu ctrl: 0b" << ppu_ctrl << std::endl;
     printf("ppu cycles %ld \n", this->cycles);
     printf("OAM Addr hexa: 0x%x decimal: %d \n", this->oam_addr, this->oam_addr);
@@ -259,7 +260,7 @@ void PPU::print_ppu_stats()
 }
 void PPU::log_ppu()
 {
-    std::bitset<8> ppu_status(this->reg.ppuStatus.val);
+    // std::bitset<8> ppu_status(this->reg.ppuStatus.val);
     std::bitset<8> ppu_ctrl(this->reg.ppuCtrl.val);
     std::bitset<8> ppu_mask(this->reg.ppumask.val);
 
@@ -273,10 +274,11 @@ void PPU::log_ppu()
     qInfo() << "";
 
     qInfo() << "===== PPU status ====";
-    qInfo() << "VBlank: " << this->reg.ppuStatus.V;
-    qInfo() << "0_hit: " << this->reg.ppuStatus.S;
-    qInfo() << "overflow: " << this->reg.ppuStatus.O;
-    qInfo() << "status: " << ppu_status.to_string();
+    this->ppustatus.log();
+    // qInfo() << "VBlank: " << this->reg.ppuStatus.V;
+    // qInfo() << "0_hit: " << this->reg.ppuStatus.S;
+    // qInfo() << "overflow: " << this->reg.ppuStatus.O;
+    // qInfo() << "status: " << ppu_status.to_string();
     qInfo() << "";
 
     qInfo() << "===== PPU ctrl ====";
@@ -312,7 +314,7 @@ void PPU::write_PPU_ctrl(uint8_t val)
     auto before = this->reg.ppuCtrl;
 
     this->reg.ppuCtrl.val = val;
-    if (before.V == 0 && this->reg.ppuCtrl.V == 1 && this->reg.ppuStatus.V == 1)
+    if (before.V == 0 && this->reg.ppuCtrl.V == 1 && this->ppustatus.get_bit(7) == 1)
     {
         this->reg.ppuCtrl.V = 1;
     }
@@ -411,7 +413,8 @@ bool PPU::tick(uint8_t clock_cycles)
 
         if (scanline == 241)
         {
-            reg.ppuStatus.V = 1;
+            this->ppustatus.set_bit(7, 1);
+            // reg.ppuStatus.V = 1;
             qInfo() << "vblank";
             if (this->reg.ppuCtrl.V == 1)
             {
@@ -428,7 +431,8 @@ bool PPU::tick(uint8_t clock_cycles)
         {
 
             this->scanline = 0;
-            this->reg.ppuStatus.V = 0;
+            this->ppustatus.set_bit(7, 1);
+            // this->reg.ppuStatus.V = 0;
             qInfo() << "reset";
             return true;
         }
@@ -440,7 +444,7 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
 {
     if (this->scanline == 241)
     {
-        this->reg.ppuStatus.V = 1;
+        this->ppustatus.set_bit(7, 1);
         if (this->reg.ppuCtrl.V == 1)
         {
 
