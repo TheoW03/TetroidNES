@@ -25,3 +25,21 @@ public:
     void reset_latch() override;
 };
 #endif
+
+#ifndef PPU_Status_H
+#define PPU_Status_H
+class PPUStatus : public ComponentRegister
+{
+private:
+    uint8_t status;
+
+public:
+    PPUStatus();
+    void write_8bit(uint8_t value) override;
+    uint8_t read_8bit() override;
+    void set_bit(int index) override;
+    int get_bit(int index) override;
+    void log() override;
+    void reset() override;
+};
+#endif
