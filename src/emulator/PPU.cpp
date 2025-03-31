@@ -205,8 +205,9 @@ uint8_t PPU::read_PPU_data()
 {
     uint16_t addr = this->ppuaddr.read_16bit();
     int inc_mode = this->ppuctrl.get_bit(2); // todo: check
-    uint16_t c = this->ppuaddr.read_16bit() + ((inc_mode) ? 32 : 1);
-    this->ppuaddr.write_16bit(c);
+    this->ppuaddr.increment(inc_mode);
+    // uint16_t c = this->ppuaddr.read_16bit() + ((inc_mode) ? 32 : 1);
+    // this->ppuaddr.write_16bit(c);
     // printf("pallete \n");
     // this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
     if (addr <= 0x1fff)
@@ -387,8 +388,9 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
         return 1;
     }
     int incmode = this->ppuctrl.get_bit(2);
-    uint16_t c = this->ppuaddr.read_16bit() + ((incmode) ? 32 : 1);
-    this->ppuaddr.write_16bit(c);
+    this->ppuaddr.increment(incmode);
+    // uint16_t c = this->ppuaddr.read_16bit() + ((incmode) ? 32 : 1);
+    // this->ppuaddr.write_16bit(c);
     // this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
     if (this->ppuaddr.read_16bit() > 0x3fff)
     {

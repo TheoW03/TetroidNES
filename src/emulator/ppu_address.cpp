@@ -42,6 +42,17 @@ void PPUAddress::log()
     qInfo() << "hi:  " << num_to_hexa(this->ppuAddr.hi);
 }
 
+void PPUAddress::increment(int toggle)
+{
+    if (toggle == 1)
+    {
+        this->ppuAddr.val += 32;
+    }
+    else
+    {
+        this->ppuAddr.val += 1;
+    }
+}
 void PPUAddress::reset_latch()
 {
     this->high_ptr = true;

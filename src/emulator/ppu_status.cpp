@@ -11,7 +11,6 @@ void PPUStatus::log()
 {
 
     std::bitset<8> ppu_status(ppuStatus.val);
-    qInfo() << "===== PPU status ====";
     qInfo() << "VBlank: " << this->ppuStatus.V;
     qInfo() << "0_hit: " << this->ppuStatus.S;
     qInfo() << "overflow: " << this->ppuStatus.O;
