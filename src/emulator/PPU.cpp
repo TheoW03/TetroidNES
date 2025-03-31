@@ -234,8 +234,6 @@ uint8_t PPU::read_status()
     // this->reg.ppuStatus.V = 0;
     this->ppustatus.set_bit(7, 0);
     this->ppuaddr.reset_latch();
-    // TODO: fix
-    //  reg.high_ptr = true;
     reg.scrollLatch = false;
     return ret;
 }

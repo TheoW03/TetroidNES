@@ -55,3 +55,52 @@ public:
     void reset() override;
 };
 #endif
+
+#ifndef PPU_MASK_H
+#define PPU_MASK_H
+class PPUMask : public ComponentRegister
+{
+public:
+    PPUMask();
+    void reset() override;
+    void log() override;
+    void set_bit(int index, int toggle) override;
+    int get_bit(int index) override;
+};
+#endif
+
+#ifndef PPU_Ctrl_H
+#define PPU_Ctrl_H
+class PPUControl : public ComponentRegister
+{
+private:
+    union
+    {
+        struct
+        {
+            unsigned N : 2; // increment mode
+            unsigned I : 1; // increment mode
+            unsigned S : 1; // sprite tile select (ignored in 8x16 sprite mode)
+
+            unsigned B : 1; // background tile select
+
+            unsigned H : 1; // sprite height
+
+            unsigned P : 1; // PPU master/slave
+
+            unsigned V : 1; // NMI enable
+        };
+        uint8_t val;
+
+    } ppuCtrl;
+
+public:
+    PPUControl();
+    void reset() override;
+    void log() override;
+    void set_bit(int index, int toggle) override;
+    int get_bit(int index) override;
+    uint8_t read_8bit() override;
+    void write_8bit(uint8_t value) override;
+};
+#endif
