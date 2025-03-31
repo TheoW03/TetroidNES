@@ -17,7 +17,8 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     this->internalDataBuffer = 0;
     // this->reg.ppuAddr.val = 0;
     this->ppuaddr.reset();
-    this->reg.ppuCtrl.val = 0;
+    this->ppuctrl.reset();
+    // this->reg.ppuCtrl.val = 0;
     // this->reg..val = 0;
     this->ppustatus.reset();
     for (int i = 0; i < 2048; i++)
@@ -203,8 +204,8 @@ uint16_t PPU::mirror(uint16_t address)
 uint8_t PPU::read_PPU_data()
 {
     uint16_t addr = this->ppuaddr.read_16bit();
-
-    uint16_t c = this->ppuaddr.read_16bit() + ((reg.ppuCtrl.I) ? 32 : 1);
+    int inc_mode = this->ppuctrl.get_bit(2); // todo: check
+    uint16_t c = this->ppuaddr.read_16bit() + ((inc_mode) ? 32 : 1);
     this->ppuaddr.write_16bit(c);
     // printf("pallete \n");
     // this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
@@ -248,9 +249,9 @@ void PPU::print_ppu_stats()
     // printf("ppu_addr hi: decimal: %d hexa: 0x%x\n", this->reg.ppuAddr.hi, this->reg.ppuAddr.hi);
     // printf("ppu_addr lo: decimal:  %d hexa: 0x%x \n", this->reg.ppuAddr.lo, this->reg.ppuAddr.lo);
     // std::bitset<7> ppu_status(this->reg.ppuStatus.val);
-    std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
+    // std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
     // std::cout << "ppu status: 0b" << ppu_status << std::endl;
-    std::cout << "ppu ctrl: 0b" << ppu_ctrl << std::endl;
+    // std::cout << "ppu ctrl: 0b" << ppu_ctrl << std::endl;
     printf("ppu cycles %ld \n", this->cycles);
     printf("OAM Addr hexa: 0x%x decimal: %d \n", this->oam_addr, this->oam_addr);
     printf("\n============================= \n"); //
@@ -259,7 +260,7 @@ void PPU::print_ppu_stats()
 void PPU::log_ppu()
 {
     // std::bitset<8> ppu_status(this->reg.ppuStatus.val);
-    std::bitset<8> ppu_ctrl(this->reg.ppuCtrl.val);
+    // std::bitset<8> ppu_ctrl(this->reg.ppuCtrl.val);
     std::bitset<8> ppu_mask(this->reg.ppumask.val);
 
     qInfo() << "===== PPU ON EXIT ===========";
@@ -280,15 +281,16 @@ void PPU::log_ppu()
     qInfo() << "";
 
     qInfo() << "===== PPU ctrl ====";
-    qInfo() << "NMI enable (0: off, 1: on): " << this->reg.ppuCtrl.V;
-    qInfo() << "PPU master/slave select (0: read backdrop from EXT pins; 1: output color on EXT pins): " << this->reg.ppuCtrl.P;
-    qInfo() << "sprite size (0: 8x8, 1: 8x16): " << this->reg.ppuCtrl.H;
-    qInfo() << "Background patterntable (0: $0000; 1: $1000): " << this->reg.ppuCtrl.B;
-    qInfo() << "Sprite patterntable (0: $0000; 1: $1000): " << this->reg.ppuCtrl.S;
-    qInfo() << "increment (0: add 1 going across, 1: add 32 going down): " << this->reg.ppuCtrl.I;
-    std::bitset<2> name_table_address(this->reg.ppuCtrl.N);
-    qInfo() << "name table addreess: " << name_table_address.to_string();
-    qInfo() << "ctrl: " << ppu_ctrl.to_string();
+    this->ppuctrl.log();
+    // qInfo() << "NMI enable (0: off, 1: on): " << this->reg.ppuCtrl.V;
+    // qInfo() << "PPU master/slave select (0: read backdrop from EXT pins; 1: output color on EXT pins): " << this->reg.ppuCtrl.P;
+    // qInfo() << "sprite size (0: 8x8, 1: 8x16): " << this->reg.ppuCtrl.H;
+    // qInfo() << "Background patterntable (0: $0000; 1: $1000): " << this->reg.ppuCtrl.B;
+    // qInfo() << "Sprite patterntable (0: $0000; 1: $1000): " << this->reg.ppuCtrl.S;
+    // qInfo() << "increment (0: add 1 going across, 1: add 32 going down): " << this->reg.ppuCtrl.I;
+    // std::bitset<2> name_table_address(this->reg.ppuCtrl.N);
+    // qInfo() << "name table addreess: " << name_table_address.to_string();
+    // qInfo() << "ctrl: " << ppu_ctrl.to_string();
     qInfo() << "";
     qInfo() << "===== PPU mask ====";
     qInfo() << "Emphasize blue: " << this->reg.ppumask.B;
@@ -309,12 +311,12 @@ void PPU::write_PPU_address(uint8_t val)
 }
 void PPU::write_PPU_ctrl(uint8_t val)
 {
-    auto before = this->reg.ppuCtrl;
-
-    this->reg.ppuCtrl.val = val;
-    if (before.V == 0 && this->reg.ppuCtrl.V == 1 && this->ppustatus.get_bit(7) == 1)
+    auto before = this->ppuctrl.get_bit(7);
+    this->ppuctrl.write_8bit(val);
+    if (before == 0 && this->ppuctrl.get_bit(7) == 1 && this->ppustatus.get_bit(7) == 1)
     {
-        this->reg.ppuCtrl.V = 1;
+        this->ppuctrl.set_bit(7, 1);
+        // this->reg.ppuCtrl.V = 1;
     }
 }
 void PPU::write_PPU_mask(uint8_t val)
@@ -384,7 +386,8 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
         }
         return 1;
     }
-    uint16_t c = this->ppuaddr.read_16bit() + ((reg.ppuCtrl.I) ? 32 : 1);
+    int incmode = this->ppuctrl.get_bit(2);
+    uint16_t c = this->ppuaddr.read_16bit() + ((incmode) ? 32 : 1);
     this->ppuaddr.write_16bit(c);
     // this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
     if (this->ppuaddr.read_16bit() > 0x3fff)
@@ -414,7 +417,7 @@ bool PPU::tick(uint8_t clock_cycles)
             this->ppustatus.set_bit(7, 1);
             // reg.ppuStatus.V = 1;
             qInfo() << "vblank";
-            if (this->reg.ppuCtrl.V == 1)
+            if (this->ppuctrl.get_bit(7) == 1)
             {
                 // printf("NMI?");
 
@@ -443,7 +446,7 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
     if (this->scanline == 241)
     {
         this->ppustatus.set_bit(7, 1);
-        if (this->reg.ppuCtrl.V == 1)
+        if (this->ppuctrl.get_bit(7) == 1)
         {
 
             // printf("%d \n",)
@@ -545,7 +548,7 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
         //  int idx = ppu_idx % 32;
         //  int idy = ppu_idx / 32;
 
-        banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
+        banks = (this->ppuctrl.get_bit(4) == 1) ? 0x1000 : 0;
         std::vector<uint8_t> tile_list;
         auto pallete_idx = attribbyte.pallete;
         // printf("%x \n", attribbyte.pallete);
@@ -630,7 +633,7 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
  */
 std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
 {
-    int banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
+    int banks = (this->ppuctrl.get_bit(4) == 1) ? 0x1000 : 0;
     std::vector<uint8_t> rgb_ds;
     rgb_ds.resize(std::get<0>(res) * std::get<1>(res) * 4);
 

@@ -18,6 +18,7 @@ private:
     void get_chr_tile(uint16_t tile_idx, int banks, std::vector<uint8_t> &tile_list);
     PPUAddress ppuaddr;
     PPUStatus ppustatus;
+    PPUControl ppuctrl;
     // sf::Color getColorFromByte(uint16_t byte);
     struct Registers
     {
@@ -46,25 +47,25 @@ private:
         //     };
         //     uint16_t val;
         // } ppuAddr;
-        union
-        {
-            struct
-            {
-                unsigned N : 2; // increment mode
-                unsigned I : 1; // increment mode
-                unsigned S : 1; // sprite tile select (ignored in 8x16 sprite mode)
+        // union
+        // {
+        //     struct
+        //     {
+        //         unsigned N : 2; // increment mode
+        //         unsigned I : 1; // increment mode
+        //         unsigned S : 1; // sprite tile select (ignored in 8x16 sprite mode)
 
-                unsigned B : 1; // background tile select
+        //         unsigned B : 1; // background tile select
 
-                unsigned H : 1; // sprite height
+        //         unsigned H : 1; // sprite height
 
-                unsigned P : 1; // PPU master/slave
+        //         unsigned P : 1; // PPU master/slave
 
-                unsigned V : 1; // NMI enable
-            };
-            uint8_t val;
+        //         unsigned V : 1; // NMI enable
+        //     };
+        //     uint8_t val;
 
-        } ppuCtrl;
+        // } ppuCtrl;
         // union
         // {
         //     struct
