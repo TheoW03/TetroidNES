@@ -13,6 +13,7 @@
 class PPU
 {
 private:
+    PPUMask ppumask;
     std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> bg_pallete(size_t row, size_t column);
     std::tuple<uint8_t, uint8_t, uint8_t> getColorFromByte(uint16_t byte, std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> pallete);
     void get_chr_tile(uint16_t tile_idx, int banks, std::vector<uint8_t> &tile_list);
@@ -22,22 +23,22 @@ private:
     // sf::Color getColorFromByte(uint16_t byte);
     struct Registers
     {
-        union
-        {
-            struct
-            {
-                unsigned g : 1; // greyscale
-                unsigned m : 1; // background left column disable
-                unsigned M : 1; // sprite left column disable
-                unsigned b : 1; // background enable
+        // union
+        // {
+        //     struct
+        //     {
+        //         unsigned g : 1; // greyscale
+        //         unsigned m : 1; // background left column disable
+        //         unsigned M : 1; // sprite left column disable
+        //         unsigned b : 1; // background enable
 
-                unsigned s : 1; // sprite enable
-                unsigned R : 1; // color emphasis Red
-                unsigned G : 1; // color emphasis Green
-                unsigned B : 1; // color emphasis Blue
-            };
-            uint8_t val;
-        } ppumask;
+        //         unsigned s : 1; // sprite enable
+        //         unsigned R : 1; // color emphasis Red
+        //         unsigned G : 1; // color emphasis Green
+        //         unsigned B : 1; // color emphasis Blue
+        //     };
+        //     uint8_t val;
+        // } ppumask;
         // union
         // {
         //     struct

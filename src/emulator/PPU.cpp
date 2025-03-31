@@ -24,7 +24,8 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     for (int i = 0; i < 2048; i++)
         this->memory[i] = 0;
     this->reg.scrollLatch = false;
-    this->reg.ppumask.val = 0;
+    // this->reg.ppumask.val = 0;
+    this->ppumask.reset();
     this->scanline = 0;
     this->cycles = 0;
     this->err_string = std::nullopt;
@@ -262,7 +263,7 @@ void PPU::log_ppu()
 {
     // std::bitset<8> ppu_status(this->reg.ppuStatus.val);
     // std::bitset<8> ppu_ctrl(this->reg.ppuCtrl.val);
-    std::bitset<8> ppu_mask(this->reg.ppumask.val);
+    // std::bitset<8> ppu_mask(this->reg.ppumask.val);
 
     qInfo() << "===== PPU ON EXIT ===========";
     qInfo() << "";
@@ -294,16 +295,17 @@ void PPU::log_ppu()
     // qInfo() << "ctrl: " << ppu_ctrl.to_string();
     qInfo() << "";
     qInfo() << "===== PPU mask ====";
-    qInfo() << "Emphasize blue: " << this->reg.ppumask.B;
-    qInfo() << "Emphasize green: " << this->reg.ppumask.G;
-    qInfo() << "Emphasize red: " << this->reg.ppumask.R;
+    this->ppumask.log();
+    // qInfo() << "Emphasize blue: " << this->reg.ppumask.B;
+    // qInfo() << "Emphasize green: " << this->reg.ppumask.G;
+    // qInfo() << "Emphasize red: " << this->reg.ppumask.R;
 
-    qInfo() << "Enable sprite rendering: " << this->reg.ppumask.s;
-    qInfo() << "Enable background rendering: " << this->reg.ppumask.b;
-    qInfo() << "Show sprites in leftmost 8 pixels of screen: " << this->reg.ppumask.M;
-    qInfo() << "Show background in leftmost 8 pixels of screen " << this->reg.ppumask.m;
-    qInfo() << "grey scale (0: normal color, 1: grey scale): " << this->reg.ppumask.g;
-    qInfo() << "ppu mask: " << ppu_mask.to_string();
+    // qInfo() << "Enable sprite rendering: " << this->reg.ppumask.s;
+    // qInfo() << "Enable background rendering: " << this->reg.ppumask.b;
+    // qInfo() << "Show sprites in leftmost 8 pixels of screen: " << this->reg.ppumask.M;
+    // qInfo() << "Show background in leftmost 8 pixels of screen " << this->reg.ppumask.m;
+    // qInfo() << "grey scale (0: normal color, 1: grey scale): " << this->reg.ppumask.g;
+    // qInfo() << "ppu mask: " << ppu_mask.to_string();
     qInfo() << "";
 }
 void PPU::write_PPU_address(uint8_t val)
@@ -323,12 +325,13 @@ void PPU::write_PPU_ctrl(uint8_t val)
 void PPU::write_PPU_mask(uint8_t val)
 {
 
-    std::bitset<7> ppu_status2(val);
-    std::cout << "mask: " << ppu_status2 << std::endl;
-    std::cout << "ppu mask being written to" << std::endl;
-    this->reg.ppumask.val = val;
-    std::bitset<7> ppu_status(this->reg.ppumask.val);
-    std::cout << "mask: " << ppu_status << std::endl;
+    ppumask.write_8bit(val);
+    // std::bitset<7> ppu_status2(val);
+    // std::cout << "mask: " << ppu_status2 << std::endl;
+    // std::cout << "ppu mask being written to" << std::endl;
+    // this->reg.ppumask.val = val;
+    // std::bitset<7> ppu_status(this->reg.ppumask.val);
+    // std::cout << "mask: " << ppu_status << std::endl;
     // exit(EXIT_FAILURE);
 }
 std::optional<int> PPU::write_PPU_data(uint8_t val)
@@ -380,7 +383,7 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
         // std::cout << "\033[91mAttempt to write into PPU READ_ONLY_MEM\033[0m" << std::endl;
         // printf("0x%x\n", addr);
         // exit(EXIT_FAILURE);
-        if (this->reg.ppumask.s != 0)
+        if (this->ppumask.get_bit(4) != 0)
         {
             this->err_string = std::optional<std::string>{"Address 0x" + num_to_hexa(this->ppuaddr.read_16bit()) + " is a PPU read only address"};
             return {};
@@ -493,7 +496,7 @@ void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<si
                 upper >>= 1;
                 lower >>= 1;
 
-                auto rgb = getColorFromByte((this->reg.ppumask.b == 1 ? value : 0), bgpallete);
+                auto rgb = getColorFromByte((this->ppumask.get_bit(3) == 1 ? value : 0), bgpallete);
                 // if (value == 0)
                 //     continue;
                 // sf::Color rgb = getColorFromByte(value);
