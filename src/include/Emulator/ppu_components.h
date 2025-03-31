@@ -61,12 +61,31 @@ public:
 #define PPU_MASK_H
 class PPUMask : public ComponentRegister
 {
+private:
+    union
+    {
+        struct
+        {
+            unsigned g : 1; // greyscale
+            unsigned m : 1; // background left column disable
+            unsigned M : 1; // sprite left column disable
+            unsigned b : 1; // background enable
+
+            unsigned s : 1; // sprite enable
+            unsigned R : 1; // color emphasis Red
+            unsigned G : 1; // color emphasis Green
+            unsigned B : 1; // color emphasis Blue
+        };
+        uint8_t val;
+    } ppumask;
+
 public:
     PPUMask();
     void reset() override;
     void log() override;
     void set_bit(int index, int toggle) override;
     int get_bit(int index) override;
+    void write_8bit(uint8_t value) override;
 };
 #endif
 
