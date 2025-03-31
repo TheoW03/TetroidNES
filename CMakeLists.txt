@@ -35,6 +35,7 @@ find_package(Qt6 REQUIRED COMPONENTS
     ${QT_REQUIRED_COMPONENTS}
 )
 
+
 include(FetchContent)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git

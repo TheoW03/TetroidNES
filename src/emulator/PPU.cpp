@@ -4,6 +4,7 @@
 #include <Emulator/PPU.h>
 #include <Emulator/EmulatorUtil.h>
 #include <Qt/util.h>
+#include <optional>
 #include <bitset>
 #include <Qt/util.h>
 #include <QDebug>
@@ -14,15 +15,17 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     this->chr_rom = chrrom;
     this->mirrorType = mirrorType;
     this->internalDataBuffer = 0;
-    this->reg.ppuAddr.val = 0;
-    this->reg.ppuCtrl.val = 0;
-    this->reg.ppuStatus.val = 0;
-
+    // this->reg.ppuAddr.val = 0;
+    this->ppuaddr.reset();
+    this->ppuctrl.reset();
+    // this->reg.ppuCtrl.val = 0;
+    // this->reg..val = 0;
+    this->ppustatus.reset();
     for (int i = 0; i < 2048; i++)
         this->memory[i] = 0;
-    this->reg.high_ptr = true;
     this->reg.scrollLatch = false;
-    this->reg.ppumask.val = 0;
+    // this->reg.ppumask.val = 0;
+    this->ppumask.reset();
     this->scanline = 0;
     this->cycles = 0;
     this->err_string = std::nullopt;
@@ -201,10 +204,13 @@ uint16_t PPU::mirror(uint16_t address)
 
 uint8_t PPU::read_PPU_data()
 {
-    uint16_t addr = this->reg.ppuAddr.val;
-    printf("pallete \n");
-
-    this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
+    uint16_t addr = this->ppuaddr.read_16bit();
+    int inc_mode = this->ppuctrl.get_bit(2); // todo: check
+    this->ppuaddr.increment(inc_mode);
+    // uint16_t c = this->ppuaddr.read_16bit() + ((inc_mode) ? 32 : 1);
+    // this->ppuaddr.write_16bit(c);
+    // printf("pallete \n");
+    // this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
     if (addr <= 0x1fff)
     {
         uint8_t res = internalDataBuffer;
@@ -227,9 +233,10 @@ uint8_t PPU::read_PPU_data()
 }
 uint8_t PPU::read_status()
 {
-    uint8_t ret = this->reg.ppuStatus.val;
-    this->reg.ppuStatus.V = 0;
-    reg.high_ptr = true;
+    uint8_t ret = this->ppustatus.read_8bit();
+    // this->reg.ppuStatus.V = 0;
+    this->ppustatus.set_bit(7, 0);
+    this->ppuaddr.reset_latch();
     reg.scrollLatch = false;
     return ret;
 }
@@ -240,23 +247,23 @@ void PPU::print_ppu_stats()
     printf("===== PPU ON EXIT =========== \n");
     printf("\n");
 
-    printf("ppu_addr:  decimal: %d hexa: 0x%x   \n", this->reg.ppuAddr.val, this->reg.ppuAddr.val);
-    printf("ppu_addr hi: decimal: %d hexa: 0x%x\n", this->reg.ppuAddr.hi, this->reg.ppuAddr.hi);
-    printf("ppu_addr lo: decimal:  %d hexa: 0x%x \n", this->reg.ppuAddr.lo, this->reg.ppuAddr.lo);
-    std::bitset<7> ppu_status(this->reg.ppuStatus.val);
-    std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
-    std::cout << "ppu status: 0b" << ppu_status << std::endl;
-    std::cout << "ppu ctrl: 0b" << ppu_ctrl << std::endl;
-    printf("ppu cycles %d \n", this->cycles);
+    // printf("ppu_addr:  decimal: %d hexa: 0x%x   \n", this->reg.ppuAddr.val, this->reg.ppuAddr.val);
+    // printf("ppu_addr hi: decimal: %d hexa: 0x%x\n", this->reg.ppuAddr.hi, this->reg.ppuAddr.hi);
+    // printf("ppu_addr lo: decimal:  %d hexa: 0x%x \n", this->reg.ppuAddr.lo, this->reg.ppuAddr.lo);
+    // std::bitset<7> ppu_status(this->reg.ppuStatus.val);
+    // std::bitset<7> ppu_ctrl(this->reg.ppuCtrl.val);
+    // std::cout << "ppu status: 0b" << ppu_status << std::endl;
+    // std::cout << "ppu ctrl: 0b" << ppu_ctrl << std::endl;
+    printf("ppu cycles %ld \n", this->cycles);
     printf("OAM Addr hexa: 0x%x decimal: %d \n", this->oam_addr, this->oam_addr);
     printf("\n============================= \n"); //
     printf("\n");
 }
 void PPU::log_ppu()
 {
-    std::bitset<8> ppu_status(this->reg.ppuStatus.val);
-    std::bitset<8> ppu_ctrl(this->reg.ppuCtrl.val);
-    std::bitset<8> ppu_mask(this->reg.ppumask.val);
+    // std::bitset<8> ppu_status(this->reg.ppuStatus.val);
+    // std::bitset<8> ppu_ctrl(this->reg.ppuCtrl.val);
+    // std::bitset<8> ppu_mask(this->reg.ppumask.val);
 
     qInfo() << "===== PPU ON EXIT ===========";
     qInfo() << "";
@@ -264,91 +271,48 @@ void PPU::log_ppu()
     qInfo() << "===== OAM  ====";
     qInfo() << "oam addr: " << num_to_hexa(this->oam_addr);
     qInfo() << "=====PPU ADDR=====";
-    qInfo() << "PPU addr:  " << num_to_hexa(this->reg.ppuAddr.val);
-    qInfo() << "lo:  " << num_to_hexa(this->reg.ppuAddr.lo);
-    qInfo() << "hi:  " << num_to_hexa(this->reg.ppuAddr.hi);
+    this->ppuaddr.log();
     qInfo() << "";
 
     qInfo() << "===== PPU status ====";
-    qInfo() << "VBlank: " << this->reg.ppuStatus.V;
-    qInfo() << "0_hit: " << this->reg.ppuStatus.S;
-    qInfo() << "overflow: " << this->reg.ppuStatus.O;
-    qInfo() << "status: " << ppu_status.to_string();
+    this->ppustatus.log();
     qInfo() << "";
-
     qInfo() << "===== PPU ctrl ====";
-    qInfo() << "NMI enable (0: off, 1: on): " << this->reg.ppuCtrl.V;
-    qInfo() << "PPU master/slave select (0: read backdrop from EXT pins; 1: output color on EXT pins): " << this->reg.ppuCtrl.P;
-    qInfo() << "sprite size (0: 8x8, 1: 8x16): " << this->reg.ppuCtrl.H;
-    qInfo() << "Background patterntable (0: $0000; 1: $1000): " << this->reg.ppuCtrl.B;
-    qInfo() << "Sprite patterntable (0: $0000; 1: $1000): " << this->reg.ppuCtrl.S;
-    qInfo() << "increment (0: add 1 going across, 1: add 32 going down): " << this->reg.ppuCtrl.I;
-    std::bitset<2> name_table_address(this->reg.ppuCtrl.N);
-    qInfo() << "name table addreess: " << name_table_address.to_string();
-    qInfo() << "ctrl: " << ppu_ctrl.to_string();
+    this->ppuctrl.log();
     qInfo() << "";
     qInfo() << "===== PPU mask ====";
-    qInfo() << "Emphasize blue: " << this->reg.ppumask.B;
-    qInfo() << "Emphasize green: " << this->reg.ppumask.G;
-    qInfo() << "Emphasize red: " << this->reg.ppumask.R;
-
-    qInfo() << "Enable sprite rendering: " << this->reg.ppumask.s;
-    qInfo() << "Enable background rendering: " << this->reg.ppumask.b;
-    qInfo() << "Show sprites in leftmost 8 pixels of screen: " << this->reg.ppumask.M;
-    qInfo() << "Show background in leftmost 8 pixels of screen " << this->reg.ppumask.m;
-    qInfo() << "grey scale (0: normal color, 1: grey scale): " << this->reg.ppumask.g;
-    qInfo() << "ppu mask: " << ppu_mask.to_string();
+    this->ppumask.log();
     qInfo() << "";
 }
 void PPU::write_PPU_address(uint8_t val)
 {
-
-    if (this->reg.high_ptr)
-    {
-        this->reg.ppuAddr.hi = val;
-    }
-    else
-    {
-        this->reg.ppuAddr.lo = val;
-    }
-    // TODO: fix later
-    //  std::cout << "ppu addr" << std::endl;
-    qInfo() << "addr";
-    qInfo() << "val: " << num_to_hexa(this->reg.ppuAddr.val);
-    qInfo() << "hi: " << num_to_hexa(this->reg.ppuAddr.hi);
-    qInfo() << "lo: " << num_to_hexa(this->reg.ppuAddr.lo);
-
-    // printf("val:%x   \n", this->reg.ppuAddr.val);
-    // printf("hi: %x \n", this->reg.ppuAddr.hi);
-    // printf("lo: %x \n", this->reg.ppuAddr.lo);
-
-    this->reg.high_ptr = !this->reg.high_ptr;
+    this->ppuaddr.write_8bit(val);
 }
 void PPU::write_PPU_ctrl(uint8_t val)
 {
-    auto before = this->reg.ppuCtrl;
-
-    this->reg.ppuCtrl.val = val;
-    if (before.V == 0 && this->reg.ppuCtrl.V == 1 && this->reg.ppuStatus.V == 1)
+    auto before = this->ppuctrl.get_bit(7);
+    this->ppuctrl.write_8bit(val);
+    if (before == 0 && this->ppuctrl.get_bit(7) == 1 && this->ppustatus.get_bit(7) == 1)
     {
-        this->reg.ppuCtrl.V = 1;
+        this->ppuctrl.set_bit(7, 1);
     }
 }
 void PPU::write_PPU_mask(uint8_t val)
 {
 
-    std::bitset<7> ppu_status2(val);
-    std::cout << "mask: " << ppu_status2 << std::endl;
-    std::cout << "ppu mask being written to" << std::endl;
-    this->reg.ppumask.val = val;
-    std::bitset<7> ppu_status(this->reg.ppumask.val);
-    std::cout << "mask: " << ppu_status << std::endl;
+    ppumask.write_8bit(val);
+    // std::bitset<7> ppu_status2(val);
+    // std::cout << "mask: " << ppu_status2 << std::endl;
+    // std::cout << "ppu mask being written to" << std::endl;
+    // this->reg.ppumask.val = val;
+    // std::bitset<7> ppu_status(this->reg.ppumask.val);
+    // std::cout << "mask: " << ppu_status << std::endl;
     // exit(EXIT_FAILURE);
 }
 std::optional<int> PPU::write_PPU_data(uint8_t val)
 {
 
-    uint16_t addr = this->reg.ppuAddr.val;
+    uint16_t addr = this->ppuaddr.read_16bit();
     if (addr == 0)
         return 1;
     // printf("%x \n", addr);
@@ -356,15 +320,8 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
     // std::cout << addr << std::endl;
     if (addr >= 0x2000 && addr <= 0x2fff)
     {
-        // uint8_t res = internalDataBuffer;
-        // if (this->reg.ppumask.b == 0)
-        // {
-        //     // printf("is 0 \n");
-        //     return 1;
-        // }
+
         this->memory[mirror(addr)] = val;
-        // std::cout << "saving to vram" << std::endl;
-        // internalDataBuffer = memory[mirror(addr)];
     }
     else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c)
     {
@@ -394,19 +351,24 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
         // std::cout << "\033[91mAttempt to write into PPU READ_ONLY_MEM\033[0m" << std::endl;
         // printf("0x%x\n", addr);
         // exit(EXIT_FAILURE);
-        if (this->reg.ppumask.s != 0)
+        if (this->ppumask.get_bit(4) != 0)
         {
-            this->err_string = std::optional<std::string>{"Address 0x" + num_to_hexa(reg.ppuAddr.val) + " is a PPU read only address"};
+            this->err_string = std::optional<std::string>{"Address 0x" + num_to_hexa(this->ppuaddr.read_16bit()) + " is a PPU read only address"};
             return {};
         }
         return 1;
     }
-    this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
-    if (reg.ppuAddr.val > 0x3fff)
+    int incmode = this->ppuctrl.get_bit(2);
+    this->ppuaddr.increment(incmode);
+    // uint16_t c = this->ppuaddr.read_16bit() + ((incmode) ? 32 : 1);
+    // this->ppuaddr.write_16bit(c);
+    // this->reg.ppuAddr.val += reg.ppuCtrl.I ? 32 : 1;
+    if (this->ppuaddr.read_16bit() > 0x3fff)
     {
-        qInfo() << "addr" << num_to_hexa(this->reg.ppuAddr.val) << " val: " << val;
-
-        this->reg.ppuAddr.val &= 0b11111111111111;
+        // qInfo() << "addr" << num_to_hexa(this->reg.ppuAddr.val) << " val: " << val;
+        uint16_t addr_value = this->ppuaddr.read_16bit() & 0b11111111111111;
+        this->ppuaddr.write_16bit(addr_value);
+        // this->reg.ppuAddr.val &= 0b11111111111111;
     }
     return 1;
 }
@@ -425,9 +387,10 @@ bool PPU::tick(uint8_t clock_cycles)
 
         if (scanline == 241)
         {
-            reg.ppuStatus.V = 1;
+            this->ppustatus.set_bit(7, 1);
+            // reg.ppuStatus.V = 1;
             qInfo() << "vblank";
-            if (this->reg.ppuCtrl.V == 1)
+            if (this->ppuctrl.get_bit(7) == 1)
             {
                 // printf("NMI?");
 
@@ -442,7 +405,8 @@ bool PPU::tick(uint8_t clock_cycles)
         {
 
             this->scanline = 0;
-            this->reg.ppuStatus.V = 0;
+            this->ppustatus.set_bit(7, 1);
+            // this->reg.ppuStatus.V = 0;
             qInfo() << "reset";
             return true;
         }
@@ -454,8 +418,8 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
 {
     if (this->scanline == 241)
     {
-        this->reg.ppuStatus.V = 1;
-        if (this->reg.ppuCtrl.V == 1)
+        this->ppustatus.set_bit(7, 1);
+        if (this->ppuctrl.get_bit(7) == 1)
         {
 
             // printf("%d \n",)
@@ -500,7 +464,7 @@ void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<si
                 upper >>= 1;
                 lower >>= 1;
 
-                auto rgb = getColorFromByte((this->reg.ppumask.b == 1 ? value : 0), bgpallete);
+                auto rgb = getColorFromByte((this->ppumask.get_bit(3) == 1 ? value : 0), bgpallete);
                 // if (value == 0)
                 //     continue;
                 // sf::Color rgb = getColorFromByte(value);
@@ -557,7 +521,7 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
         //  int idx = ppu_idx % 32;
         //  int idy = ppu_idx / 32;
 
-        banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
+        banks = (this->ppuctrl.get_bit(4) == 1) ? 0x1000 : 0;
         std::vector<uint8_t> tile_list;
         auto pallete_idx = attribbyte.pallete;
         // printf("%x \n", attribbyte.pallete);
@@ -642,7 +606,7 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
  */
 std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
 {
-    int banks = this->reg.ppuCtrl.B ? 0x1000 : 0;
+    int banks = (this->ppuctrl.get_bit(4) == 1) ? 0x1000 : 0;
     std::vector<uint8_t> rgb_ds;
     rgb_ds.resize(std::get<0>(res) * std::get<1>(res) * 4);
 
