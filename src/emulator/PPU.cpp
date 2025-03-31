@@ -276,36 +276,12 @@ void PPU::log_ppu()
 
     qInfo() << "===== PPU status ====";
     this->ppustatus.log();
-    // qInfo() << "VBlank: " << this->reg.ppuStatus.V;
-    // qInfo() << "0_hit: " << this->reg.ppuStatus.S;
-    // qInfo() << "overflow: " << this->reg.ppuStatus.O;
-    // qInfo() << "status: " << ppu_status.to_string();
     qInfo() << "";
-
     qInfo() << "===== PPU ctrl ====";
     this->ppuctrl.log();
-    // qInfo() << "NMI enable (0: off, 1: on): " << this->reg.ppuCtrl.V;
-    // qInfo() << "PPU master/slave select (0: read backdrop from EXT pins; 1: output color on EXT pins): " << this->reg.ppuCtrl.P;
-    // qInfo() << "sprite size (0: 8x8, 1: 8x16): " << this->reg.ppuCtrl.H;
-    // qInfo() << "Background patterntable (0: $0000; 1: $1000): " << this->reg.ppuCtrl.B;
-    // qInfo() << "Sprite patterntable (0: $0000; 1: $1000): " << this->reg.ppuCtrl.S;
-    // qInfo() << "increment (0: add 1 going across, 1: add 32 going down): " << this->reg.ppuCtrl.I;
-    // std::bitset<2> name_table_address(this->reg.ppuCtrl.N);
-    // qInfo() << "name table addreess: " << name_table_address.to_string();
-    // qInfo() << "ctrl: " << ppu_ctrl.to_string();
     qInfo() << "";
     qInfo() << "===== PPU mask ====";
     this->ppumask.log();
-    // qInfo() << "Emphasize blue: " << this->reg.ppumask.B;
-    // qInfo() << "Emphasize green: " << this->reg.ppumask.G;
-    // qInfo() << "Emphasize red: " << this->reg.ppumask.R;
-
-    // qInfo() << "Enable sprite rendering: " << this->reg.ppumask.s;
-    // qInfo() << "Enable background rendering: " << this->reg.ppumask.b;
-    // qInfo() << "Show sprites in leftmost 8 pixels of screen: " << this->reg.ppumask.M;
-    // qInfo() << "Show background in leftmost 8 pixels of screen " << this->reg.ppumask.m;
-    // qInfo() << "grey scale (0: normal color, 1: grey scale): " << this->reg.ppumask.g;
-    // qInfo() << "ppu mask: " << ppu_mask.to_string();
     qInfo() << "";
 }
 void PPU::write_PPU_address(uint8_t val)
@@ -319,7 +295,6 @@ void PPU::write_PPU_ctrl(uint8_t val)
     if (before == 0 && this->ppuctrl.get_bit(7) == 1 && this->ppustatus.get_bit(7) == 1)
     {
         this->ppuctrl.set_bit(7, 1);
-        // this->reg.ppuCtrl.V = 1;
     }
 }
 void PPU::write_PPU_mask(uint8_t val)
@@ -345,15 +320,8 @@ std::optional<int> PPU::write_PPU_data(uint8_t val)
     // std::cout << addr << std::endl;
     if (addr >= 0x2000 && addr <= 0x2fff)
     {
-        // uint8_t res = internalDataBuffer;
-        // if (this->reg.ppumask.b == 0)
-        // {
-        //     // printf("is 0 \n");
-        //     return 1;
-        // }
+
         this->memory[mirror(addr)] = val;
-        // std::cout << "saving to vram" << std::endl;
-        // internalDataBuffer = memory[mirror(addr)];
     }
     else if (addr == 0x3f10 || addr == 0x3f14 || addr == 0x3f18 || addr == 0x3f1c)
     {
