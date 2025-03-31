@@ -30,6 +30,6 @@ int ComponentRegister::get_bit(int inudex)
     return 0;
 }
 
-void ComponentRegister::set_bit(int index)
+void ComponentRegister::set_bit(int index, int toggle)
 {
 }

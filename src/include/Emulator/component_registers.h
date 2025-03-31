@@ -23,6 +23,6 @@ public:
     virtual void log() = 0;
     virtual int get_bit(int index);
 
-    virtual void set_bit(int index);
+    virtual void set_bit(int index, int toggle);
 };
 #endif

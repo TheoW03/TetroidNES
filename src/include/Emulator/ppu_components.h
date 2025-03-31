@@ -31,13 +31,25 @@ public:
 class PPUStatus : public ComponentRegister
 {
 private:
-    uint8_t status;
+    union
+    {
+        struct
+        {
+            unsigned padding : 5;
+
+            unsigned O : 1;
+            unsigned S : 1;
+            unsigned V : 1;
+        };
+        uint8_t val;
+
+    } ppuStatus;
 
 public:
     PPUStatus();
     void write_8bit(uint8_t value) override;
     uint8_t read_8bit() override;
-    void set_bit(int index) override;
+    void set_bit(int index, int toggle) override;
     int get_bit(int index) override;
     void log() override;
     void reset() override;
