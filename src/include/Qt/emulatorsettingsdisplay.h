@@ -3,7 +3,7 @@
 #include <QWidget>
 #include <QComboBox>
 #include <QGroupBox>
-#include <QCheckbox>
+#include <QCheckBox>
 
 class EmulatorSettingsDisplay : public QWidget
 {
@@ -21,5 +21,4 @@ private:
     QComboBox *speed_combobox;
     QCheckBox *threaded_checkbox;
     QCheckBox *crt_shader_checkbox;
-
 };
