@@ -133,7 +133,7 @@ void InputSettings::on_add_profile_clicked()
         QString("TetroidNES - %1").arg(tr("Add new profile")),
         tr("Enter a new profile name:"),
         QLineEdit::Normal,
-        "",
+        EMPTY,
         &ok
     );
 
