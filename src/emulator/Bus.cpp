@@ -433,21 +433,21 @@ void Bus::print_ppu()
 {
     ppu.print_ppu_stats();
 }
-void Bus::write_controller1(Controller value, int isPressed)
+void Bus::write_controller1(Controller value, const bool isPressed)
 {
     // uint8_t v = (uint8_t) value;
 
-    if (isPressed == 1)
+    if (isPressed)
         joy_pad_byte1 |= (uint8_t)value;
-    else if (isPressed == 0)
+    else
         joy_pad_byte1 &= ~((uint8_t)(value));
 }
 
-void Bus::write_controller2(Controller value, int isPressed)
+void Bus::write_controller2(Controller value, const bool isPressed)
 {
-    if (isPressed == 1)
+    if (isPressed)
         joy_pad_byte2 |= (uint8_t)value;
-    else if (isPressed == 0)
+    else
         joy_pad_byte2 &= ~((uint8_t)(value));
 }
 std::vector<uint8_t> Bus::render_texture(std::tuple<size_t, size_t> res)

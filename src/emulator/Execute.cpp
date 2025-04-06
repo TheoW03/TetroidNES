@@ -84,31 +84,30 @@ void Execute::log_Cpu()
         controller1(this->cpu.bus.joy_pad_byte1);
     std::bitset<8>
         controller2(this->cpu.bus.joy_pad_byte2);
-    qInfo() << "========CONTROLLER ON EXIT=====";
-    qInfo() << "controller byte1: " << controller1.to_string();
-    qInfo() << "controller byte2: " << controller2.to_string();
-    qInfo() << "=====CPU on quit======";
-    qInfo() << "A register on exit: " << this->cpu.A_Reg;
-    qInfo() << "X register on exit: " << this->cpu.X_Reg;
-    qInfo() << "Y register on exit: " << this->cpu.Y_Reg;
-    qInfo() << "PC on exit: 0x" << num_to_hexa(this->cpu.bus.get_PC());
-    qInfo() << "Stack pointer " << num_to_hexa(this->cpu.bus.get_stack_pointer());
+    qInfo() << "========CONTROLLER ON EXIT====="
+    << "\ncontroller byte1: " << controller1.to_string()
+    << "\ncontroller byte2: " << controller2.to_string()
+    << "\n=====CPU on quit======"
+    << "\nA register on exit: " << this->cpu.A_Reg
+    << "\nX register on exit: " << this->cpu.X_Reg
+    << "\nY register on exit: " << this->cpu.Y_Reg
+    << "\nPC on exit: 0x" << num_to_hexa(this->cpu.bus.get_PC())
+    << "\nStack pointer " << num_to_hexa(this->cpu.bus.get_stack_pointer());
     std::bitset<7>
         status(this->cpu.status.val);
 
-    qInfo() << "====STATUS REGTISTER BITS====";
-    qInfo() << "Carry: " << this->cpu.status.C;
-    qInfo() << "Zero: " << this->cpu.status.Z;
-    qInfo() << "Break: " << this->cpu.status.B;
-    qInfo() << "Interrupt disabled: " << this->cpu.status.I;
-    qInfo() << "decimal mode: " << this->cpu.status.D;
-
-    qInfo() << "Overflow: " << this->cpu.status.V;
-    qInfo() << "Negative: " << this->cpu.status.N;
-    qInfo() << "value: " << status.to_string();
-    qInfo() << "===============";
-    qInfo() << "clock cycles: " << this->cpu.bus.clock_cycles;
-    qInfo() << "";
+    qInfo() << "====STATUS REGTISTER BITS===="
+    << "\nCarry: " << this->cpu.status.C
+    << "\nZero: " << this->cpu.status.Z
+    << "\nBreak: " << this->cpu.status.B
+    << "\nInterrupt disabled: " << this->cpu.status.I
+    << "\ndecimal mode: " << this->cpu.status.D
+    << "\nOverflow: " << this->cpu.status.V
+    << "\nNegative: " << this->cpu.status.N
+    << "\nvalue: " << status.to_string()
+    << "\n==============="
+    << "\nclock cycles: " << this->cpu.bus.clock_cycles
+    << "\n";
 }
 
 void Execute::reset()
@@ -125,12 +124,12 @@ void Execute::reset()
     cpu.bus.clock_cycles = 0;
     cpu.interrupt = {};
 }
-void Execute::joypad2(Controller button, int isPressed)
+void Execute::joypad2(Controller button, const bool isPressed)
 {
     // qDebug() << "joypad2";
     cpu.bus.write_controller2(button, isPressed);
 }
-void Execute::joypad1(Controller button, int isPressed)
+void Execute::joypad1(Controller button, const bool isPressed)
 {
     // qDebug() << "joypad1";
 

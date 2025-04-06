@@ -11,11 +11,12 @@ void PPUStatus::log()
 {
 
     std::bitset<8> ppu_status(ppuStatus.val);
-    qInfo() << "VBlank: " << this->ppuStatus.V;
-    qInfo() << "0_hit: " << this->ppuStatus.S;
-    qInfo() << "overflow: " << this->ppuStatus.O;
-    qInfo() << "status: " << ppu_status.to_string();
-    qInfo() << "";
+    qInfo() << "===== PPU status ===="
+    << "\nVBlank: " << this->ppuStatus.V
+    << "\n0_hit: " << this->ppuStatus.S
+    << "\noverflow: " << this->ppuStatus.O
+    << "\nstatus: " << ppu_status.to_string()
+    << "\n";
 }
 
 void PPUStatus::reset()

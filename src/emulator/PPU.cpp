@@ -265,24 +265,13 @@ void PPU::log_ppu()
     // std::bitset<8> ppu_ctrl(this->reg.ppuCtrl.val);
     // std::bitset<8> ppu_mask(this->reg.ppumask.val);
 
-    qInfo() << "===== PPU ON EXIT ===========";
-    qInfo() << "";
-
-    qInfo() << "===== OAM  ====";
-    qInfo() << "oam addr: " << num_to_hexa(this->oam_addr);
-    qInfo() << "=====PPU ADDR=====";
+    qInfo() << "===== PPU ON EXIT ==========="
+    << "\n===== OAM  ===="
+    << "\noam addr: " << num_to_hexa(this->oam_addr);
     this->ppuaddr.log();
-    qInfo() << "";
-
-    qInfo() << "===== PPU status ====";
     this->ppustatus.log();
-    qInfo() << "";
-    qInfo() << "===== PPU ctrl ====";
     this->ppuctrl.log();
-    qInfo() << "";
-    qInfo() << "===== PPU mask ====";
     this->ppumask.log();
-    qInfo() << "";
 }
 void PPU::write_PPU_address(uint8_t val)
 {
@@ -446,7 +435,7 @@ void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<si
         std::vector<uint8_t>
             tile_list;
         this->get_chr_tile(tile, banks, tile_list);
-        qDebug() << tile;
+        qDebug() << "PPU tile:" << tile;
         // std::vector<uint8_t> tile_list = this->get_chr_tile(tile, banks);
 
         // for (int i = banks + tile * 16; i <= ((banks + tile * 16) + 15); i++)
@@ -534,7 +523,10 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
 
         };
         // printf("offset: %d \n", pallete_offset);
-        qDebug() << "sprite pallete 1: " << num_to_hexa(std::get<0>(sprite_palletes)) << "2: " << num_to_hexa(std::get<1>(sprite_palletes)) << "3: " << num_to_hexa(std::get<2>(sprite_palletes));
+        qDebug()
+        << "Sprite palletes 1: " << num_to_hexa(std::get<0>(sprite_palletes))
+        << "2: " << num_to_hexa(std::get<1>(sprite_palletes))
+        << "3: " << num_to_hexa(std::get<2>(sprite_palletes));
         // for (int i = 0; i < 32; i++)
         //     printf("pallete: 0x%x \n", this->pallete[i]);
 

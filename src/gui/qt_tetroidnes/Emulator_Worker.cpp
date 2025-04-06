@@ -171,12 +171,10 @@ void EmulatorWorker::process_cpu()
     for (const auto button : InputMap::AllButtons)
     {
         const auto key = ControllerManager::get_button_keyboard(input_map, button);
+        const auto is_pressed = sf::Keyboard::isKeyPressed(key);
 
-        if (sf::Keyboard::isKeyPressed(key))
-        {
-            exe.joypad1(AllController[button], 1);
-            qInfo() << "Button" << QString::number(button) << "pressed";
-        }
+        exe.joypad1(AllController[button], is_pressed);
+        qInfo() << "Button" << QString::number(button) << "is pressed:" << is_pressed;
     }
     is_frame_generated = true;
 }

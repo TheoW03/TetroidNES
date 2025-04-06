@@ -17,6 +17,6 @@ public:
     int reset_clock();
     void log_Cpu();
     void reset();
-    void joypad1(Controller button, int isPressed);
-    void joypad2(Controller button, int isPressed);
+    void joypad1(Controller button, const bool isPressed);
+    void joypad2(Controller button, const bool isPressed);
 };

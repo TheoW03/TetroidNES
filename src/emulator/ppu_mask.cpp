@@ -9,16 +9,18 @@ PPUMask::PPUMask()
 void PPUMask::log()
 {
     std::bitset<8> ppu_mask(this->ppumask.val);
-    qInfo() << "Emphasize blue: " << this->ppumask.B;
-    qInfo() << "Emphasize green: " << this->ppumask.G;
-    qInfo() << "Emphasize red: " << this->ppumask.R;
+    qInfo() << "===== PPU mask ===="
+    << "\nEmphasize blue: " << this->ppumask.B
+    << "\nEmphasize green: " << this->ppumask.G
+    << "\nEmphasize red: " << this->ppumask.R
 
-    qInfo() << "Enable sprite rendering: " << this->ppumask.s;
-    qInfo() << "Enable background rendering: " << this->ppumask.b;
-    qInfo() << "Show sprites in leftmost 8 pixels of screen: " << this->ppumask.M;
-    qInfo() << "Show background in leftmost 8 pixels of screen " << this->ppumask.m;
-    qInfo() << "grey scale (0: normal color, 1: grey scale): " << this->ppumask.g;
-    qInfo() << "ppu mask: " << ppu_mask.to_string();
+    << "\nEnable sprite rendering: " << this->ppumask.s
+    << "\nEnable background rendering: " << this->ppumask.b
+    << "\nShow sprites in leftmost 8 pixels of screen: " << this->ppumask.M
+    << "\nShow background in leftmost 8 pixels of screen " << this->ppumask.m
+    << "\ngrey scale (0: normal color, 1: grey scale): " << this->ppumask.g
+    << "\nppu mask: " << ppu_mask.to_string()
+    << "\n";
 }
 
 void PPUMask::reset()

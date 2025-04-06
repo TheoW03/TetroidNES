@@ -37,9 +37,10 @@ void PPUAddress::reset()
 
 void PPUAddress::log()
 {
-    qInfo() << "PPU addr:  " << num_to_hexa(this->ppuAddr.val);
-    qInfo() << "lo:  " << num_to_hexa(this->ppuAddr.lo);
-    qInfo() << "hi:  " << num_to_hexa(this->ppuAddr.hi);
+    qInfo() << "=====PPU ADDR====="
+    << "\nPPU addr:  " << num_to_hexa(this->ppuAddr.val)
+    << "\nlo:  " << num_to_hexa(this->ppuAddr.lo)
+    << "\nhi:  " << num_to_hexa(this->ppuAddr.hi);
 }
 
 void PPUAddress::increment(int toggle)

@@ -86,8 +86,8 @@ public:
     void print_ppu();
     uint8_t read_joypad1();
     uint8_t read_joypad2();
-    void write_controller1(Controller value, int isPressed);
-    void write_controller2(Controller value, int isPressed);
+    void write_controller1(Controller value, const bool isPressed);
+    void write_controller2(Controller value, const bool isPressed);
 
     std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
     std::optional<std::string> check_error();
