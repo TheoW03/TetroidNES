@@ -169,7 +169,6 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     {
         uint16_t mirror_address = address & 0x7ff;
         v_memory[mirror_address] = value;
-        // qInfo() << "oam dma: " << num_to_hexa(value);
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
