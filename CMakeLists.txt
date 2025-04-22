@@ -39,7 +39,7 @@ find_package(Qt6 REQUIRED COMPONENTS
 include(FetchContent)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG master # TODO: REPLACE THIS WITH 3.1.x WHEN IT RELEASES
+    GIT_TAG 3.0.x
     GIT_SHALLOW ON
     EXCLUDE_FROM_ALL
     SYSTEM)
