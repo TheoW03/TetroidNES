@@ -54,8 +54,8 @@ void initializeInstructionMap()
     instructionMap.insert(make_pair(0x6D, Instruction{(instructionPointer)ADC, AddressMode::ABSOLUTE}));
     instructionMap.insert(make_pair(0x7D, Instruction{(instructionPointer)ADC, AddressMode::ABSOLUTE_X}));
     instructionMap.insert(make_pair(0x79, Instruction{(instructionPointer)ADC, AddressMode::ABSOLUTE_Y}));
-    instructionMap.insert(make_pair(0x71, Instruction{(instructionPointer)ADC, AddressMode::INDIRECT_X}));
-    instructionMap.insert(make_pair(0x61, Instruction{(instructionPointer)ADC, AddressMode::INDIRECT_Y}));
+    instructionMap.insert(make_pair(0x61, Instruction{(instructionPointer)ADC, AddressMode::INDIRECT_X}));
+    instructionMap.insert(make_pair(0x71, Instruction{(instructionPointer)ADC, AddressMode::INDIRECT_Y}));
 #pragma endregion
 
 #pragma region SBC
