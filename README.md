@@ -1,6 +1,6 @@
 # TetroidNES
 
-![ci build][build] ![license][license] ![loc][loc]
+![ci build][build] ![license][license]
 
 TetroidNES is an open source multi platform NES emulator.
 
@@ -44,4 +44,3 @@ a special thanks to all who helped me make this
 [build]: <https://github.com/TheoW03/TetroidNES/actions/workflows/ci.yml/badge.svg>
 [license]: <https://img.shields.io/badge/License-MIT-yellow.svg>
 [Prerequisites]: <https://github.com/TheoW03/TetroidNES/wiki/Build-Instructions>
-[loc]: <https://tokei.rs/b1/github/TheoW03/TetroidNES>
