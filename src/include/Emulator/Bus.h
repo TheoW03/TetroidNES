@@ -18,8 +18,7 @@ enum class Controller
     LEFT = 0b01000000,
     RIGHT = 0b10000000
 };
-static const Controller AllController[]
-{
+static const Controller AllController[]{
     Controller::A,
     Controller::B,
     Controller::SELECT,
@@ -27,15 +26,13 @@ static const Controller AllController[]
     Controller::UP,
     Controller::DOWN,
     Controller::LEFT,
-    Controller::RIGHT
-};
+    Controller::RIGHT};
 
 class Bus
 {
 private:
     uint8_t v_memory[0x800];
     uint16_t reset_vector;
-    Rom rom;
     PPU ppu;
     APU apu;
     uint16_t program_counter;
@@ -47,6 +44,8 @@ private:
     std::optional<std::string> err_string;
 
 public:
+    Rom rom;
+
     size_t clock_cycles;
     size_t clock_cycles_instr;
     uint8_t stored_instructions[2];

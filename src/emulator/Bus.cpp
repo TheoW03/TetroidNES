@@ -84,7 +84,7 @@ void Bus::fill(uint16_t pc)
 {
     if (pc < rom.PRG.size())
     {
-        err_string = "ROM size is to small";
+        err_string = "ROM size is to small" + std::to_string(rom.PRG.size()) + " pc " + std::to_string(pc);
         return;
     }
 
@@ -153,7 +153,7 @@ uint8_t Bus::read_8bit(uint16_t address)
     {
         return read_joypad2();
     }
-    else if (address >= 0x8000 && address <= 0xFFFF)
+    else if (address >= reset_vector && address <= 0xFFFF)
     {
         return rom.PRG[address - reset_vector];
     }
@@ -280,7 +280,7 @@ uint16_t Bus::read_16bit(uint16_t address)
     {
         return read_8bit(address + 1) << 8 | read_8bit(address);
     }
-    else if (address >= 0x8000 && address <= 0xFFFF)
+    else if (address >= reset_vector && address <= 0xFFFF)
     {
 
         // uint8_t lsb = rom.PRG[address - reset_vector];

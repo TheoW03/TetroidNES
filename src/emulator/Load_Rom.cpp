@@ -72,6 +72,9 @@ struct Rom
     uint8_t mapper;
     MirrorType mirror;
     ColorEncoding color_encoding;
+
+    size_t prg_size;
+    size_t chr_size;
 };
 std::vector<uint8_t> file_tobyte_vector(std::string file_name)
 {
@@ -119,7 +122,11 @@ std::optional<Rom> load_rom(std::vector<uint8_t> instructions)
 
     // uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);
     rom.mapper = nes_header.flag7.mapper_upper | nes_header.flag6.mapper_lower;
+    rom.prg_size = nes_header.prg_size * PRG_ROM_SIZE;
     size_t prg_rom = nes_header.prg_size * PRG_ROM_SIZE;
+    // if (prg_rom == PRG_ROM_SIZE)
+    // {
+
     // if (prg_rom ==)
     size_t chr_rom = nes_header.chr_size * CHR_ROM_SIZE;
     // uint8_t control_byte1 = instructions[6];

@@ -73,9 +73,15 @@ void EmulatorWorker::init()
     // printf("%x \n", pc_start);
     // exit(EXIT_SUCCESS);
     // uint16_t reset_vector = this->rom.prg[];
-    Bus bus = Bus(this->rom, NES_START);
+    auto reste = 0x8000;
+    if (this->rom.prg_size == 16384)
+    {
+        reste = 0xc000;
+    }
+    Bus bus = Bus(this->rom, reste);
     CPU cpu = CPU();
     cpu.bus = bus;
+
     this->exe = Execute(cpu);
     this->exe.reset();
     // bus.fill(bus.read_16bit(0xfffc));

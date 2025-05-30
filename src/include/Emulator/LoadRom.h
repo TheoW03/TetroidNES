@@ -25,6 +25,9 @@ struct Rom
     uint8_t mapper;
     MirrorType mirror;
     ColorEncoding color_encoding;
+
+    size_t prg_size;
+    size_t chr_size;
 };
 
 std::vector<uint8_t> file_tobyte_vector(std::string file_name);

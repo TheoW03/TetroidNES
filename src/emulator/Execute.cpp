@@ -4,10 +4,12 @@
 #include <QDebug>
 #include <Qt/util.h>
 #include <bitset>
-
+#define NMI_VECTOR 0xfffa
+#define IRQ_VECTOR 0xfffc
 Execute::Execute(CPU cpu)
 {
     this->cpu = cpu;
+
     printf("%x \n", this->cpu.bus.get_PC());
     // std::cout << this->cpu.bus.get_PC() << std::end
 }
@@ -32,7 +34,7 @@ CPU Execute::run()
         // set_interrupt_disabled(1, cpu);
         set_brk(cpu, 1);
 
-        cpu.bus.fill(cpu.bus.read_16bit(0xfffa));
+        cpu.bus.fill(cpu.bus.read_16bit(NMI_VECTOR));
         // cpu.bus.tick();
         // cpu.bus.tick();
     }
@@ -85,36 +87,35 @@ void Execute::log_Cpu()
     std::bitset<8>
         controller2(this->cpu.bus.joy_pad_byte2);
     qInfo() << "========CONTROLLER ON EXIT====="
-    << "\ncontroller byte1: " << controller1.to_string()
-    << "\ncontroller byte2: " << controller2.to_string()
-    << "\n=====CPU on quit======"
-    << "\nA register on exit: " << this->cpu.A_Reg
-    << "\nX register on exit: " << this->cpu.X_Reg
-    << "\nY register on exit: " << this->cpu.Y_Reg
-    << "\nPC on exit: 0x" << num_to_hexa(this->cpu.bus.get_PC())
-    << "\nStack pointer " << num_to_hexa(this->cpu.bus.get_stack_pointer());
+            << "\ncontroller byte1: " << controller1.to_string()
+            << "\ncontroller byte2: " << controller2.to_string()
+            << "\n=====CPU on quit======"
+            << "\nA register on exit: " << this->cpu.A_Reg
+            << "\nX register on exit: " << this->cpu.X_Reg
+            << "\nY register on exit: " << this->cpu.Y_Reg
+            << "\nPC on exit: 0x" << num_to_hexa(this->cpu.bus.get_PC())
+            << "\nStack pointer " << num_to_hexa(this->cpu.bus.get_stack_pointer());
     std::bitset<7>
         status(this->cpu.status.val);
 
     qInfo() << "====STATUS REGTISTER BITS===="
-    << "\nCarry: " << this->cpu.status.C
-    << "\nZero: " << this->cpu.status.Z
-    << "\nBreak: " << this->cpu.status.B
-    << "\nInterrupt disabled: " << this->cpu.status.I
-    << "\ndecimal mode: " << this->cpu.status.D
-    << "\nOverflow: " << this->cpu.status.V
-    << "\nNegative: " << this->cpu.status.N
-    << "\nvalue: " << status.to_string()
-    << "\n==============="
-    << "\nclock cycles: " << this->cpu.bus.clock_cycles
-    << "\n";
+            << "\nCarry: " << this->cpu.status.C
+            << "\nZero: " << this->cpu.status.Z
+            << "\nBreak: " << this->cpu.status.B
+            << "\nInterrupt disabled: " << this->cpu.status.I
+            << "\ndecimal mode: " << this->cpu.status.D
+            << "\nOverflow: " << this->cpu.status.V
+            << "\nNegative: " << this->cpu.status.N
+            << "\nvalue: " << status.to_string()
+            << "\n==============="
+            << "\nclock cycles: " << this->cpu.bus.clock_cycles
+            << "\n";
 }
 
 void Execute::reset()
 {
     // Bus bus = Bus(this->rom, NES_START);
-    cpu.bus.fill(cpu.bus.read_16bit(0xfffc));
-    // printf("0x%x\n", bus.get_PC());
+    cpu.bus.fill(cpu.bus.read_16bit(IRQ_VECTOR));
 
     // cpu.bus = bus;
     cpu.A_Reg = 0;

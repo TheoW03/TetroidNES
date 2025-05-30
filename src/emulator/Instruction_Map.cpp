@@ -271,5 +271,6 @@ Instruction GetInstruction(uint8_t opcode)
 }
 bool InstructionValid(uint8_t opcode)
 {
+
     return instructionMap.find(opcode) != instructionMap.end();
 }

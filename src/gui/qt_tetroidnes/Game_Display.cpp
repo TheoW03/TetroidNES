@@ -251,8 +251,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
             QString("TetroidNES - %1").arg(tr("Confirmation")),
             QString("%1\n%2").arg(
                 tr("Are you sure you want to quit?"),
-                tr("(Remember to save before quitting!)")
-            ),
+                tr("(Remember to save before quitting!)")),
             QMessageBox::Yes | QMessageBox::No);
         if (message_box_result == QMessageBox::No)
         {
@@ -273,9 +272,8 @@ void GameDisplay::update_game_scale()
 {
     QSize widget_size = size();
     sf::Vector2u texture_size = sprite->getTexture().getSize();
-    sprite->setScale({
-        static_cast<float>(widget_size.width()) / texture_size.x,
-        static_cast<float>(widget_size.height()) / texture_size.y});
+    sprite->setScale({static_cast<float>(widget_size.width()) / texture_size.x,
+                      static_cast<float>(widget_size.height()) / texture_size.y});
 }
 
 void GameDisplay::center_display()
