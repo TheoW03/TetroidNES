@@ -73,10 +73,10 @@ uint8_t Bus::fetch_next()
     stored_instructions[1] = stored_instructions[0];
     // printf(" fetch: current_instrcution: 0x%x  pc: 0x%x \n", current_instruction, this->program_counter);
     program_counter++;
-    this->tick();
-    this->tick();
-    stored_instructions[0] = rom.PRG[this->program_counter - reset_vector];
-
+    // this->tick();
+    // this->tick();
+    // stored_instructions[0] = rom.PRG[this->program_counter - reset_vector];
+    stored_instructions[0] = read_8bit(this->program_counter);
     return current_instruction;
 }
 
@@ -88,14 +88,15 @@ void Bus::fill(uint16_t pc)
         return;
     }
 
-    stored_instructions[0] = rom.PRG[(pc + 1) - reset_vector];
-    stored_instructions[1] = rom.PRG[(pc - reset_vector)];
+    // stored_instructions[0] = rom.PRG[(pc + 1) - reset_vector];
+    stored_instructions[0] = read_8bit(pc + 1);
+    stored_instructions[1] = read_8bit(pc);
+    // stored_instructions[1] = rom.PRG[(pc - reset_vector)];
     // clock_cycles += 2;
-    this->tick();
-    this->tick();
+    // this->tick();
+    // this->tick();
     this->program_counter = pc;
     // printf("current_instrcution: 0x%x  pc: 0x%x \n", current_instruction, this->program_counter);
-    // printf(" fill: proram counter: 0x%x current: 0x%x \n", pc, stored_instructions[1]);
 
     program_counter++;
 }
