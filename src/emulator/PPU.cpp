@@ -498,7 +498,7 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
         //  uint16_t tile = this->memory[ppu_idx];
         //  int idx = ppu_idx % 32;
         //  int idy = ppu_idx / 32;
-
+        ////
         banks = (this->ppuctrl.get_bit(4) == 1) ? 0x1000 : 0;
         std::vector<uint8_t> tile_list;
         auto pallete_idx = attribbyte.pallete;
