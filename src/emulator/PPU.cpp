@@ -556,13 +556,13 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
                 auto rgb = getColorFromByte(value, sprite_palletes);
                 // std::cout << rgb << std::endl;
                 int tile_x = 0;
-                if (attribbyte.flip_x)
+                if (attribbyte.flip_x == 1)
                     tile_x = idx + 7 - x;
                 else
                     tile_x = idx + x;
 
                 int tile_y = 0;
-                if (attribbyte.flip_y)
+                if (attribbyte.flip_y == 1)
                     tile_y = idy + 7 - y;
                 else
                     tile_y = idy + y;
@@ -621,9 +621,6 @@ void PPU::write_OAM_data(uint8_t val)
     // }
     if (oam_addr > 255)
     {
-        qDebug() << "oam is 0";
-        qDebug() << "oam: " << num_to_hexa(this->oam_addr);
-
         this->oam_addr = 0;
     }
     // oam_addr += (oam_addr + 1) % 256;
