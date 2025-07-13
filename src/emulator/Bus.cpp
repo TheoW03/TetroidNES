@@ -154,7 +154,7 @@ uint8_t Bus::read_8bit(uint16_t address)
     {
         return read_joypad2();
     }
-    else if (address >= reset_vector && address <= 0xFFFF)
+    else if ((address >= reset_vector || address >= NES_START) && address <= 0xFFFF)
     {
         return rom.PRG[address - reset_vector];
     }
@@ -281,7 +281,7 @@ uint16_t Bus::read_16bit(uint16_t address)
     {
         return read_8bit(address + 1) << 8 | read_8bit(address);
     }
-    else if (address >= reset_vector && address <= 0xFFFF)
+    else if ((address >= reset_vector || address >= NES_START) && address <= 0xFFFF)
     {
 
         // uint8_t lsb = rom.PRG[address - reset_vector];
@@ -402,6 +402,8 @@ uint8_t Bus::read_joypad1()
     {
         return 1;
     }
+    // joy_pad_byte1 = 32;
+
     // uint8_t button = (joy_pad_byte1 << joypad1_idx);
     uint8_t button = (joy_pad_byte1 & (1 << joypad1_idx)) >> joypad1_idx;
     qInfo() << "strobe: " << joypad1_idx << " value: " << num_to_hexa(button);
