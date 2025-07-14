@@ -18,12 +18,13 @@ endif()
 
 set(QT_REQUIRED_COMPONENTS Widgets Core Gui LinguistTools)
 
-file(GLOB QT_TRANSLATION_FILES "src/gui/qt_tetroidnes/translations/tetroidnes_*.ts")
-file(GLOB EMULATOR_HEADERS "src/include/Emulator/*.h")
-file(GLOB EMULATOR_SOURCES "*src/emulator/*.cpp")
-file(GLOB QT_PROJECT_SOURCES "src/gui/qt_tetroidnes/*.cpp")
-file(GLOB QT_RCC_FILES "src/gui/qt_tetroidnes/resources/*.qrc")
-file(GLOB QT_HEADERS "src/include/Qt/*.h")
+file(GLOB QT_TRANSLATION_FILES "./src/gui/qt_tetroidnes/translations/tetroidnes_*.ts")
+file(GLOB QT_RCC_FILES "./src/gui/qt_tetroidnes/resources/*.qrc")
+file(GLOB EMULATOR_HEADERS "./src/include/Emulator/*.h")
+file(GLOB EMULATOR_SOURCES "./src/emulator/*.cpp")
+file(GLOB_RECURSE QT_PROJECT_SOURCES "./src/gui/qt_tetroidnes/*.cpp")
+file(GLOB_RECURSE QT_HEADERS "./src/include/Qt/*.h")
+set(MAIN_FILE "./src/gui/qt_tetroidnes/Main.cpp")
 
 find_package(OpenGL REQUIRED COMPONENTS OpenGL)
 
@@ -45,7 +46,8 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-include_directories(${EXECUTABLE_NAME} PRIVATE src/include/Qt)
+#include_directories(${EXECUTABLE_NAME} PRIVATE src/include/Qt)
+include_directories(${EXECUTABLE_NAME} PRIVATE src/include/)
 
 qt_add_executable(${EXECUTABLE_NAME}
     MANUAL_FINALIZATION
@@ -61,8 +63,6 @@ if(ANDROID)
     set_property(TARGET ${EXECUTABLE_NAME} APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
         ${CMAKE_CURRENT_SOURCE_DIR}/android)
 endif()
-
-include_directories(${EXECUTABLE_NAME} PRIVATE src/include/)
 
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE Qt6::Widgets Qt6::Gui Qt6::Core)
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE SFML::Graphics SFML::Window SFML::Audio)
@@ -88,14 +88,14 @@ install(CODE
 )
 
 # Update version macro if needed
-file(READ src/gui/qt_tetroidnes/Main.cpp FILE_CONTENT)
+file(READ ${MAIN_FILE} FILE_CONTENT)
 string(REGEX MATCH "#define VERSION \"[^\"]*\"" FIRST_LINE "${FILE_CONTENT}")
 #message(STATUS "First line: ${FIRST_LINE} Replacing to: ${VERSION_DEF}")
 string(REPLACE "${FIRST_LINE}" "${VERSION_DEF}" NEW_CONTENT "${FILE_CONTENT}")
 #message(STATUS "New Content:\n${NEW_CONTENT}")
 
 if(NOT NEW_CONTENT STREQUAL FILE_CONTENT)
-    file(WRITE src/gui/qt_tetroidnes/Main.cpp
+    file(WRITE ${MAIN_FILE}
         "${NEW_CONTENT}"
     )
 

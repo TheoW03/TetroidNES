@@ -1,6 +1,7 @@
-#include <Emulator/ppu_components.h>
-#include <Qt/util.h>
 #include <QDebug>
+
+#include <Qt/utils/util.h>
+#include <Emulator/ppu_components.h>
 
 PPUAddress::PPUAddress()
 {

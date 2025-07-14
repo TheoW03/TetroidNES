@@ -1,7 +1,9 @@
 #include <iostream>
-#include <Emulator/StatusRegister.h>
 #include <bitset>
+
+#include <Emulator/StatusRegister.h>
 #include <Emulator/EmulatorUtil.h>
+
 uint8_t add(uint8_t a, uint8_t b, CPU &cpu, uint8_t &carry)
 {
 	uint8_t c_in = 0;

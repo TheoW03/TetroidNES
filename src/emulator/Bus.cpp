@@ -1,14 +1,16 @@
 // #include "../include/Bus.h"
 // #include "../include/PPU.h"
 // #include "../include/APU.h"
+#include <bitset>
+
+#include <SFML/Graphics.hpp>
+
+#include <Qt/utils/util.h>
 #include <Emulator/APU.h>
 #include <Emulator/Bus.h>
 #include <Emulator/PPU.h>
-#include <SFML/Graphics.hpp>
-#include <bitset>
 #include <Emulator/Bus.h>
 #include <Emulator/InstructionMap.h>
-#include <Qt/util.h>
 
 #define TOP_STACK 0x1ff
 #define BOTTOM_STACK 0x100

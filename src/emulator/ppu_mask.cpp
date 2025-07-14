@@ -1,6 +1,9 @@
-#include <Emulator/ppu_components.h>
-#include <QDebug>
 #include <bitset>
+
+#include <QDebug>
+
+#include <Emulator/ppu_components.h>
+
 PPUMask::PPUMask()
 {
     this->reset();

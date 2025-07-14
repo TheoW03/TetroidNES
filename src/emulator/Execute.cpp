@@ -1,11 +1,15 @@
+#include <bitset>
+
+#include <QDebug>
+
 #include <Emulator/Execute.h>
 #include <Emulator/InstructionMap.h>
 #include <Emulator/StatusRegister.h>
-#include <QDebug>
-#include <Qt/util.h>
-#include <bitset>
+#include <Qt/utils/util.h>
+
 #define NMI_VECTOR 0xfffa
 #define IRQ_VECTOR 0xfffc
+
 Execute::Execute(CPU cpu)
 {
     this->cpu = cpu;

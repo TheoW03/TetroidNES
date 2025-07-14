@@ -1,6 +1,8 @@
 #include <map>
-#include <Emulator/Instructions.h>
 #include <stdint.h>
+
+#include <Emulator/Instructions.h>
+
 using instructionPointer = void (*)(AddressMode, CPU &);
 
 struct Instruction

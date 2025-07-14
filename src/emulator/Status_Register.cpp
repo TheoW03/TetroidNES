@@ -1,5 +1,6 @@
 #include <iostream>
 #include <bitset>
+
 #include <Emulator/EmulatorUtil.h>
 
 #define CARRY_BIT 0b0000001

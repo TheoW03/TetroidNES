@@ -1,0 +1,42 @@
+#pragma once
+
+#include <QMainWindow>
+#include <QPushButton>
+#include <QScrollArea>
+#include <QLabel>
+
+#include <Qt/objects/rom_data.h>
+#include <Qt/widgets/qwidget/rom_list.h>
+#include <Qt/widgets/qframe/filter_control_frame.h>
+#include <Qt/widgets/qmenubar/menubar.h>
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
+    void update_page_info();
+    void create_display(QString rom_link);
+public slots:
+    void sort_mode_button_released(const int id) const;
+    void sort_order_button_toggled(const bool toggled) const;
+    void search_bar_edited(QString string) const;
+    void rom_list_scroll_value_changed(const int value);
+    void on_gamedisplay_destroyed();
+private:
+    QWidget *centralwidget;
+    RomList *rom_list;
+    FilterControlFrame *sort_control_frame;
+    QScrollArea *rom_list_scroll;
+    MenuBar *main_menubar;
+    QLabel *page_info;
+protected:
+    void wheelEvent(QWheelEvent *event) override;
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dragMoveEvent(QDragMoveEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
+    void closeEvent(QCloseEvent *event) override;
+
+};

@@ -1,13 +1,14 @@
-// #include "PPU.h
-#include <SFML/Graphics.hpp>
 #include <stdint.h>
+#include <bitset>
+#include <optional>
+
+#include <SFML/Graphics.hpp>
+#include <QDebug>
+
+#include <Qt/utils/util.h>
+
 #include <Emulator/PPU.h>
 #include <Emulator/EmulatorUtil.h>
-#include <Qt/util.h>
-#include <optional>
-#include <bitset>
-#include <Qt/util.h>
-#include <QDebug>
 
 PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
 {

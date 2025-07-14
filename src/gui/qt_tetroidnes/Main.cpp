@@ -4,10 +4,10 @@
 #include <QTranslator>
 #include <QtLogging>
 
-#include <Qt/controllermanager.h>
-#include <Qt/settingsmanager.h>
-#include <Qt/mainwindow.h>
-#include <Qt/log.h>
+#include <Qt/objects/controller_manager.h>
+#include <Qt/objects/settings_manager.h>
+#include <Qt/widgets/qmainwindow/main_window.h>
+#include <Qt/utils/log.h>
 
 /*
 Checks for a missing active input map in the controller manager

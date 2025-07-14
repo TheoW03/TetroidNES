@@ -1,6 +1,8 @@
-#include <Emulator/ppu_components.h>
 #include <bitset>
+
 #include <QDebug>
+
+#include <Emulator/ppu_components.h>
 
 PPUStatus::PPUStatus()
 {
