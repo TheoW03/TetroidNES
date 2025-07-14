@@ -33,6 +33,8 @@ Bus::Bus(Rom rom, uint16_t pc_start)
     this->rom = rom;
     PPU nes_ppu(rom.CHR, rom.mirror);
     joy_pad_byte1 = 0;
+    joypad1_idx = 0;
+    strobe = false;
     this->ppu = nes_ppu; // test
     // this->ppu.chr_rom = rom.CHR;
     // this->ppu.mirrorType = rom.mirror;
