@@ -153,15 +153,12 @@ void GameDisplay::on_init()
     time_between_draw_timer->start();
 }
 
-void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
+void GameDisplay::on_update(std::vector<uint8_t>* rgb_data_vector)
 {
-    uint8_t rgb_data[rgb_data_size];
-    std::copy(rgb_data_vector.begin(), rgb_data_vector.end(), rgb_data);
-
     // Display next frame
 
     render_window->clear();
-    texture.update(rgb_data);
+    texture.update(rgb_data_vector->data());
 
     draw_func(*sprite.get());
     render_window->display();

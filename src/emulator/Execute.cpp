@@ -74,9 +74,9 @@ CPU Execute::run()
 
     return cpu;
 }
-std::vector<uint8_t> Execute::render()
+std::vector<uint8_t>* Execute::render()
 {
-    return cpu.bus.render_texture({NES_RES_L, NES_RES_W});
+    return cpu.bus.render_texture();
 }
 
 int Execute::reset_clock()

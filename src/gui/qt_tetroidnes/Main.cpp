@@ -1,4 +1,4 @@
-#define VERSION "1.0.0"
+#define VERSION "1.0.0-Debug"
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
@@ -44,7 +44,7 @@ void apply_stylesheet(QApplication &a)
 int main(int argc, char **argv)
 {
     // originalHandler = qInstallMessageHandler(logToFile);
-    InitLogs();
+    //InitLogs();
     // int &c = argc
     QApplication a(argc, argv);
     a.setApplicationName("TetroidNES");

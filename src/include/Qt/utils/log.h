@@ -38,9 +38,16 @@ inline void check_log_dir()
 
 inline void logToFile(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+    const auto LOG_FILENAME = QStringLiteral(u"/logs");
+
     QString message = qFormatLogMessage(type, context, msg);
-    LogNotifier &log_notifier = LogNotifier::instance();
-    std::filesystem::create_directories("logs");
+    auto log_dir = QDir(QCoreApplication::applicationDirPath() + LOG_FILENAME);
+
+    if (!log_dir.exists())
+    {
+        log_dir.mkdir(log_dir.absolutePath());
+    }
+
     std::time_t t = std::time(0); // t is an integer type
     // char *intStr = itoa(t);
     // std::string str = std::string(intStr);
@@ -54,7 +61,7 @@ inline void logToFile(QtMsgType type, const QMessageLogContext &context, const Q
         originalHandler(type, context, msg);
     }
 
-    emit log_notifier.log_pushed(message);
+    emit LogNotifier::instance().log_pushed(message);
 }
 
 inline void InitLogs()

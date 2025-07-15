@@ -9,7 +9,6 @@
 #include <Emulator/APU.h>
 #include <Emulator/Bus.h>
 #include <Emulator/PPU.h>
-#include <Emulator/Bus.h>
 #include <Emulator/InstructionMap.h>
 
 #define TOP_STACK 0x1ff
@@ -456,9 +455,9 @@ void Bus::write_controller2(Controller value, const bool isPressed)
     else
         joy_pad_byte2 &= ~((uint8_t)(value));
 }
-std::vector<uint8_t> Bus::render_texture(std::tuple<size_t, size_t> res)
+std::vector<uint8_t>* Bus::render_texture()
 {
-    return this->ppu.render_texture(res);
+    return this->ppu.render_texture();
 }
 
 std::optional<std::string> Bus::check_error()

@@ -1,5 +1,8 @@
 #include <iostream>
+#include <cstdint>
+
 #include <Emulator/EmulatorUtil.h>
+#include <Emulator/Bus.h>
 
 uint8_t add(uint8_t a, uint8_t b, CPU &cpu, uint8_t &carry);
 

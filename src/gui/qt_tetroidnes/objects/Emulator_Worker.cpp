@@ -6,6 +6,8 @@
 
 #include <Emulator/InstructionMap.h>
 #include <Emulator/LoadRom.h>
+#include <Emulator/Bus.h>
+#include <Emulator/Bus.h>
 
 const size_t cpu_cycles_frame = 29782;
 EmulatorWorker::EmulatorWorker(Rom rom, QString rom_dest, QWidget *parent) : QObject{parent},
@@ -136,8 +138,7 @@ void EmulatorWorker::on_start_main_thread()
 void EmulatorWorker::render_frame()
 {
     // qDebug() << "Emitting draw_frame signal";
-    std::vector<uint8_t> render = exe.render();
-    emit draw_frame(render);
+    emit draw_frame(exe.render());
 }
 
 bool EmulatorWorker::is_running() const

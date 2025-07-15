@@ -1,11 +1,14 @@
 #pragma once
 
 #include <iostream>
+#include <optional>
+#include <cstdint>
+
+// #include <SFML/Graphics.hpp>
+
 #include <Emulator/PPU.h>
 #include <Emulator/LoadRom.h>
 #include <Emulator/APU.h>
-#include <optional>
-#include <cstdint>
 
 enum class Controller
 {
@@ -26,7 +29,8 @@ static const Controller AllController[]{
     Controller::UP,
     Controller::DOWN,
     Controller::LEFT,
-    Controller::RIGHT};
+    Controller::RIGHT
+};
 
 class Bus
 {
@@ -88,7 +92,7 @@ public:
     void write_controller1(Controller value, const bool isPressed);
     void write_controller2(Controller value, const bool isPressed);
 
-    std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
+    std::vector<uint8_t>* render_texture();
     std::optional<std::string> check_error();
     void log_ppu();
 };

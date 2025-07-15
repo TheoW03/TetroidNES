@@ -34,7 +34,7 @@ signals:
 
 public slots:
     void on_push_error(QString msg, int error_code);
-    void on_update(std::vector<uint8_t> rgb_data_vector);
+    void on_update(std::vector<uint8_t>* rgb_data_vector);
 
 private:
     void on_init();

@@ -31,6 +31,8 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     this->cycles = 0;
     this->err_string = std::nullopt;
     this->start = std::chrono::high_resolution_clock::now();
+    this->rgb_ds = std::shared_ptr<std::vector<uint8_t>>(new std::vector<uint8_t>());
+    this->rgb_ds->resize(NES_RES_F);
 
     for (int i = 0; i < 255; i++)
         this->oam[i] = 0;
@@ -42,10 +44,10 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
 }
 PPU::PPU() {}
 
-std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte, std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> pallete)
+ColorPalette PPU::getColorFromByte(uint16_t byte, ColorPalette &pallete)
 {
 #pragma region SYS_PAL
-    std::tuple<uint8_t, uint8_t, uint8_t> system_palette[64] = {
+    constexpr const ColorPalette system_palette[64] = {
         {0x80, 0x80, 0x80}, // 0x0
         {0x00, 0x3D, 0xA6}, // 0x1
         {0x00, 0x12, 0xB0}, // 0x2
@@ -113,30 +115,27 @@ std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte, std::
     };
 #pragma endregion
 
-    if (byte == 0)
+    switch(byte)
     {
-        // qInfo() << "0b00" << num_to_hexa(this->pallete[0]);
+        case 0:
+            // qInfo() << "0b00" << num_to_hexa(this->pallete[0]);
 
-        return system_palette[this->pallete[0]];
-    }
-    else if (byte == 1)
-    {
-        // qInfo() << "0b01";
+            return system_palette[pallete.r];
+        case 1:
+            // qInfo() << "0b01";
 
-        return system_palette[std::get<2>(pallete)];
-    }
-    else if (byte == 2)
-    {
-        // qInfo() << "error";
+            return system_palette[pallete.b];
+        case 2:
+            // qInfo() << "error";
 
-        return system_palette[std::get<1>(pallete)];
+            return system_palette[pallete.g];
+        case 3:
+            return system_palette[pallete.a];
+        default:
+            return system_palette[byte];
+        
     }
-    else if (byte == 3)
-    {
-
-        return system_palette[std::get<3>(pallete)];
-    }
-    return system_palette[byte];
+    
 }
 
 void PPU::get_chr_tile(uint16_t tile_idx, int banks, std::vector<uint8_t> &tile_list)
@@ -149,7 +148,7 @@ void PPU::get_chr_tile(uint16_t tile_idx, int banks, std::vector<uint8_t> &tile_
         tile_list.push_back(chr_rom[i]);
     }
 }
-std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> PPU::bg_pallete(size_t row, size_t column)
+ColorPalette PPU::bg_pallete(size_t row, size_t column)
 {
     size_t attr_table = row / 4 * 8 + column / 4;
     uint8_t attr_byte = this->memory[0x3c0 + attr_table];
@@ -410,7 +409,7 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
     return false;
 }
 
-void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_t, size_t> res)
+void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks)
 {
 
     for (int ppu_idx = 0; ppu_idx < 0x3c0; ppu_idx++)
@@ -451,11 +450,11 @@ void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<si
                 int tile_y = idy * 8 + y;
                 // printf("tile_x %d  tile_y: %d \n", tile_x, tile_y);
 
-                int b = (tile_y) * 4 * std::get<0>(res) + (tile_x) * 4;
+                int b = (tile_y) * 4 * NES_RES_L + (tile_x) * 4;
 
-                rgb_ds[b] = std::get<0>(rgb);
-                rgb_ds[b + 1] = std::get<1>(rgb);
-                rgb_ds[b + 2] = std::get<2>(rgb);
+                rgb_ds[b] = rgb.r;
+                rgb_ds[b + 1] = rgb.g;
+                rgb_ds[b + 2] = rgb.b;
                 rgb_ds[b + 3] = 0xff;
             }
             // printf("=========\n");
@@ -463,7 +462,7 @@ void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<si
         // printf("\n ");
     }
 }
-void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_t, size_t> res)
+void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks)
 {
 
     for (int ppu_idx = 255; ppu_idx >= 0; ppu_idx -= 4)
@@ -506,20 +505,20 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
         // printf("%x \n", attribbyte.pallete);
         size_t pallete_offset = 0x11 + (pallete_idx * 4);
         // pallete_offset += 1;
-        std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> sprite_palletes = {
+        ColorPalette sprite_palletes = { .rgba=(
             // 0x0, 0x29, 0x10, 0x0f
             0x0,
             this->pallete[pallete_offset],
             this->pallete[pallete_offset + 1],
-            this->pallete[pallete_offset + 2],
+            this->pallete[pallete_offset + 2])
 
         };
         printf("offset: %d \n", pallete_offset);
 
         qDebug()
-            << "Sprite palletes 1: " << num_to_hexa(std::get<1>(sprite_palletes))
-            << "2: " << num_to_hexa(std::get<2>(sprite_palletes))
-            << "3: " << num_to_hexa(std::get<3>(sprite_palletes));
+            << "Sprite palletes Blue: " << num_to_hexa(sprite_palletes.b)
+            << "Green: " << num_to_hexa(sprite_palletes.g)
+            << "Alpha: " << num_to_hexa(sprite_palletes.a);
         // for (int i = 0; i < 32; i++)
         //     printf("pallete: 0x%x \n", this->pallete[i]);
 
@@ -571,11 +570,11 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
                 else
                     tile_y = idy + y;
                 // printf("tile_x %d  tile_y: %d \n", tile_x, tile_y);
-                int b = (tile_y) * 4 * std::get<0>(res) + (tile_x) * 4;
-
-                rgb_ds[b] = std::get<0>(rgb);
-                rgb_ds[b + 1] = std::get<1>(rgb);
-                rgb_ds[b + 2] = std::get<2>(rgb);
+                int b = (tile_y) * 4 * NES_RES_L + (tile_x) * 4;
+                
+                rgb_ds[b] = rgb.r;
+                rgb_ds[b + 1] = rgb.g;
+                rgb_ds[b + 2] = rgb.b;
                 rgb_ds[b + 3] = 0xff;
 
                 // printf("combined %d  \n", b);
@@ -589,20 +588,17 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
 /**
  * @brief gets u a vector of bytes that represent the Texture map warning. assumes you are RGBA so its res * 4
  *
- * @param res
- * @return std::vector<uint8_t>
+ * @return std::vector<uint8_t>*
  */
-std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
+std::vector<uint8_t>* PPU::render_texture()
 {
     int banks = (this->ppuctrl.get_bit(4) == 1) ? 0x1000 : 0;
-    std::vector<uint8_t> rgb_ds;
-    rgb_ds.resize(std::get<0>(res) * std::get<1>(res) * 4);
 
-    if (this->chr_rom.size() == 0)
-        return rgb_ds;
-    draw_background(rgb_ds, banks, res);
-    draw_sprites(rgb_ds, banks, res);
-    return rgb_ds;
+    if (this->chr_rom.size() > 0)
+        draw_background(*rgb_ds, banks);
+        draw_sprites(*rgb_ds, banks);
+    
+    return rgb_ds.get();
 }
 uint8_t PPU::read_OAM_data()
 {

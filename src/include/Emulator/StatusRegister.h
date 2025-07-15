@@ -1,5 +1,7 @@
-#include <Emulator/EmulatorUtil.h>
 #include <iostream>
+
+#include <Emulator/EmulatorUtil.h>
+#include <Emulator/Bus.h>
 
 void set_zero(uint8_t value, CPU &cpu);
 int check_zero(CPU &cpu);
