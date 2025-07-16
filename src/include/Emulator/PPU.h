@@ -4,7 +4,6 @@
 #include <vector>
 #include <bit>
 #include <optional>
-#include <tuple>
 #include <chrono>
 #include <cstdint>
 
@@ -12,6 +11,9 @@
 
 #include <Emulator/ppu_components.h>
 #include <Emulator/LoadRom.h>
+
+using renderdata = std::array<uint8_t, 245760ULL>;
+using renderdata_shared_ptr = std::shared_ptr<renderdata>;
 
 union ColorPalette {
     uint8_t rgba[4];
@@ -37,22 +39,22 @@ private:
     {
         bool scrollLatch;
     };
-    uint8_t memory[0x800];
+    std::array<uint8_t, 0x800> memory;
     Registers reg;
     std::vector<uint8_t> chr_rom;
 
-    uint8_t oam[256];
+    std::array<uint8_t, 256> oam;
     uint8_t oam_addr;
-    uint8_t pallete[0x20];
+    std::array<uint8_t, 0x20> pallete;
     MirrorType mirrorType;
     uint8_t internalDataBuffer;
     uint16_t mirror(uint16_t address);
     size_t cycles;
     uint16_t scanline;
-    std::shared_ptr<std::vector<uint8_t>> rgb_ds; // Unique ptr will implicitly delete copy operator for this class
+    renderdata_shared_ptr rgb_ds; // Unique ptr will implicitly delete copy operator for this class
 
-    void draw_background(std::vector<uint8_t> &rgb_ds, int banks);
-    void draw_sprites(std::vector<uint8_t> &rgb_ds, int banks);
+    void draw_background(renderdata &rgb_ds, int banks);
+    void draw_sprites(renderdata &rgb_ds, int banks);
 
 public:
     PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType);
@@ -74,6 +76,6 @@ public:
     void print_ppu_stats();
 
     // void render(sf::Texture &texture, int bank, int tile);
-    std::vector<uint8_t>* render_texture();
+    renderdata_shared_ptr render_texture();
     void log_ppu();
 };

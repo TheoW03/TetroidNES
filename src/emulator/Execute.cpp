@@ -74,7 +74,7 @@ CPU Execute::run()
 
     return cpu;
 }
-std::vector<uint8_t>* Execute::render()
+renderdata_shared_ptr Execute::render()
 {
     return cpu.bus.render_texture();
 }

@@ -35,7 +35,7 @@ static const Controller AllController[]{
 class Bus
 {
 private:
-    uint8_t v_memory[0x800];
+    std::array<uint8_t, 0x800> v_memory;
     uint16_t reset_vector;
     PPU ppu;
     APU apu;
@@ -52,7 +52,7 @@ public:
 
     size_t clock_cycles;
     size_t clock_cycles_instr;
-    uint8_t stored_instructions[2];
+    std::array<uint8_t, 2> stored_instructions;
     bool strobe;
     uint8_t joy_pad_byte1;
     uint8_t joy_pad_byte2;
@@ -92,7 +92,7 @@ public:
     void write_controller1(Controller value, const bool isPressed);
     void write_controller2(Controller value, const bool isPressed);
 
-    std::vector<uint8_t>* render_texture();
+    renderdata_shared_ptr render_texture();
     std::optional<std::string> check_error();
     void log_ppu();
 };

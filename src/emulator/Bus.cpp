@@ -455,7 +455,7 @@ void Bus::write_controller2(Controller value, const bool isPressed)
     else
         joy_pad_byte2 &= ~((uint8_t)(value));
 }
-std::vector<uint8_t>* Bus::render_texture()
+renderdata_shared_ptr Bus::render_texture()
 {
     return this->ppu.render_texture();
 }
