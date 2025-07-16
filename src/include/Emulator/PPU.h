@@ -8,16 +8,18 @@
 #include <cstdint>
 
 // #include <SFML/Graphics.hpp>
-
+#include <memory>
 #include <Emulator/ppu_components.h>
 #include <Emulator/LoadRom.h>
 
 using renderdata = std::array<uint8_t, 245760ULL>;
 using renderdata_shared_ptr = std::shared_ptr<renderdata>;
 
-union ColorPalette {
+union ColorPalette
+{
     uint8_t rgba[4];
-    struct {
+    struct
+    {
         uint8_t r;
         uint8_t g;
         uint8_t b;

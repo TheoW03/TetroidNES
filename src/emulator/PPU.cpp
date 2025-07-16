@@ -40,7 +40,10 @@ PPU::PPU() {}
 
 ColorPalette PPU::getColorFromByte(uint16_t byte, ColorPalette &pallete)
 {
+
 #pragma region SYS_PAL
+    constexpr const ColorPalette system_palette[64] = {
+
         {0x80, 0x80, 0x80, 0xFF}, // 0x0
         {0x00, 0x3D, 0xA6, 0xFF}, // 0x1
         {0x00, 0x12, 0xB0, 0xFF}, // 0x2
@@ -132,7 +135,6 @@ ColorPalette PPU::getColorFromByte(uint16_t byte, ColorPalette &pallete)
         return system_palette[pallete.a];
     }
     return system_palette[byte];
-    
 }
 
 void PPU::get_chr_tile(uint16_t tile_idx, int banks, std::vector<uint8_t> &tile_list)
@@ -501,14 +503,13 @@ void PPU::draw_sprites(renderdata &rgb_ds, int banks)
         // printf("%x \n", attribbyte.pallete);
         size_t pallete_offset = 0x11 + (pallete_idx * 4);
         // pallete_offset += 1;
-        
+
         ColorPalette sprite_palletes = {
             // 0x0, 0x29, 0x10, 0x0f
             0x0,
             this->pallete[pallete_offset],
             this->pallete[pallete_offset + 1],
-            this->pallete[pallete_offset + 2]
-        };
+            this->pallete[pallete_offset + 2]};
 
         printf("offset: %d \n", pallete_offset);
 
@@ -568,7 +569,7 @@ void PPU::draw_sprites(renderdata &rgb_ds, int banks)
                     tile_y = idy + y;
                 // printf("tile_x %d  tile_y: %d \n", tile_x, tile_y);
                 int b = (tile_y) * 4 * NES_RES_L + (tile_x) * 4;
-                
+
                 rgb_ds[b] = rgb.r;
                 rgb_ds[b + 1] = rgb.g;
                 rgb_ds[b + 2] = rgb.b;
@@ -593,8 +594,8 @@ renderdata_shared_ptr PPU::render_texture()
 
     if (this->chr_rom.size() > 0)
         draw_background(*rgb_ds, banks);
-        draw_sprites(*rgb_ds, banks);
-    
+    draw_sprites(*rgb_ds, banks);
+
     return rgb_ds;
 }
 uint8_t PPU::read_OAM_data()
