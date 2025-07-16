@@ -25,8 +25,7 @@ Bus::Bus()
 Bus::Bus(Rom rom, uint16_t pc_start)
 {
     this->clock_cycles = 0;
-    this->stored_instructions[0] = 0;
-    this->stored_instructions[1] = 0;
+    std::fill(stored_instructions.begin(), stored_instructions.end(), 0);
     this->program_counter = 0;
     this->reset_vector = pc_start;
     this->rom = rom;

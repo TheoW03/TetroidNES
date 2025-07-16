@@ -31,8 +31,8 @@ class PPU
 {
 private:
     ColorPalette bg_pallete(size_t row, size_t column);
-    ColorPalette getColorFromByte(uint16_t byte, ColorPalette &pallete);
-    void get_chr_tile(uint16_t tile_idx, int banks, std::vector<uint8_t> &tile_list);
+    const ColorPalette& getColorFromByte(uint16_t byte, ColorPalette &pallete) const;
+    void get_chr_tile(uint16_t tile_idx, int banks, std::array<uint8_t, 16401> &tile_list);
     PPUMask ppumask;
     PPUAddress ppuaddr;
     PPUStatus ppustatus;
