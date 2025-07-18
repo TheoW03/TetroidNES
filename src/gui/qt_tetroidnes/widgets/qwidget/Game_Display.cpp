@@ -242,6 +242,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
     }
     else
     {
+        set_paused(true);
         int message_box_result = QMessageBox::question(
             this,
             QString("TetroidNES - %1").arg(tr("Confirmation")),
@@ -252,6 +253,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
         if (message_box_result == QMessageBox::No)
         {
             event->ignore();
+            set_paused(false);
         }
         else
         {

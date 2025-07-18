@@ -1,13 +1,14 @@
-#define VERSION "1.0.0"
+#define VERSION "1.0.0-Debug"
 #include <QApplication>
 #include <QLocale>
 #include <QTranslator>
 #include <QtLogging>
+#include <QFile>
 
 #include <Qt/objects/controller_manager.h>
 #include <Qt/objects/settings_manager.h>
+#include <Qt/objects/log_notifier.h>
 #include <Qt/widgets/qmainwindow/main_window.h>
-#include <Qt/utils/log.h>
 
 /*
 Checks for a missing active input map in the controller manager
@@ -43,13 +44,11 @@ void apply_stylesheet(QApplication &a)
 
 int main(int argc, char **argv)
 {
-    // originalHandler = qInstallMessageHandler(logToFile);
-    //InitLogs();
-    // int &c = argc
     QApplication a(argc, argv);
     a.setApplicationName("TetroidNES");
-
     a.setApplicationVersion(VERSION);
+
+    LogNotifier::instance();
 
     qInfo() << "STARTING" << a.applicationName() << "VERSION" << a.applicationVersion();
     QTranslator translator;
