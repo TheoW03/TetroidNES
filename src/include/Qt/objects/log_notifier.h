@@ -14,13 +14,13 @@ class LogNotifier : public QObject
 {
     Q_OBJECT
 public:
-    static LogNotifier& instance()
+    static LogNotifier &instance()
     {
         static LogNotifier instance;
         return instance;
     }
-    LogNotifier(const LogNotifier&) = delete;
-    LogNotifier& operator=(const LogNotifier&) = delete;
+    LogNotifier(const LogNotifier &) = delete;
+    LogNotifier &operator=(const LogNotifier &) = delete;
 signals:
     void log_pushed(const QString &message);
 private slots:
@@ -39,7 +39,6 @@ private slots:
     }
 
 private:
-
     QString queue;
     std::string current_file_path;
 
@@ -54,11 +53,11 @@ private:
         cooldown->setSingleShot(true);
 
         queue.reserve(QUEUE_MAX_SIZE);
-        
+
         init_logs();
 
-        connect(cooldown, &QTimer::timeout, this, &on_cooldown_timeout);
-        connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, &on_about_to_quit);
+        connect(cooldown, &QTimer::timeout, this, &LogNotifier::on_about_to_quit);
+        connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, &LogNotifier::on_about_to_quit);
     }
 
     void init_logs()
@@ -67,10 +66,10 @@ private:
         check_log_dir();
         qSetMessagePattern(QStringLiteral("%{type} | %{function}:%{line} | %{time dd/MM/yyyy h:mm:ss} | %{message}"));
         current_file_path = QCoreApplication::applicationDirPath()
-            .toStdString() + 
-            "/logs/log_" +
-            std::to_string(std::time(0)) +
-            ".txt";
+                                .toStdString() +
+                            "/logs/log_" +
+                            std::to_string(std::time(0)) +
+                            ".txt";
     }
 
     static void push_log(QtMsgType type, const QMessageLogContext &context, const QString &msg)
@@ -81,7 +80,7 @@ private:
         {
             originalHandler(type, context, msg);
         }
-        
+
         if (instance.queue.size() + msg.size() >= QUEUE_MAX_SIZE)
         {
             instance.cooldown->stop();
@@ -95,11 +94,9 @@ private:
 
         instance.queue.append(
             QString("%1%2")
-            .arg(
-                qFormatLogMessage(type, context, msg),
-                QStringLiteral("\n")
-            ));
-
+                .arg(
+                    qFormatLogMessage(type, context, msg),
+                    QStringLiteral("\n")));
     }
 
     void write_to_file(const QString &msg)
@@ -120,8 +117,7 @@ private:
             QCoreApplication::applicationDirPath() + QStringLiteral("/logs"),
             QStringLiteral("*.txt"),
             QDir::Name,
-            QDir::Files
-        );
+            QDir::Files);
 
         if (!log_dir.exists())
         {
