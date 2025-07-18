@@ -13,7 +13,8 @@ private:
 public:
     Execute(CPU cpu);
     Execute();
-    CPU run();
+    CPU& get_cpu();
+    void run();
     renderdata_shared_ptr render();
     int reset_clock();
     void log_Cpu();

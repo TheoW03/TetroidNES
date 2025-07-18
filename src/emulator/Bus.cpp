@@ -44,7 +44,7 @@ Bus::Bus(Rom rom, uint16_t pc_start)
     this->stack = BOTTOM_STACK + stack_pointer;
     this->clock_cycles_instr = 0;
 }
-uint16_t Bus::get_PC()
+const uint16_t Bus::get_PC() const
 {
     return this->program_counter;
 }
@@ -459,7 +459,7 @@ renderdata_shared_ptr Bus::render_texture()
     return this->ppu.render_texture();
 }
 
-std::optional<std::string> Bus::check_error()
+const std::optional<std::string> Bus::check_error() const
 {
     if (this->err_string.has_value())
     {

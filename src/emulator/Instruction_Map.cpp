@@ -1,4 +1,4 @@
-#include <map>
+#include <unordered_map>
 #include <stdint.h>
 
 #include <Emulator/Instructions.h>
@@ -11,7 +11,7 @@ struct Instruction
     AddressMode addressmode;
 };
 
-std::map<uint8_t, Instruction> instructionMap;
+std::unordered_map<uint8_t, Instruction> instructionMap;
 
 void initializeInstructionMap()
 {
@@ -267,11 +267,11 @@ void initializeInstructionMap()
     instructionMap.insert(make_pair(0x00, Instruction{(instructionPointer)BRK, AddressMode::IMPLIED}));
     instructionMap.insert(make_pair(0xea, Instruction{(instructionPointer)NOP, AddressMode::IMPLIED}));
 }
-Instruction GetInstruction(uint8_t opcode)
+Instruction& GetInstruction(const uint8_t &opcode)
 {
     return instructionMap.at(opcode);
 }
-bool InstructionValid(uint8_t opcode)
+const bool InstructionValid(const uint8_t &opcode)
 {
 
     return instructionMap.find(opcode) != instructionMap.end();

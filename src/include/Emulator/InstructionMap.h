@@ -13,5 +13,5 @@ struct Instruction
 
 void initializeInstructionMap();
 // Instruction initializeInstructionMap();
-Instruction GetInstruction(uint8_t opcode);
-bool InstructionValid(uint8_t opcode);
+Instruction& GetInstruction(const uint8_t &opcode);
+const bool InstructionValid(const uint8_t &opcode);

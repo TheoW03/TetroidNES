@@ -14,7 +14,7 @@ std::vector<uint8_t> file_tobyte_vector(std::string file_name)
     while (infile)
     {
         uint8_t a = (uint8_t)infile.get();
-        instructions.push_back(a);
+        instructions.emplace_back(a);
     }
 
     return instructions;
@@ -71,13 +71,13 @@ std::optional<Rom> load_rom(const std::vector<uint8_t> &instructions)
 
     for (size_t i = prg_start; i < prg_rom + prg_start; i++)
     {
-        rom.PRG.push_back(instructions[i]);
+        rom.PRG.emplace_back(instructions[i]);
     }
     size_t chr_start = prg_start + prg_rom;
     size_t chr_size = prg_start + prg_rom + chr_rom;
     for (size_t i = chr_start; i < chr_size; i++)
     {
-        rom.CHR.push_back(instructions[i]);
+        rom.CHR.emplace_back(instructions[i]);
     }
     rom.color_encoding = (nes_header.flag9.color_encoding == 1) ? ColorEncoding::Pal : ColorEncoding::Ntsc;
     return rom;

@@ -69,7 +69,7 @@ public:
     uint16_t read_16bit(uint16_t address);
     void write_16bit(uint16_t address, uint16_t value);
     void print_clock();
-    uint16_t get_PC();
+    const uint16_t get_PC() const;
 
     // stack methods. provides a more clean way of stack reads and writes
     void push_stack8(uint8_t value);
@@ -93,6 +93,6 @@ public:
     void write_controller2(Controller value, const bool isPressed);
 
     renderdata_shared_ptr render_texture();
-    std::optional<std::string> check_error();
+    const std::optional<std::string> check_error() const;
     void log_ppu();
 };

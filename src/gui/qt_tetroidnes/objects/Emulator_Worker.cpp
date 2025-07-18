@@ -149,18 +149,18 @@ bool EmulatorWorker::is_running() const
 void EmulatorWorker::process_cpu()
 {
     // Process CPU
-    CPU result;
+    const CPU cpu = exe.get_cpu();
     int clock_cycles = 0;
     qInfo() << "processing cpu";
 
     while (clock_cycles < cpu_cycles_frame)
     {
-        result = exe.run();
-        if (result.error_code == EXIT_FAILURE)
+        exe.run();
+        if (cpu.error_code == EXIT_FAILURE)
         {
-            qCritical() << "potential error with the cpu at pc=0x" << num_to_hexa(result.bus.get_PC());
-            auto error_cpu = result.bus.check_error().value_or("error with emulator, please check the ROM for faulty instructions");
-            auto err_mess = QString("%1-- at PC= 0x%2").arg(QString::fromStdString(error_cpu), QString::fromStdString(num_to_hexa(result.bus.get_PC())));
+            qCritical() << "potential error with the cpu at pc=0x" << num_to_hexa(cpu.bus.get_PC());
+            auto error_cpu = cpu.bus.check_error().value_or("error with emulator, please check the ROM for faulty instructions");
+            auto err_mess = QString("%1-- at PC= 0x%2").arg(QString::fromStdString(error_cpu), QString::fromStdString(num_to_hexa(cpu.bus.get_PC())));
             emit push_error(err_mess, EXIT_FAILURE);
             is_frame_generated = false;
             return;
