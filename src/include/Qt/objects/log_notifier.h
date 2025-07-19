@@ -62,8 +62,8 @@ private:
 
     void init_logs()
     {
-        originalHandler = qInstallMessageHandler(push_log);
         check_log_dir();
+        originalHandler = qInstallMessageHandler(push_log);
         qSetMessagePattern(QStringLiteral("%{type} | %{function}:%{line} | %{time dd/MM/yyyy h:mm:ss} | %{message}"));
         current_file_path = QCoreApplication::applicationDirPath()
                                 .toStdString() +
@@ -111,6 +111,13 @@ private:
 
     void check_log_dir()
     {
+
+        // REMOVES EXTRA LOGGING FUNCIONALITY TO PREVENT INFINITE RECURSION
+        if (originalHandler)
+        {
+            originalHandler = nullptr;
+        }
+
         const qsizetype MAX_FILES = 32;
 
         QDir log_dir(

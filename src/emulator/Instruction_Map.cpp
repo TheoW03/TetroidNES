@@ -1,278 +1,261 @@
 #include <unordered_map>
 #include <stdint.h>
 
-#include <Emulator/Instructions.h>
+#include <Emulator/InstructionMap.h>
 
-using instructionPointer = void (*)(AddressMode, CPU &);
+static const std::unordered_map<uint8_t, Instruction> INSTRUCTION_MAP = {
+// LDA
+    {0xA9, Instruction{InstFunc::LDA_PTR, AddressMode::IMMEDIATE}},
+    {0xA5, Instruction{InstFunc::LDA_PTR, AddressMode::ZERO_PAGE}},
+    {0xA5, Instruction{InstFunc::LDA_PTR, AddressMode::ZERO_PAGE_X}},
+    {0xAD, Instruction{InstFunc::LDA_PTR, AddressMode::ABSOLUTE}},
+    {0xA9, Instruction{InstFunc::LDA_PTR, AddressMode::IMMEDIATE}},
+    {0xBD, Instruction{InstFunc::LDA_PTR, AddressMode::ABSOLUTE_X}},
+    {0xB9, Instruction{InstFunc::LDA_PTR, AddressMode::ABSOLUTE_Y}},
+    {0xA1, Instruction{InstFunc::LDA_PTR, AddressMode::INDIRECT_X}},
+    {0xB1, Instruction{InstFunc::LDA_PTR, AddressMode::INDIRECT_Y}},
 
-struct Instruction
-{
-    instructionPointer i;
-    AddressMode addressmode;
+// LDX
+    {0xA2, Instruction{InstFunc::LDX_PTR, AddressMode::IMMEDIATE}},
+    {0xA6, Instruction{InstFunc::LDX_PTR, AddressMode::ZERO_PAGE}},
+    {0xB6, Instruction{InstFunc::LDX_PTR, AddressMode::ZERO_PAGE_Y}},
+    {0xAE, Instruction{InstFunc::LDX_PTR, AddressMode::ABSOLUTE}},
+    {0xBE, Instruction{InstFunc::LDX_PTR, AddressMode::ABSOLUTE_Y}},
+
+
+// LDY
+    {0xA0, Instruction{InstFunc::LDY_PTR, AddressMode::IMMEDIATE}},
+    {0xA4, Instruction{InstFunc::LDY_PTR, AddressMode::ZERO_PAGE}},
+    {0xB4, Instruction{InstFunc::LDY_PTR, AddressMode::ZERO_PAGE_X}},
+    {0xAC, Instruction{InstFunc::LDY_PTR, AddressMode::ABSOLUTE}},
+    {0xBC, Instruction{InstFunc::LDY_PTR, AddressMode::ABSOLUTE_X}},
+
+
+// ADC
+    {0x69, Instruction{InstFunc::ADC_PTR, AddressMode::IMMEDIATE}},
+    {0x65, Instruction{InstFunc::ADC_PTR, AddressMode::ZERO_PAGE}},
+    {0x75, Instruction{InstFunc::ADC_PTR, AddressMode::ZERO_PAGE_X}},
+    {0x6D, Instruction{InstFunc::ADC_PTR, AddressMode::ABSOLUTE}},
+    {0x7D, Instruction{InstFunc::ADC_PTR, AddressMode::ABSOLUTE_X}},
+    {0x79, Instruction{InstFunc::ADC_PTR, AddressMode::ABSOLUTE_Y}},
+    {0x61, Instruction{InstFunc::ADC_PTR, AddressMode::INDIRECT_X}},
+    {0x71, Instruction{InstFunc::ADC_PTR, AddressMode::INDIRECT_Y}},
+
+
+// SBC
+    {0xE9, Instruction{InstFunc::SBC_PTR, AddressMode::IMMEDIATE}},
+    {0xE5, Instruction{InstFunc::SBC_PTR, AddressMode::ZERO_PAGE}},
+    {0xF5, Instruction{InstFunc::SBC_PTR, AddressMode::ZERO_PAGE_X}},
+    {0xED, Instruction{InstFunc::SBC_PTR, AddressMode::ABSOLUTE}},
+    {0xFD, Instruction{InstFunc::SBC_PTR, AddressMode::ABSOLUTE_X}},
+    {0xF9, Instruction{InstFunc::SBC_PTR, AddressMode::ABSOLUTE_Y}},
+    {0xE1, Instruction{InstFunc::SBC_PTR, AddressMode::INDIRECT_X}},
+    {0xF1, Instruction{InstFunc::SBC_PTR, AddressMode::INDIRECT_Y}},
+
+
+// AND
+    {0x29, Instruction{InstFunc::AND_PTR, AddressMode::IMMEDIATE}},
+    {0x25, Instruction{InstFunc::AND_PTR, AddressMode::ZERO_PAGE}},
+    {0x35, Instruction{InstFunc::AND_PTR, AddressMode::ZERO_PAGE_X}},
+    {0x2D, Instruction{InstFunc::AND_PTR, AddressMode::ABSOLUTE}},
+    {0x3D, Instruction{InstFunc::AND_PTR, AddressMode::ABSOLUTE_X}},
+    {0x39, Instruction{InstFunc::AND_PTR, AddressMode::ABSOLUTE_Y}},
+    {0x21, Instruction{InstFunc::AND_PTR, AddressMode::INDIRECT_X}},
+    {0x31, Instruction{InstFunc::AND_PTR, AddressMode::INDIRECT_Y}},
+
+
+// ORA
+    {0x09, Instruction{InstFunc::ORA_PTR, AddressMode::IMMEDIATE}},
+    {0x05, Instruction{InstFunc::ORA_PTR, AddressMode::ZERO_PAGE}},
+    {0x15, Instruction{InstFunc::ORA_PTR, AddressMode::ZERO_PAGE_X}},
+    {0x0D, Instruction{InstFunc::ORA_PTR, AddressMode::ABSOLUTE}},
+    {0x1D, Instruction{InstFunc::ORA_PTR, AddressMode::ABSOLUTE_X}},
+    {0x19, Instruction{InstFunc::ORA_PTR, AddressMode::ABSOLUTE_Y}},
+    {0x01, Instruction{InstFunc::ORA_PTR, AddressMode::INDIRECT_X}},
+    {0x11, Instruction{InstFunc::ORA_PTR, AddressMode::INDIRECT_Y}},
+
+
+// ROL/ROR
+    {0x2A, Instruction{InstFunc::ROL_PTR, AddressMode::ACCUMULATOR}},
+    {0x26, Instruction{InstFunc::ROL_PTR, AddressMode::ZERO_PAGE}},
+    {0x36, Instruction{InstFunc::ROL_PTR, AddressMode::ZERO_PAGE_X}},
+    {0x2E, Instruction{InstFunc::ROL_PTR, AddressMode::ABSOLUTE}},
+    {0x3E, Instruction{InstFunc::ROL_PTR, AddressMode::ABSOLUTE_X}},
+
+    {0x6A, Instruction{InstFunc::ROR_PTR, AddressMode::ACCUMULATOR}},
+    {0x66, Instruction{InstFunc::ROR_PTR, AddressMode::ZERO_PAGE}},
+    {0x76, Instruction{InstFunc::ROR_PTR, AddressMode::ZERO_PAGE_X}},
+    {0x6E, Instruction{InstFunc::ROR_PTR, AddressMode::ABSOLUTE}},
+    {0x7E, Instruction{InstFunc::ROR_PTR, AddressMode::ABSOLUTE_X}},
+
+
+// STX/STY/STA
+    {0x86, Instruction{InstFunc::STX_PTR, AddressMode::ZERO_PAGE}},
+    {0x96, Instruction{InstFunc::STX_PTR, AddressMode::ZERO_PAGE_X}},
+    {0x8E, Instruction{InstFunc::STX_PTR, AddressMode::ABSOLUTE}},
+
+    {0x84, Instruction{InstFunc::STY_PTR, AddressMode::ZERO_PAGE}},
+    {0x94, Instruction{InstFunc::STY_PTR, AddressMode::ZERO_PAGE_X}},
+    {0x8C, Instruction{InstFunc::STY_PTR, AddressMode::ABSOLUTE}},
+
+    {0x85, Instruction{InstFunc::STA_PTR, AddressMode::ZERO_PAGE}},
+    {0x95, Instruction{InstFunc::STA_PTR, AddressMode::ZERO_PAGE_X}},
+    {0x8D, Instruction{InstFunc::STA_PTR, AddressMode::ABSOLUTE}},
+    {0x9D, Instruction{InstFunc::STA_PTR, AddressMode::ABSOLUTE_X}},
+    {0x99, Instruction{InstFunc::STA_PTR, AddressMode::ABSOLUTE_Y}},
+    {0x81, Instruction{InstFunc::STA_PTR, AddressMode::INDIRECT_X}},
+    {0x91, Instruction{InstFunc::STA_PTR, AddressMode::INDIRECT_Y}},
+
+
+// bitshift
+    {0x4A, Instruction{InstFunc::LSR_PTR, AddressMode::ACCUMULATOR}},
+    {0x46, Instruction{InstFunc::LSR_PTR, AddressMode::ZERO_PAGE}},
+    {0x56, Instruction{InstFunc::LSR_PTR, AddressMode::ZERO_PAGE_X}},
+    {0x4E, Instruction{InstFunc::LSR_PTR, AddressMode::ABSOLUTE}},
+    {0x5E, Instruction{InstFunc::LSR_PTR, AddressMode::ABSOLUTE_X}},
+
+    {0x0A, Instruction{InstFunc::ASL_PTR, AddressMode::ACCUMULATOR}},
+    {0x06, Instruction{InstFunc::ASL_PTR, AddressMode::ZERO_PAGE}},
+    {0x16, Instruction{InstFunc::ASL_PTR, AddressMode::ZERO_PAGE_X}},
+    {0x0E, Instruction{InstFunc::ASL_PTR, AddressMode::ABSOLUTE}},
+    {0x1E, Instruction{InstFunc::ASL_PTR, AddressMode::ABSOLUTE_X}},
+
+
+// XOR
+    {0x49, Instruction{InstFunc::EOR_PTR, AddressMode::IMMEDIATE}},
+    {0x45, Instruction{InstFunc::EOR_PTR, AddressMode::ZERO_PAGE}},
+    {0x55, Instruction{InstFunc::EOR_PTR, AddressMode::ZERO_PAGE_X}},
+    {0x4D, Instruction{InstFunc::EOR_PTR, AddressMode::ABSOLUTE}},
+    {0x5D, Instruction{InstFunc::EOR_PTR, AddressMode::ABSOLUTE_X}},
+    {0x59, Instruction{InstFunc::EOR_PTR, AddressMode::ABSOLUTE_Y}},
+    {0x41, Instruction{InstFunc::EOR_PTR, AddressMode::INDIRECT_X}},
+    {0x51, Instruction{InstFunc::EOR_PTR, AddressMode::INDIRECT_Y}},
+
+
+// DEC
+    {0xCA, Instruction{InstFunc::DEX_PTR, AddressMode::IMPLIED}},
+    {0x88, Instruction{InstFunc::DEY_PTR, AddressMode::IMPLIED}},
+
+    {0xC6, Instruction{InstFunc::DEC_PTR, AddressMode::ZERO_PAGE}},
+    {0xD6, Instruction{InstFunc::DEC_PTR, AddressMode::ZERO_PAGE_X}},
+    {0xCE, Instruction{InstFunc::DEC_PTR, AddressMode::ABSOLUTE}},
+    {0xDE, Instruction{InstFunc::DEC_PTR, AddressMode::ABSOLUTE_X}},
+
+
+// INC
+    {0xE8, Instruction{InstFunc::INX_PTR, AddressMode::IMPLIED}},
+
+    {0xC8, Instruction{InstFunc::INY_PTR, AddressMode::IMPLIED}},
+
+    {0xE6, Instruction{InstFunc::INC_PTR, AddressMode::ZERO_PAGE}},
+    {0xF6, Instruction{InstFunc::INC_PTR, AddressMode::ZERO_PAGE_X}},
+    {0xEE, Instruction{InstFunc::INC_PTR, AddressMode::ABSOLUTE}},
+    {0xFE, Instruction{InstFunc::INC_PTR, AddressMode::ABSOLUTE_X}},
+
+
+// Clear/set Flags
+    {0x18, Instruction{InstFunc::CLC_PTR, AddressMode::IMPLIED}}, //"implied"
+
+    {0x38, Instruction{InstFunc::SEC_PTR, AddressMode::IMPLIED}},
+
+    {0xD8, Instruction{InstFunc::CLD_PTR, AddressMode::IMPLIED}},
+
+    {0xF8, Instruction{InstFunc::SED_PTR, AddressMode::IMPLIED}},
+
+    {0x78, Instruction{InstFunc::SEI_PTR, AddressMode::IMPLIED}},
+
+    {0x58, Instruction{InstFunc::CLI_PTR, AddressMode::IMPLIED}},
+
+    {0xB8, Instruction{InstFunc::CLV_PTR, AddressMode::IMPLIED}},
+
+    {0x40, Instruction{InstFunc::RTI_PTR, AddressMode::IMPLIED}},
+
+
+// JMP
+    {0x4C, Instruction{InstFunc::JMP_PTR, AddressMode::ABSOLUTE}},
+    {0x6C, Instruction{InstFunc::JMP_PTR, AddressMode::INDIRECT}},
+
+
+// Compare
+    {0xC9, Instruction{InstFunc::CMP_PTR, AddressMode::IMMEDIATE}},
+    {0xC5, Instruction{InstFunc::CMP_PTR, AddressMode::ZERO_PAGE}},
+    {0xD5, Instruction{InstFunc::CMP_PTR, AddressMode::ZERO_PAGE_X}},
+    {0xCD, Instruction{InstFunc::CMP_PTR, AddressMode::ABSOLUTE}},
+    {0xDD, Instruction{InstFunc::CMP_PTR, AddressMode::ABSOLUTE_X}},
+    {0xD9, Instruction{InstFunc::CMP_PTR, AddressMode::ABSOLUTE_Y}},
+    {0xC1, Instruction{InstFunc::CMP_PTR, AddressMode::INDIRECT_X}},
+    {0xD1, Instruction{InstFunc::CMP_PTR, AddressMode::INDIRECT_Y}},
+
+    {0xC0, Instruction{InstFunc::CPY_PTR, AddressMode::IMMEDIATE}},
+    {0xC4, Instruction{InstFunc::CPY_PTR, AddressMode::ZERO_PAGE}},
+    {0xCC, Instruction{InstFunc::CPY_PTR, AddressMode::ABSOLUTE}},
+
+    {0xE0, Instruction{InstFunc::CPX_PTR, AddressMode::IMMEDIATE}},
+    {0xE4, Instruction{InstFunc::CPX_PTR, AddressMode::ZERO_PAGE}},
+    {0xEC, Instruction{InstFunc::CPX_PTR, AddressMode::ABSOLUTE}},
+
+    {0x24, Instruction{InstFunc::BIT_PTR, AddressMode::ZERO_PAGE}},
+    {0x2C, Instruction{InstFunc::BIT_PTR, AddressMode::ABSOLUTE}},
+
+
+
+// Conditional Branching
+    {0xF0, Instruction{InstFunc::BEQ_PTR, AddressMode::RELATIVE}},
+
+    {0xD0, Instruction{InstFunc::BNE_PTR, AddressMode::RELATIVE}},
+
+    {0x90, Instruction{InstFunc::BCC_PTR, AddressMode::RELATIVE}},
+
+    {0xB0, Instruction{InstFunc::BCS_PTR, AddressMode::RELATIVE}},
+
+    {0x10, Instruction{InstFunc::BPL_PTR, AddressMode::RELATIVE}},
+
+    {0x30, Instruction{InstFunc::BMI_PTR, AddressMode::RELATIVE}},
+
+    {0x50, Instruction{InstFunc::BVC_PTR, AddressMode::RELATIVE}},
+
+    {0x70, Instruction{InstFunc::BVS_PTR, AddressMode::RELATIVE}},
+
+
+// Subroutine
+    {0x20, Instruction{InstFunc::JSR_PTR, AddressMode::ABSOLUTE}},
+
+    {0x60, Instruction{InstFunc::RTS_PTR, AddressMode::IMPLIED}},
+
+
+// Pull register from stack
+    {0x28, Instruction{InstFunc::PLP_PTR, AddressMode::IMPLIED}},
+
+    {0x08, Instruction{InstFunc::PHP_PTR, AddressMode::IMPLIED}},
+
+    {0x68, Instruction{InstFunc::PLA_PTR, AddressMode::IMPLIED}},
+
+    {0x48, Instruction{InstFunc::PHA_PTR, AddressMode::IMPLIED}},
+
+
+// Transfer
+    {0xAA, Instruction{InstFunc::TAX_PTR, AddressMode::IMPLIED}},
+
+    {0x8A, Instruction{InstFunc::TXA_PTR, AddressMode::IMPLIED}},
+
+    {0x9A, Instruction{InstFunc::TXS_PTR, AddressMode::IMPLIED}},
+
+    {0xBA, Instruction{InstFunc::TSX_PTR, AddressMode::IMPLIED}},
+
+    {0x98, Instruction{InstFunc::TYA_PTR, AddressMode::IMPLIED}},
+
+    {0xA8, Instruction{InstFunc::TAY_PTR, AddressMode::IMPLIED}},
+
+    {0x00, Instruction{InstFunc::BRK_PTR, AddressMode::IMPLIED}},
+    {0xea, Instruction{InstFunc::NOP_PTR, AddressMode::IMPLIED}}
 };
 
-std::unordered_map<uint8_t, Instruction> instructionMap;
-
-void initializeInstructionMap()
+const Instruction& GetInstruction(const uint8_t &opcode)
 {
-
-    using std::make_pair; // here bc im lazy you may use using on the stack level. but lets stick to this
-
-#pragma region LDA
-    instructionMap.insert(make_pair(0xA9, Instruction{(instructionPointer)LDA, AddressMode::IMMEDIATE}));
-    instructionMap.insert(make_pair(0xA5, Instruction{(instructionPointer)LDA, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0xB5, Instruction{(instructionPointer)LDA, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0xAD, Instruction{(instructionPointer)LDA, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0xBD, Instruction{(instructionPointer)LDA, AddressMode::ABSOLUTE_X}));
-    instructionMap.insert(make_pair(0xB9, Instruction{(instructionPointer)LDA, AddressMode::ABSOLUTE_Y}));
-    instructionMap.insert(make_pair(0xA1, Instruction{(instructionPointer)LDA, AddressMode::INDIRECT_X}));
-    instructionMap.insert(make_pair(0xB1, Instruction{(instructionPointer)LDA, AddressMode::INDIRECT_Y}));
-#pragma endregion
-
-#pragma region LDX
-
-    instructionMap.insert(make_pair(0xA2, Instruction{(instructionPointer)LDX, AddressMode::IMMEDIATE}));
-    instructionMap.insert(make_pair(0xA6, Instruction{(instructionPointer)LDX, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0xB6, Instruction{(instructionPointer)LDX, AddressMode::ZERO_PAGE_Y}));
-    instructionMap.insert(make_pair(0xAE, Instruction{(instructionPointer)LDX, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0xBE, Instruction{(instructionPointer)LDX, AddressMode::ABSOLUTE_Y}));
-
-#pragma endregion
-
-#pragma region LDY
-
-    instructionMap.insert(make_pair(0xA0, Instruction{(instructionPointer)LDY, AddressMode::IMMEDIATE}));
-    instructionMap.insert(make_pair(0xA4, Instruction{(instructionPointer)LDY, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0xB4, Instruction{(instructionPointer)LDY, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0xAC, Instruction{(instructionPointer)LDY, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0xBC, Instruction{(instructionPointer)LDY, AddressMode::ABSOLUTE_X}));
-
-#pragma endregion
-
-#pragma region ADC
-    instructionMap.insert(make_pair(0x69, Instruction{(instructionPointer)ADC, AddressMode::IMMEDIATE}));
-    instructionMap.insert(make_pair(0x65, Instruction{(instructionPointer)ADC, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0x75, Instruction{(instructionPointer)ADC, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0x6D, Instruction{(instructionPointer)ADC, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0x7D, Instruction{(instructionPointer)ADC, AddressMode::ABSOLUTE_X}));
-    instructionMap.insert(make_pair(0x79, Instruction{(instructionPointer)ADC, AddressMode::ABSOLUTE_Y}));
-    instructionMap.insert(make_pair(0x61, Instruction{(instructionPointer)ADC, AddressMode::INDIRECT_X}));
-    instructionMap.insert(make_pair(0x71, Instruction{(instructionPointer)ADC, AddressMode::INDIRECT_Y}));
-#pragma endregion
-
-#pragma region SBC
-    instructionMap.insert(make_pair(0xE9, Instruction{(instructionPointer)SBC, AddressMode::IMMEDIATE}));
-    instructionMap.insert(make_pair(0xE5, Instruction{(instructionPointer)SBC, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0xF5, Instruction{(instructionPointer)SBC, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0xED, Instruction{(instructionPointer)SBC, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0xFD, Instruction{(instructionPointer)SBC, AddressMode::ABSOLUTE_X}));
-    instructionMap.insert(make_pair(0xF9, Instruction{(instructionPointer)SBC, AddressMode::ABSOLUTE_Y}));
-    instructionMap.insert(make_pair(0xE1, Instruction{(instructionPointer)SBC, AddressMode::INDIRECT_X}));
-    instructionMap.insert(make_pair(0xF1, Instruction{(instructionPointer)SBC, AddressMode::INDIRECT_Y}));
-#pragma endregion
-
-#pragma region AND
-    instructionMap.insert(make_pair(0x29, Instruction{(instructionPointer)AND, AddressMode::IMMEDIATE}));
-    instructionMap.insert(make_pair(0x25, Instruction{(instructionPointer)AND, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0x35, Instruction{(instructionPointer)AND, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0x2D, Instruction{(instructionPointer)AND, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0x3D, Instruction{(instructionPointer)AND, AddressMode::ABSOLUTE_X}));
-    instructionMap.insert(make_pair(0x39, Instruction{(instructionPointer)AND, AddressMode::ABSOLUTE_Y}));
-    instructionMap.insert(make_pair(0x21, Instruction{(instructionPointer)AND, AddressMode::INDIRECT_X}));
-    instructionMap.insert(make_pair(0x31, Instruction{(instructionPointer)AND, AddressMode::INDIRECT_Y}));
-#pragma endregion
-
-#pragma region ORA
-    instructionMap.insert(make_pair(0x09, Instruction{(instructionPointer)ORA, AddressMode::IMMEDIATE}));
-    instructionMap.insert(make_pair(0x05, Instruction{(instructionPointer)ORA, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0x15, Instruction{(instructionPointer)ORA, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0x0D, Instruction{(instructionPointer)ORA, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0x1D, Instruction{(instructionPointer)ORA, AddressMode::ABSOLUTE_X}));
-    instructionMap.insert(make_pair(0x19, Instruction{(instructionPointer)ORA, AddressMode::ABSOLUTE_Y}));
-    instructionMap.insert(make_pair(0x01, Instruction{(instructionPointer)ORA, AddressMode::INDIRECT_X}));
-    instructionMap.insert(make_pair(0x11, Instruction{(instructionPointer)ORA, AddressMode::INDIRECT_Y}));
-#pragma endregion
-
-#pragma region ROL/ROR
-    instructionMap.insert(make_pair(0x2A, Instruction{(instructionPointer)ROL, AddressMode::ACCUMULATOR}));
-    instructionMap.insert(make_pair(0x26, Instruction{(instructionPointer)ROL, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0x36, Instruction{(instructionPointer)ROL, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0x2E, Instruction{(instructionPointer)ROL, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0x3E, Instruction{(instructionPointer)ROL, AddressMode::ABSOLUTE_X}));
-
-    instructionMap.insert(make_pair(0x6A, Instruction{(instructionPointer)ROR, AddressMode::ACCUMULATOR}));
-    instructionMap.insert(make_pair(0x66, Instruction{(instructionPointer)ROR, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0x76, Instruction{(instructionPointer)ROR, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0x6E, Instruction{(instructionPointer)ROR, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0x7E, Instruction{(instructionPointer)ROR, AddressMode::ABSOLUTE_X}));
-#pragma endregion
-
-#pragma region STX
-    instructionMap.insert(make_pair(0x86, Instruction{(instructionPointer)STX, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0x96, Instruction{(instructionPointer)STX, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0x8E, Instruction{(instructionPointer)STX, AddressMode::ABSOLUTE}));
-
-    instructionMap.insert(make_pair(0x84, Instruction{(instructionPointer)STY, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0x94, Instruction{(instructionPointer)STY, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0x8C, Instruction{(instructionPointer)STY, AddressMode::ABSOLUTE}));
-
-    instructionMap.insert(make_pair(0x85, Instruction{(instructionPointer)STA, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0x95, Instruction{(instructionPointer)STA, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0x8D, Instruction{(instructionPointer)STA, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0x9D, Instruction{(instructionPointer)STA, AddressMode::ABSOLUTE_X}));
-    instructionMap.insert(make_pair(0x99, Instruction{(instructionPointer)STA, AddressMode::ABSOLUTE_Y}));
-    instructionMap.insert(make_pair(0x81, Instruction{(instructionPointer)STA, AddressMode::INDIRECT_X}));
-    instructionMap.insert(make_pair(0x91, Instruction{(instructionPointer)STA, AddressMode::INDIRECT_Y}));
-#pragma endregion
-
-#pragma region bitshift
-    instructionMap.insert(make_pair(0x4A, Instruction{(instructionPointer)LSR, AddressMode::ACCUMULATOR}));
-    instructionMap.insert(make_pair(0x46, Instruction{(instructionPointer)LSR, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0x56, Instruction{(instructionPointer)LSR, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0x4E, Instruction{(instructionPointer)LSR, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0x5E, Instruction{(instructionPointer)LSR, AddressMode::ABSOLUTE_X}));
-
-    instructionMap.insert(make_pair(0x0A, Instruction{(instructionPointer)ASL, AddressMode::ACCUMULATOR}));
-    instructionMap.insert(make_pair(0x06, Instruction{(instructionPointer)ASL, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0x16, Instruction{(instructionPointer)ASL, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0x0E, Instruction{(instructionPointer)ASL, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0x1E, Instruction{(instructionPointer)ASL, AddressMode::ABSOLUTE_X}));
-#pragma endregion
-
-#pragma region XOR
-    instructionMap.insert(make_pair(0x49, Instruction{(instructionPointer)EOR, AddressMode::IMMEDIATE}));
-    instructionMap.insert(make_pair(0x45, Instruction{(instructionPointer)EOR, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0x55, Instruction{(instructionPointer)EOR, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0x4D, Instruction{(instructionPointer)EOR, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0x5D, Instruction{(instructionPointer)EOR, AddressMode::ABSOLUTE_X}));
-    instructionMap.insert(make_pair(0x59, Instruction{(instructionPointer)EOR, AddressMode::ABSOLUTE_Y}));
-    instructionMap.insert(make_pair(0x41, Instruction{(instructionPointer)EOR, AddressMode::INDIRECT_X}));
-    instructionMap.insert(make_pair(0x51, Instruction{(instructionPointer)EOR, AddressMode::INDIRECT_Y}));
-#pragma endregion
-
-#pragma region DEC
-    instructionMap.insert(make_pair(0xCA, Instruction{(instructionPointer)DEX, AddressMode::IMPLIED}));
-    instructionMap.insert(make_pair(0x88, Instruction{(instructionPointer)DEY, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0xC6, Instruction{(instructionPointer)DEC, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0xD6, Instruction{(instructionPointer)DEC, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0xCE, Instruction{(instructionPointer)DEC, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0xDE, Instruction{(instructionPointer)DEC, AddressMode::ABSOLUTE_X}));
-#pragma endregion
-
-#pragma region INC
-    instructionMap.insert(make_pair(0xE8, Instruction{(instructionPointer)INX, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0xC8, Instruction{(instructionPointer)INY, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0xE6, Instruction{(instructionPointer)INC, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0xF6, Instruction{(instructionPointer)INC, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0xEE, Instruction{(instructionPointer)INC, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0xFE, Instruction{(instructionPointer)INC, AddressMode::ABSOLUTE_X}));
-#pragma endregion
-
-#pragma region Clear/set Flags
-    instructionMap.insert(make_pair(0x18, Instruction{(instructionPointer)CLC, AddressMode::IMPLIED})); //"implied"
-
-    instructionMap.insert(make_pair(0x38, Instruction{(instructionPointer)SEC, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0xD8, Instruction{(instructionPointer)CLD, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0xF8, Instruction{(instructionPointer)SED, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0x78, Instruction{(instructionPointer)SEI, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0x58, Instruction{(instructionPointer)CLI, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0xB8, Instruction{(instructionPointer)CLV, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0x40, Instruction{(instructionPointer)RTI, AddressMode::IMPLIED}));
-#pragma endregion
-
-#pragma region JMP
-    instructionMap.insert(make_pair(0x4C, Instruction{(instructionPointer)JMP, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0x6C, Instruction{(instructionPointer)JMP, AddressMode::INDIRECT}));
-#pragma endregion
-
-#pragma region Compare
-    instructionMap.insert(make_pair(0xC9, Instruction{(instructionPointer)CMP, AddressMode::IMMEDIATE}));
-    instructionMap.insert(make_pair(0xC5, Instruction{(instructionPointer)CMP, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0xD5, Instruction{(instructionPointer)CMP, AddressMode::ZERO_PAGE_X}));
-    instructionMap.insert(make_pair(0xCD, Instruction{(instructionPointer)CMP, AddressMode::ABSOLUTE}));
-    instructionMap.insert(make_pair(0xDD, Instruction{(instructionPointer)CMP, AddressMode::ABSOLUTE_X}));
-    instructionMap.insert(make_pair(0xD9, Instruction{(instructionPointer)CMP, AddressMode::ABSOLUTE_Y}));
-    instructionMap.insert(make_pair(0xC1, Instruction{(instructionPointer)CMP, AddressMode::INDIRECT_X}));
-    instructionMap.insert(make_pair(0xD1, Instruction{(instructionPointer)CMP, AddressMode::INDIRECT_Y}));
-
-    instructionMap.insert(make_pair(0xC0, Instruction{(instructionPointer)CPY, AddressMode::IMMEDIATE}));
-    instructionMap.insert(make_pair(0xC4, Instruction{(instructionPointer)CPY, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0xCC, Instruction{(instructionPointer)CPY, AddressMode::ABSOLUTE}));
-
-    instructionMap.insert(make_pair(0xE0, Instruction{(instructionPointer)CPX, AddressMode::IMMEDIATE}));
-    instructionMap.insert(make_pair(0xE4, Instruction{(instructionPointer)CPX, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0xEC, Instruction{(instructionPointer)CPX, AddressMode::ABSOLUTE}));
-
-    instructionMap.insert(make_pair(0x24, Instruction{(instructionPointer)BIT, AddressMode::ZERO_PAGE}));
-    instructionMap.insert(make_pair(0x2C, Instruction{(instructionPointer)BIT, AddressMode::ABSOLUTE}));
-
-#pragma endregion
-
-#pragma region Conditional Branching
-    instructionMap.insert(make_pair(0xF0, Instruction{(instructionPointer)BEQ, AddressMode::RELATIVE}));
-
-    instructionMap.insert(make_pair(0xD0, Instruction{(instructionPointer)BNE, AddressMode::RELATIVE}));
-
-    instructionMap.insert(make_pair(0x90, Instruction{(instructionPointer)BCC, AddressMode::RELATIVE}));
-
-    instructionMap.insert(make_pair(0xB0, Instruction{(instructionPointer)BCS, AddressMode::RELATIVE}));
-
-    instructionMap.insert(make_pair(0x10, Instruction{(instructionPointer)BPL, AddressMode::RELATIVE}));
-
-    instructionMap.insert(make_pair(0x30, Instruction{(instructionPointer)BMI, AddressMode::RELATIVE}));
-
-    instructionMap.insert(make_pair(0x50, Instruction{(instructionPointer)BVC, AddressMode::RELATIVE}));
-
-    instructionMap.insert(make_pair(0x70, Instruction{(instructionPointer)BVS, AddressMode::RELATIVE}));
-#pragma endregion
-
-#pragma region Subroutine
-    instructionMap.insert(make_pair(0x20, Instruction{(instructionPointer)JSR, AddressMode::ABSOLUTE}));
-
-    instructionMap.insert(make_pair(0x60, Instruction{(instructionPointer)RTS, AddressMode::IMPLIED}));
-#pragma endregion
-
-#pragma region Pull register from stack
-    instructionMap.insert(make_pair(0x28, Instruction{(instructionPointer)PLP, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0x08, Instruction{(instructionPointer)PHP, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0x68, Instruction{(instructionPointer)PLA, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0x48, Instruction{(instructionPointer)PHA, AddressMode::IMPLIED}));
-#pragma endregion
-
-#pragma region Transfer
-    instructionMap.insert(make_pair(0xAA, Instruction{(instructionPointer)TAX, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0x8A, Instruction{(instructionPointer)TXA, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0x9A, Instruction{(instructionPointer)TXS, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0xBA, Instruction{(instructionPointer)TSX, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0x98, Instruction{(instructionPointer)TYA, AddressMode::IMPLIED}));
-
-    instructionMap.insert(make_pair(0xA8, Instruction{(instructionPointer)TAY, AddressMode::IMPLIED}));
-#pragma endregion
-    instructionMap.insert(make_pair(0x00, Instruction{(instructionPointer)BRK, AddressMode::IMPLIED}));
-    instructionMap.insert(make_pair(0xea, Instruction{(instructionPointer)NOP, AddressMode::IMPLIED}));
-}
-Instruction& GetInstruction(const uint8_t &opcode)
-{
-    return instructionMap.at(opcode);
+    return INSTRUCTION_MAP.at(opcode);
 }
 const bool InstructionValid(const uint8_t &opcode)
 {
 
-    return instructionMap.find(opcode) != instructionMap.end();
+    return INSTRUCTION_MAP.find(opcode) != INSTRUCTION_MAP.end();
 }

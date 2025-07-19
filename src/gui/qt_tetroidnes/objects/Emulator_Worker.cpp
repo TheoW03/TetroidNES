@@ -7,7 +7,6 @@
 #include <Emulator/InstructionMap.h>
 #include <Emulator/LoadRom.h>
 #include <Emulator/Bus.h>
-#include <Emulator/Bus.h>
 
 const size_t cpu_cycles_frame = 29782;
 EmulatorWorker::EmulatorWorker(Rom rom, QString rom_dest, QWidget *parent) : QObject{parent},
@@ -63,7 +62,7 @@ void EmulatorWorker::init()
     connect(frame_timer, &QChronoTimer::timeout, this, &EmulatorWorker::on_frame_timer_timeout);
 
     // Setup CPU
-    initializeInstructionMap();
+    //initializeInstructionMap();
     // auto rom = load_rom(file_tobyte_vector(rom_url.toStdString()));
     // if (rom.has_value() == 0)
     // {
@@ -75,8 +74,8 @@ void EmulatorWorker::init()
     // printf("%x \n", pc_start);
     // exit(EXIT_SUCCESS);
     // uint16_t reset_vector = this->rom.prg[];
-    auto reste = 0x8000;
-    if (this->rom.prg_size == 16384)
+    auto reste = PRG_ROM_SIZE_32;
+    if (this->rom.prg_size == PRG_ROM_SIZE_16)
     {
         reste = 0xc000;
     }
