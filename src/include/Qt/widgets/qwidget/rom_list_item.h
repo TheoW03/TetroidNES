@@ -13,7 +13,7 @@ class RomListItem: public QWidget
 public:
     explicit RomListItem(RomData *data = nullptr, QWidget *parent = nullptr);
     ~RomListItem();
-    RomData* romdata() const;
+    const RomData* romdata() const;
     void set_romdata(RomData *data);
     
 private slots:

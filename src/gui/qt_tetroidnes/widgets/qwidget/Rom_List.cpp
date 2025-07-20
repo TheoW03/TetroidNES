@@ -14,7 +14,7 @@
 
 
 RomList::RomList(QWidget *parent) : QWidget{parent},
-                                    data(new QList<RomData*>()),
+                                    data(new QList<RomData>()),
                                     main_layout(new FlowLayout()),
                                     m_current_order(Qt::AscendingOrder),
                                     m_current_page(1),
@@ -42,7 +42,6 @@ RomList::RomList(QWidget *parent) : QWidget{parent},
 
 void RomList::cleanup_romdata()
 {
-    qDeleteAll(data->begin(), data->end());
     data->clear();
 }
 
@@ -90,6 +89,8 @@ void RomList::setup_display()
             continue;
         }
 
+        data->reserve(data->max_size() + files.size());
+
         for (auto &url : files)
         {
             auto final_url = QUrl(dir.absoluteFilePath(url));
@@ -99,31 +100,26 @@ void RomList::setup_display()
                 << "File:" << final_url.toLocalFile()
                 << "Title:" << rom_title;
 
-            auto *romdata = new RomData(nullptr, year, image, rom_title, favorite, final_url);
-            data->append(romdata);
+            data->emplace_back(RomData(year, image, rom_title, favorite, final_url));
         }
     }
     qDebug() << "Finished!";
 }
 
-RomData* RomList::get_romdata(const int page, const int index)
+const RomData& RomList::get_romdata(const int page, const int index) const
 {
     uint32_t romlist_index = m_items_per_page * (page - 1) + index;
-    RomData *romdata = nullptr;
 
-    if (data->size() - 1 > romlist_index && romlist_index >= 0)
+    if (!(data->size() - 1 > romlist_index && romlist_index >= 0))
     {
-        //qDebug() << "Valid index:" << romlist_index;
-        romdata = data->at(romlist_index);
+        qCritical()
+            << "Out of bounds"
+            << "page:" << page
+            << "index:" << index
+            << "Rom data size:" << QString::number(data->size());
     }
 
-    qDebug()
-        << "page:" << page
-        << "index:" << index
-        << "Rom data size:" << QString::number(data->size())
-        << "Is nullptr (Out of bounds)(bool):" << QString::number(romdata == nullptr);
-
-    return romdata;
+    return data->at(romlist_index);
 }
 
 uint32_t RomList::items_per_page() const { return m_items_per_page; }
@@ -207,28 +203,23 @@ void RomList::update_display()
     // Apply data
     for (int i = 0; i < widgets_count; i++)
     {
-        auto *romdata = get_romdata(m_current_page, i);
+        auto romdata = get_romdata(m_current_page, i);
         auto romlistitem = list_of_widgets[i];
-        if (romdata != nullptr)
-        {
-            romlistitem->set_romdata(romdata);
-            // Hide empty items and show valid items
-            romdata->is_empty() ? romlistitem->hide() : romlistitem->show();
-        }
-        else
-        {
-            romlistitem->hide();
-        }
+
+        romlistitem->set_romdata(&romdata);
+
+        // Hide empty items and show valid items
+        romdata.is_empty() ? romlistitem->hide() : romlistitem->show();
         
     }
 
     qDebug() << "Done updating display";
 }
 
-const bool RomList::compare_regex(const RomData *a, const RomData *b, const QRegularExpression &expr, const SortMode &mode)
+const bool RomList::compare_regex(const RomData &a, const RomData &b, const QRegularExpression &expr, const SortMode &mode)
 {
-    const bool match_a = expr.match(a->title()).hasMatch();
-    const bool match_b = expr.match(b->title()).hasMatch();
+    const bool match_a = expr.match(a.title()).hasMatch();
+    const bool match_b = expr.match(b.title()).hasMatch();
 
     if (match_a != match_b)
     {
@@ -248,11 +239,11 @@ const bool RomList::compare_regex(const RomData *a, const RomData *b, const QReg
     return false;
 }
 
-const bool RomList::compare_year(const RomData *a, const RomData *b)
+const bool RomList::compare_year(const RomData &a, const RomData &b)
 {
-    if (a->year() != b->year())
+    if (a.year() != b.year())
     {
-        return a->year() < b->year();
+        return a.year() < b.year();
     }
     else
     {
@@ -260,11 +251,11 @@ const bool RomList::compare_year(const RomData *a, const RomData *b)
     }
 }
 
-const bool RomList::compare_favorite(const RomData *a, const RomData *b)
+const bool RomList::compare_favorite(const RomData &a, const RomData &b)
 {
-    if (a->favorited() != b->favorited())
+    if (a.favorited() != b.favorited())
     {
-        return a->favorited() < b->favorited();
+        return a.favorited() < b.favorited();
     }
     else
     {
@@ -272,31 +263,30 @@ const bool RomList::compare_favorite(const RomData *a, const RomData *b)
     }
 }
 
-const bool RomList::compare_alphabet(const RomData *a, const RomData *b)
+const bool RomList::compare_alphabet(const RomData &a, const RomData &b)
 {
-    return a->title().compare(b->title(), Qt::CaseInsensitive) > 0;
+    return a.title().compare(b.title(), Qt::CaseInsensitive) > 0;
 }
 
 void RomList::search(QString &expr)
 {
     auto regular_expression = QRegularExpression(expr);
     SortMode mode = current_mode();
+    const auto SORT_FUNC(
+        [&regular_expression, &mode](const RomData &a, const RomData &b)
+        {
+            return compare_regex(a, b, regular_expression, mode);
+        }
+    );
 
     if (current_order() == Qt::AscendingOrder)
     {
-        std::sort(data->begin(), data->end(),
-                  [&regular_expression, &mode](const RomData *a, const RomData *b)
-                  {
-                      return compare_regex(a, b, regular_expression, mode);
-                  });
+        std::sort(data->begin(), data->end(), SORT_FUNC);
+
     }
     else
     {
-        std::sort(data->rbegin(), data->rend(),
-                  [&regular_expression, &mode](const RomData *a, const RomData *b)
-                  {
-                      return compare_regex(a, b, regular_expression, mode);
-                  });
+        std::sort(data->rbegin(), data->rend(), SORT_FUNC);
     }
 
     update_display();

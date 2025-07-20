@@ -1,30 +1,29 @@
 #pragma once
 
-#include <QObject>
 #include <QUrl>
 
-class RomData : public QObject
+class RomData
 {
-    Q_OBJECT
 public:
-    explicit RomData(QObject *parent = nullptr, 
-        uint16_t year = 0,
-        QByteArray img = QByteArray(),
-        QString title = QString(),
-        bool favorited = false,
-        QUrl path = QUrl(QStringLiteral(""))
-    );
+    explicit RomData(uint16_t year, QByteArray img, QString title, bool favorited, QUrl path);
+    RomData();
     ~RomData();
+
     uint16_t year() const;
-    void set_year(const uint16_t year);
+    void set_year(const uint16_t &year);
+
     QString title() const;
-    void set_title(QString title);
+    void set_title(const QString &title);
+
     QByteArray img() const;
-    void set_img(QByteArray img);
+    void set_img(const QByteArray &img);
+
     bool favorited() const;
-    void set_favorited(const bool b);
+    void set_favorited(const bool &b);
+
     QUrl path() const;
-    void set_path(QUrl path);
+    void set_path(const QUrl &path);
+
     bool is_empty() const;
 
 private:

@@ -54,14 +54,14 @@ void RomListItem::set_romdata(RomData *data)
     update_data();
 }
 
-RomData* RomListItem::romdata() const
+const RomData* RomListItem::romdata() const
 {
     return m_romdata;
 }
 
 void RomListItem::favorite_button_clicked(int checked)
 {
-    RomList *rom_list = qobject_cast<RomList *>(parent());
+    auto *rom_list = qobject_cast<RomList *>(parent());
 
     m_romdata->set_favorited(checked);
 

@@ -32,18 +32,18 @@ public:
     uint32_t total_pages() const;
     void update_total_pages();
     uint32_t items_per_page() const;
-    RomData* get_romdata(const int page, const int index);
+    const RomData& get_romdata(const int page, const int index) const;
     void search(QString &expr);
     void update_display();
 private:
-    inline static const bool compare_year(const RomData *a, const RomData *b);
-    inline static const bool compare_favorite(const RomData *a, const RomData *b);
-    inline static const bool compare_alphabet(const RomData *a, const RomData *b);
-    inline static const bool compare_regex(const RomData *a, const RomData *b, const QRegularExpression &expr, const SortMode &mode);
+    inline static const bool compare_year(const RomData &a, const RomData &b);
+    inline static const bool compare_favorite(const RomData &a, const RomData &b);
+    inline static const bool compare_alphabet(const RomData &a, const RomData &b);
+    inline static const bool compare_regex(const RomData &a, const RomData &b, const QRegularExpression &expr, const SortMode &mode);
     void setup_display();
     void cleanup_romdata();
     FlowLayout *main_layout;
-    QScopedPointer<QList<RomData*>> data;
+    QScopedPointer<QList<RomData>> data;
     RomList::SortMode m_current_mode;
     Qt::SortOrder m_current_order;
 
