@@ -4,8 +4,6 @@
 #include <QSettings>
 
 #include <Qt/utils/util.h>
-#include <Qt/widgets/qwidget/rom_list.h>
-#include <Qt/objects/rom_data.h>
 
 class SettingsManager : public QObject
 {
@@ -38,8 +36,8 @@ public:
     bool run_emulator_on_seperate_thread() const;
     void set_run_emulator_on_seperate_thread(bool b);
 
-    RomList::SortMode sort_mode() const;
-    void set_sort_mode(const RomList::SortMode sort_mode);
+    SortMode sort_mode() const;
+    void set_sort_mode(const SortMode sort_mode);
 
     Qt::SortOrder ascending_order() const;
     void set_ascending_order(const Qt::SortOrder sort_order);

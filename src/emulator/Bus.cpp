@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 
 #include <Qt/utils/util.h>
+#include <Emulator/EmulatorUtil.h>
 #include <Emulator/APU.h>
 #include <Emulator/Bus.h>
 #include <Emulator/PPU.h>

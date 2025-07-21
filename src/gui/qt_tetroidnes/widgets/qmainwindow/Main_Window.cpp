@@ -69,7 +69,7 @@ void MainWindow::create_display(QString rom_link)
     std::optional<Rom> rom = load_rom(file_tobyte_vector(rom_link.toStdString()));
     if (!rom.has_value())
     {
-        constexpr const char* err = "Not a INES v1.0 ROM.\n(You should see NES at the top of the file if it is a INES v1.0 ROM and be greater then in size)";
+        constexpr const auto err = "Not a INES v1.0 ROM.\n(You should see NES at the top of the file if it is a INES v1.0 ROM and be greater then in size)";
         qInfo() << err;
         QMessageBox::critical(
             this,
@@ -183,7 +183,7 @@ void MainWindow::rom_list_scroll_value_changed(const int value)
 
 void MainWindow::sort_mode_button_released(const int id) const
 {
-    const auto sort_mode = RomList::SortMode(id);
+    const auto sort_mode = SortMode(id);
     auto &settings = SettingsManager::instance();
     QString search_bar_text = sort_control_frame->search_bar->text();
     const bool regex = !search_bar_text.isEmpty();

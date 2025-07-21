@@ -63,19 +63,19 @@ FilterControlFrame::FilterControlFrame(QWidget *parent) : QFrame{parent}
 
     // setup button group
     sort_mode_button_group->setExclusive(true);
-    sort_mode_button_group->addButton(sort_mode_year, RomList::Year);
-    sort_mode_button_group->addButton(sort_mode_favorites, RomList::Favorites);
-    sort_mode_button_group->addButton(sort_mode_az, RomList::AZ);
+    sort_mode_button_group->addButton(sort_mode_year, SortMode::Year);
+    sort_mode_button_group->addButton(sort_mode_favorites, SortMode::Favorites);
+    sort_mode_button_group->addButton(sort_mode_az, SortMode::AZ);
 
     switch (sort_mode)
     {
-    case RomList::Year:
+    case SortMode::Year:
         sort_mode_year->setChecked(true);
         break;
-    case RomList::Favorites:
+    case SortMode::Favorites:
         sort_mode_favorites->setChecked(true);
         break;
-    case RomList::AZ:
+    case SortMode::AZ:
         sort_mode_az->setChecked(true);
         break;
     default:

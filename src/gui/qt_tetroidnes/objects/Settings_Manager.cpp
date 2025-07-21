@@ -71,14 +71,14 @@ void SettingsManager::set_speed(const float speed)
     emit speed_changed(speed);
 }
 
-void SettingsManager::set_sort_mode(const RomList::SortMode sort_mode)
+void SettingsManager::set_sort_mode(const SortMode sort_mode)
 {
     m_settings.setValue(key_sort_mode, sort_mode);
 }
 
-RomList::SortMode SettingsManager::sort_mode() const
+SortMode SettingsManager::sort_mode() const
 {
-    return RomList::SortMode(m_settings.value(key_sort_mode, RomList::AZ).toInt());
+    return SortMode(m_settings.value(key_sort_mode, SortMode::AZ).toInt());
 }
 
 Qt::SortOrder SettingsManager::ascending_order() const

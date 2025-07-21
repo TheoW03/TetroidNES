@@ -5,23 +5,23 @@
 class RomData
 {
 public:
-    explicit RomData(uint16_t year, QByteArray img, QString title, bool favorited, QUrl path);
+    explicit RomData(uint16_t year, const QByteArray &img, const QString &title, bool favorited, const QUrl &path);
     RomData();
     ~RomData();
 
-    uint16_t year() const;
+    const uint16_t& year() const;
     void set_year(const uint16_t &year);
 
-    QString title() const;
+    const QString& title() const;
     void set_title(const QString &title);
 
-    QByteArray img() const;
+    const QByteArray& img() const;
     void set_img(const QByteArray &img);
 
-    bool favorited() const;
+    const bool& favorited() const;
     void set_favorited(const bool &b);
 
-    QUrl path() const;
+    const QUrl& path() const;
     void set_path(const QUrl &path);
 
     bool is_empty() const;

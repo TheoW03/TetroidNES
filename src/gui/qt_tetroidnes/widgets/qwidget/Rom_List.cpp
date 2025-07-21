@@ -14,7 +14,6 @@
 
 
 RomList::RomList(QWidget *parent) : QWidget{parent},
-                                    data(new QList<RomData>()),
                                     main_layout(new FlowLayout()),
                                     m_current_order(Qt::AscendingOrder),
                                     m_current_page(1),
@@ -30,7 +29,7 @@ RomList::RomList(QWidget *parent) : QWidget{parent},
 
     m_items_per_page = 10; // TODO: Change this so the program remembers what the user chose last time
 
-    on_rom_dirs_changed(QStringList());
+    on_rom_dirs_changed();
 
     set_current_mode(settings.sort_mode());
     set_current_order(settings.ascending_order());
@@ -40,14 +39,8 @@ RomList::RomList(QWidget *parent) : QWidget{parent},
     qInfo() << "Finished setting up romlist";
 }
 
-void RomList::cleanup_romdata()
+void RomList::on_rom_dirs_changed()
 {
-    data->clear();
-}
-
-void RomList::on_rom_dirs_changed(QStringList dirs)
-{
-    cleanup_romdata();
     setup_display();
     update_total_pages();
     m_current_page = 1;
@@ -56,70 +49,8 @@ void RomList::on_rom_dirs_changed(QStringList dirs)
 
 void RomList::setup_display()
 {
-    const QStringList rom_dirs = SettingsManager::instance().get_rom_dirs();
-    const QRegularExpression qregex(QStringLiteral(R"(\.nes$)"));
-
-    if (rom_dirs.isEmpty())
-    {
-        qDebug() << "Rom dirs were empty";
-        return;
-    }
-
-    qDebug() << "Searching rom dirs, size:" << rom_dirs.length();
-
-    for (auto &directory_url : rom_dirs)
-    {
-
-        auto dir = QDir(directory_url);
-
-        if (!dir.isAbsolute() || !dir.exists() || dir.isEmpty())
-        {
-            continue;
-        }
-
-        // TODO: MAKE A WAY TO PARSE METADATA OF ROMS TO SET THESE
-        uint16_t year = 1980;
-        QByteArray image;
-        bool favorite = false;
-
-        const QStringList files = dir.entryList(QDir::Files | QDir::NoSymLinks).filter(qregex);
-        if (files.isEmpty())
-        {
-            qDebug() << dir.dirName() << "is empty, skipping iteration...";
-            continue;
-        }
-
-        data->reserve(data->max_size() + files.size());
-
-        for (auto &url : files)
-        {
-            auto final_url = QUrl(dir.absoluteFilePath(url));
-            auto rom_title = url.section('.', 0, 0);
-
-            qDebug()
-                << "File:" << final_url.toLocalFile()
-                << "Title:" << rom_title;
-
-            data->emplace_back(RomData(year, image, rom_title, favorite, final_url));
-        }
-    }
-    qDebug() << "Finished!";
-}
-
-const RomData& RomList::get_romdata(const int page, const int index) const
-{
-    uint32_t romlist_index = m_items_per_page * (page - 1) + index;
-
-    if (!(data->size() - 1 > romlist_index && romlist_index >= 0))
-    {
-        qCritical()
-            << "Out of bounds"
-            << "page:" << page
-            << "index:" << index
-            << "Rom data size:" << QString::number(data->size());
-    }
-
-    return data->at(romlist_index);
+    data.update_raw_data();
+    update_display();
 }
 
 uint32_t RomList::items_per_page() const { return m_items_per_page; }
@@ -144,18 +75,7 @@ uint32_t RomList::current_page() const { return m_current_page; }
 
 void RomList::update_total_pages()
 {
-    qDebug()
-        << "Data length:" << data->length()
-        << "Items per page:" << items_per_page();
-    if (data->length() <= 1)
-    {
-        qInfo() << "Data length is lower or equal to 1! Setting total pages to 1";
-        m_total_pages = 1;
-    }
-    else
-    {
-        m_total_pages = (data->length() + (items_per_page() - 1)) / items_per_page(); // Always rounds up a page
-    }
+    m_total_pages = static_cast<uint32_t>(data.get_mimic_data()->length());
 }
 uint32_t RomList::total_pages() const { return m_total_pages; }
 
@@ -163,136 +83,48 @@ uint32_t RomList::total_pages() const { return m_total_pages; }
 void RomList::update_display()
 {
     auto list_of_widgets = findChildren<RomListItem *>();
-    int widgets_count = list_of_widgets.size();
+    qDeleteAll(list_of_widgets);
 
-    qDebug() << "Updating display, Widgets count:" << widgets_count;
+    const int true_page = m_current_page - 1;
+    const auto *mimic_data = data.get_mimic_data();
+    const int data_size = mimic_data->size();
 
-    // Add widgets if there are less items than items that need to be shown
-    if (m_items_per_page > widgets_count)
-    {
-
-        qDebug() << "Adding widgets";
-
-        for (int i = 0; i < m_items_per_page - widgets_count; i++)
-        {
-            auto *new_widget = new RomListItem(nullptr, this);
-
-            main_layout->addWidget(new_widget);
-            list_of_widgets.append(new_widget);
-        }
-        widgets_count = list_of_widgets.size();
-    }
-    // Remove widgets if there are more items than items that need to be shown
-    else if (m_items_per_page < widgets_count)
-    {
-        qDebug() << "Removing widgets";
-        for (int i = widgets_count; i > widgets_count - (widgets_count - m_items_per_page); i--)
-        {
-            qDebug() << i;
-            auto *widget = list_of_widgets[i];
-
-            widget->setParent(nullptr);
-            list_of_widgets.removeLast();
-            widget->deleteLater();
-        }
-        widgets_count = list_of_widgets.size();
-    }
-
-    qDebug() << "Applying data to widgets";
+    /*qDebug()
+    << "Applying data to widgets"
+    << "\nMimic Romdata" << *data.get_mimic_data()
+    << "\nMimic RomData Page size:" << data_size
+    << "\nCurrent page:" << m_current_page
+    << "\nTrue page:" << true_page;*/
 
     // Apply data
-    for (int i = 0; i < widgets_count; i++)
+    for (auto &rom_data : mimic_data->at(true_page))
     {
-        auto romdata = get_romdata(m_current_page, i);
-        auto romlistitem = list_of_widgets[i];
+        //qDebug() << "Getting rom data...";
 
-        romlistitem->set_romdata(&romdata);
+        auto *romlistitem = new RomListItem(*rom_data, this);
 
-        // Hide empty items and show valid items
-        romdata.is_empty() ? romlistitem->hide() : romlistitem->show();
-        
+        //qDebug() << "Getting rom list item to populate with data";
+
+        layout()->addWidget(romlistitem);
+
+        romlistitem->set_romdata(*rom_data);
+
+        romlistitem->show();
+
     }
 
     qDebug() << "Done updating display";
 }
 
-const bool RomList::compare_regex(const RomData &a, const RomData &b, const QRegularExpression &expr, const SortMode &mode)
-{
-    const bool match_a = expr.match(a.title()).hasMatch();
-    const bool match_b = expr.match(b.title()).hasMatch();
-
-    if (match_a != match_b)
-    {
-        return match_a;
-    }
-
-    switch (mode)
-    {
-    case Year:
-        return compare_year(a, b);
-    case Favorites:
-        return compare_favorite(a, b);
-    case AZ:
-        return compare_alphabet(a, b);
-    }
-
-    return false;
-}
-
-const bool RomList::compare_year(const RomData &a, const RomData &b)
-{
-    if (a.year() != b.year())
-    {
-        return a.year() < b.year();
-    }
-    else
-    {
-        return compare_alphabet(a, b);
-    }
-}
-
-const bool RomList::compare_favorite(const RomData &a, const RomData &b)
-{
-    if (a.favorited() != b.favorited())
-    {
-        return a.favorited() < b.favorited();
-    }
-    else
-    {
-        return compare_alphabet(a, b);
-    }
-}
-
-const bool RomList::compare_alphabet(const RomData &a, const RomData &b)
-{
-    return a.title().compare(b.title(), Qt::CaseInsensitive) > 0;
-}
-
 void RomList::search(QString &expr)
 {
     auto regular_expression = QRegularExpression(expr);
-    SortMode mode = current_mode();
-    const auto SORT_FUNC(
-        [&regular_expression, &mode](const RomData &a, const RomData &b)
-        {
-            return compare_regex(a, b, regular_expression, mode);
-        }
-    );
 
-    if (current_order() == Qt::AscendingOrder)
-    {
-        std::sort(data->begin(), data->end(), SORT_FUNC);
-
-    }
-    else
-    {
-        std::sort(data->rbegin(), data->rend(), SORT_FUNC);
-    }
+    data.sort_data(regular_expression, current_order(), current_mode());
 
     update_display();
 }
 
-// TODO: Make this function not have two switch cases that essientially do the same thing
 void RomList::set_current_mode(const SortMode &mode, const bool update)
 {
     m_current_mode = mode;
@@ -301,47 +133,23 @@ void RomList::set_current_mode(const SortMode &mode, const bool update)
         return;
     }
 
-    if (current_order() == Qt::AscendingOrder)
+    switch (mode)
     {
-        auto begin = data->begin();
-        auto end = data->end();
-
-        switch (mode)
-        {
-        case Year:
-            std::sort(begin, end, compare_year);
-            break;
-        case Favorites:
-            std::sort(begin, end, compare_favorite);
-            break;
-        case AZ:
-            std::sort(begin, end, compare_alphabet);
-            break;
-        }
-    }
-    else
-    {
-        auto rbegin = data->rbegin();
-        auto rend = data->rend();
-
-        switch (mode)
-        {
-        case Year:
-            std::sort(rbegin, rend, compare_year);
-            break;
-        case Favorites:
-            std::sort(rbegin, rend, compare_favorite);
-            break;
-        case AZ:
-            std::sort(rbegin, rend, compare_alphabet);
-            break;
-        }
+    case Year:
+        data.sort_data(ComparePtrs::CMP_YEAR, m_current_order);
+        break;
+    case Favorites:
+        data.sort_data(ComparePtrs::CMP_FAV, m_current_order);
+        break;
+    case AZ:
+        data.sort_data(ComparePtrs::CMP_ABC, m_current_order);
+        break;
     }
 
     update_display();
 }
 
-RomList::SortMode RomList::current_mode() const
+SortMode RomList::current_mode() const
 {
     return m_current_mode;
 }
@@ -352,7 +160,7 @@ void RomList::set_current_order(const Qt::SortOrder order)
         return;
 
     m_current_order = order;
-    std::reverse(data->begin(), data->end());
+    data.sort_data_reverse();
 
     update_display();
 }
@@ -364,5 +172,4 @@ Qt::SortOrder RomList::current_order() const
 
 RomList::~RomList()
 {
-    cleanup_romdata();
 }

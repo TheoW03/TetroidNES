@@ -11,10 +11,10 @@ class RomListItem: public QWidget
 {
     Q_OBJECT
 public:
-    explicit RomListItem(RomData *data = nullptr, QWidget *parent = nullptr);
+    explicit RomListItem(const RomData &data, QWidget *parent = nullptr);
     ~RomListItem();
-    const RomData* romdata() const;
-    void set_romdata(RomData *data);
+    const RomData& romdata() const;
+    void set_romdata(RomData const &data);
     
 private slots:
     void favorite_button_clicked(int checked);
@@ -27,7 +27,8 @@ private:
     QPushButton *play;
     QFrame *buttons_frame;
     QPushButton *favorite_button;
-    RomData* m_romdata;
+
+    RomData m_romdata;
 
 signals:
 };

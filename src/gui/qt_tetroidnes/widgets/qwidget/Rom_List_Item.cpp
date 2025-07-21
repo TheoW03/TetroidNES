@@ -1,10 +1,11 @@
-#include <QtLogging>
+#include <QDebug>
 
 #include <Qt/utils/util.h>
+#include <Qt/widgets/qmainwindow/main_window.h>
 #include <Qt/widgets/qwidget/rom_list.h>
 #include <Qt/objects/settings_manager.h>
 
-RomListItem::RomListItem(RomData *data, QWidget *parent) : QWidget{parent}
+RomListItem::RomListItem(const RomData &data, QWidget *parent) : QWidget{parent}
 {
 
     setMinimumSize(250, 250);
@@ -19,7 +20,7 @@ RomListItem::RomListItem(RomData *data, QWidget *parent) : QWidget{parent}
     favorite_button = new QPushButton(buttons_frame);
 
     favorite_button->setCheckable(true);
-    favorite_button->setText("Favorite button");
+    favorite_button->setText(tr("Favorite button"));
 
     title->setAlignment(Qt::AlignCenter);
     year->setAlignment(Qt::AlignCenter);
@@ -33,10 +34,9 @@ RomListItem::RomListItem(RomData *data, QWidget *parent) : QWidget{parent}
     buttons_layout->addWidget(favorite_button);
     buttons_frame->setLayout(buttons_layout);
 
-    if (data != nullptr)
+    if (!data.is_empty())
     {
         set_romdata(data);
-        qDebug() << data->title();
     }
 
     // Events
@@ -48,13 +48,20 @@ RomListItem::~RomListItem()
 {
 }
 
-void RomListItem::set_romdata(RomData *data)
+void RomListItem::set_romdata(const RomData &data)
 {
     m_romdata = data;
+    /*qDebug()
+        << "RomData ptr set, members:\n"
+        << m_romdata.year() << "\n"
+        << m_romdata.path() << "\n"
+        << m_romdata.img() << "\n"
+        << m_romdata.title()
+        << "Is pointing to:" << &m_romdata;*/
     update_data();
 }
 
-const RomData* RomListItem::romdata() const
+const RomData& RomListItem::romdata() const
 {
     return m_romdata;
 }
@@ -63,20 +70,20 @@ void RomListItem::favorite_button_clicked(int checked)
 {
     auto *rom_list = qobject_cast<RomList *>(parent());
 
-    m_romdata->set_favorited(checked);
+    m_romdata.set_favorited(checked);
 
     // Refresh display
-    if (rom_list->current_mode() == RomList::SortMode::Favorites)
+    if (rom_list->current_mode() == SortMode::Favorites)
     {
-        rom_list->set_current_mode(RomList::SortMode::Favorites);
+        rom_list->set_current_mode(SortMode::Favorites);
     }
 }
 
 void RomListItem::update_data()
 {
-    title->setText(m_romdata->title());
-    year->setText(QString::number(m_romdata->year()));
-    if (m_romdata->img().isNull())
+    title->setText(m_romdata.title());
+    year->setText(QString::number(m_romdata.year()));
+    if (m_romdata.img().isNull())
     {
         auto placeholder_img = QPixmap(175, 175);
         placeholder_img.fill(Qt::darkGreen);
@@ -85,22 +92,25 @@ void RomListItem::update_data()
     }
     // else {play->setIcon(QIcon());)
 
-    favorite_button->setChecked(m_romdata->favorited());
+    favorite_button->setChecked(m_romdata.favorited());
 }
 
 void RomListItem::play_button_clicked()
 {
 
-    auto path = m_romdata->path();
+    const auto &path = m_romdata.path();
+    qDebug() << "Mem address:" << &m_romdata;
 
     if (!path.isValid())
     {
-        qCritical() << "Path is not valid (Try restarting the program)";
+        qCritical()
+        << "Path is not valid (Try restarting the program)"
+        << "Path Tried to open:" << path.toString();
         return;
     }
 
     qInfo() << "Starting" << title->text();
     qDebug() << "Path:" << path;
     SettingsManager::instance().append_recent_roms(path.toString());
-    start_game(path.toString());
+    MainWindow::start_game(path.toLocalFile());
 }

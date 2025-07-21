@@ -5,10 +5,10 @@
 #include <QScrollArea>
 #include <QLabel>
 
-#include <Qt/objects/rom_data.h>
 #include <Qt/widgets/qwidget/rom_list.h>
 #include <Qt/widgets/qframe/filter_control_frame.h>
 #include <Qt/widgets/qmenubar/menubar.h>
+#include <Qt/widgets/qwidget/game_display.h>
 
 class MainWindow : public QMainWindow
 {
@@ -19,6 +19,41 @@ public:
     ~MainWindow();
     void update_page_info();
     void create_display(QString rom_link);
+    inline static bool is_a_game_running()
+    {
+
+        for (auto &widget : qApp->topLevelWidgets())
+        {
+            if (widget->inherits("GameDisplay"))
+            {
+                if (qobject_cast<GameDisplay *>(widget)->initialized())
+                {
+                    return true;
+                }
+            }
+        }
+
+        // Code reaches this point if all game display objects are not initialized
+        return false;
+    }
+    inline static void start_game(QString path)
+    {
+        if (is_a_game_running())
+        {
+            qInfo() << "Can't open game while a game is already running";
+            return;
+        }
+        for (auto &widget : qApp->topLevelWidgets())
+        {
+            if (widget->inherits("MainWindow"))
+            {
+                qDebug() << "File path:" << path;
+                qobject_cast<MainWindow *>(widget)->create_display(path);
+                break;
+            }
+        }
+    }
+
 public slots:
     void sort_mode_button_released(const int id) const;
     void sort_order_button_toggled(const bool toggled) const;

@@ -9,6 +9,8 @@
 #define NES_RES_W 240
 #define NES_RES_L 256
 
+#define NES_START 0x8000
+
 struct CPU
 {
     uint8_t A_Reg;
