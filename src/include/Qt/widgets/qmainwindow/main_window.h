@@ -18,7 +18,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void update_page_info();
-    void create_display(QString rom_link);
+    void create_display(const QString &rom_link);
     inline static bool is_a_game_running()
     {
 
@@ -36,7 +36,7 @@ public:
         // Code reaches this point if all game display objects are not initialized
         return false;
     }
-    inline static void start_game(QString path)
+    inline static void start_game(const QString &path)
     {
         if (is_a_game_running())
         {

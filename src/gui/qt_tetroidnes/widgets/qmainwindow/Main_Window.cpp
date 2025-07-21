@@ -62,9 +62,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
     connect(rom_list_scroll->verticalScrollBar(), &QScrollBar::valueChanged, this, &MainWindow::rom_list_scroll_value_changed);
 }
 
-void MainWindow::create_display(QString rom_link)
+void MainWindow::create_display(const QString &rom_link)
 {
 
+    qDebug() << "Loading rom, path:" << rom_link.toStdString();
     // std::shared_ptr<GameDisplay> display = std::make_shared<GameDisplay>(this, rom_link);
     std::optional<Rom> rom = load_rom(file_tobyte_vector(rom_link.toStdString()));
     if (!rom.has_value())

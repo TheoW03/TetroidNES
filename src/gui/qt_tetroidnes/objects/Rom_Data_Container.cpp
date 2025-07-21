@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QFileInfo>
 
 #include <Qt/objects/settings_manager.h>
 
@@ -48,13 +49,20 @@ void RomDataContainer::update_raw_data()
             continue;
         }
 
-        const QStringList files = dir.entryList(QDir::Files | QDir::NoSymLinks).filter(qregex);
+        QStringList files = dir.entryList(QDir::Files | QDir::NoSymLinks).filter(qregex);
+
         if (files.isEmpty())
         {
             qDebug() << dir.dirName() << "is empty, skipping iteration...";
             continue;
         }
         
+        // Get absolute paths
+        for (int i = 0; i < files.size(); i++)
+        {
+            files[i] = dir.absoluteFilePath(files[i]);
+        }
+
         rom_urls.reserve(rom_urls.length() + files.length());
         rom_urls += files;
     }
@@ -68,7 +76,7 @@ void RomDataContainer::update_raw_data()
 
     for (const QString &rom_url : rom_urls)
     {
-        auto rom_title = rom_url.section('.', 0, 0);
+        auto rom_title = QFileInfo(rom_url).completeBaseName();
 
         m_raw_data.emplace_back(RomData(year, image, rom_title, favorite, rom_url));   
     }

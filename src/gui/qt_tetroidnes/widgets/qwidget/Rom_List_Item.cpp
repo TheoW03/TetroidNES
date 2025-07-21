@@ -110,7 +110,11 @@ void RomListItem::play_button_clicked()
     }
 
     qInfo() << "Starting" << title->text();
-    qDebug() << "Path:" << path;
+    /*qDebug()
+    << "Path:" << path
+    << "\nPath to QString:" << path.toString()
+    << "\nPath to Local File QString:" << path.toLocalFile();*/
+
     SettingsManager::instance().append_recent_roms(path.toString());
-    MainWindow::start_game(path.toLocalFile());
+    MainWindow::start_game(path.toString());
 }
