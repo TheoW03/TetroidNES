@@ -1,13 +1,18 @@
 // #include "../include/Bus.h"
 // #include "../include/PPU.h"
 // #include "../include/APU.h"
+#include <bitset>
+
+#include <SFML/Graphics.hpp>
+
+#include <Qt/utils/util.h>
+#include <Emulator/EmulatorUtil.h>
 #include <Emulator/APU.h>
 #include <Emulator/Bus.h>
 #include <Emulator/PPU.h>
-#include <SFML/Graphics.hpp>
-#include <bitset>
 #include <Emulator/Bus.h>
-// #include "Bus.h>
+#include <Emulator/InstructionMap.h>
+
 #define TOP_STACK 0x1ff
 #define BOTTOM_STACK 0x100
 #define STACK_RESET 0xfd
@@ -29,14 +34,18 @@ Bus::Bus(Rom rom, uint16_t pc_start)
     this->rom = rom;
     PPU nes_ppu(rom.CHR, rom.mirror);
     joy_pad_byte1 = 0;
+    joypad1_idx = 0;
+    strobe = false;
     this->ppu = nes_ppu; // test
     // this->ppu.chr_rom = rom.CHR;
     // this->ppu.mirrorType = rom.mirror;
+    this->err_string = std::nullopt;
 
     APU APU();
     this->apu = apu; // test
     this->stack_pointer = STACK_RESET;
     this->stack = BOTTOM_STACK + stack_pointer;
+    this->clock_cycles_instr = 0;
 }
 uint16_t Bus::get_PC()
 {
@@ -69,27 +78,40 @@ uint8_t Bus::fetch_next()
     stored_instructions[1] = stored_instructions[0];
     // printf(" fetch: current_instrcution: 0x%x  pc: 0x%x \n", current_instruction, this->program_counter);
     program_counter++;
-    stored_instructions[0] = rom.PRG[this->program_counter - reset_vector];
-
+    // this->tick();
+    // this->tick();
+    // stored_instructions[0] = rom.PRG[this->program_counter - reset_vector];
+    stored_instructions[0] = read_8bit(this->program_counter);
     return current_instruction;
 }
 
 void Bus::fill(uint16_t pc)
 {
-    stored_instructions[0] = rom.PRG[(pc + 1) - reset_vector];
-    stored_instructions[1] = rom.PRG[(pc - reset_vector)];
-    clock_cycles += 2;
+    if (pc < rom.PRG.size())
+    {
+        err_string = "ROM size is to small" + std::to_string(rom.PRG.size()) + " pc " + std::to_string(pc);
+        return;
+    }
+
+    // stored_instructions[0] = rom.PRG[(pc + 1) - reset_vector];
+    stored_instructions[0] = read_8bit(pc + 1);
+    stored_instructions[1] = read_8bit(pc);
+    // stored_instructions[1] = rom.PRG[(pc - reset_vector)];
+    // clock_cycles += 2;
+    // this->tick();
+    // this->tick();
     this->program_counter = pc;
     // printf("current_instrcution: 0x%x  pc: 0x%x \n", current_instruction, this->program_counter);
-    // printf(" fill: proram counter: 0x%x current: 0x%x \n", pc, stored_instructions[1]);
 
     program_counter++;
 }
 
 uint8_t Bus::read_8bit(uint16_t address)
 {
-    this->clock_cycles++;
-    if (address < 0x1FFF)
+    // this->clock_cycles++;
+    // this->ppu.tick(3);
+    this->tick();
+    if (address <= 0x1FFF)
     {
         uint16_t mirror_address = address & 0x7ff;
         return v_memory[mirror_address];
@@ -103,7 +125,9 @@ uint8_t Bus::read_8bit(uint16_t address)
         if (address == 0x2007)
             return this->ppu.read_PPU_data();
         else if (address == 0x2002)
+        {
             return this->ppu.read_status();
+        }
         else if (address == 0x2004)
         {
             return this->ppu.read_OAM_data();
@@ -129,13 +153,13 @@ uint8_t Bus::read_8bit(uint16_t address)
     }
     else if (address == 0x4016)
     {
-        return read_joypad();
+        return read_joypad1();
     }
     else if (address == 0x4017)
     {
-        return joy_pad_byte2;
+        return read_joypad2();
     }
-    else if (address >= 0x8000 && address <= 0xFFFF)
+    else if ((address >= reset_vector || address >= NES_START) && address <= 0xFFFF)
     {
         return rom.PRG[address - reset_vector];
     }
@@ -144,7 +168,9 @@ uint8_t Bus::read_8bit(uint16_t address)
 
 void Bus::write_8bit(uint16_t address, uint8_t value)
 {
-    this->clock_cycles++;
+    // this->clock_cycles++;
+    // this->ppu.tick(3);
+    this->tick();
     if (address <= 0x1FFF)
     {
         uint16_t mirror_address = address & 0x7ff;
@@ -152,15 +178,13 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
-        // std::cout << "ppu write" << address << std::endl;
-        // printf("%x \n", address);
-
         if (address == 0x2000)
         {
             this->ppu.write_PPU_ctrl(value);
         }
         else if (address == 0x2001)
         {
+
             this->ppu.write_PPU_mask(value);
         }
         else if (address == 0x2003)
@@ -173,57 +197,66 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
         }
         else if (address == 0x2005)
         {
+            // this->ppu.write_OAM_data(value);
         }
         else if (address == 0x2006)
         {
+            std::cout << "write to addr" << std::endl;
+            qInfo() << num_to_hexa(this->get_PC() - reset_vector);
+            std::cout << rom.PRG.size() << std::endl;
+            std::cout << rom.CHR.size() << std::endl;
+
             this->ppu.write_PPU_address(value);
         }
         else if (address == 0x2007)
         {
             auto b = this->ppu.write_PPU_data(value);
-            if (b == std::nullopt)
-            {
-                this->stored_instructions[1] = 0x82;
-            }
+
+            // if (b == std::nullopt)
+            // {
+            // this->stored_instructions[1] = 0x82;
+            // }
             // if ()
         }
         else if (address >= 0x2008)
             this->write_8bit(address & 0x2007, value);
         else
         {
-            this->stored_instructions[1] = 0x82;
-            std::cout << "\033[91mforbidden access to PPU read only address\033[0m" << std::endl;
-            printf("address 0x%x \n", address);
-            std::cout << "" << std::endl;
+            // this->stored_instructions[1] = 0x82;
+            // std::cout << "\033[91mforbidden access to PPU read only address\033[0m" << std::endl;
+            // printf("address 0x%x \n", address);
+            // this->err_string = {"\033[91mforbidden access to PPU read only address\033[0m"};
+            // std::cout << "" << std::endl;
+            this->err_string = "Address 0x" + num_to_hexa(address) + " is a PPU read only address";
         }
     }
     else if (address == 0x4014)
     {
-        uint8_t startaddr = value << 8;
-
         for (int i = 0; i < 256; i++)
-            this->ppu.write_OAM_data(this->read_8bit(startaddr | i));
+        {
+            this->ppu.write_OAM_data(v_memory[i + 0x0200]);
+        }
+        qInfo() << "writting to OAM";
     }
     else if (address == 0x4016)
     {
         strobe = (bool)value;
-        button_idx = 0;
-        // std::cout <<
-        // joy_pad_byte1 = 0;
-        // joy_pad_byte1 = value & 0b00000001;
-        // return
+        if (strobe)
+        {
+            joypad1_idx = 0;
+            joypad2_idx = 0;
+        }
+
+        qInfo() << "strobe is set";
+        qInfo() << num_to_hexa(value);
     }
-    // else if (address == 0x4017)
-    // {
-    //     joy_pad_byte2 = value;
-    // }
     else if (address >= 0x8000 && address <= 0xFFFF)
     {
-        this->stored_instructions[1] = 0x82;
-
-        std::cout << "\033[91mAttempt to write into READ_ONLY_MEM\033[0m" << std::endl;
-        printf("address 0x%x \n", address);
-        std::cout << "" << std::endl;
+        // this->stored_instructions[1] = 0x82;
+        this->err_string = "Address 0x" + num_to_hexa(address) + " is `_ONLY on this emulator";
+        // std::cout << "\033[91mAttempt to write into READ_ONLY_MEM\033[0m" << std::endl;
+        // printf("address 0x%x \n", address);
+        // std::cout << "" << std::endl;
 
         // exit(EXIT_FAILURE);
     }
@@ -236,39 +269,42 @@ void Bus::write_8bit(uint16_t address, uint8_t value)
 
 uint16_t Bus::read_16bit(uint16_t address)
 {
-    clock_cycles += 2;
+    // clock_cycles += 2;
 
     if (address < 0x1FFF)
     {
-        uint16_t mirror_address = address & 0x7ff;
-        uint16_t value = (uint16_t)(v_memory[mirror_address + 1] << 8) | v_memory[mirror_address];
-        return value;
+        // uint16_t mirror_address = address & 0x7ff;
+        // uint16_t value = (uint16_t)(v_memory[mirror_address + 1] << 8) | v_memory[mirror_address];
+        return read_8bit(address + 1) << 8 | read_8bit(address);
+        // return value;
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
         return read_8bit(address + 1) << 8 | read_8bit(address);
     }
-    else if (address >= 0x8000 && address <= 0xFFFF)
+    else if (address == 0x4014 || address == 0x4016 || address == 0x4017)
+    {
+        return read_8bit(address + 1) << 8 | read_8bit(address);
+    }
+    else if ((address >= reset_vector || address >= NES_START) && address <= 0xFFFF)
     {
 
-        uint8_t lsb = rom.PRG[address - reset_vector];
-        uint8_t msb = rom.PRG[(address + 1) - reset_vector];
-        return (uint16_t)(msb << 8) | lsb;
+        // uint8_t lsb = rom.PRG[address - reset_vector];
+        // uint8_t msb = rom.PRG[(address + 1) - reset_vector];
+        // return (uint16_t)(msb << 8) | lsb;
+        return read_8bit(address + 1) << 8 | read_8bit(address);
     }
     return 0;
 }
 
 void Bus::write_16bit(uint16_t address, uint16_t value)
 {
-    clock_cycles += 2;
+    // clock_cycles += 2;
 
     if (address < 0x1FFF)
     {
-        uint16_t mirror_address = address & 0x7ff;
-        uint8_t msb = (uint8_t)(value >> 8);
-        uint8_t lsb = (uint8_t)(value & 0xFF);
-        v_memory[mirror_address] = lsb;
-        v_memory[mirror_address + 1] = msb;
+        write_8bit(address + 1, value >> 8);
+        write_8bit(address, value);
     }
     else if (address >= 0x2000 && address <= 0x3FFF)
     {
@@ -276,12 +312,19 @@ void Bus::write_16bit(uint16_t address, uint16_t value)
         write_8bit(address + 1, value >> 8);
         write_8bit(address, value);
     }
-
+    else if (address == 0x4014 || address == 0x4016)
+    {
+        write_8bit(address + 1, value >> 8);
+        write_8bit(address, value);
+    }
     else if (address >= 0x8000 && address <= 0xFFFF)
     {
-        this->stored_instructions[1] = 0x82;
+        // this->stored_instructions[1] = 0x82;
+        // write_8bit(address + 1, value >> 8);
+        // write_8bit(address, value);
+        this->err_string = "Address 0x" + num_to_hexa(address) + " is READ_ONLY on this emulator";
 
-        std::cout << "Attempt to write into READ_ONLY_MEM" << std::endl;
+        // std::cout << "Attempt to write into READ_ONLY_MEM" << std::endl;
     }
 }
 
@@ -335,10 +378,20 @@ void Bus::print_stack()
 
 void Bus::tick()
 {
-    this->ppu.tick(this->clock_cycles * 3);
+    this->clock_cycles++;
+    this->ppu.tick(3);
+    this->clock_cycles_instr++;
+    // std::cout << "clock cycles: " << this->clock_cycles << std::endl;
+    // this->ppu.tick(this->clock_cycles * 3);
+    // qInfo() << "cpu clock cyles * 3: " << clock_cycles * 3;
 }
 
-// void Bus::render(sf::Texture &texture, int bank, int tile)
+int Bus::reset_clock()
+{
+    int ret = this->clock_cycles_instr;
+    this->clock_cycles_instr = 0;
+    return ret;
+} // void Bus::render(sf::Texture &texture, int bank, int tile)
 // {
 //     this->ppu.render(texture, bank, tile);
 // }
@@ -348,16 +401,37 @@ bool Bus::NMI_interrupt()
     return this->ppu.NMI_interrupt(this->clock_cycles * 3);
 }
 
-uint8_t Bus::read_joypad()
+uint8_t Bus::read_joypad1()
 {
-    if (button_idx > 7)
+    if (joypad1_idx > 7)
     {
         return 1;
     }
-    uint8_t button = (joy_pad_byte1 << button_idx);
-    if (strobe)
+    // joy_pad_byte1 = 32;
+
+    // uint8_t button = (joy_pad_byte1 << joypad1_idx);
+    uint8_t button = (joy_pad_byte1 & (1 << joypad1_idx)) >> joypad1_idx;
+    qInfo() << "strobe: " << joypad1_idx << " value: " << num_to_hexa(button);
+
+    if (!strobe && joypad1_idx <= 7)
     {
-        button_idx++;
+        joypad1_idx++;
+    }
+    return button;
+}
+
+uint8_t Bus::read_joypad2()
+{
+    if (joypad2_idx > 7)
+    {
+        return 1;
+    }
+    // uint8_t button = (joy_pad_byte2 << joypad2_idx);
+    uint8_t button = (joy_pad_byte2 & (1 << joypad2_idx)) >> joypad2_idx;
+
+    if (!strobe && joypad2_idx <= 7)
+    {
+        joypad2_idx++;
     }
     return button;
 }
@@ -366,17 +440,44 @@ void Bus::print_ppu()
 {
     ppu.print_ppu_stats();
 }
-void Bus::write_controller1(Controller value, int isPressed)
+void Bus::write_controller1(Controller value, const bool isPressed)
 {
     // uint8_t v = (uint8_t) value;
 
-    if (isPressed == 1)
+    if (isPressed)
         joy_pad_byte1 |= (uint8_t)value;
-    else if (isPressed == 0)
+    else
         joy_pad_byte1 &= ~((uint8_t)(value));
 }
 
+void Bus::write_controller2(Controller value, const bool isPressed)
+{
+    if (isPressed)
+        joy_pad_byte2 |= (uint8_t)value;
+    else
+        joy_pad_byte2 &= ~((uint8_t)(value));
+}
 std::vector<uint8_t> Bus::render_texture(std::tuple<size_t, size_t> res)
 {
     return this->ppu.render_texture(res);
+}
+
+std::optional<std::string> Bus::check_error()
+{
+    if (this->err_string.has_value())
+    {
+        return this->err_string;
+    }
+    else if (this->ppu.err_string.has_value())
+    {
+        return this->ppu.err_string;
+    }
+    return std::nullopt;
+    // return std::optional<std::string>();
+}
+
+void Bus::log_ppu()
+{
+
+    this->ppu.log_ppu();
 }

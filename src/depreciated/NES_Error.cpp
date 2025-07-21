@@ -1,4 +1,4 @@
-#include <Emulator/Computer.h>
+#include <Emulator/EmulatorUtil.h>
 #include <fstream>
 
 void cpu_to_log(std::string path)
@@ -7,7 +7,7 @@ void cpu_to_log(std::string path)
 }
 void program_success(CPU cpu)
 {
-    printCPU_stats(cpu);
+    // printCPU_stats(cpu);
     std::cout << "" << std::endl;
     std::cout << "\033[92mProgram has successfully exited" << std::endl;
     std::cout << "exit code 0 \033[0m" << std::endl;
@@ -16,7 +16,7 @@ void program_success(CPU cpu)
 void program_failure(std::string reason, CPU cpu, int exit_code)
 {
     std::cout << reason << std::endl;
-    printCPU_stats(cpu);
+    // printCPU_stats(cpu);
     printf("\n");
     std::cout << "\033[91mProgram unsuccessfully exited" << std::endl;
     std::cout << "exit code 1\033[0m" << std::endl;

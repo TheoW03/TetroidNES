@@ -1,16 +1,16 @@
 #!/bin/bash
 
 build() {
-    # Define the list of ROM build commands
-    cmake -S . -B build -DUNITTESTS=ON
 
-    mkdir -p ./src/unitTests/TestRoms/
+    # mkdir -p ./src/unitTests/TestRoms/
+    mkdir -p ./games/
     RomList=(
         "nya~"
-        "./src/unitTests/TestRomsSource/LDATest.s -o ./src/unitTests/TestRoms/LDATest.nes"
-        "./src/unitTests/TestRomsSource/JMPTest.s -o ./src/unitTests/TestRoms/JMPTest.nes"
-        "./src/unitTests/TestRomsSource/TestASL.s -o ./src/unitTests/TestRoms/TestAsl.nes"
+        "./src/TestRomSrc/WhiteBG.s -o ./games/WhiteBG.nes"
+        "./src/TestRomSrc/OAMDMATest/OAMDma.s -o ./games/TestOAMDMA.nes"
+        "./src/TestRomSrc/ControllerTest/Controllers.s -o ./games/TestControls.nes"
     )
+    
 
     echo ""
 

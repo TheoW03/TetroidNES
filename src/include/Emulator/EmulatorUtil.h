@@ -1,14 +1,16 @@
+#pragma once
+
 #include <iostream>
 #include <Emulator/Bus.h>
 #include <filesystem>
-
+#include <optional>
 // #include <SFML/Graphics.hpp>
 #define NES_RES_A 256 * 240
 #define NES_RES_W 240
 #define NES_RES_L 256
 
-#ifndef CPU_H
-#define CPU_H
+#define NES_START 0x8000
+
 struct CPU
 {
     uint8_t A_Reg;
@@ -22,7 +24,7 @@ struct CPU
             unsigned C : 1; // Carry
             unsigned Z : 1; // Zero
             unsigned I : 1; // interrupt disabled
-            unsigned D : 1; // Decimal mode (un-used)
+            unsigned D : 1; // Decimal mode (un-used in the NES)
             unsigned B : 1; // break
             unsigned Unused : 1;
             unsigned V : 1; // overflow
@@ -34,10 +36,9 @@ struct CPU
     int error_code;
 
     Bus bus;
+    std::optional<int> interrupt;
 };
-#endif
-#ifndef ADDRESS_MODE
-#define ADDRESS_MODE
+
 enum class AddressMode
 {
     ACCUMULATOR,
@@ -54,7 +55,3 @@ enum class AddressMode
     RELATIVE,
     IMPLIED
 };
-#endif
-CPU run(CPU cpu, std::string file_name);
-void printCPU_stats(CPU cpu);
-CPU init(std::string file_name);

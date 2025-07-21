@@ -1,100 +1,105 @@
 cmake_minimum_required(VERSION 3.16)
-project(CMakeSFMLProject LANGUAGES CXX)
 
-set(CMAKE_EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/..)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/..)
-set(EXECUTABLE_NAME Tetroid)
-set(UNIT_TEST_EXE Emulator_tests)
-# string(APPEND CMAKE_CXX_FLAGS "-Wall")
-string(APPEND CMAKE_CXX_FLAGS " -g")
-# set(CMAKE_BUILD_TYPE Debug)
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+project(tetroidnes VERSION 1.0.0 LANGUAGES CXX)
+
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(EXECUTABLE_NAME TetroidNES)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+set(VERSION_DEF "#define VERSION \"${PROJECT_VERSION}-Debug\"")
+else()
+set(VERSION_DEF "#define VERSION \"${PROJECT_VERSION}\"")
+endif()
+
+set(QT_REQUIRED_COMPONENTS Widgets Core Gui LinguistTools)
+
+file(GLOB QT_TRANSLATION_FILES "./src/gui/qt_tetroidnes/translations/tetroidnes_*.ts")
+file(GLOB QT_RCC_FILES "./src/gui/qt_tetroidnes/resources/*.qrc")
+file(GLOB EMULATOR_HEADERS "./src/include/Emulator/*.h")
+file(GLOB EMULATOR_SOURCES "./src/emulator/*.cpp")
+file(GLOB_RECURSE QT_PROJECT_SOURCES "./src/gui/qt_tetroidnes/*.cpp")
+file(GLOB_RECURSE QT_HEADERS "./src/include/Qt/*.h")
+set(MAIN_FILE "./src/gui/qt_tetroidnes/Main.cpp")
+
+find_package(OpenGL REQUIRED COMPONENTS OpenGL)
+
+if(UNIX)
+    find_package(SFML 3 REQUIRED COMPONENTS Graphics Audio)
+endif()
+
+find_package(Qt6 REQUIRED COMPONENTS
+    ${QT_REQUIRED_COMPONENTS}
 )
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
 
-option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+
 include(FetchContent)
 FetchContent_Declare(SFML
     GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG 2.6.x)
+    GIT_TAG 3.0.x
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
+#include_directories(${EXECUTABLE_NAME} PRIVATE src/include/Qt)
+include_directories(${EXECUTABLE_NAME} PRIVATE src/include/)
 
-
-if(DEFINED UNITTESTS AND UNITTESTS STREQUAL "ON")
-  enable_testing()
-  add_executable(
-  ${UNIT_TEST_EXE}
-  src/unitTests/RunUnitTests.cc
-  src/unitTests/emulator_test.cc
-    src/SetupSFML.cpp
-    src/emulator/APU.cpp
-    src/emulator/AddressMode.cpp
-    src/emulator/BitOperations.cpp
-    src/emulator/Bus.cpp
-    src/emulator/Computer.cpp
-    src/emulator/Instructions.cpp
-    src/emulator/LoadRom.cpp
-    src/emulator/PPU.cpp
-    src/emulator/StatusRegister.cpp
-    src/emulator/NESError.cpp
-    src/emulator/InstructionMap.cpp
-)
-target_link_libraries(
-  ${UNIT_TEST_EXE}
-
-  GTest::gtest_main
-)
-target_include_directories(${UNIT_TEST_EXE} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
-
-target_link_libraries(
-  ${UNIT_TEST_EXE}
-    sfml-graphics
-)
-include(GoogleTest)
-gtest_discover_tests(  ${UNIT_TEST_EXE})
-target_compile_features(  ${UNIT_TEST_EXE} PRIVATE cxx_std_20)
-
-
-install(TARGETS   ${UNIT_TEST_EXE}
-)
-else()
-add_executable(${EXECUTABLE_NAME} src/main.cpp
-    src/SetupSFML.cpp
-    src/emulator/APU.cpp
-    src/emulator/AddressMode.cpp
-    src/emulator/BitOperations.cpp
-    src/emulator/Bus.cpp
-    src/emulator/Computer.cpp
-    src/emulator/Instructions.cpp
-    src/emulator/LoadRom.cpp
-    src/emulator/PPU.cpp
-    src/emulator/StatusRegister.cpp
-    src/emulator/NESError.cpp
-    src/emulator/InstructionMap.cpp
+qt_add_executable(${EXECUTABLE_NAME}
+    MANUAL_FINALIZATION
+    ${QT_RCC_FILES}
+    ${QT_PROJECT_SOURCES}
+    ${EMULATOR_SOURCES}
+    ${QT_HEADERS}
 )
 
-target_include_directories(${EXECUTABLE_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src/include)
+qt_add_translations(${EXECUTABLE_NAME} TS_FILES ${QT_TRANSLATION_FILES})
 
-target_link_libraries(${EXECUTABLE_NAME} PRIVATE sfml-graphics)
-target_compile_features(${EXECUTABLE_NAME} PRIVATE cxx_std_20)
-install(TARGETS ${EXECUTABLE_NAME})
-
-
+if(ANDROID)
+    set_property(TARGET ${EXECUTABLE_NAME} APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+        ${CMAKE_CURRENT_SOURCE_DIR}/android)
 endif()
 
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE Qt6::Widgets Qt6::Gui Qt6::Core)
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE SFML::Graphics SFML::Window SFML::Audio)
 
+#target_link_libraries(${EXECUTABLE_NAME} PRIVATE OpenGL::GLES2)
 
-# if(WIN32)
-# add_custom_command(
-# TARGET ${EXECUTABLE_NAME}
-# COMMENT "Copy OpenAL DLL"
-# PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${SFML_SOURCE_DIR}/extlibs/bin/$<IF:$<EQUAL:${CMAKE_SIZEOF_VOID_P},8>,x64,x86>/openal32.dll $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>
-# VERBATIM)
-# endif()
-# uncomment if you are running this in Visual Studio or if you get an error on windows with the current setup
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES
+    ${BUNDLE_ID_OPTION}
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE TRUE
+    WIN32_EXECUTABLE TRUE
+)
+
+include(GNUInstallDirs)
+install(TARGETS ${EXECUTABLE_NAME}
+    BUNDLE DESTINATION .
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(CODE
+    file(GET_RUNTIME_DEPENDENCIES DIRECTORY ${QT_REQUIRED_COMPONENTS})
+)
+
+# Update version macro if needed
+file(READ ${MAIN_FILE} FILE_CONTENT)
+string(REGEX MATCH "#define VERSION \"[^\"]*\"" FIRST_LINE "${FILE_CONTENT}")
+#message(STATUS "First line: ${FIRST_LINE} Replacing to: ${VERSION_DEF}")
+string(REPLACE "${FIRST_LINE}" "${VERSION_DEF}" NEW_CONTENT "${FILE_CONTENT}")
+#message(STATUS "New Content:\n${NEW_CONTENT}")
+
+if(NOT NEW_CONTENT STREQUAL FILE_CONTENT)
+    file(WRITE ${MAIN_FILE}
+        "${NEW_CONTENT}"
+    )
+
+else()
+    message(STATUS "Version line not found or is the same")
+endif()
+qt_finalize_executable(${EXECUTABLE_NAME})

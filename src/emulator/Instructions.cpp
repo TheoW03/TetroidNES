@@ -2,7 +2,7 @@
 
 #include <Emulator/BitOperations.h>
 // #include "Memory.h"
-#include <Emulator/Computer.h>
+#include <Emulator/EmulatorUtil.h>
 #include <Emulator/AddressMode.h>
 #include <Emulator/StatusRegister.h>
 #include <Emulator/Bus.h>
@@ -133,14 +133,17 @@ void PLA(AddressMode addressType, CPU &cpu)
 void STA(AddressMode addressType, CPU &cpu)
 {
 	// TODO store accumulator in mem
-
 	uint16_t v = address_mode(addressType, cpu);
+	// printf("%x \n", v);
+	// printf("%x \n", cpu.bus.get_PC());
 	cpu.bus.write_8bit(v, cpu.A_Reg);
 }
 
 void STX(AddressMode addressType, CPU &cpu)
 {
 	uint16_t v = address_mode(addressType, cpu);
+	// printf("%x \n", v);
+	// printf("%x \n", cpu.bus.get_PC());
 	cpu.bus.write_8bit(v, cpu.X_Reg);
 }
 
@@ -250,6 +253,7 @@ void BIT(AddressMode addressType, CPU &cpu)
 {
 	// TODO: bit test
 	uint8_t value = get_value(addressType, cpu);
+
 	uint8_t result = cpu.A_Reg & value;
 	set_zero(result, cpu);
 	set_overflow((value & 0b00100000) != 0, cpu);
@@ -279,9 +283,9 @@ void ROR(AddressMode addressType, CPU &cpu)
 {
 	// TODO: rotate right
 
-	set_carry((cpu.A_Reg & 1) != 0, cpu);
 	if (addressType == AddressMode::ACCUMULATOR)
 	{
+		set_carry((cpu.A_Reg & 1) != 0, cpu);
 		cpu.A_Reg = right_rotate(cpu.A_Reg, 1);
 		set_negative(cpu.A_Reg, cpu);
 		set_zero(cpu.A_Reg, cpu);
@@ -291,6 +295,7 @@ void ROR(AddressMode addressType, CPU &cpu)
 
 		uint16_t address = address_mode(addressType, cpu);
 		uint8_t value = cpu.bus.read_8bit(address);
+		set_carry((value & 1) != 0, cpu);
 		value = right_rotate(value, 1);
 		cpu.bus.write_8bit(address, value);
 		set_negative(value, cpu);
@@ -300,10 +305,16 @@ void ROR(AddressMode addressType, CPU &cpu)
 
 void ROL(AddressMode addressType, CPU &cpu)
 {
-	set_carry(((cpu.A_Reg >> 7) != 0), cpu);
+	// cpu.A_Reg = 129;
+
+	// printf("%d \n", ((cpu.A_Reg >> 7) != 0));
+	// std::bitset<8> test(cpu.A_Reg);
+	// std::cout << test << std::endl;
+	// exit(EXIT_FAILURE);
 	if (addressType == AddressMode::ACCUMULATOR)
 	{
 		// accumulator
+		set_carry(((cpu.A_Reg >> 7) != 0), cpu);
 		cpu.A_Reg = left_rotate(cpu.A_Reg, 1);
 		set_negative(cpu.A_Reg, cpu);
 		set_zero(cpu.A_Reg, cpu);
@@ -313,6 +324,7 @@ void ROL(AddressMode addressType, CPU &cpu)
 
 		uint16_t address = address_mode(addressType, cpu);
 		uint8_t value = cpu.bus.read_8bit(address);
+		set_carry(((value >> 7) != 0), cpu);
 		value = left_rotate(value, 1);
 		cpu.bus.write_8bit(address, value);
 		set_negative(value, cpu);
@@ -325,11 +337,12 @@ void ROL(AddressMode addressType, CPU &cpu)
 void ASL(AddressMode addressType, CPU &cpu)
 {
 	// TODO a >> m
-	set_carry(((cpu.A_Reg >> 7) != 0), cpu);
 
 	if (addressType == AddressMode::ACCUMULATOR)
 	{
+		set_carry(((cpu.A_Reg >> 7) != 0), cpu);
 		cpu.A_Reg = cpu.A_Reg << 1;
+
 		set_negative(cpu.A_Reg, cpu);
 		set_zero(cpu.A_Reg, cpu);
 	}
@@ -338,8 +351,7 @@ void ASL(AddressMode addressType, CPU &cpu)
 
 		uint16_t address = address_mode(addressType, cpu);
 		uint8_t value = cpu.bus.read_8bit(address);
-
-		// cpu.A_Reg = cpu.A_Reg << value;
+		set_carry(((value >> 7) != 0), cpu);
 		value <<= 1;
 		cpu.bus.write_8bit(address, value);
 		set_negative(value, cpu);
@@ -349,10 +361,11 @@ void ASL(AddressMode addressType, CPU &cpu)
 
 void LSR(AddressMode addressType, CPU &cpu)
 {
-	set_carry((cpu.A_Reg & 1) != 0, cpu);
 
 	if (addressType == AddressMode::ACCUMULATOR)
 	{
+		set_carry((cpu.A_Reg & 1) != 0, cpu);
+
 		cpu.A_Reg = cpu.A_Reg >> 1;
 		set_negative(cpu.A_Reg, cpu);
 		set_zero(cpu.A_Reg, cpu);
@@ -362,6 +375,7 @@ void LSR(AddressMode addressType, CPU &cpu)
 
 		uint16_t address = address_mode(addressType, cpu);
 		uint8_t value = cpu.bus.read_8bit(address);
+		set_carry((value & 1) != 0, cpu);
 		value >>= 1;
 		cpu.bus.write_8bit(address, value);
 		set_negative(value, cpu);
@@ -476,10 +490,12 @@ void CLD(AddressMode addressType, CPU &cpu)
 
 void RTI(AddressMode addressType, CPU &cpu)
 {
-	// TODO:return from interrupt
 	cpu.bus.fill(cpu.bus.pop_stack16());
 	cpu.status.val = cpu.bus.pop_stack8();
 	set_brk(cpu, 0);
+	set_interrupt_disabled(0, cpu);
+
+	cpu.interrupt = {};
 }
 #pragma endregion setFlags
 
@@ -523,7 +539,7 @@ void BCC(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (check_carry(cpu))
+	if (check_carry(cpu) == 1)
 	{
 		return;
 	}
@@ -536,7 +552,7 @@ void BCS(AddressMode addressType, CPU &cpu)
 
 	int8_t new_PC = (int8_t)get_value(addressType, cpu);
 
-	if (!check_carry(cpu))
+	if (check_carry(cpu) == 0)
 	{
 		return;
 	}
@@ -551,7 +567,7 @@ void BPL(AddressMode addressType, CPU &cpu)
 	{
 		return;
 	}
-
+	// printf("bpl \n");
 	cpu.bus.fill((uint16_t)((cpu.bus.get_PC() - 1) + new_PC));
 }
 

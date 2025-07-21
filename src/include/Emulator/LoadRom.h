@@ -1,25 +1,34 @@
+#pragma once
+
 #include <iostream>
 #include <vector>
+#include <optional>
+#include <cstdint>
 
-#ifndef MIRROR_TYPE_H
-#define MIRROR_TYPE_H
 enum MirrorType
 {
     VERTICAL,
     HORIZONTAL,
     FOUR_SCREEN,
 };
-#endif
-#ifndef ROM_H
-#define ROM_H
+
+enum ColorEncoding
+{
+    Pal,
+    Ntsc
+};
+
 struct Rom
 {
     std::vector<uint8_t> PRG;
     std::vector<uint8_t> CHR;
     uint8_t mapper;
     MirrorType mirror;
+    ColorEncoding color_encoding;
+
+    size_t prg_size;
+    size_t chr_size;
 };
-#endif
 
 std::vector<uint8_t> file_tobyte_vector(std::string file_name);
-Rom load_rom(std::vector<uint8_t> instructions);
+std::optional<Rom> load_rom(std::vector<uint8_t> instructions);

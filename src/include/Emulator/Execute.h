@@ -1,0 +1,20 @@
+#pragma once
+
+#include <Emulator/EmulatorUtil.h>
+
+class Execute
+{
+private:
+    CPU cpu;
+
+public:
+    Execute(CPU cpu);
+    Execute();
+    CPU run();
+    std::vector<uint8_t> render();
+    int reset_clock();
+    void log_Cpu();
+    void reset();
+    void joypad1(Controller button, const bool isPressed);
+    void joypad2(Controller button, const bool isPressed);
+};

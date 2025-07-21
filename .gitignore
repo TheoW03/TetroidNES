@@ -1,12 +1,18 @@
 /.vscode/
 /SDL2/
-*.bat
+
+clean.bat
+Run.bat
+run_test.bat
+compile.bat
+
 *.o
 *.exe
 *.dll
 /games/
 output
 
+log*.txt
 /Release/
 build
 out
@@ -16,7 +22,72 @@ out
 .vscode
 *.pdb
 /src/unitTests/TestRoms/*.nes
+
+### Qt Generated Ignores ###
+*~
+*.autosave
+*.a
+*.core
+*.moc
+*.obj
+*.orig
+*.rej
+*.so
+*.so.*
+*_pch.h.cpp
+*_resource.rc
+*.qm
+.#*
+*.*#
+core
+!core/
+tags
+.DS_Store
+.directory
+*.debug
+Makefile*
+*.prl
+*.app
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+Thumbs.db
+*.res
+*.rc
+/.qmake.cache
+/.qmake.stash
+
+# qtcreator generated files
+*.pro.user*
+CMakeLists.txt.user*
+
+# xemacs temporary files
+*.flc
+
+# Vim temporary files
+.*.swp
+
+# Visual Studio generated files
+*.ib_pdb_index
+*.idb
+*.ilk
+*.sln
+*.suo
+*.vcproj
+*vcproj.*.*.user
+*.ncb
+*.sdf
+*.opensdf
+*.vcxproj
+*vcxproj.*
+
+# MinGW generated files
+*.Debug
+*.Release
 Tetroid
 *.nes
 Emulator_tests
 Logo.png
+
+logs/
+save/

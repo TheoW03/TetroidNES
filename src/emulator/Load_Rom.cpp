@@ -4,6 +4,8 @@
 #include <sstream>
 #include <cstdio>
 #include <cstring>
+#include <optional>
+#include <cstdint>
 
 #define PRG_ROM_SIZE 16384
 #define CHR_ROM_SIZE 8192
@@ -13,6 +15,12 @@ enum MirrorType
     VERTICAL,
     HORIZONTAL,
     FOUR_SCREEN,
+};
+
+enum ColorEncoding
+{
+    Pal,
+    Ntsc
 };
 
 // easier to understand over doing bytes and bit operations
@@ -44,6 +52,18 @@ struct NESHeader
         };
         byte_t val;
     } flag7;
+
+    byte_t flag8;
+
+    union
+    {
+        struct
+        {
+            unsigned color_encoding : 1; // NTSC vs pal
+            unsigned padding : 7;
+        };
+        byte_t val;
+    } flag9;
 };
 struct Rom
 {
@@ -51,31 +71,43 @@ struct Rom
     std::vector<uint8_t> CHR;
     uint8_t mapper;
     MirrorType mirror;
+    ColorEncoding color_encoding;
+
+    size_t prg_size;
+    size_t chr_size;
 };
 std::vector<uint8_t> file_tobyte_vector(std::string file_name)
 {
     std::vector<uint8_t> instructions;
     std::ifstream infile(file_name, std::ios::binary); // Open the file for reading
     std::string line;
-    if (!infile)
-    {
-        std::cerr << "Error opening file." << std::endl;
-        exit(EXIT_FAILURE);
-    }
     while (infile)
     {
         uint8_t a = (uint8_t)infile.get();
         instructions.push_back(a);
     }
+
     return instructions;
 }
 
-Rom load_rom(std::vector<uint8_t> instructions)
+std::optional<Rom> load_rom(std::vector<uint8_t> instructions)
 {
-
+    if (instructions.size() == 1)
+    {
+        return {};
+    }
+    const int NES_ROM_SIZE = 16401;
+    std::cout << instructions.size() << std::endl;
+    if (instructions.size() < NES_ROM_SIZE)
+        return {};
     Rom rom;
     NESHeader nes_header;
     memcpy(&nes_header, instructions.data(), sizeof(NESHeader));
+
+    nes_header.flag6.val = instructions[6];
+    nes_header.flag7.val = instructions[7];
+    nes_header.flag8 = instructions[8];
+    nes_header.flag9.val = instructions[9];
 
     // uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);
     if (                                 //
@@ -85,12 +117,16 @@ Rom load_rom(std::vector<uint8_t> instructions)
          && nes_header.ident[3] != 0x1a) // all man style should be the default in the VS code formatiro
         || nes_header.flag7.inesverif == 0xc)
     {
-        std::cout << "not NES Rom or NES 1.0 format" << std::endl;
-        exit(EXIT_FAILURE);
+        return {};
     }
+
     // uint8_t map = (instructions[7] & 0b11110000) | (instructions[6] >> 4);
     rom.mapper = nes_header.flag7.mapper_upper | nes_header.flag6.mapper_lower;
+    rom.prg_size = nes_header.prg_size * PRG_ROM_SIZE;
     size_t prg_rom = nes_header.prg_size * PRG_ROM_SIZE;
+    // if (prg_rom == PRG_ROM_SIZE)
+    // {
+
     // if (prg_rom ==)
     size_t chr_rom = nes_header.chr_size * CHR_ROM_SIZE;
     // uint8_t control_byte1 = instructions[6];
@@ -102,7 +138,7 @@ Rom load_rom(std::vector<uint8_t> instructions)
                  : (!four_screen && vertical_mirroring) ? MirrorType::VERTICAL
                                                         : MirrorType::HORIZONTAL;
     uint16_t prg_start = 16 + (512 * nes_header.flag6.trainer);
-    // printf("%d \n", prg_start + prg_rom)
+
     for (size_t i = prg_start; i < prg_rom + prg_start; i++)
     {
         rom.PRG.push_back(instructions[i]);
@@ -113,5 +149,6 @@ Rom load_rom(std::vector<uint8_t> instructions)
     {
         rom.CHR.push_back(instructions[i]);
     }
+    rom.color_encoding = (nes_header.flag9.color_encoding == 1) ? ColorEncoding::Pal : ColorEncoding::Ntsc;
     return rom;
 }

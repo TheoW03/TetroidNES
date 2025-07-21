@@ -1,53 +1,44 @@
 # TetroidNES
 
-
 ![ci build][build] ![license][license]
 
 TetroidNES is an open source multi platform NES emulator.
 
-It currently has support for both windows and debian based linux distros
+It currently has support for both Windows and debian based linux distros
 
 ## Build Instructions
 
 glance at the Prerequisites page in the wiki to see what you need to download and compiler
+
 [Prerequisites]
 
+once you do that run this 
+
 ```SH
-# build Cmake you can set the -DUNITTESTS flag to build unit tests or the relase
+cmake  -DCMAKE_PREFIX_PATH=~/path/to/Qt/6.8.0/gcc_64/ -DCMAKE_CXX_FLAGS="-std=c++17"  -S . -B build # this builds the CMake
 
-# this builds the project
-cmake -S . -B build -DUNITTESTS=OFF
+cmake --build build --config Release # builds project 
 
-# this builds the unit tests
-cmake -S . -B build -DUNITTESTS=ON
+./build.sh # build script if this is too muc 
 
-# build amd run project
-cmake --build build --config Release
-
-./Release/Tetroid.exe ${path to .nes rom file}  # windws
-./Tetroid {path to .nes rom file} # linux
-
-# TODO  install cc65 assembler and add it to your PATH/bin directory 
-# if you want buildTestRoms.ps1 to work
-# downlaode page: 
-# make sure TestRoms are up to date
-
-# builds the Test Roms 
-. .\buildTestRoms.ps1  
-build 
-
-
-./Emulator_tests # linux
-./Debug/Emulator_tests.exe # windows
-
+./build/TetroidNES # runs project 
 
 ```
+
+check out the ./log/ directory to see logs
 
 ## Documentation
 
 [documentation]
 
 a special thanks to all who helped me make this
+
+## contributors
+
+<a href="https://github.com/TheoW03/TetroidNES/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=TheoW03/TetroidNES" alt="including wolfymyth. helped alot"/>
+  <p>and wolfymyth who helped alot with the UI </p>
+</a>
 
 [documentation]: <https://github.com/TheoW03/TetroidNES/wiki>
 [build]: <https://github.com/TheoW03/TetroidNES/actions/workflows/ci.yml/badge.svg>

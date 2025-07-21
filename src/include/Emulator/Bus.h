@@ -1,10 +1,12 @@
+#pragma once
+
 #include <iostream>
 #include <Emulator/PPU.h>
 #include <Emulator/LoadRom.h>
 #include <Emulator/APU.h>
+#include <optional>
+#include <cstdint>
 
-#ifndef CONTROILER_H
-#define CONTROILER_H
 enum class Controller
 {
     A = 0b00000001,
@@ -16,24 +18,36 @@ enum class Controller
     LEFT = 0b01000000,
     RIGHT = 0b10000000
 };
-#endif
-#ifndef BUS_H
-#define BUS_H
+static const Controller AllController[]{
+    Controller::A,
+    Controller::B,
+    Controller::SELECT,
+    Controller::START,
+    Controller::UP,
+    Controller::DOWN,
+    Controller::LEFT,
+    Controller::RIGHT};
+
 class Bus
 {
 private:
     uint8_t v_memory[0x800];
     uint16_t reset_vector;
-    Rom rom;
     PPU ppu;
     APU apu;
     uint16_t program_counter;
     uint8_t stack_pointer;
     uint16_t stack;
-    uint8_t button_idx;
+    uint8_t joypad1_idx;
+    uint8_t joypad2_idx;
+
+    std::optional<std::string> err_string;
 
 public:
+    Rom rom;
+
     size_t clock_cycles;
+    size_t clock_cycles_instr;
     uint8_t stored_instructions[2];
     bool strobe;
     uint8_t joy_pad_byte1;
@@ -65,11 +79,16 @@ public:
     void set_stack_pointer(uint8_t value);
     void print_stack(); // prints true value of stack
     void tick();
+    int reset_clock();
     // void render(sf::Texture &texture, int bank, int tile);
     bool NMI_interrupt();
     void print_ppu();
-    uint8_t read_joypad();
-    void write_controller1(Controller value, int isPressed);
+    uint8_t read_joypad1();
+    uint8_t read_joypad2();
+    void write_controller1(Controller value, const bool isPressed);
+    void write_controller2(Controller value, const bool isPressed);
+
     std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
+    std::optional<std::string> check_error();
+    void log_ppu();
 };
-#endif
