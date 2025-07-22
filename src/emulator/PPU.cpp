@@ -22,8 +22,7 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     // this->reg.ppuCtrl.val = 0;
     // this->reg..val = 0;
     this->ppustatus.reset();
-    for (int i = 0; i < 2048; i++)
-        this->memory[i] = 0;
+    std::fill(memory.begin(), memory.end(), 0);
     this->reg.scrollLatch = false;
     // this->reg.ppumask.val = 0;
     this->ppumask.reset();
@@ -31,85 +30,82 @@ PPU::PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType)
     this->cycles = 0;
     this->err_string = std::nullopt;
     this->start = std::chrono::high_resolution_clock::now();
+    this->rgb_ds = std::shared_ptr<renderdata>(new renderdata());
 
-    for (int i = 0; i < 255; i++)
-        this->oam[i] = 0;
-    for (int i = 0; i < 32; i++)
-    {
-        this->pallete[i] = 0;
-    }
+    std::fill(oam.begin(), oam.end(), 0);
+    std::fill(pallete.begin(), pallete.end(), 0);
     this->oam_addr = 0;
 }
 PPU::PPU() {}
 
-std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte, std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> pallete)
+const ColorPalette& PPU::getColorFromByte(uint16_t byte, ColorPalette &pallete) const
 {
 #pragma region SYS_PAL
-    std::tuple<uint8_t, uint8_t, uint8_t> system_palette[64] = {
-        {0x80, 0x80, 0x80}, // 0x0
-        {0x00, 0x3D, 0xA6}, // 0x1
-        {0x00, 0x12, 0xB0}, // 0x2
-        {0x44, 0x00, 0x96}, // 0x3
-        {0xA1, 0x00, 0x5E}, // 0x4
-        {0xC7, 0x00, 0x28}, // 0x5
-        {0xBA, 0x06, 0x00}, // 0x6
-        {0x8C, 0x17, 0x00}, // 0x7
-        {0x5C, 0x2F, 0x00}, // 0x8
-        {0x10, 0x45, 0x00}, // 0x9
-        {0x05, 0x4A, 0x00}, // 0xa
-        {0x00, 0x47, 0x2E}, // 0xb
-        {0x00, 0x41, 0x66}, // 0xc
-        {0x00, 0x00, 0x00}, // 0xd
-        {0x05, 0x05, 0x05}, // 0xe
-        {0x05, 0x05, 0x05}, // 0xf
-        {0xC7, 0xC7, 0xC7}, // 0x10
-        {0x00, 0x77, 0xFF}, // 0x11
-        {0x21, 0x55, 0xFF}, // 0x12
-        {0x82, 0x37, 0xFA}, // 0x13
-        {0xEB, 0x2F, 0xB5}, // 0x14
-        {0xFF, 0x29, 0x50}, // 0x15
-        {0xFF, 0x22, 0x00}, // 0x16
-        {0xD6, 0x32, 0x00}, // 0x17
-        {0xC4, 0x62, 0x00}, // 0x18
-        {0x35, 0x80, 0x00}, // 0x19
-        {0x05, 0x8F, 0x00}, // 0x1a
-        {0x00, 0x8A, 0x55}, // 0x1c
-        {0x00, 0x99, 0xCC}, // 0x1d
-        {0x21, 0x21, 0x21}, // 0x1e
-        {0x09, 0x09, 0x09}, // 0x1f
-        {0x09, 0x09, 0x09}, // 0x20
-        {0xFF, 0xFF, 0xFF}, // 0x21
-        {0x0F, 0xD7, 0xFF}, // 0x22
-        {0x69, 0xA2, 0xFF}, // 0x23
-        {0xD4, 0x80, 0xFF}, // 0x24
-        {0xFF, 0x45, 0xF3}, // 0x25
-        {0xFF, 0x61, 0x8B}, // 0x26
-        {0xFF, 0x88, 0x33}, // 0x27
-        {0xFF, 0x9C, 0x12}, // 0x28
-        {0xFA, 0xBC, 0x20}, // 0x29
-        {0x9F, 0xE3, 0x0E}, // 0x2a
-        {0x2B, 0xF0, 0x35}, // 0x2b
-        {0x0C, 0xF0, 0xA4}, // 0x2c
-        {0x05, 0xFB, 0xFF}, // 0x2d
-        {0x5E, 0x5E, 0x5E}, // 0x2e
-        {0x0D, 0x0D, 0x0D}, // 0x2f
-        {0x0D, 0x0D, 0x0D}, // 0x30
-        {0xFF, 0xFF, 0xFF}, // 0x31
-        {0xA6, 0xFC, 0xFF}, // 0x32
-        {0xB3, 0xEC, 0xFF}, // 0x33
-        {0xDA, 0xAB, 0xEB}, // 0x34
-        {0xFF, 0xA8, 0xF9}, // 0x35
-        {0xFF, 0xAB, 0xB3}, // 0x36
-        {0xFF, 0xD2, 0xB0}, // 0x37
-        {0xFF, 0xEF, 0xA6}, // 0x38
-        {0xFF, 0xF7, 0x9C}, // 0x39
-        {0xD7, 0xE8, 0x95}, // 0x3a
-        {0xA6, 0xED, 0xAF}, // 0x3b
-        {0xA2, 0xF2, 0xDA}, // 0x3c
-        {0x99, 0xFF, 0xFC}, // 0x3d
-        {0xDD, 0xDD, 0xDD}, // 0x3e
-        {0x11, 0x11, 0x11}, // 0x3f
-        {0x11, 0x11, 0x11}  // 0x40
+    static constexpr const std::array<ColorPalette, 64> system_palette = {
+        ColorPalette{0x80, 0x80, 0x80, 0xFF}, // 0x0
+        ColorPalette{0x00, 0x3D, 0xA6, 0xFF}, // 0x1
+        ColorPalette{0x00, 0x12, 0xB0, 0xFF}, // 0x2
+        ColorPalette{0x44, 0x00, 0x96, 0xFF}, // 0x3
+        ColorPalette{0xA1, 0x00, 0x5E, 0xFF}, // 0x4
+        ColorPalette{0xC7, 0x00, 0x28, 0xFF}, // 0x5
+        ColorPalette{0xBA, 0x06, 0x00, 0xFF}, // 0x6
+        ColorPalette{0x8C, 0x17, 0x00, 0xFF}, // 0x7
+        ColorPalette{0x5C, 0x2F, 0x00, 0xFF}, // 0x8
+        ColorPalette{0x10, 0x45, 0x00, 0xFF}, // 0x9
+        ColorPalette{0x05, 0x4A, 0x00, 0xFF}, // 0xa
+        ColorPalette{0x00, 0x47, 0x2E, 0xFF}, // 0xb
+        ColorPalette{0x00, 0x41, 0x66, 0xFF}, // 0xc
+        ColorPalette{0x00, 0x00, 0x00, 0xFF}, // 0xd
+        ColorPalette{0x05, 0x05, 0x05, 0xFF}, // 0xe
+        ColorPalette{0x05, 0x05, 0x05, 0xFF}, // 0xf
+        ColorPalette{0xC7, 0xC7, 0xC7, 0xFF}, // 0x10
+        ColorPalette{0x00, 0x77, 0xFF, 0xFF}, // 0x11
+        ColorPalette{0x21, 0x55, 0xFF, 0xFF}, // 0x12
+        ColorPalette{0x82, 0x37, 0xFA, 0xFF}, // 0x13
+        ColorPalette{0xEB, 0x2F, 0xB5, 0xFF}, // 0x14
+        ColorPalette{0xFF, 0x29, 0x50, 0xFF}, // 0x15
+        ColorPalette{0xFF, 0x22, 0x00, 0xFF}, // 0x16
+        ColorPalette{0xD6, 0x32, 0x00, 0xFF}, // 0x17
+        ColorPalette{0xC4, 0x62, 0x00, 0xFF}, // 0x18
+        ColorPalette{0x35, 0x80, 0x00, 0xFF}, // 0x19
+        ColorPalette{0x05, 0x8F, 0x00, 0xFF}, // 0x1a
+        ColorPalette{0x00, 0x8A, 0x55, 0xFF}, // 0x1c
+        ColorPalette{0x00, 0x99, 0xCC, 0xFF}, // 0x1d
+        ColorPalette{0x21, 0x21, 0x21, 0xFF}, // 0x1e
+        ColorPalette{0x09, 0x09, 0x09, 0xFF}, // 0x1f
+        ColorPalette{0x09, 0x09, 0x09, 0xFF}, // 0x20
+        ColorPalette{0xFF, 0xFF, 0xFF, 0xFF}, // 0x21
+        ColorPalette{0x0F, 0xD7, 0xFF, 0xFF}, // 0x22
+        ColorPalette{0x69, 0xA2, 0xFF, 0xFF}, // 0x23
+        ColorPalette{0xD4, 0x80, 0xFF, 0xFF}, // 0x24
+        ColorPalette{0xFF, 0x45, 0xF3, 0xFF}, // 0x25
+        ColorPalette{0xFF, 0x61, 0x8B, 0xFF}, // 0x26
+        ColorPalette{0xFF, 0x88, 0x33, 0xFF}, // 0x27
+        ColorPalette{0xFF, 0x9C, 0x12, 0xFF}, // 0x28
+        ColorPalette{0xFA, 0xBC, 0x20, 0xFF}, // 0x29
+        ColorPalette{0x9F, 0xE3, 0x0E, 0xFF}, // 0x2a
+        ColorPalette{0x2B, 0xF0, 0x35, 0xFF}, // 0x2b
+        ColorPalette{0x0C, 0xF0, 0xA4, 0xFF}, // 0x2c
+        ColorPalette{0x05, 0xFB, 0xFF, 0xFF}, // 0x2d
+        ColorPalette{0x5E, 0x5E, 0x5E, 0xFF}, // 0x2e
+        ColorPalette{0x0D, 0x0D, 0x0D, 0xFF}, // 0x2f
+        ColorPalette{0x0D, 0x0D, 0x0D, 0xFF}, // 0x30
+        ColorPalette{0xFF, 0xFF, 0xFF, 0xFF}, // 0x31
+        ColorPalette{0xA6, 0xFC, 0xFF, 0xFF}, // 0x32
+        ColorPalette{0xB3, 0xEC, 0xFF, 0xFF}, // 0x33
+        ColorPalette{0xDA, 0xAB, 0xEB, 0xFF}, // 0x34
+        ColorPalette{0xFF, 0xA8, 0xF9, 0xFF}, // 0x35
+        ColorPalette{0xFF, 0xAB, 0xB3, 0xFF}, // 0x36
+        ColorPalette{0xFF, 0xD2, 0xB0, 0xFF}, // 0x37
+        ColorPalette{0xFF, 0xEF, 0xA6, 0xFF}, // 0x38
+        ColorPalette{0xFF, 0xF7, 0x9C, 0xFF}, // 0x39
+        ColorPalette{0xD7, 0xE8, 0x95, 0xFF}, // 0x3a
+        ColorPalette{0xA6, 0xED, 0xAF, 0xFF}, // 0x3b
+        ColorPalette{0xA2, 0xF2, 0xDA, 0xFF}, // 0x3c
+        ColorPalette{0x99, 0xFF, 0xFC, 0xFF}, // 0x3d
+        ColorPalette{0xDD, 0xDD, 0xDD, 0xFF}, // 0x3e
+        ColorPalette{0x11, 0x11, 0x11, 0xFF}, // 0x3f
+        ColorPalette{0x11, 0x11, 0x11, 0xFF}  // 0x40
     };
 #pragma endregion
 
@@ -117,39 +113,39 @@ std::tuple<uint8_t, uint8_t, uint8_t> PPU::getColorFromByte(uint16_t byte, std::
     {
         // qInfo() << "0b00" << num_to_hexa(this->pallete[0]);
 
-        return system_palette[this->pallete[0]];
+        return system_palette[pallete.r];
     }
     else if (byte == 1)
     {
         // qInfo() << "0b01";
 
-        return system_palette[std::get<2>(pallete)];
+        return system_palette[pallete.b];
     }
     else if (byte == 2)
     {
         // qInfo() << "error";
 
-        return system_palette[std::get<1>(pallete)];
+        return system_palette[pallete.g];
     }
     else if (byte == 3)
     {
 
-        return system_palette[std::get<3>(pallete)];
+        return system_palette[pallete.a];
     }
     return system_palette[byte];
+    
 }
 
-void PPU::get_chr_tile(uint16_t tile_idx, int banks, std::vector<uint8_t> &tile_list)
+void PPU::get_chr_tile(uint16_t tile_idx, int banks, std::array<uint8_t, 16401> &tile_list)
 {
-
     // get chr tile
     for (int i = banks + tile_idx * 16; i <= ((banks + tile_idx * 16) + 15); i++)
     {
 
-        tile_list.push_back(chr_rom[i]);
+        tile_list[i] = chr_rom[i];
     }
 }
-std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> PPU::bg_pallete(size_t row, size_t column)
+ColorPalette PPU::bg_pallete(size_t row, size_t column)
 {
     size_t attr_table = row / 4 * 8 + column / 4;
     uint8_t attr_byte = this->memory[0x3c0 + attr_table];
@@ -184,7 +180,6 @@ std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> PPU::bg_pallete(size_t row, size_
         this->pallete[pallete_offset],
         this->pallete[pallete_offset + 1],
         this->pallete[pallete_offset + 2],
-
     };
 }
 
@@ -410,7 +405,7 @@ bool PPU::NMI_interrupt(uint8_t clock_cycles)
     return false;
 }
 
-void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_t, size_t> res)
+void PPU::draw_background(renderdata &rgb_ds, int banks)
 {
 
     for (int ppu_idx = 0; ppu_idx < 0x3c0; ppu_idx++)
@@ -421,8 +416,8 @@ void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<si
         int idx = ppu_idx % 32;
         int idy = ppu_idx / 32;
         auto bgpallete = this->bg_pallete(idx, idy);
-        std::vector<uint8_t>
-            tile_list;
+        //std::vector<uint8_t> tile_list;
+        std::array<uint8_t, 16401> tile_list;
         this->get_chr_tile(tile, banks, tile_list);
         // qDebug() << "PPU tile:" << tile;
         // std::vector<uint8_t> tile_list = this->get_chr_tile(tile, banks);
@@ -451,11 +446,11 @@ void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<si
                 int tile_y = idy * 8 + y;
                 // printf("tile_x %d  tile_y: %d \n", tile_x, tile_y);
 
-                int b = (tile_y) * 4 * std::get<0>(res) + (tile_x) * 4;
+                int b = (tile_y) * 4 * NES_RES_L + (tile_x) * 4;
 
-                rgb_ds[b] = std::get<0>(rgb);
-                rgb_ds[b + 1] = std::get<1>(rgb);
-                rgb_ds[b + 2] = std::get<2>(rgb);
+                rgb_ds[b] = rgb.r;
+                rgb_ds[b + 1] = rgb.g;
+                rgb_ds[b + 2] = rgb.b;
                 rgb_ds[b + 3] = 0xff;
             }
             // printf("=========\n");
@@ -463,7 +458,7 @@ void PPU::draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<si
         // printf("\n ");
     }
 }
-void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_t, size_t> res)
+void PPU::draw_sprites(renderdata &rgb_ds, int banks)
 {
 
     for (int ppu_idx = 255; ppu_idx >= 0; ppu_idx -= 4)
@@ -501,25 +496,27 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
         //  int idy = ppu_idx / 32;
         ////
         banks = (this->ppuctrl.get_bit(4) == 1) ? 0x1000 : 0;
-        std::vector<uint8_t> tile_list;
+        //std::vector<uint8_t> tile_list;
+        std::array<uint8_t, 16401> tile_list;
         auto pallete_idx = attribbyte.pallete;
         // printf("%x \n", attribbyte.pallete);
         size_t pallete_offset = 0x11 + (pallete_idx * 4);
         // pallete_offset += 1;
-        std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> sprite_palletes = {
+        
+        ColorPalette sprite_palletes = {
             // 0x0, 0x29, 0x10, 0x0f
             0x0,
             this->pallete[pallete_offset],
             this->pallete[pallete_offset + 1],
-            this->pallete[pallete_offset + 2],
-
+            this->pallete[pallete_offset + 2]
         };
+
         printf("offset: %d \n", pallete_offset);
 
         qDebug()
-            << "Sprite palletes 1: " << num_to_hexa(std::get<1>(sprite_palletes))
-            << "2: " << num_to_hexa(std::get<2>(sprite_palletes))
-            << "3: " << num_to_hexa(std::get<3>(sprite_palletes));
+            << "Sprite palletes Blue: " << num_to_hexa(sprite_palletes.b)
+            << "Green: " << num_to_hexa(sprite_palletes.g)
+            << "Alpha: " << num_to_hexa(sprite_palletes.a);
         // for (int i = 0; i < 32; i++)
         //     printf("pallete: 0x%x \n", this->pallete[i]);
 
@@ -571,11 +568,11 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
                 else
                     tile_y = idy + y;
                 // printf("tile_x %d  tile_y: %d \n", tile_x, tile_y);
-                int b = (tile_y) * 4 * std::get<0>(res) + (tile_x) * 4;
-
-                rgb_ds[b] = std::get<0>(rgb);
-                rgb_ds[b + 1] = std::get<1>(rgb);
-                rgb_ds[b + 2] = std::get<2>(rgb);
+                int b = (tile_y) * 4 * NES_RES_L + (tile_x) * 4;
+                
+                rgb_ds[b] = rgb.r;
+                rgb_ds[b + 1] = rgb.g;
+                rgb_ds[b + 2] = rgb.b;
                 rgb_ds[b + 3] = 0xff;
 
                 // printf("combined %d  \n", b);
@@ -589,19 +586,16 @@ void PPU::draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_
 /**
  * @brief gets u a vector of bytes that represent the Texture map warning. assumes you are RGBA so its res * 4
  *
- * @param res
- * @return std::vector<uint8_t>
+ * @return std::vector<uint8_t>*
  */
-std::vector<uint8_t> PPU::render_texture(std::tuple<size_t, size_t> res)
+renderdata_shared_ptr PPU::render_texture()
 {
     int banks = (this->ppuctrl.get_bit(4) == 1) ? 0x1000 : 0;
-    std::vector<uint8_t> rgb_ds;
-    rgb_ds.resize(std::get<0>(res) * std::get<1>(res) * 4);
 
-    if (this->chr_rom.size() == 0)
-        return rgb_ds;
-    draw_background(rgb_ds, banks, res);
-    draw_sprites(rgb_ds, banks, res);
+    if (this->chr_rom.size() > 0)
+        draw_background(*rgb_ds, banks);
+        draw_sprites(*rgb_ds, banks);
+    
     return rgb_ds;
 }
 uint8_t PPU::read_OAM_data()

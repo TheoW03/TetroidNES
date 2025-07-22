@@ -1,13 +1,30 @@
 #pragma once
 
-#include <iostream>
-#include <Emulator/Bus.h>
-#include <filesystem>
 #include <optional>
-// #include <SFML/Graphics.hpp>
-#define NES_RES_A 256 * 240
+
+#include <Emulator/Bus.h>
+
 #define NES_RES_W 240
 #define NES_RES_L 256
+#define NES_RES_A 256 * 240
+#define NES_RES_F 256 * 240 * 4
+
+enum class AddressMode
+{
+    ACCUMULATOR,
+    ABSOLUTE,
+    ABSOLUTE_Y,
+    ABSOLUTE_X,
+    ZERO_PAGE,
+    ZERO_PAGE_X,
+    ZERO_PAGE_Y,
+    IMMEDIATE,
+    INDIRECT,
+    INDIRECT_X,
+    INDIRECT_Y,
+    RELATIVE,
+    IMPLIED
+};
 
 #define NES_START 0x8000
 
@@ -37,21 +54,4 @@ struct CPU
 
     Bus bus;
     std::optional<int> interrupt;
-};
-
-enum class AddressMode
-{
-    ACCUMULATOR,
-    ABSOLUTE,
-    ABSOLUTE_Y,
-    ABSOLUTE_X,
-    ZERO_PAGE,
-    ZERO_PAGE_X,
-    ZERO_PAGE_Y,
-    IMMEDIATE,
-    INDIRECT,
-    INDIRECT_X,
-    INDIRECT_Y,
-    RELATIVE,
-    IMPLIED
 };

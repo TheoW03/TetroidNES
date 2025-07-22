@@ -102,4 +102,5 @@ if(NOT NEW_CONTENT STREQUAL FILE_CONTENT)
 else()
     message(STATUS "Version line not found or is the same")
 endif()
+
 qt_finalize_executable(${EXECUTABLE_NAME})

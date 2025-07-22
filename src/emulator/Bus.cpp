@@ -10,7 +10,6 @@
 #include <Emulator/APU.h>
 #include <Emulator/Bus.h>
 #include <Emulator/PPU.h>
-#include <Emulator/Bus.h>
 #include <Emulator/InstructionMap.h>
 
 #define TOP_STACK 0x1ff
@@ -27,8 +26,7 @@ Bus::Bus()
 Bus::Bus(Rom rom, uint16_t pc_start)
 {
     this->clock_cycles = 0;
-    this->stored_instructions[0] = 0;
-    this->stored_instructions[1] = 0;
+    std::fill(stored_instructions.begin(), stored_instructions.end(), 0);
     this->program_counter = 0;
     this->reset_vector = pc_start;
     this->rom = rom;
@@ -47,7 +45,7 @@ Bus::Bus(Rom rom, uint16_t pc_start)
     this->stack = BOTTOM_STACK + stack_pointer;
     this->clock_cycles_instr = 0;
 }
-uint16_t Bus::get_PC()
+const uint16_t Bus::get_PC() const
 {
     return this->program_counter;
 }
@@ -457,12 +455,12 @@ void Bus::write_controller2(Controller value, const bool isPressed)
     else
         joy_pad_byte2 &= ~((uint8_t)(value));
 }
-std::vector<uint8_t> Bus::render_texture(std::tuple<size_t, size_t> res)
+renderdata_shared_ptr Bus::render_texture()
 {
-    return this->ppu.render_texture(res);
+    return this->ppu.render_texture();
 }
 
-std::optional<std::string> Bus::check_error()
+const std::optional<std::string> Bus::check_error() const
 {
     if (this->err_string.has_value())
     {

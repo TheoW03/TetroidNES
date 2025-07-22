@@ -2,20 +2,37 @@
 
 #include <iostream>
 #include <vector>
-// #include <SFML/Graphics.hpp>
 #include <bit>
-#include "LoadRom.h"
 #include <optional>
-#include <tuple>
 #include <chrono>
-#include <Emulator/ppu_components.h>
 #include <cstdint>
+
+// #include <SFML/Graphics.hpp>
+#include <memory>
+#include <Emulator/ppu_components.h>
+#include <Emulator/LoadRom.h>
+
+using renderdata = std::array<uint8_t, 245760ULL>;
+using renderdata_shared_ptr = std::shared_ptr<renderdata>;
+
+union ColorPalette
+{
+    uint8_t rgba[4];
+    struct
+    {
+        uint8_t r;
+        uint8_t g;
+        uint8_t b;
+        uint8_t a;
+    };
+};
+
 class PPU
 {
 private:
-    std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> bg_pallete(size_t row, size_t column);
-    std::tuple<uint8_t, uint8_t, uint8_t> getColorFromByte(uint16_t byte, std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> pallete);
-    void get_chr_tile(uint16_t tile_idx, int banks, std::vector<uint8_t> &tile_list);
+    ColorPalette bg_pallete(size_t row, size_t column);
+    const ColorPalette& getColorFromByte(uint16_t byte, ColorPalette &pallete) const;
+    void get_chr_tile(uint16_t tile_idx, int banks, std::array<uint8_t, 16401> &tile_list);
     PPUMask ppumask;
     PPUAddress ppuaddr;
     PPUStatus ppustatus;
@@ -24,21 +41,22 @@ private:
     {
         bool scrollLatch;
     };
-    uint8_t memory[0x800];
+    std::array<uint8_t, 0x800> memory;
     Registers reg;
     std::vector<uint8_t> chr_rom;
 
-    uint8_t oam[256];
+    std::array<uint8_t, 256> oam;
     uint8_t oam_addr;
-    uint8_t pallete[0x20];
+    std::array<uint8_t, 0x20> pallete;
     MirrorType mirrorType;
     uint8_t internalDataBuffer;
     uint16_t mirror(uint16_t address);
     size_t cycles;
     uint16_t scanline;
+    renderdata_shared_ptr rgb_ds; // Unique ptr will implicitly delete copy operator for this class
 
-    void draw_background(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_t, size_t> res);
-    void draw_sprites(std::vector<uint8_t> &rgb_ds, int banks, std::tuple<size_t, size_t> res);
+    void draw_background(renderdata &rgb_ds, int banks);
+    void draw_sprites(renderdata &rgb_ds, int banks);
 
 public:
     PPU(std::vector<uint8_t> chrrom, MirrorType mirrorType);
@@ -60,6 +78,6 @@ public:
     void print_ppu_stats();
 
     // void render(sf::Texture &texture, int bank, int tile);
-    std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
+    renderdata_shared_ptr render_texture();
     void log_ppu();
 };

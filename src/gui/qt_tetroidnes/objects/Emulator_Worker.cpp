@@ -6,6 +6,7 @@
 
 #include <Emulator/InstructionMap.h>
 #include <Emulator/LoadRom.h>
+#include <Emulator/Bus.h>
 
 const size_t cpu_cycles_frame = 29782;
 EmulatorWorker::EmulatorWorker(Rom rom, QString rom_dest, QWidget *parent) : QObject{parent},
@@ -61,7 +62,7 @@ void EmulatorWorker::init()
     connect(frame_timer, &QChronoTimer::timeout, this, &EmulatorWorker::on_frame_timer_timeout);
 
     // Setup CPU
-    initializeInstructionMap();
+    //initializeInstructionMap();
     // auto rom = load_rom(file_tobyte_vector(rom_url.toStdString()));
     // if (rom.has_value() == 0)
     // {
@@ -73,8 +74,8 @@ void EmulatorWorker::init()
     // printf("%x \n", pc_start);
     // exit(EXIT_SUCCESS);
     // uint16_t reset_vector = this->rom.prg[];
-    auto reste = 0x8000;
-    if (this->rom.prg_size == 16384)
+    auto reste = PRG_ROM_SIZE_32;
+    if (this->rom.prg_size == PRG_ROM_SIZE_16)
     {
         reste = 0xc000;
     }
@@ -136,8 +137,7 @@ void EmulatorWorker::on_start_main_thread()
 void EmulatorWorker::render_frame()
 {
     // qDebug() << "Emitting draw_frame signal";
-    std::vector<uint8_t> render = exe.render();
-    emit draw_frame(render);
+    emit draw_frame(exe.render());
 }
 
 bool EmulatorWorker::is_running() const
@@ -148,18 +148,18 @@ bool EmulatorWorker::is_running() const
 void EmulatorWorker::process_cpu()
 {
     // Process CPU
-    CPU result;
+    const CPU cpu = exe.get_cpu();
     int clock_cycles = 0;
     qInfo() << "processing cpu";
 
     while (clock_cycles < cpu_cycles_frame)
     {
-        result = exe.run();
-        if (result.error_code == EXIT_FAILURE)
+        exe.run();
+        if (cpu.error_code == EXIT_FAILURE)
         {
-            qCritical() << "potential error with the cpu at pc=0x" << num_to_hexa(result.bus.get_PC());
-            auto error_cpu = result.bus.check_error().value_or("error with emulator, please check the ROM for faulty instructions");
-            auto err_mess = QString("%1-- at PC= 0x%2").arg(QString::fromStdString(error_cpu), QString::fromStdString(num_to_hexa(result.bus.get_PC())));
+            qCritical() << "potential error with the cpu at pc=0x" << num_to_hexa(cpu.bus.get_PC());
+            auto error_cpu = cpu.bus.check_error().value_or("error with emulator, please check the ROM for faulty instructions");
+            auto err_mess = QString("%1-- at PC= 0x%2").arg(QString::fromStdString(error_cpu), QString::fromStdString(num_to_hexa(cpu.bus.get_PC())));
             emit push_error(err_mess, EXIT_FAILURE);
             is_frame_generated = false;
             return;

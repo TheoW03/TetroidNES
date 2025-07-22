@@ -3,8 +3,7 @@
 #include <QVBoxLayout>
 
 LogDisplay::LogDisplay(QWidget *parent) : QWidget{parent},
-                                                    text_display(new QPlainTextEdit(this)),
-                                                    log_notifier(LogNotifier::instance())
+                                                    text_display(new QPlainTextEdit(this))
 {
     setAttribute(Qt::WA_DeleteOnClose, true);
     setAttribute(Qt::WA_AcceptDrops, false);
@@ -20,10 +19,12 @@ LogDisplay::LogDisplay(QWidget *parent) : QWidget{parent},
     layout->addWidget(text_display);
     setLayout(layout);
 
-    connect(&log_notifier, &LogNotifier::log_pushed, this, &LogDisplay::append_line);
+    connect(&LogNotifier::instance(), &LogNotifier::log_pushed, this, &LogDisplay::append_line);
 }
 
-void LogDisplay::append_line(QString line)
+void LogDisplay::append_line(const QString &line)
 {
+    blockSignals(true);
     text_display->appendPlainText(line);
+    blockSignals(false);
 }

@@ -3,7 +3,12 @@
 set QT_WIN_DEPLOY_PATH="%QT_PATH%\bin\windeployqt6.exe"
 
 cmake -G "MinGW Makefiles" -S . -B build
-cmake --build build --config Release
+cmake --build build
+
+::IF %ERRORLEVEL% GEQ 1 {
+::    echo Build Failed! Error Level: %ERRORLEVEL%
+::    exit
+::}
 
 cd build
 

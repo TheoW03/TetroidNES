@@ -1,7 +1,9 @@
 #include <iostream>
 #include <bitset>
+#include <cstdint>
 
 #include <Emulator/EmulatorUtil.h>
+#include <Emulator/Bus.h>
 
 #define CARRY_BIT 0b0000001
 #define ZERO_BIT 0b0000010

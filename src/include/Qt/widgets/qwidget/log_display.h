@@ -14,10 +14,9 @@ public:
     explicit LogDisplay(QWidget *parent = nullptr);
 
 public slots:
-    void append_line(QString line);
+    void append_line(const QString &line);
 
 private:
-    LogNotifier &log_notifier;
     QPlainTextEdit *text_display;
 
 };

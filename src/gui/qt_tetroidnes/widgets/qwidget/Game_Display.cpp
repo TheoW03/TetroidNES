@@ -153,15 +153,11 @@ void GameDisplay::on_init()
     time_between_draw_timer->start();
 }
 
-void GameDisplay::on_update(std::vector<uint8_t> rgb_data_vector)
+void GameDisplay::on_update(renderdata_shared_ptr rgb_data_vector)
 {
-    uint8_t rgb_data[rgb_data_size];
-    std::copy(rgb_data_vector.begin(), rgb_data_vector.end(), rgb_data);
-
     // Display next frame
-
     render_window->clear();
-    texture.update(rgb_data);
+    texture.update(rgb_data_vector->data());
 
     draw_func(*sprite.get());
     render_window->display();
@@ -246,6 +242,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
     }
     else
     {
+        set_paused(true);
         int message_box_result = QMessageBox::question(
             this,
             QString("TetroidNES - %1").arg(tr("Confirmation")),
@@ -256,6 +253,7 @@ void GameDisplay::closeEvent(QCloseEvent *event)
         if (message_box_result == QMessageBox::No)
         {
             event->ignore();
+            set_paused(false);
         }
         else
         {

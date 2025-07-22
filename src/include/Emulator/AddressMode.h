@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <Emulator/Bus.h>
+
 uint16_t immediate_address_mode(CPU &cpu);
 uint16_t relative_addressmode(CPU &cpu);
 

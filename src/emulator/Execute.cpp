@@ -21,7 +21,13 @@ Execute::Execute(CPU cpu)
 Execute::Execute()
 {
 }
-CPU Execute::run()
+
+CPU& Execute::get_cpu()
+{
+    return cpu;
+}
+
+void Execute::run()
 {
 
     if (cpu.bus.NMI_interrupt() && !cpu.interrupt.has_value())
@@ -51,7 +57,7 @@ CPU Execute::run()
         qCritical() << "ERROR WITH THE CPU" << cpu.bus.check_error().value();
         cpu.error_code = EXIT_FAILURE;
 
-        return cpu;
+        return;
         // qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
     }
     auto current_instr = cpu.bus.fetch_next();
@@ -64,7 +70,7 @@ CPU Execute::run()
         cpu.error_code = EXIT_SUCCESS;
         // joypad1(Controller::LEFT, 0);
 
-        return cpu;
+        return;
     }
     qCritical() << "instruction" << num_to_hexa(current_instr) << "is invalid";
 
@@ -72,11 +78,11 @@ CPU Execute::run()
 
     cpu.error_code = EXIT_FAILURE;
 
-    return cpu;
+    return;
 }
-std::vector<uint8_t> Execute::render()
+renderdata_shared_ptr Execute::render()
 {
-    return cpu.bus.render_texture({NES_RES_L, NES_RES_W});
+    return cpu.bus.render_texture();
 }
 
 int Execute::reset_clock()

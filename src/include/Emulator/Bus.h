@@ -1,11 +1,14 @@
 #pragma once
 
 #include <iostream>
+#include <optional>
+#include <cstdint>
+
+// #include <SFML/Graphics.hpp>
+
 #include <Emulator/PPU.h>
 #include <Emulator/LoadRom.h>
 #include <Emulator/APU.h>
-#include <optional>
-#include <cstdint>
 
 enum class Controller
 {
@@ -26,12 +29,13 @@ static const Controller AllController[]{
     Controller::UP,
     Controller::DOWN,
     Controller::LEFT,
-    Controller::RIGHT};
+    Controller::RIGHT
+};
 
 class Bus
 {
 private:
-    uint8_t v_memory[0x800];
+    std::array<uint8_t, 0x800> v_memory;
     uint16_t reset_vector;
     PPU ppu;
     APU apu;
@@ -48,7 +52,7 @@ public:
 
     size_t clock_cycles;
     size_t clock_cycles_instr;
-    uint8_t stored_instructions[2];
+    std::array<uint8_t, 2> stored_instructions;
     bool strobe;
     uint8_t joy_pad_byte1;
     uint8_t joy_pad_byte2;
@@ -65,7 +69,7 @@ public:
     uint16_t read_16bit(uint16_t address);
     void write_16bit(uint16_t address, uint16_t value);
     void print_clock();
-    uint16_t get_PC();
+    const uint16_t get_PC() const;
 
     // stack methods. provides a more clean way of stack reads and writes
     void push_stack8(uint8_t value);
@@ -88,7 +92,7 @@ public:
     void write_controller1(Controller value, const bool isPressed);
     void write_controller2(Controller value, const bool isPressed);
 
-    std::vector<uint8_t> render_texture(std::tuple<size_t, size_t> res);
-    std::optional<std::string> check_error();
+    renderdata_shared_ptr render_texture();
+    const std::optional<std::string> check_error() const;
     void log_ppu();
 };

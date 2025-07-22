@@ -1,5 +1,9 @@
 #include <iostream>
+#include <cstdint>
+
 #include <Emulator/EmulatorUtil.h>
+#include <Emulator/Bus.h>
+
 void LDA(AddressMode addressType, CPU &cpu);
 void LDX(AddressMode addressType, CPU &cpu);
 void LDY(AddressMode addressType, CPU &cpu);

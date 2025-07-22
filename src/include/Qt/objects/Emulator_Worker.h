@@ -23,7 +23,7 @@ public slots:
     void on_frame_timer_timeout();
     void on_pause_toggle(bool paused);
 signals:
-    void draw_frame(std::vector<uint8_t> vector);
+    void draw_frame(renderdata_shared_ptr vector);
     void push_error(QString msg, int error_code);
 
 private:
